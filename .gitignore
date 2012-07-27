@@ -10,3 +10,12 @@
 *.lai
 *.la
 *.a
+CMakeFiles*
+CMakeCache*
+*.cmake
+*~
+bin*
+lib*
+.project
+.cproject
+Makefile
