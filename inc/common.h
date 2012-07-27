@@ -26,6 +26,8 @@
 
 #include <cassert>
 
+typedef std::pair<size_t, size_t> Position;
+
 typedef std::vector<bool> BoolVector;
 
 typedef std::set<size_t> IntSet;
@@ -62,6 +64,14 @@ class Graph;
 class Data;
 class Number;
 class IndexedList;
+class Data;
+class Density;
+class Modularity;
+class MultiStart;
+class Vnds;
+
+class ICriterion;
+class INeighborhood;
 
 std::ostream & operator<<(std::ostream &out, Graph const&);
 
