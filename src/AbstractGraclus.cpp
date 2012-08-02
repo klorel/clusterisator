@@ -53,19 +53,19 @@ void AbstractGraclus::readGraph(Graph const & input) {
 
 	_graph.nedges *= 2;
 
-	_graph.xadj = idxsmalloc(_graph.nvtxs + 1, 0, "ReadGraph: xadj");
-	_graph.adjncy = idxmalloc(_graph.nedges, "ReadGraph: adjncy");
+	_graph.xadj = idxsmalloc(_graph.nvtxs + 1, 0, 0);
+	_graph.adjncy = idxmalloc(_graph.nedges, 0);
 
 	_graph.ncon = 1;
 	_graph.vwgt = NULL;
-	_graph.adjwgt = idxmalloc(_graph.nedges, "ReadGraph: adjwgt");
+	_graph.adjwgt = idxmalloc(_graph.nedges, 0);
 	bool isFractionnaire(false);
 	/* Start reading the graph file */
 	for (_graph.xadj[0] = 0, k = 0, i = 0; i < _graph.nvtxs; i++) {
 		for (auto const & e : input.row(i)) {
 			_graph.adjncy[k] = e.first;
 			if (isFractionnaire)
-				_graph.adjwgt[k] = e.second;
+				_graph.adjwgt[k] = static_cast<int>(floor(e.second));
 			else
 				_graph.adjwgt[k] = 1;
 			k++;
@@ -105,23 +105,23 @@ void AbstractGraclus::launch(int nparts) {
 	}
 
 	float lbvec[MAXNCON];
-//	stoptimer(IOTmr);
+	//	stoptimer(IOTmr);
 
 	int levels = amax((_graph.nvtxs)/(40*log2_metis(nparts)), 20*(nparts));
 	//levels = graph.nvtxs/128;
-//	printf(
-//			"\n----------------------------------------------------------------------\n");
-//	printf("%s", MLKKMTITLE);
-//	printf("Graph Information:\n");
-//	printf("  Name: %s, \n  #Vertices: %d, #Edges: %d, ", "noname",
-//			_graph.nvtxs, _graph.nedges / 2);
-//	if (_graph.ncon > 1)
-//		printf("  Balancing Constraints: %d\n", _graph.ncon);
+	//	printf(
+	//			"\n----------------------------------------------------------------------\n");
+	//	printf("%s", MLKKMTITLE);
+	//	printf("Graph Information:\n");
+	//	printf("  Name: %s, \n  #Vertices: %d, #Edges: %d, ", "noname",
+	//			_graph.nvtxs, _graph.nedges / 2);
+	//	if (_graph.ncon > 1)
+	//		printf("  Balancing Constraints: %d\n", _graph.ncon);
 
-	idxtype * part = idxmalloc(_graph.nvtxs, "main: part");
+	idxtype * part = idxmalloc(_graph.nvtxs, 0);
 	int options[11];
 	options[0] = 0;
-//	starttimer(METISTmr);
+	//	starttimer(METISTmr);
 	int numflag = 0;
 	int clusteringEva = 0;
 	int edgecut = 0;
@@ -131,10 +131,10 @@ void AbstractGraclus::launch(int nparts) {
 
 	if (clusteringEva > 0) {
 		//nparts = readClustering(clusterIDFile, part, graph.nvtxs);
-//		printf("#Clusters: %d\n\nClustering file:\n  %s\n", nparts,
-//				clusterIDFile);
+		//		printf("#Clusters: %d\n\nClustering file:\n  %s\n", nparts,
+		//				clusterIDFile);
 	} else {
-//		printf("#Clusters: %d\n", nparts);
+		//		printf("#Clusters: %d\n", nparts);
 		if (_graph.ncon == 1) {
 			// modification
 			/*METIS_PartGraphKway(&graph.nvtxs, graph.xadj, graph.adjncy, graph.vwgt, graph.adjwgt,
@@ -146,46 +146,46 @@ void AbstractGraclus::launch(int nparts) {
 
 			/* ends */
 		} else {
-//			for (i = 0; i < graph.ncon; i++)
-//				rubvec[i] = HORIZONTAL_IMBALANCE;
+			//			for (i = 0; i < graph.ncon; i++)
+			//				rubvec[i] = HORIZONTAL_IMBALANCE;
 			/*
 			 METIS_mCPartGraphKway(&graph.nvtxs, &graph.ncon, graph.xadj, graph.adjncy, graph.vwgt,
 			 graph.adjwgt, &wgtflag, &numflag, &nparts, rubvec, options, &edgecut, part);
 			 */
 		}
 	}
-//	stoptimer(METISTmr);
+	//	stoptimer(METISTmr);
 	ComputePartitionBalance(&_graph, nparts, part, lbvec);
 
 	if (cutType == NCUT) {
 		_score = ComputeNCut(&_graph, part, nparts);
-//		printf("\nNormalized-Cut... \n   Cut value: %7f, Balance: ", _score);
+		//		printf("\nNormalized-Cut... \n   Cut value: %7f, Balance: ", _score);
 	} else {
 		_score = ComputeRAsso(&_graph, part, nparts);
-//		printf("\nRatio Association...  \n  Association value: %7f, Balance: ",
-//				_score);
+		//		printf("\nRatio Association...  \n  Association value: %7f, Balance: ",
+		//				_score);
 	}
 
 	//printf("  %d-way Edge-Cut: %7d\n", nparts, ComputeCut(&graph, part));
-//	for (int i = 0; i < _graph.ncon; i++)
-//		printf("%5.2f ", lbvec[i]);
-//	printf("\n");
+	//	for (int i = 0; i < _graph.ncon; i++)
+	//		printf("%5.2f ", lbvec[i]);
+	//	printf("\n");
 
 	if (clusteringEva == 0) {
-//		starttimer(IOTmr);
-//		WritePartition(filename, part, graph.nvtxs, nparts);
+		//		starttimer(IOTmr);
+		//		WritePartition(filename, part, graph.nvtxs, nparts);
 
 		for (int i(0); i < _graph.nvtxs; ++i)
 			_partition[i] = part[i];
 
-//		stoptimer(IOTmr);
+		//		stoptimer(IOTmr);
 	}
-//	stoptimer(TOTALTmr);
+	//	stoptimer(TOTALTmr);
 
-//	printf("\nTiming Information:\n");
-//	printf("  I/O:          \t\t %7.3f\n", gettimer(IOTmr));
-//	printf("  Clustering:   \t\t %7.3f   (Graclus time)\n", gettimer(METISTmr));
-//	printf("  Total:        \t\t %7.3f\n", gettimer(TOTALTmr));
-//	printf(
-//			"----------------------------------------------------------------------\n");
+	//	printf("\nTiming Information:\n");
+	//	printf("  I/O:          \t\t %7.3f\n", gettimer(IOTmr));
+	//	printf("  Clustering:   \t\t %7.3f   (Graclus time)\n", gettimer(METISTmr));
+	//	printf("  Total:        \t\t %7.3f\n", gettimer(TOTALTmr));
+	//	printf(
+	//			"----------------------------------------------------------------------\n");
 }
