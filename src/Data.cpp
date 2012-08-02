@@ -163,18 +163,11 @@ IntVector Data::sortLocation() const {
 
 void Data::shift(size_t const& n, size_t const & l) {
 	if (labelOfNode(n) != l) {
-		DEBUG_TRACE(
-				"move " << n << " from  " << labelOfNode(n) << " to " << l
-				<< std::endl);
 		degreeOfLabel(l) += _graph.degree(n);
 		degreeOfLabel(labelOfNode(n)) -= _graph.degree(n);
 		--sizeOfLabel(labelOfNode(n));
 		_labelLists[labelOfNode(n)].erase(_nodePosition[n]);
 		if (sizeOfLabel(labelOfNode(n)) == 0) {
-			DEBUG_TRACE(
-					"usedLabel.remove(" << labelOfNode(n) << ");" << std::endl);
-			DEBUG_ASSERT(!_unUsedLabel.contains(labelOfNode(n)));
-			DEBUG_ASSERT(_usedLabel.contains(labelOfNode(n)));
 			_usedLabel.erase(labelOfNode(n));
 			_unUsedLabel.insert(labelOfNode(n));
 			//			std::cout << "Result : " << std::endl;
@@ -187,9 +180,6 @@ void Data::shift(size_t const& n, size_t const & l) {
 			//			std::cout << "-----------------" << std::endl;
 		}
 		if (sizeOfLabel(l) == 0) {
-			DEBUG_TRACE("usedLabel.add(" << l << ");" << std::endl);
-			DEBUG_ASSERT(_unUsedLabel.contains(l));
-			DEBUG_ASSERT(!_usedLabel.contains(l));
 			_unUsedLabel.erase(l);
 			_usedLabel.insert(l);
 		}
@@ -225,14 +215,12 @@ size_t Data::nbLabels() const {
 }
 
 size_t const & Data::sizeOfLabel(size_t const & l) const {
-	DEBUG_ASSERT(l <_size.size());
 	return _size[l];
 }
 
 size_t & Data::sizeOfLabel(size_t const & l) {
 	if (l >= nbNodes()) {
 		TRACE_N(l);
-		DEBUG_ASSERT(l <nbNodes());
 	}
 	return _size[l];
 }

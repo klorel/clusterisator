@@ -78,13 +78,4 @@ std::ostream & operator<<(std::ostream &out, Graph const&);
 #define TRACE(x) std::cout << x
 #define TRACE_N(x) std::cout <<std::setw(30)<<#x<<" = "<<std::setw(10)<<x<<std::endl
 
-#ifdef DEBUG
-#define DEBUG_TRACE(x)  TRACE(x)
-#define DEBUG_ASSERT(x) assert(x)
-#else
-#define DEBUG_TRACE(x)
-#define DEBUG_ASSERT(x) assert(x)
-#define ASSERT(x) assert(x)
-#endif
-
 #endif /* COMMON_H_ */

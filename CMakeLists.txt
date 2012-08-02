@@ -7,9 +7,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -DIL_STD -pedantic -Wall -Wex
 
 set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
 set(LIBRARY_OUTPUT_PATH lib/${CMAKE_BUILD_TYPE})
+LINK_DIRECTORIES( ~/graclus1.2 )
 
 # includes
-INCLUDE_DIRECTORIES(inc)
+INCLUDE_DIRECTORIES(inc inc/libgraclus)
 
 # code sources
 file(GLOB_RECURSE clustering_files src/* )
@@ -17,8 +18,10 @@ file(GLOB_RECURSE clustering_files src/* )
 # libs
 add_library(clustering STATIC ${clustering_files} )
 
-# exe 
-add_executable( exe  main.cpp )
 # link
-target_link_libraries(exe  clustering)
+target_link_libraries(clustering  multilevel metis)
+
+add_executable( exe  main.cpp )
+target_link_libraries(exe  clustering )
+
 

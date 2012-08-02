@@ -13,26 +13,41 @@
 #include "Number.hpp"
 #include "Vnds.hpp"
 #include "Density.hpp"
-
-#undef NDEBUG
+#include "IGraclus.hpp"
+#include "Timer.hpp"
 
 int main(int argc, char ** argv) {
+	Timer total;
+	Timer t;
 	Number::SetSeed(0);
 	if (argc == 1)
 		return 0;
 	std::string graphFileName(argv[1]);
 	Graph graph(graphFileName);
+	int const k = 32;
 
-	Data data(graph);
+	IGraclus * iGraclus(IGraclus::Get());
+	iGraclus->set(graph);
+	iGraclus->launch(32);
+	std::cout << "Init    time " << t.elapsed() << "\n";
+	t.restart();
+	iGraclus->launch(k);
+	std::cout << "Launch  time " << t.elapsed() << "\n";
+	std::cout << "Total   time " << total.elapsed() << "\n";
+	std::cout << "Value        " << iGraclus->score() << "\n";
 
-	IntVector x(Random(graph.nbNodes()));
-	data.startWith(x);
+	delete iGraclus;
 
-	ICriterion * criterion = new Modularity;
+//	Data data(graph);
+//
+//	IntVector x(Random(graph.nbNodes()));
+//	data.startWith(x);
+//
+//	ICriterion * criterion = new Modularity;
 //	ICriterion * criterion = new Density;
 
-	Vnds vnds;
-	vnds.run(data, *criterion, 10);
+//	Vnds vnds;
+//	vnds.run(data, *criterion, 10);
 
-	delete criterion;
+//	delete criterion;
 }
