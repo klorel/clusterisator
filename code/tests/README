@@ -1,0 +1,13 @@
+====== Tests ======
+Here dwell the tests. We use the framework googlemock (http://code.google.com/p/googlemock/)
+
+===== Compiling and running the tests=====
+To compile and run the tests:
+  - Download the framework googlemock and build gmock_main.a
+  - Rename it to libgmock_main.a
+  - Set the CMake option WITH_TEST to ON
+  - Set the CMake option GMOCK_ROOT to the googlemock directory. This directory should contain in particular:
+    * make/libgmock_main.a
+    * gtest/include/gtest/gtest.h
+  - Then, build the whole clusterisator project as usual: it should build the file code/tests
+  - Run the binary code/tests

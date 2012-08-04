@@ -21,15 +21,24 @@ add_executable( exe  main.cpp )
 target_link_libraries(exe  clustering )
 
 
+#Don't compile tests by default
 option(WITH_TESTS "Build tests" OFF)
 set(GMOCK_ROOT "" CACHE STRING "Root of gmock. Only needed to compile tests")
 if ( WITH_TESTS )
+
+  #Let include <gtest/gtest.h>
   LINK_DIRECTORIES(${GMOCK_ROOT}/make)
+
+  #Actual test files
   file(GLOB_RECURSE tests_files tests/*)
   add_executable(tests ${tests_files})
-  include_directories(${WITH_ROOT}/make)
+
+  #Link against files to tests, and the libgmock_main.a which contains the main and which run every tests
+  #FIXME: by default we have gmock_main.a, but here it is required to have the prefix "lib". It could be better to let get rid of this "lib"-constraint
   target_link_libraries(tests clustering gmock_main)
   include_directories(${GMOCK_ROOT}/include ${GMOCK_ROOT}/gtest/include)
+
+  #To have the flag -pthread
   find_package (Threads)
   target_link_libraries(tests ${CMAKE_THREAD_LIBS_INIT})
 endif ( WITH_TESTS )
