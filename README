@@ -1,0 +1,1 @@
+To build the project create a repository at the root, go there and execute "cmake .."
