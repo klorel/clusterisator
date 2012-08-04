@@ -1,14 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 project(graclus)
 
-set(CMAKE_BUILD_TYPE "RELEASE")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -pedantic  -Wall -Wextra  -fmessage-length=0 -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-uninitialized -Wno-conversion -Wno-unused-parameter -Wno-unused-variable -Wno-write-strings -Wno-unused-but-set-variable -Wno-parentheses -Wno-missing-braces -Wno-format-security -Wno-extra -Wno-unused-result") 
-
-set(CMAKE_CXX_COMPILER "g++")
-
-#set(EXECUTABLE_OUTPUT_PATH bin/${CMAKE_BUILD_TYPE})
-#set(LIBRARY_OUTPUT_PATH lib/${CMAKE_BUILD_TYPE})
 
 # includes
 INCLUDE_DIRECTORIES(metisLib multilevelLib programs )
