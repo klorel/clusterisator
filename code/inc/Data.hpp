@@ -12,27 +12,20 @@
 
 #include "IndexedList.hpp"
 #include "Graph.hpp"
+#include "IExtendedPartition.hpp"
 
-class Data {
+class Data: public IExtendedPartition {
 public:
-	typedef IntList::iterator NodePosition;
-	typedef std::vector<NodePosition> NodePositions;
-	typedef std::vector<Int2Double> LabelGraph;
-	typedef std::vector<IntList> LabelLists;
-	typedef IndexedList::iterator iterator;
-	typedef IndexedList::const_iterator const_iterator;
 public:
-	Data(Data const &);
-	Data(Graph const &);
+	Data(IGraph const &);
 	virtual ~Data();
 public:
 	// déplacement d'un noeud
 	void shift(size_t const & n, size_t const & p);
 	// fusion de deux labels
-	void fusion(size_t const & l1, size_t const & l2);
+	size_t fusion(size_t const & l1, size_t const & l2);
 	// la taille d'un label
 public:
-	Graph const & graph() const;
 	// le nombre de noeuds
 	size_t nbNodes() const;
 	// le nombre d'arrêtes
@@ -67,8 +60,8 @@ public:
 	IntList & list(size_t const & label);
 	IntList const & list(size_t const & label) const;
 
-	size_t const & labelOfNode(size_t n) const;
-	size_t & labelOfNode(size_t n);
+	size_t const & label(size_t const & n) const;
+	size_t & label(size_t const &n);
 
 	IntVector sortLocation() const;
 
@@ -83,7 +76,6 @@ public:
 
 	bool checkDegree(size_t const l) const;
 private:
-	Graph const & _graph;
 	// le degree de chaque label
 	DoubleVector _labelDegree;
 

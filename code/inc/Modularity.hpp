@@ -10,17 +10,19 @@
 
 #include "common.h"
 #include "ICriterion.hpp"
-class Modularity :public ICriterion{
+class Modularity: public ICriterion {
 public:
 	// calcul brut
-	 double eval(Data const & data)const;
+	double eval(IExtendedPartition const & data) const;
 	// calcul de la composante associé au label
-	 double eval(Data const & data, size_t const & label)const;
+	double eval(IExtendedPartition const & data, size_t const & label) const;
 
-	 bool isBetter(double const & candidate, double const & ref)const;
+	bool isBetter(double const & candidate, double const & ref) const;
+
+	bool isPartitioning() const;
 public:
 
-		virtual ~Modularity(){}
+	virtual ~Modularity();
 };
 
 #endif /* MODULARITY_HPP_ */

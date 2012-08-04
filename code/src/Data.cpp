@@ -7,15 +7,15 @@
 
 #include "Data.hpp"
 //#include "Modularity.hpp"
-#include "Graph.hpp"
+#include "IGraph.hpp"
 //#include "Utils.hpp"
 
-Data::Data(Graph const & graph) :
-		_graph(graph), _labelDegree(_graph.nbNodes(), 0), _labelLists(
-				_graph.nbNodes()), _nodeLabel(_graph.nbNodes(),
-				_graph.nbNodes()), _nodePosition(_graph.nbNodes()), _size(
-				_graph.nbNodes(), 0), _usedLabel(_graph.nbNodes()), _unUsedLabel(
-				_graph.nbNodes()) {
+Data::Data(IGraph const & _graph) :
+		IExtendedPartition(_graph), _labelDegree(graph().nbNodes(), 0), _labelLists(
+				graph().nbNodes()), _nodeLabel(graph().nbNodes(),
+				graph().nbNodes()), _nodePosition(graph().nbNodes()), _size(
+				graph().nbNodes(), 0), _usedLabel(graph().nbNodes()), _unUsedLabel(
+				graph().nbNodes()) {
 
 }
 
@@ -23,17 +23,6 @@ Data::~Data() {
 
 }
 
-Data::Data(Data const & rhs) :
-		_graph(rhs._graph), _labelDegree(rhs._labelDegree), _labelLists(
-				rhs.nbNodes()), _nodeLabel(rhs._nodeLabel), _nodePosition(
-				rhs.nbNodes(), list(0).end()), _size(rhs._size), _usedLabel(
-				rhs._usedLabel), _unUsedLabel(rhs._unUsedLabel) {
-	assert(nbNodes() == rhs.nbNodes());
-	for (size_t n(0); n < nbNodes(); ++n) {
-		_labelLists[rhs.labelOfNode(n)].push_front(n);
-		_nodePosition[n] = _labelLists[rhs.labelOfNode(n)].begin();
-	}
-}
 // attention, plus besoin d'avoir des entiers contigus
 void Data::startWith(IntVector const & location) {
 	_size.assign(nbNodes(), 0);
@@ -48,7 +37,7 @@ void Data::startWith(IntVector const & location) {
 		_unUsedLabel.erase(l);
 		_labelLists[l].push_front(n);
 		_nodePosition[n] = _labelLists[l].begin();
-		_labelDegree[l] += _graph.degree(n);
+		_labelDegree[l] += graph().degree(n);
 		++_size[l];
 	}
 }
@@ -87,7 +76,7 @@ void Data::startWith(IntVector const & location) {
 double Data::computeDegreeOfLabel(size_t const &l) const {
 	double res(0);
 	for (auto const & n : list(l)) {
-		res += _graph.degree(n);
+		res += graph().degree(n);
 	}
 	return res;
 }
@@ -101,10 +90,10 @@ bool Data::checkPosition() const {
 	for (auto const & l : usedLabel()) {
 		assert(sizeOfLabel(l)>0);
 		for (auto const & n : list(l)) {
-			if (labelOfNode(n) != l) {
+			if (label(n) != l) {
 				std::cout << n;
 				std::cout << " not in " << l;
-				std::cout << " but in " << labelOfNode(n);
+				std::cout << " but in " << label(n);
 				std::cout << std::endl;
 				assert(false);
 			}
@@ -147,7 +136,7 @@ bool Data::checkDegree(size_t const l) const {
 	//		TRACE("LABEL "<<l<<std::endl);
 	for (auto const & n : list(l)) {
 		//			TRACE_N(*n);
-		verif += _graph.degree(n);
+		verif += graph().degree(n);
 	}
 	if (fabs(verif - degreeOfLabel(l)) > 1e-10) {
 		std::cout << "WRONG DEGREE OF LABEL " << l << " = " << degreeOfLabel(l)
@@ -162,14 +151,14 @@ IntVector Data::sortLocation() const {
 }
 
 void Data::shift(size_t const& n, size_t const & l) {
-	if (labelOfNode(n) != l) {
-		degreeOfLabel(l) += _graph.degree(n);
-		degreeOfLabel(labelOfNode(n)) -= _graph.degree(n);
-		--sizeOfLabel(labelOfNode(n));
-		_labelLists[labelOfNode(n)].erase(_nodePosition[n]);
-		if (sizeOfLabel(labelOfNode(n)) == 0) {
-			_usedLabel.erase(labelOfNode(n));
-			_unUsedLabel.insert(labelOfNode(n));
+	if (label(n) != l) {
+		degreeOfLabel(l) += graph().degree(n);
+		degreeOfLabel(label(n)) -= graph().degree(n);
+		--sizeOfLabel(label(n));
+		_labelLists[label(n)].erase(_nodePosition[n]);
+		if (sizeOfLabel(label(n)) == 0) {
+			_usedLabel.erase(label(n));
+			_unUsedLabel.insert(label(n));
 			//			std::cout << "Result : " << std::endl;
 			//			for (IndexedList::const_iterator lIte(begin()); lIte != end(); ++lIte) {
 			//				std::cout << std::setw(4) << *lIte;
@@ -190,25 +179,23 @@ void Data::shift(size_t const& n, size_t const & l) {
 	}
 }
 // fusion de deux labels
-void Data::fusion(size_t const & l1, size_t const & l2) {
+size_t Data::fusion(size_t const & l1, size_t const & l2) {
 	IntSet buffer;
 	Insert(list(l1), buffer);
 	for (auto const & n : buffer)
 		shift(n, l2);
+	return l2;
 
 }
 IntVector const & Data::nodeLabel() const {
 	return _nodeLabel;
 }
 
-Graph const & Data::graph() const {
-	return _graph;
-}
 size_t Data::nbNodes() const {
-	return _graph.nbNodes();
+	return graph().nbNodes();
 }
 size_t Data::nbEdges() const {
-	return _graph.nbEdge();
+	return graph().nbEdges();
 }
 size_t Data::nbLabels() const {
 	return _usedLabel.size();
@@ -246,11 +233,11 @@ IntList const & Data::list(size_t const & label) const {
 	return _labelLists[label];
 }
 
-size_t const & Data::labelOfNode(size_t n) const {
+size_t const & Data::label(size_t const &n) const {
 	return _nodeLabel[n];
 }
 
-size_t & Data::labelOfNode(size_t n) {
+size_t & Data::label(size_t const &n) {
 	return _nodeLabel[n];
 }
 size_t Data::getUnUsedLabel() const {

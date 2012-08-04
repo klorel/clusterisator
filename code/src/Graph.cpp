@@ -72,7 +72,7 @@ void Graph::fill(TempGraph const & rhs) {
 	for (size_t i(0); i < rhs.size(); ++i) {
 		_rows[i]->resize(rhs[i].size());
 		//		size_t index(0);
-		std::copy(rhs[i].begin(), rhs[i].end(), row(i).begin());
+		std::copy(rhs[i].begin(), rhs[i].end(), adjacentList(i).begin());
 		//		for (TempRow::const_iterator ite(rhs[i].begin()); ite != rhs[i].end(); ++ite) {
 		//			if (ite->first != i) {
 		//
@@ -90,7 +90,7 @@ void Graph::writeCplusplus(std::string const &fileName) const {
 	std::ofstream file(fileName.c_str());
 	file << "	getGraph().allocate(" << nbNodes() << ");" << std::endl;
 	for (size_t i(0); i < nbNodes(); ++i) {
-		for (auto const & e : row(i)) {
+		for (auto const & e : adjacentList(i)) {
 			file << "getGraph()[" << i << "][" << e.first << "]=" << e.second
 					<< ";" << std::endl;
 		}
@@ -111,7 +111,7 @@ Graph::Graph(std::string const& fileName, std::ostream & out) {
 Graph::Graph(Graph const& orig) {
 	allocate(orig.nbNodes());
 	for (size_t i(0); i < orig.nbNodes(); ++i) {
-		*_rows[i] = orig.row(i);
+		*_rows[i] = orig.adjacentList(i);
 	}
 	_nbEdge = orig._nbEdge;
 	_degrees = orig._degrees;
@@ -129,7 +129,7 @@ void Graph::allocate(size_t const&i) {
 	desallocate();
 	_rows.resize(i);
 	for (size_t p = 0; p < i; ++p)
-		_rows[p] = new Row;
+		_rows[p] = new AdjacentList;
 	//		rows.push_back(Container::value_type());
 	//		rows.push_back(Container::value_type(new row_t));
 }
@@ -144,7 +144,7 @@ void Graph::buildDegrees() {
 	_degree = 0;
 	for (size_t p = 0; p < nbNodes(); ++p) {
 		_degrees[p] = 0;
-		for (auto const & e : row(p)) {
+		for (auto const & e : adjacentList(p)) {
 			_degrees[p] += e.second;
 			if (e.first == p)
 				_degrees[p] += e.second;
@@ -194,7 +194,7 @@ void Graph::readRotta(std::string const & fileName) {
 	}
 	allocate(tempGraph.size());
 	for (size_t i(0); i < tempGraph.size(); ++i) {
-		Row & row(*_rows[i]);
+		AdjacentList & row(*_rows[i]);
 		row.resize(tempGraph[i].size());
 		size_t index(0);
 		for (TempRow::const_iterator ite(tempGraph[i].begin());
@@ -206,9 +206,49 @@ void Graph::readRotta(std::string const & fileName) {
 	buildDegrees();
 }
 
-Graph::Row & Graph::row(size_t const & i) {
+Graph::AdjacentList & Graph::adjacentList(size_t const & i) {
 	return *_rows[i];
 }
-Graph::Row const & Graph::row(size_t const & i) const {
+Graph::AdjacentList const & Graph::adjacentList(size_t const & i) const {
 	return *_rows[i];
+}
+
+std::ostream & operator<<(std::ostream &out, Graph const&g) {
+	out << "nbObs:\t" << g.nbNodes() << std::endl;
+	for (size_t id(0); id < g.nbNodes(); ++id) {
+		out << std::setw(4) << id << " | ";
+		for (auto const & e : g.adjacentList(id)) {
+			out << e.first << " , " << e.second << " ; ";
+		}
+		out << std::endl;
+	}
+	return out;
+}
+
+double const & Graph::degree(size_t const & nodeId) const {
+	return _degrees[nodeId];
+}
+
+double const & Graph::degree() const {
+	return _degree;
+}
+
+double const & Graph::squareDegree() const {
+	return _squareDegree;
+}
+
+size_t Graph::nbEdges() const {
+	return _nbEdge;
+}
+
+size_t & Graph::nbEdges() {
+	return _nbEdge;
+}
+
+size_t Graph::nbNodes() const {
+	return _rows.size();
+}
+
+void Graph::clear() {
+	_rows.clear();
 }

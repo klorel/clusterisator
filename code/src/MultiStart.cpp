@@ -98,7 +98,7 @@ bool MultiStart::generate() {
 	if (success) {
 		_score = score;
 		for (auto const & n : _nodes)
-			_reference[n] = _data.labelOfNode(n);
+			_reference[n] = _data.label(n);
 	} else {
 		for (auto const & n : _nodes) {
 			_data.shift(n, _reference[n]);

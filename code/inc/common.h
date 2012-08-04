@@ -27,7 +27,6 @@
 #include <cassert>
 
 typedef std::pair<size_t, size_t> Position;
-
 typedef std::vector<bool> BoolVector;
 
 typedef std::set<size_t> IntSet;

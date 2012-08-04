@@ -6,49 +6,56 @@
  */
 
 #include "Modularity.hpp"
-#include "Graph.hpp"
+#include "IGraph.hpp"
 #include "Data.hpp"
 
 // calcul brut
-double Modularity::eval(Data const & data) const {
+double Modularity::eval(IExtendedPartition const & data) const {
 	DoubleVector degree(data.nbNodes(), 0);
 	DoubleVector intra(data.nbNodes(), 0);
 
 	for (size_t n(0); n < data.nbNodes(); ++n) {
-		size_t const & l(data.labelOfNode(n));
+		size_t const & l(data.label(n));
 		degree[l] += data.graph().degree(n);
-		for (auto const & e : data.graph().row(n)) {
-			if (data.labelOfNode(e.first) == l)
+		for (auto const & e : data.graph().adjacentList(n)) {
+			if (data.label(e.first) == l)
 				intra[l] += e.second;
 		}
 	}
 	double value(0);
 	double const & M(data.graph().degree());
-	double const & MxM(data.graph().squareDegree());
+
 	for (auto const & l : data.used()) {
 
-		value += intra[l] / M - degree[l] / MxM;
+		value += intra[l] / M - degree[l] / (M * M);
 	}
 	return value;
 }
 // calcul de la composante associé au label
-double Modularity::eval(Data const & data, size_t const & l) const {
+double Modularity::eval(IExtendedPartition const & data,
+		size_t const & l) const {
 	double degree(0);
 	double intra(0);
 	for (auto const & n : data.list(l)) {
-		size_t const & l(data.labelOfNode(n));
+		size_t const & l(data.label(n));
 		degree += data.graph().degree(n);
-		for (auto const & e : data.graph().row(n)) {
-			if (data.labelOfNode(e.first) == l)
+		for (auto const & e : data.graph().adjacentList(n)) {
+			if (data.label(e.first) == l)
 				intra += e.second;
 		}
 	}
 	double const & M(data.graph().degree());
-	double const & MxM(data.graph().squareDegree());
 
-	return intra / M - degree / MxM;
+	return intra / M - degree / (M * M);
 }
 bool Modularity::isBetter(double const & candidate, double const & ref) const {
 	return candidate > 1e-10 + ref;
 
+}
+bool Modularity::isPartitioning() const {
+	return false;
+
+}
+
+Modularity::~Modularity() {
 }

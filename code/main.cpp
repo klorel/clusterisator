@@ -25,11 +25,11 @@ int main(int argc, char ** argv) {
 	std::string graphFileName(argv[1]);
 	Graph graph(graphFileName);
 	int const k = 32;
-
+	// utilisation de graclus
 	IGraclus * iGraclus(IGraclus::Get());
-	iGraclus->allocate(graph.nbNodes(), graph.nbEdge(), false);
+	iGraclus->allocate(graph.nbNodes(), graph.nbEdges(), false);
 	for (size_t i(0); i < graph.nbNodes(); ++i)
-		iGraclus->setRow(i, graph.row(i));
+		iGraclus->setRow(i, graph.adjacentList(i));
 	iGraclus->check();
 	iGraclus->launch(32);
 	std::cout << "Init    time " << t.elapsed() << "\n";
@@ -41,16 +41,16 @@ int main(int argc, char ** argv) {
 
 	delete iGraclus;
 
-//	Data data(graph);
-//
-//	IntVector x(Random(graph.nbNodes()));
-//	data.startWith(x);
-//
-//	ICriterion * criterion = new Modularity;
-//	ICriterion * criterion = new Density;
+	//	Data data(graph);
+	//
+	//	IntVector x(Random(graph.nbNodes()));
+	//	data.startWith(x);
+	//
+	//	ICriterion * criterion = new Modularity;
+	//	ICriterion * criterion = new Density;
 
-//	Vnds vnds;
-//	vnds.run(data, *criterion, 10);
+	//	Vnds vnds;
+	//	vnds.run(data, *criterion, 10);
 
-//	delete criterion;
+	//	delete criterion;
 }
