@@ -36,7 +36,7 @@ void LocalSearch::check() const {
 	double score;
 	DoubleVector scores;
 	init(score, scores);
-	std::cout << "score = " << _score << "\n";
+	//	std::cout << "score = " << _score << "\n";
 	double const absolute_score(
 			_neighborhood.criterion().eval(_neighborhood.data()));
 	if (fabs(absolute_score - score) > 1e-10) {
@@ -58,6 +58,7 @@ void LocalSearch::check() const {
 }
 bool LocalSearch::run() {
 	init();
+	std::cout << "init done\n";
 	bool improvementDone(false);
 	bool stop(false);
 	size_t i(0);
@@ -74,6 +75,7 @@ bool LocalSearch::run() {
 bool LocalSearch::loop() {
 	bool improvementDone(false);
 	for (auto const & seed : _neighborhood) {
+		std::cout << "node " << seed << "\n";
 		check();
 		if (_neighborhood.findBest(seed, _score, _scores))
 			improvementDone = true;

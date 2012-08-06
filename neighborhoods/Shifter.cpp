@@ -29,52 +29,57 @@ Shifter::const_iterator Shifter::end() const {
 size_t Shifter::random() const {
 	return nodes().random();
 }
-// recherche le premier movement améliorant, retourne true si un mouvement améliorant est déterminé
 bool Shifter::findFirst(size_t const & node) {
 	bool improvement(false);
 	return improvement;
 }
-// recherche le meilleur mouvement améliorant, retourne true si un mouvement améliorant est déterminé
-bool Shifter::findBest(size_t const & node, double & score,
+
+bool Shifter::findBest(size_t const & node, double & bestScore,
 		DoubleVector & scores) {
 	bool improvement(false);
 	size_t const from(data().label(node));
-	double bestScore(score);
-	double bestFromScore(score);
-	double bestToScore(score);
+
+	double candidateScore(bestScore);
+	double bestFromScore(bestScore);
+	double bestToScore(bestScore);
 	size_t bestTo(from);
 
-	bestScore -= scores[from];
+	candidateScore -= scores[from];
 
 	for (auto const & to : labels()) {
 		if (to != from) {
-			bestScore -= scores[to];
+			candidateScore -= scores[to];
 			data().shift(node, to);
 			double const newFrom(criterion().eval(data(), from));
 			double const newTo(criterion().eval(data(), to));
+			data().shift(node, from);
 
-			bestScore += newFrom;
-			bestScore += newTo;
-			if (criterion().isBetter(bestScore, score)) {
+			candidateScore += newFrom;
+			candidateScore += newTo;
+			if (criterion().isBetter(bestScore, candidateScore)) {
 				improvement = true;
-				score = bestScore;
+				bestScore = candidateScore;
 				bestFromScore = newFrom;
 				bestToScore = newTo;
 				bestTo = to;
 			}
-			bestScore -= newFrom;
-			bestScore -= newTo;
+			candidateScore -= newFrom;
+			candidateScore -= newTo;
+			candidateScore += scores[to];
 		}
 	}
+
 	if (improvement) {
+//		std::cout << node << " : " << from << " --> " << bestTo << "\n";
 		data().shift(node, bestTo);
 		scores[from] = bestFromScore;
 		scores[bestTo] = bestToScore;
-		score = bestScore;
+
+		bestScore = candidateScore;
 	}
 	return improvement;
 }
-// applique n'importe quel mouvement
+
 void Shifter::findAny(size_t const & node) {
 
 }

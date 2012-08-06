@@ -206,9 +206,6 @@ size_t const & Data::sizeOfLabel(size_t const & l) const {
 }
 
 size_t & Data::sizeOfLabel(size_t const & l) {
-	if (l >= nbNodes()) {
-		TRACE_N(l);
-	}
 	return _size[l];
 }
 double const & Data::degreeOfLabel(size_t const & l) const {
