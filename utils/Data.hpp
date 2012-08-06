@@ -13,6 +13,7 @@
 #include "IndexedList.hpp"
 #include "Graph.hpp"
 #include "IExtendedPartition.hpp"
+#include "Partition.hpp"
 
 class Data: public IExtendedPartition {
 public:
@@ -51,8 +52,8 @@ public:
 	// est-ce que le label est utilisé
 	bool isUsed(size_t const & l) const;
 public:
-	IntVector const & nodeLabel() const;
-	void startWith(IntVector const &);
+	IPartition const & nodeLabel() const;
+	void startWith(IPartition const &);
 
 	IndexedList const & usedLabel() const;
 	IndexedList const & unUsedLabel() const;
@@ -60,10 +61,10 @@ public:
 	IntList & list(size_t const & label);
 	IntList const & list(size_t const & label) const;
 
-	size_t  label(size_t const & n) const;
+	size_t label(size_t const & n) const;
 	size_t & label(size_t const &n);
 
-	IntVector sortLocation() const;
+//	IntVector sortLocation() const;
 
 public:
 	double computeDegreeOfLabel(size_t const & l) const;
@@ -83,7 +84,7 @@ private:
 	LabelLists _labelLists;
 
 	// le label de chaque noeud
-	IntVector _nodeLabel;
+	Partition _nodeLabel;
 	// la position de chaque noeud dans les listes de composition
 	NodePositions _nodePosition;
 	// la taille des labels

@@ -51,6 +51,8 @@ public:
 
 	virtual IntList & list(size_t const & label) = 0;
 	virtual IntList const & list(size_t const & label) const = 0;
+
+	virtual void startWith(IPartition const &) = 0;
 public:
 	// change the label of one node
 	virtual void shift(size_t const & node, size_t const & newLabel) = 0;

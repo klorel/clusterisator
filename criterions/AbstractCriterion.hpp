@@ -23,7 +23,7 @@ public:
 template<ICriterion::Sense sense, ICriterion::Kind kind> inline
 bool AbstractCriterion<sense, kind>::isBetter(double const & candidate,
 		double const & ref) const {
-	return sense == Minimization ?
+	return sense == Maximization ?
 			candidate > ref + 1e-10 : candidate < ref - 1e-10;
 }
 

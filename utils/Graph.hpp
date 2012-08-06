@@ -8,7 +8,7 @@ class Graph: public IGraph {
 public:
 
 	Graph(size_t const & = 0);
-	Graph(std::string const &, std::ostream & = std::cout);
+	Graph(std::string const &, std::ostream * = 0);
 	Graph(Graph const &);
 
 	virtual ~Graph();
@@ -20,7 +20,7 @@ public:
 	void readRotta(std::string const &);
 	void buildDegrees();
 
-	void read(std::string const &, std::ostream & = std::cout);
+	void read(std::string const &, std::ostream * = 0);
 
 	double const & degree(size_t const &) const;
 	double const & degree() const;

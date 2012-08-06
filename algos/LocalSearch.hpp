@@ -12,17 +12,21 @@
 
 class LocalSearch {
 public:
-	LocalSearch(Data &, ICriterion &, INeighborhood &);
+	LocalSearch(INeighborhood &);
 	virtual ~LocalSearch();
 
 public:
 	bool run();
 private:
+	void init(double & score, DoubleVector & scores) const;
+	void init();
 	bool loop();
+	void check() const;
 private:
-	Data & _data;
-	ICriterion & _criterion;
 	INeighborhood & _neighborhood;
+
+	double _score;
+	DoubleVector _scores;
 };
 
 #endif /* LOCALSEARCH_HPP_ */

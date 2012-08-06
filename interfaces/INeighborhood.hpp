@@ -23,11 +23,12 @@ public:
 	virtual const_iterator end() const= 0;
 
 	virtual size_t random() const = 0;
-	// recherche le premier movement améliorant, retourne true si un mouvement améliorant est déterminé
+	//
 	virtual bool findFirst(size_t const &) = 0;
-	// recherche le meilleur mouvement améliorant, retourne true si un mouvement améliorant est déterminé
-	virtual bool findBest(size_t const &) = 0;
-	// applique n'importe quel mouvement
+	//
+	virtual bool findBest(size_t const & seed, double & score,
+			DoubleVector & scores) = 0;
+	//
 	virtual void findAny(size_t const &) = 0;
 public:
 	IExtendedPartition & data();
@@ -35,9 +36,13 @@ public:
 	ICriterion const & criterion() const;
 	IndexedList const & nodes() const;
 	IndexedList const & labels() const;
+
+	DoubleVector & scores();
+	DoubleVector const & scores() const;
 public:
 	INeighborhood(IExtendedPartition& data, ICriterion const & criterion,
 			IndexedList const & nodes, IndexedList const & labels);
+	INeighborhood(IExtendedPartition& data, ICriterion const & criterion);
 	virtual ~INeighborhood();
 private:
 	IExtendedPartition & _data;
@@ -47,7 +52,7 @@ private:
 
 };
 
-IExtendedPartition & INeighborhood::data() {
+inline IExtendedPartition & INeighborhood::data() {
 	return _data;
 }
 inline IExtendedPartition const & INeighborhood::data() const {

@@ -16,7 +16,7 @@ Data::Data(IGraph const & _graph) :
 				graph().nbNodes()), _nodePosition(graph().nbNodes()), _size(
 				graph().nbNodes(), 0), _usedLabel(graph().nbNodes()), _unUsedLabel(
 				graph().nbNodes()) {
-
+	//	startWith(IntVector(nbNodes(), 0));
 }
 
 Data::~Data() {
@@ -24,7 +24,7 @@ Data::~Data() {
 }
 
 // attention, plus besoin d'avoir des entiers contigus
-void Data::startWith(IntVector const & location) {
+void Data::startWith(IPartition const & location) {
 	_size.assign(nbNodes(), 0);
 	_usedLabel.clear();
 	_unUsedLabel.fill();
@@ -32,7 +32,7 @@ void Data::startWith(IntVector const & location) {
 	_nodeLabel = location;
 	_labelLists.assign(nbNodes(), IntList());
 	for (size_t n(0); n < nbNodes(); ++n) {
-		size_t const & l(location[n]);
+		size_t const l(location.label(n));
 		_usedLabel.insert(l);
 		_unUsedLabel.erase(l);
 		_labelLists[l].push_front(n);
@@ -146,9 +146,9 @@ bool Data::checkDegree(size_t const l) const {
 
 	return true;
 }
-IntVector Data::sortLocation() const {
-	return SortLocation(nodeLabel());
-}
+//IntVector Data::sortLocation() const {
+//	return SortLocation(nodeLabel());
+//}
 
 void Data::shift(size_t const& n, size_t const & l) {
 	if (label(n) != l) {
@@ -175,7 +175,7 @@ void Data::shift(size_t const& n, size_t const & l) {
 		++sizeOfLabel(l);
 		_labelLists[l].push_front(n);
 		_nodePosition[n] = _labelLists[l].begin();
-		_nodeLabel[n] = l;
+		_nodeLabel.label(n) = l;
 	}
 }
 // fusion de deux labels
@@ -187,7 +187,7 @@ size_t Data::fusion(size_t const & l1, size_t const & l2) {
 	return l2;
 
 }
-IntVector const & Data::nodeLabel() const {
+IPartition const & Data::nodeLabel() const {
 	return _nodeLabel;
 }
 
@@ -234,11 +234,11 @@ IntList const & Data::list(size_t const & label) const {
 }
 
 size_t Data::label(size_t const &n) const {
-	return _nodeLabel[n];
+	return _nodeLabel.label(n);
 }
 
 size_t & Data::label(size_t const &n) {
-	return _nodeLabel[n];
+	return _nodeLabel.label(n);
 }
 size_t Data::getUnUsedLabel() const {
 	return _unUsedLabel.front();

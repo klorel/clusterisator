@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-void Graph::read(const std::string & fileName, std::ostream & out) {
+void Graph::read(const std::string & fileName, std::ostream * out) {
 	std::string line;
 	std::string tempString;
 
@@ -25,18 +25,21 @@ void Graph::read(const std::string & fileName, std::ostream & out) {
 		std::getline(file, line);
 		//istringstream lineStream(line);
 		std::istringstream in(line);
-		if (!(in >> nbObs)) {
-			out << "n'a pas pu lire le nombre d'elements" << std::endl;
+		if (!(in >> nbObs) && out != 0) {
+			*out << "n'a pas pu lire le nombre d'elements" << std::endl;
 		}
-		if (!(in >> _nbEdge)) {
-			out << "n'a pas pu lire le nombre d'arêtes" << std::endl;
+		if (!(in >> _nbEdge) && out != 0) {
+			*out << "n'a pas pu lire le nombre d'arêtes" << std::endl;
 		}
 		in >> isFractionnaire;
-		out << std::endl;
-		out << std::setw(20) << "Nodes" << std::setw(10) << nbObs << "\n";
-		out << std::setw(20) << "Edges" << std::setw(10) << _nbEdge << "\n";
-		out << std::setw(20) << (isFractionnaire ? "WEIGHTED" : "UNWEIGHTED")
-				<< "\n";
+		if (out != 0) {
+			*out << std::endl;
+			*out << std::setw(20) << "Nodes" << std::setw(10) << nbObs << "\n";
+			*out << std::setw(20) << "Edges" << std::setw(10) << _nbEdge
+					<< "\n";
+			*out << std::setw(20)
+					<< (isFractionnaire ? "WEIGHTED" : "UNWEIGHTED") << "\n";
+		}
 
 		tempGraph.resize(nbObs);
 		//		allocate(nbObs);
@@ -46,8 +49,8 @@ void Graph::read(const std::string & fileName, std::ostream & out) {
 			//       out<<lineNumber<< std::endl;
 			while (lineStream >> tempPoint) {
 				if (isFractionnaire) {
-					if (!(lineStream >> tempSimilarity)) {
-						out << "probleme de format l." << lineNumber
+					if (!(lineStream >> tempSimilarity) && out != 0) {
+						*out << "probleme de format l." << lineNumber
 								<< std::endl;
 					}
 				} else
@@ -62,7 +65,7 @@ void Graph::read(const std::string & fileName, std::ostream & out) {
 		buildDegrees();
 
 	} else {
-		out << "impossible d'ouvrir le fichier : " << fileName << std::endl;
+		*out << "impossible d'ouvrir le fichier : " << fileName << std::endl;
 		exit(0);
 	}
 
@@ -70,7 +73,7 @@ void Graph::read(const std::string & fileName, std::ostream & out) {
 void Graph::fill(TempGraph const & rhs) {
 	allocate(rhs.size());
 	for (size_t i(0); i < rhs.size(); ++i) {
-		_rows[i]->resize(rhs[i].size());
+		adjacentList(i).resize(rhs[i].size());
 		//		size_t index(0);
 		std::copy(rhs[i].begin(), rhs[i].end(), adjacentList(i).begin());
 		//		for (TempRow::const_iterator ite(rhs[i].begin()); ite != rhs[i].end(); ++ite) {
@@ -101,9 +104,10 @@ Graph::Graph(size_t const & i) {
 	allocate(i);
 }
 
-Graph::Graph(std::string const& fileName, std::ostream & out) {
+Graph::Graph(std::string const& fileName, std::ostream * out) {
 
-	out << std::endl << "Reading " << fileName;
+	if (out != 0)
+		*out << std::endl << "Reading " << fileName;
 	read(fileName, out);
 	buildDegrees();
 }
