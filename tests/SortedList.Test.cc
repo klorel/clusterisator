@@ -20,6 +20,8 @@ void my_test() {
 	std::cout << list;
 	list.set(0, 9);
 	std::cout << list;
+	list.set(0, 8);
+	std::cout << list;
 }
 
 TEST(SortedList, set) {
