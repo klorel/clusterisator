@@ -49,14 +49,6 @@ double Density::eval(IExtendedPartition const & data, size_t const & l) const {
 
 	return (intra - cut) / static_cast<double>(data.sizeOfLabel(l));
 }
-bool Density::isBetter(double const & candidate, double const & ref) const {
-	return candidate > 1e-10 + ref;
-
-}
-
-bool Density::isPartitioning() const {
-	return false;
-}
 Density::~Density() {
 
 }

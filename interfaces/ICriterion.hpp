@@ -12,6 +12,14 @@
 #include "IExtendedPartition.hpp"
 class ICriterion {
 public:
+	enum Sense {
+		Minimization, Maximization
+	};
+
+	enum Kind {
+		Partitioning, Free
+	};
+public:
 	// calcul brut
 	virtual double eval(IExtendedPartition const & data) const = 0;
 	// calcul de la composante associé au label

@@ -24,11 +24,8 @@ double Modularity::eval(IExtendedPartition const & data) const {
 	}
 	double value(0);
 	double const & M(data.graph().degree());
-
-	for (auto const & l : data.used()) {
-
+	for (auto const & l : data.used())
 		value += intra[l] / M - degree[l] / (M * M);
-	}
 	return value;
 }
 // calcul de la composante associé au label
@@ -47,14 +44,6 @@ double Modularity::eval(IExtendedPartition const & data,
 	double const & M(data.graph().degree());
 
 	return intra / M - degree / (M * M);
-}
-bool Modularity::isBetter(double const & candidate, double const & ref) const {
-	return candidate > 1e-10 + ref;
-
-}
-bool Modularity::isPartitioning() const {
-	return false;
-
 }
 
 Modularity::~Modularity() {

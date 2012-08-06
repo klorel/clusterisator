@@ -15,8 +15,11 @@
 #include "Density.hpp"
 #include "IGraclus.hpp"
 #include "Timer.hpp"
+#include "NormalizedCut.hpp"
 
 int main(int argc, char ** argv) {
+	NormalizedCut cut;
+	std::cout << cut.isPartitioning() << "\n";
 	Timer total;
 	Timer t;
 	Number::SetSeed(0);

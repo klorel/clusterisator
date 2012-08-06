@@ -233,7 +233,7 @@ IntList const & Data::list(size_t const & label) const {
 	return _labelLists[label];
 }
 
-size_t const & Data::label(size_t const &n) const {
+size_t Data::label(size_t const &n) const {
 	return _nodeLabel[n];
 }
 

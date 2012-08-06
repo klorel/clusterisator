@@ -60,7 +60,7 @@ public:
 	IntList & list(size_t const & label);
 	IntList const & list(size_t const & label) const;
 
-	size_t const & label(size_t const & n) const;
+	size_t  label(size_t const & n) const;
 	size_t & label(size_t const &n);
 
 	IntVector sortLocation() const;

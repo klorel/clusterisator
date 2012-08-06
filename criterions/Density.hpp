@@ -5,24 +5,20 @@
  *      Author: manuel
  */
 
-#ifndef MODULARITY_HPP_
-#define MODULARITY_HPP_
+#ifndef DENSITY_HPP_
+#define DENSITY_HPP_
 
-#include "common.h"
-#include "ICriterion.hpp"
-class Modularity: public ICriterion {
+#include "AbstractCriterion.hpp"
+
+class Density: public AbstractCriterion<ICriterion::Maximization, ICriterion::Free>
+{
 public:
 	// calcul brut
 	double eval(IExtendedPartition const & data) const;
 	// calcul de la composante associé au label
 	double eval(IExtendedPartition const & data, size_t const & label) const;
-
-	bool isBetter(double const & candidate, double const & ref) const;
-
-	bool isPartitioning() const;
 public:
-
-	virtual ~Modularity();
+	virtual ~Density();
 };
 
 #endif /* MODULARITY_HPP_ */

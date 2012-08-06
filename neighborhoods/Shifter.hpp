@@ -12,7 +12,7 @@
 
 class Shifter: public INeighborhood {
 public:
-	Shifter(Data& data, ICriterion const & criterion, IndexedList const & nodes,
+	Shifter(IExtendedPartition& data, ICriterion const & criterion, IndexedList const & nodes,
 			IndexedList const & labels);
 	virtual ~Shifter();
 public:

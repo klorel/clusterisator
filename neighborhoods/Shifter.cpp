@@ -8,7 +8,7 @@
 #include "Shifter.hpp"
 #include "IndexedList.hpp"
 
-Shifter::Shifter(Data& data, ICriterion const & criterion,
+Shifter::Shifter(IExtendedPartition& data, ICriterion const & criterion,
 		IndexedList const & nodes, IndexedList const & labels) :
 		INeighborhood(data, criterion, nodes, labels) {
 

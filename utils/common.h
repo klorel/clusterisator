@@ -59,6 +59,18 @@ IntVector SortLocation(IntVector const &location);
 void Random(IntVector &);
 IntVector Random(size_t const & n);
 
+// forward declaration of interfaces
+class IGraph;
+class IPartition;
+class IExtendedPartition;
+class ICriterion;
+class IMesure;
+class IAlgo;
+class INeighborhood;
+
+
+
+// forward declaration of implementations
 class Graph;
 class Data;
 class Number;

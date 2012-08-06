@@ -10,6 +10,8 @@
 
 #include "common.h"
 #include "IndexedList.hpp"
+#include "IExtendedPartition.hpp"
+
 class INeighborhood {
 public:
 	typedef IndexedList Container;
@@ -28,21 +30,46 @@ public:
 	// applique n'importe quel mouvement
 	virtual void findAny(size_t const &) = 0;
 public:
-	Data & data();
-	Data const & data() const;
+	IExtendedPartition & data();
+	IExtendedPartition const & data() const;
 	ICriterion const & criterion() const;
 	IndexedList const & nodes() const;
 	IndexedList const & labels() const;
 public:
-	INeighborhood(Data& data, ICriterion const & criterion,
+	INeighborhood(IExtendedPartition& data, ICriterion const & criterion,
 			IndexedList const & nodes, IndexedList const & labels);
 	virtual ~INeighborhood();
 private:
-	Data & _data;
+	IExtendedPartition & _data;
 	ICriterion const & _criterion;
 	IndexedList const & _nodes;
 	IndexedList const & _labels;
 
 };
+
+IExtendedPartition & INeighborhood::data() {
+	return _data;
+}
+inline IExtendedPartition const & INeighborhood::data() const {
+	return _data;
+}
+inline ICriterion const & INeighborhood::criterion() const {
+	return _criterion;
+}
+
+inline IndexedList const & INeighborhood::nodes() const {
+	return _nodes;
+}
+inline IndexedList const & INeighborhood::labels() const {
+	return _labels;
+}
+inline INeighborhood::INeighborhood(IExtendedPartition& data,
+		ICriterion const & criterion, IndexedList const & nodes,
+		IndexedList const & labels) :
+		_data(data), _criterion(criterion), _nodes(nodes), _labels(labels) {
+}
+inline INeighborhood::~INeighborhood() {
+
+}
 
 #endif /* INEIGHBORHOOD_HPP_ */
