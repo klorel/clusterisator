@@ -1,3 +1,10 @@
+=====Overview=====
+
+Clustering framework.
+
+
+=====Build=====
+
 To build the project :
 - create a repository at the root and go there
 - cmake ..

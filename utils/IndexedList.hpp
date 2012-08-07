@@ -5,6 +5,14 @@
 
 #include "Number.hpp"
 
+/**
+ * Behave like a specialized and optimized unordered_set.
+ * Let add, remove, and test the existence of an element in O(1).
+ * 
+ * The counterparts of the optimizations are:
+ * - It may only contains size_t
+ * - Size isn't dynamic and we may only insert elements of [0, max_size[
+ */
 class IndexedList {
 public:
 	typedef IntVector::const_reverse_iterator const_iterator;
