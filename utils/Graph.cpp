@@ -38,7 +38,7 @@ void Graph::read(const std::string & fileName, std::ostream * out) {
 			*out << std::setw(20) << "Edges" << std::setw(10) << _nbEdge
 					<< "\n";
 			*out << std::setw(20)
-					<< (isFractionnaire ? "WEIGHTED" : "UNWEIGHTED") << "\n";
+			<< (isFractionnaire ? "WEIGHTED" : "UNWEIGHTED") << "\n";
 		}
 
 		tempGraph.resize(nbObs);
@@ -93,7 +93,7 @@ void Graph::writeCplusplus(std::string const &fileName) const {
 	std::ofstream file(fileName.c_str());
 	file << "	getGraph().allocate(" << nbNodes() << ");" << std::endl;
 	for (size_t i(0); i < nbNodes(); ++i) {
-		for (auto const & e : adjacentList(i)) {
+		FOR_EACH_CONST( e , adjacentList(i)) {
 			file << "getGraph()[" << i << "][" << e.first << "]=" << e.second
 					<< ";" << std::endl;
 		}
@@ -148,7 +148,7 @@ void Graph::buildDegrees() {
 	_degree = 0;
 	for (size_t p = 0; p < nbNodes(); ++p) {
 		_degrees[p] = 0;
-		for (auto const & e : adjacentList(p)) {
+		FOR_EACH_CONST( e , adjacentList(p)) {
 			_degrees[p] += e.second;
 			if (e.first == p)
 				_degrees[p] += e.second;
@@ -221,7 +221,7 @@ std::ostream & operator<<(std::ostream &out, Graph const&g) {
 	out << "nbObs:\t" << g.nbNodes() << std::endl;
 	for (size_t id(0); id < g.nbNodes(); ++id) {
 		out << std::setw(4) << id << " | ";
-		for (auto const & e : g.adjacentList(id)) {
+		FOR_EACH_CONST(e , g.adjacentList(id)) {
 			out << e.first << " , " << e.second << " ; ";
 		}
 		out << std::endl;

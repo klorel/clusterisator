@@ -57,7 +57,7 @@ template<class T> inline void MultiStart::init(T const & t) {
 		setLabels();
 	}
 	_nodes.clear();
-	for (auto const & l : _labels)
+	FOR_EACH_CONST( l , _labels)
 		Insert(_data.list(l), _nodes);
 
 }

@@ -46,7 +46,7 @@ bool Shifter::findBest(size_t const & node, double & bestScore,
 
 	candidateScore -= scores[from];
 
-	for (auto const & to : labels()) {
+	FOR_EACH_CONST(to ,labels()) {
 		if (to != from) {
 			candidateScore -= scores[to];
 			data().shift(node, to);
@@ -70,7 +70,7 @@ bool Shifter::findBest(size_t const & node, double & bestScore,
 	}
 
 	if (improvement) {
-//		std::cout << node << " : " << from << " --> " << bestTo << "\n";
+		std::cout << node << " : " << from << " --> " << bestTo << "\n";
 		data().shift(node, bestTo);
 		scores[from] = bestFromScore;
 		scores[bestTo] = bestToScore;

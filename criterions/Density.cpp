@@ -9,7 +9,6 @@
 #include "Graph.hpp"
 #include "Data.hpp"
 
-// calcul brut
 double Density::eval(IExtendedPartition const & data) const {
 
 	DoubleVector intra(data.nbNodes(), 0);
@@ -17,7 +16,7 @@ double Density::eval(IExtendedPartition const & data) const {
 
 	for (size_t n(0); n < data.nbNodes(); ++n) {
 		size_t const & l(data.label(n));
-		for (auto const & e : data.graph().adjacentList(n)) {
+		FOR_EACH_CONST(e , data.graph().adjacentList(n)) {
 			if (data.label(e.first) == l)
 				intra[l] += e.second;
 			else
@@ -25,20 +24,19 @@ double Density::eval(IExtendedPartition const & data) const {
 		}
 	}
 	double value(0);
-	for (auto const & l : data.used()) {
-
+	FOR_EACH_CONST(l , data.used()) {
 		value += (intra[l] - cut[l] / 2.0)
 				/ static_cast<double>(data.sizeOfLabel(l));
 	}
 	return value;
 }
-// calcul de la composante associé au label
+
 double Density::eval(IExtendedPartition const & data, size_t const & l) const {
 	double cut(0);
 	double intra(0);
-	for (auto const & n : data.list(l)) {
+	FOR_EACH_CONST (n , data.list(l)) {
 		size_t const & l(data.label(n));
-		for (auto const & e : data.graph().adjacentList(n)) {
+		FOR_EACH_CONST(e , data.graph().adjacentList(n)) {
 			if (data.label(e.first) == l)
 				intra += e.second;
 			else

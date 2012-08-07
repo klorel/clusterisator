@@ -7,17 +7,16 @@
 
 #include "MinimumSumOfSquare.hpp"
 
-// calcul brut
 double MinimumSumOfSquare::eval(IExtendedPartition const & data) const {
 	DoubleVector cut(data.nbNodes(), 0);
 	getCut(data, cut);
 	double value(0);
-	for (auto const & label : data.used()) {
+	FOR_EACH_CONST(label , data.used()) {
 		value += cut[label] / static_cast<double>(data.sizeOfLabel(label));
 	}
 	return value;
 }
-// calcul de la composante associé au label
+
 double MinimumSumOfSquare::eval(IExtendedPartition const & data,
 		size_t const & label) const {
 	double cut(getCut(data, label));

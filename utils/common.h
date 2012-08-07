@@ -68,16 +68,22 @@ class INeighborhood;
 
 std::ostream & operator<<(std::ostream &out, Graph const&);
 
-template<class T>
-inline void DisplayContainer(std::ostream & stream, T const & t) {
+#ifdef _WIN32
+#define FOR_EACH(iterator, container) for each(auto & iterator in container)
+#define FOR_EACH(iterator, container) for each(auto const & iterator in container)
+#else
+#define FOR_EACH(iterator, container) for(auto & iterator : container)
+#define FOR_EACH_CONST(iterator, container) for(auto const& iterator : container)
+#endif
+
+template<class T> inline void DisplayContainer(std::ostream & stream,
+		T const & t) {
 	std::copy(t.begin(), t.end(),
 			std::ostream_iterator<typename T::value_type>(stream, " "));
 }
 
-template<class T, class U>
-inline void Insert(T const & t, U & u) {
-	for (auto const & it : t)
-		u.insert(it);
+template<class T, class U> inline void Insert(T const & t, U & u) {
+	FOR_EACH_CONST(it,t) u.insert(it);
 }
 
 IntVector SortLocation(IntVector const &location);

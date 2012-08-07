@@ -11,7 +11,8 @@
 #include "ICriterion.hpp"
 
 LocalSearch::LocalSearch(INeighborhood & neighborhood) :
-		_neighborhood(neighborhood) {
+_neighborhood(neighborhood), _score(0), _scores(
+		neighborhood.data().nbNodes(), 0) {
 
 }
 
@@ -24,12 +25,10 @@ void LocalSearch::init() {
 void LocalSearch::init(double & score, DoubleVector & scores) const {
 	score = 0;
 	scores.assign(_neighborhood.data().nbNodes(), 0);
-	for (auto const & label : _neighborhood.data().used()) {
+	FOR_EACH_CONST(label, _neighborhood.data().used()) {
 		scores[label] = _neighborhood.criterion().eval(_neighborhood.data(),
 				label);
-
 		score += scores[label];
-
 	}
 }
 void LocalSearch::check() const {
@@ -56,30 +55,39 @@ void LocalSearch::check() const {
 		}
 
 }
+void LocalSearch::display(size_t const & i, std::ostream & stream) const {
+	stream << std::setw(6) << i;
+	stream << std::setw(15) << _score;
+	stream << "\n";
+}
 bool LocalSearch::run() {
 	init();
 	std::cout << "init done\n";
 	bool improvementDone(false);
 	bool stop(false);
 	size_t i(0);
+	display(i, std::cout << std::setw(6)<<"loop");
 	do {
-		if (loop())
+		++i;
+		if (loop()) {
 			improvementDone = true;
-		else
+		} else
 			stop = true;
-		std::cout << "loop " << ++i << "\n";
+		check();
+		display(i, std::cout << std::setw(6)<<"loop");
 	} while (!stop);
+
 	return improvementDone;
 }
 
 bool LocalSearch::loop() {
 	bool improvementDone(false);
-	for (auto const & seed : _neighborhood) {
-		std::cout << "node " << seed << "\n";
-		check();
-		if (_neighborhood.findBest(seed, _score, _scores))
+	FOR_EACH_CONST(seed,_neighborhood){
+		if (_neighborhood.findBest(seed, _score, _scores)) {
+			display(seed, std::cout << std::setw(6)<<"node");
+			check();
 			improvementDone = true;
-
+		}
 	}
 	return improvementDone;
 

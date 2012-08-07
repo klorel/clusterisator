@@ -11,11 +11,11 @@
 //#include "Utils.hpp"
 
 Data::Data(IGraph const & _graph) :
-		IExtendedPartition(_graph), _labelDegree(graph().nbNodes(), 0), _labelLists(
-				graph().nbNodes()), _nodeLabel(graph().nbNodes(),
+IExtendedPartition(_graph), _labelDegree(graph().nbNodes(), 0), _labelLists(
+		graph().nbNodes()), _nodeLabel(graph().nbNodes(),
 				graph().nbNodes()), _nodePosition(graph().nbNodes()), _size(
-				graph().nbNodes(), 0), _usedLabel(graph().nbNodes()), _unUsedLabel(
-				graph().nbNodes()) {
+						graph().nbNodes(), 0), _usedLabel(graph().nbNodes()), _unUsedLabel(
+								graph().nbNodes()) {
 	//	startWith(IntVector(nbNodes(), 0));
 }
 
@@ -75,21 +75,21 @@ void Data::startWith(IPartition const & location) {
 
 double Data::computeDegreeOfLabel(size_t const &l) const {
 	double res(0);
-	for (auto const & n : list(l)) {
+	FOR_EACH_CONST(n ,list(l)) {
 		res += graph().degree(n);
 	}
 	return res;
 }
 
 bool Data::checkPosition() const {
-	for (auto const & l : usedLabel()) {
+	FOR_EACH_CONST(l ,usedLabel()) {
 		//		TRACE_N(*l);
 		DisplayContainer(std::cout << "\nlabel " << l << " : ", list(l));
 	}
 	std::cout << std::endl;
-	for (auto const & l : usedLabel()) {
+	FOR_EACH_CONST(l , usedLabel()) {
 		assert(sizeOfLabel(l)>0);
-		for (auto const & n : list(l)) {
+		FOR_EACH_CONST(n , list(l)) {
 			if (label(n) != l) {
 				std::cout << n;
 				std::cout << " not in " << l;
@@ -111,11 +111,11 @@ bool Data::check() const {
 	//		std::cout << std::endl;
 	//	}
 	checkDegrees();
-	for (auto const & l : usedLabel()) {
+	FOR_EACH_CONST(l , usedLabel()) {
 		//		TRACE_N(*l);
 		if (sizeOfLabel(l) == 0)
 			std::cout << "error on size of label " << l << "\n";
-		for (auto const & n : list(l)) {
+		FOR_EACH_CONST( n , list(l)) {
 			if (n != *_nodePosition[n]) {
 				std::cout << n << " iterator in label " << l << " is wrong\n";
 			}
@@ -134,13 +134,13 @@ bool Data::checkDegrees() const {
 bool Data::checkDegree(size_t const l) const {
 	double verif(0);
 	//		TRACE("LABEL "<<l<<std::endl);
-	for (auto const & n : list(l)) {
+	FOR_EACH_CONST( n , list(l)) {
 		//			TRACE_N(*n);
 		verif += graph().degree(n);
 	}
 	if (fabs(verif - degreeOfLabel(l)) > 1e-10) {
 		std::cout << "WRONG DEGREE OF LABEL " << l << " = " << degreeOfLabel(l)
-				<< " sould be " << verif << std::endl;
+						<< " sould be " << verif << std::endl;
 		return false;
 	}
 
@@ -182,8 +182,7 @@ void Data::shift(size_t const& n, size_t const & l) {
 size_t Data::fusion(size_t const & l1, size_t const & l2) {
 	IntSet buffer;
 	Insert(list(l1), buffer);
-	for (auto const & n : buffer)
-		shift(n, l2);
+	FOR_EACH_CONST(n , buffer) shift(n, l2);
 	return l2;
 
 }

@@ -6,6 +6,7 @@
  */
 
 #include "AbstractGraclus.hpp"
+#include "common.h"
 
 int boundary_points;
 int spectral_initialization;
@@ -40,7 +41,7 @@ void AbstractGraclus::free() {
 }
 
 void AbstractGraclus::setRow(unsigned const int & i, Row const & row) {
-	for (auto const & e : row) {
+	FOR_EACH_CONST(e , row) {
 		_graph.adjncy[_k] = e.first;
 		if (_isWeighted)
 			_graph.adjwgt[_k] = static_cast<int>(floor(e.second));
@@ -79,14 +80,14 @@ void AbstractGraclus::allocate(size_t const & nbNodes, size_t const & nbEdges,
 //}
 
 void AbstractGraclus::check() {
-	if ( _k != _graph.nedges) {
+	if (_k != _graph.nedges) {
 		printf(
 				"------------------------------------------------------------------------------\n");
 		printf("***  I detected an error in your input file  ***\n\n");
 		printf(
 				"In the first line of the file, you specified that the graph contained\n%d edges. However, I only found %d edges in the file.\n",
 				_graph.nedges / 2, _k / 2);
-		if (2 *  _k == _graph.nedges) {
+		if (2 * _k == _graph.nedges) {
 			printf(
 					"\n *> I detected that you specified twice the number of edges that you have in\n");
 			printf(

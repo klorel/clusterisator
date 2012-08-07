@@ -22,6 +22,7 @@ private:
 	void init();
 	bool loop();
 	void check() const;
+	void display(size_t const & loop, std::ostream & = std::cout)const;
 private:
 	INeighborhood & _neighborhood;
 
