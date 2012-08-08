@@ -63,10 +63,11 @@ inline size_t SortedList::get(size_t const & key) const {
 	return _key_positions[key] == _set.end() ? 0 : *_key_positions[key];
 }
 inline size_t SortedList::min() const {
-	return *_set.begin();
+
+	return _set.empty() ? 0 : *_set.begin();
 }
 inline size_t SortedList::max() const {
-	return *_set.rbegin();
+	return _set.empty() ? 0 : *_set.rbegin();
 }
 
 inline SortedList::const_iterator SortedList::begin() const {
