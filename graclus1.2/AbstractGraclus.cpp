@@ -52,7 +52,7 @@ void AbstractGraclus::setRow(unsigned const int & i, Row const & row) {
 	_graph.xadj[i + 1] = _k;
 }
 
-void AbstractGraclus::allocate(size_t const & nbNodes, size_t const & nbEdges,
+void AbstractGraclus::allocate(unsigned  int const & nbNodes, unsigned  int const & nbEdges,
 		bool const & isWeighted) {
 	_isWeighted = isWeighted;
 	_graph.nvtxs = nbNodes;

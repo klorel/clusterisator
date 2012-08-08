@@ -16,7 +16,7 @@ public:
 	AbstractGraclus();
 	virtual ~AbstractGraclus();
 public:
-	void allocate(size_t const &, size_t const &, bool const &);
+	void allocate(unsigned  int const &, unsigned  int const &, bool const &);
 	void setRow(unsigned const int &, Row const &);
 	void check();
 
@@ -28,7 +28,7 @@ protected:
 	void free();
 private:
 	GraphType _graph;
-	std::vector<size_t> _partition;
+	std::vector<unsigned  int> _partition;
 	double _score;
 	int _wgtflag;
 	int _k;
