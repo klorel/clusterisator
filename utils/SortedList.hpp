@@ -103,7 +103,7 @@ inline void SortedList::set(size_t const & key, size_t const & value) {
 			else {
 				bool optimizeInsertion(false);
 				if (_value_positions[old] != _set.begin()) {
-					size_t const before(*(_key_positions[old]--));
+					size_t const before(*(_value_positions[old]--));
 					if (before < value) {
 						_value_positions[value] = _set.insert(
 								_value_positions[old]--, value);
