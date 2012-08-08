@@ -6,8 +6,8 @@
  */
 
 #include "Modularity.hpp"
+#include "IExtendedPartition.hpp"
 #include "IGraph.hpp"
-#include "Data.hpp"
 
 double Modularity::eval(IExtendedPartition const & data) const {
 	DoubleVector degree(data.nbNodes(), 0);

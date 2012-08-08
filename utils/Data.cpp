@@ -73,6 +73,22 @@ void Data::startWith(IPartition const & location) {
 //	}
 //}
 
+double Data::intra(size_t const & label) {
+	double result(0);
+	FOR_EACH_CONST(node1, list(label)){
+		result+=intra(node1,label);
+	}
+	return result;
+}
+double Data::intra(size_t const & node, size_t const & label) {
+	double result(0);
+	FOR_EACH_CONST(node2, graph().adjacentList(node)) {
+		if (label == _nodeLabel.label(node2.first)) {
+			result+=node2.second;
+		}
+	}
+	return result;
+}
 double Data::computeDegreeOfLabel(size_t const &l) const {
 	double res(0);
 	FOR_EACH_CONST(n ,list(l)) {

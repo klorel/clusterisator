@@ -9,7 +9,6 @@
 #define ICRITERION_HPP_
 
 #include "common.h"
-#include "IExtendedPartition.hpp"
 class ICriterion {
 public:
 	enum Sense {

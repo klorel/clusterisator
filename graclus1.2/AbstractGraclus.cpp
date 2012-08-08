@@ -22,7 +22,7 @@ AbstractGraclus::~AbstractGraclus() {
 	free();
 }
 
-unsigned int AbstractGraclus::get(unsigned const int & vtx) const {
+size_t AbstractGraclus::get(size_t const  & vtx) const {
 	return _partition[vtx];
 }
 
@@ -40,7 +40,7 @@ void AbstractGraclus::free() {
 	delete _graph.adjwgt;
 }
 
-void AbstractGraclus::setRow(unsigned const int & i, Row const & row) {
+void AbstractGraclus::setRow(size_t const  & i, Row const & row) {
 	FOR_EACH_CONST(e , row) {
 		_graph.adjncy[_k] = e.first;
 		if (_isWeighted)
@@ -52,7 +52,7 @@ void AbstractGraclus::setRow(unsigned const int & i, Row const & row) {
 	_graph.xadj[i + 1] = _k;
 }
 
-void AbstractGraclus::allocate(unsigned  int const & nbNodes, unsigned  int const & nbEdges,
+void AbstractGraclus::allocate(size_t const  & nbNodes, size_t const  & nbEdges,
 		bool const & isWeighted) {
 	_isWeighted = isWeighted;
 	_graph.nvtxs = nbNodes;

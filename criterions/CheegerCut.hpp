@@ -10,6 +10,7 @@
 
 #include "AbstractCriterion.hpp"
 #include "Cut.hpp"
+
 class CheegerCut: public AbstractCriterion<ICriterion::Minimization,
 		ICriterion::Partitioning>, Cut {
 public:

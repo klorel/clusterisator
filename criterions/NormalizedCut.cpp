@@ -6,6 +6,8 @@
  */
 
 #include "NormalizedCut.hpp"
+#include "IExtendedPartition.hpp"
+#include "IGraph.hpp"
 
 
 double NormalizedCut::eval(IExtendedPartition const & data) const {

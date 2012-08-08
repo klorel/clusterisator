@@ -9,20 +9,21 @@
 #define IGRACLUS_HPP_
 
 #include <vector>
+// needed for size_t declaration
+#include <cstdlib>
 
 class Graph;
 class IGraclus {
 public:
-	typedef std::vector<std::pair<unsigned int, double> > Row;
+	typedef std::vector<std::pair<size_t, double> > Row;
 	static IGraclus * Get();
 public:
-	virtual void allocate(unsigned int const&, unsigned int const &,
-			bool const &) = 0;
-	virtual void setRow(unsigned int const&, Row const &)= 0;
+	virtual void allocate(size_t const&, size_t const &, bool const &) = 0;
+	virtual void setRow(size_t const&, Row const &)= 0;
 	virtual void check()= 0;
 
 	virtual void launch(int nparts) = 0;
-	virtual unsigned int get(unsigned int const&) const=0;
+	virtual size_t get(size_t const&) const=0;
 	virtual double score() const = 0;
 	virtual ~IGraclus();
 };

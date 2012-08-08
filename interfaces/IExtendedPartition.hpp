@@ -59,6 +59,9 @@ public:
 	// fusion of two label, return the used label
 	virtual size_t fusion(size_t const & label1, size_t const & label2) = 0;
 public:
+	virtual double intra(size_t const & label) = 0;
+	virtual double intra(size_t const & node, size_t const & label) = 0;
+public:
 	IExtendedPartition(IGraph const & iGraph);
 	virtual ~IExtendedPartition();
 

@@ -16,19 +16,19 @@ public:
 	AbstractGraclus();
 	virtual ~AbstractGraclus();
 public:
-	void allocate(unsigned  int const &, unsigned  int const &, bool const &);
-	void setRow(unsigned const int &, Row const &);
+	void allocate(size_t const  &, size_t const  &, bool const &);
+	void setRow(size_t const  &, Row const &);
 	void check();
 
 	void launch(int nparts);
-	unsigned int get(unsigned const int & vtx) const;
+	size_t get(size_t const  & vtx) const;
 	double score() const;
 protected:
 	void init();
 	void free();
 private:
 	GraphType _graph;
-	std::vector<unsigned  int> _partition;
+	std::vector<size_t> _partition;
 	double _score;
 	int _wgtflag;
 	int _k;

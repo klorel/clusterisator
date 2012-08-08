@@ -64,8 +64,10 @@ public:
 	size_t label(size_t const & n) const;
 	size_t & label(size_t const &n);
 
-//	IntVector sortLocation() const;
-
+	//	IntVector sortLocation() const;
+	// can be overloaded in other implementations
+	virtual double intra(size_t const & label);
+	virtual double intra(size_t const & node, size_t const & label);
 public:
 	double computeDegreeOfLabel(size_t const & l) const;
 
@@ -79,10 +81,8 @@ public:
 private:
 	// le degree de chaque label
 	DoubleVector _labelDegree;
-
 	// la composition de chaque label
 	LabelLists _labelLists;
-
 	// le label de chaque noeud
 	Partition _nodeLabel;
 	// la position de chaque noeud dans les listes de composition

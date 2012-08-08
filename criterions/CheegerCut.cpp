@@ -6,7 +6,9 @@
  */
 
 #include "CheegerCut.hpp"
+#include "IExtendedPartition.hpp"
 #include "IGraph.hpp"
+
 
 
 double CheegerCut::eval(IExtendedPartition const & data) const {

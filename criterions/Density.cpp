@@ -6,8 +6,8 @@
  */
 
 #include "Density.hpp"
-#include "Graph.hpp"
-#include "Data.hpp"
+#include "IExtendedPartition.hpp"
+#include "IGraph.hpp"
 
 double Density::eval(IExtendedPartition const & data) const {
 

@@ -6,6 +6,8 @@
  */
 
 #include "MinimumSumOfSquare.hpp"
+#include "IExtendedPartition.hpp"
+#include "IGraph.hpp"
 
 double MinimumSumOfSquare::eval(IExtendedPartition const & data) const {
 	DoubleVector cut(data.nbNodes(), 0);
