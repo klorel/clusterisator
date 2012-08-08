@@ -90,7 +90,7 @@ TEST(IndexedList, random){
   items.insert(0);
   items.insert(3);
   items.insert(4);
-  for ( size_t item : items ){
+  FOR_EACH (item, items ){
     list.insert(item);
   }
   //Make sure we start in an exepected state
@@ -111,7 +111,7 @@ TEST(IndexedList, pop_random){
   items.insert(0);
   items.insert(3);
   items.insert(4);
-  for ( size_t item : items ){
+  FOR_EACH (item, items ){
     list.insert(item);
   }
   //Make sure we start in an exepected state
@@ -123,7 +123,7 @@ TEST(IndexedList, pop_random){
 
   //Make sure we kept every item except the extracted one
   EXPECT_EQ(items.size()-1, list.size());
-  for ( size_t item : items ){
+  FOR_EACH (item, items ){
     if ( item == extracted ){
       EXPECT_FALSE(list.contains(item));
     } else {
