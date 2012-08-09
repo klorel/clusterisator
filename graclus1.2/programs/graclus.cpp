@@ -16,6 +16,8 @@
 #include <metis.h>
 //#include <io.h>
 
+
+
 int boundary_points;
 int spectral_initialization;
 int cutType; //cut type, default is normalized cut
