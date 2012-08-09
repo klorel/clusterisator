@@ -40,9 +40,12 @@ typedef std::vector<double> DoubleVector;
 typedef std::vector<std::string> StringVector;
 
 typedef std::vector<IntVector> IntMatrix;
+typedef std::vector<DoubleVector> DoubleMatrix;
+
 typedef std::vector<IntList> IntListVector;
 typedef std::map<size_t, double> Int2Double;
 
+typedef std::pair<double,double> Double2;
 // forward declaration of interfaces
 class IGraph;
 class IPartition;

@@ -68,6 +68,7 @@ public:
 	// can be overloaded in other implementations
 	virtual double intra(size_t const & label);
 	virtual double intra(size_t const & node, size_t const & label);
+	void intra(size_t const & node, DoubleVector & values, bool const & reset);
 public:
 	double computeDegreeOfLabel(size_t const & l) const;
 

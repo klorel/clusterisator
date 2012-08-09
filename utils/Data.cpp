@@ -89,6 +89,18 @@ double Data::intra(size_t const & node, size_t const & label) {
 	}
 	return result;
 }
+
+void Data::intra(size_t const & node, DoubleVector & values,
+		bool const & reset) {
+	values.resize(nbNodes());
+	if (reset)
+		std::fill_n(values.begin(), nbNodes(), 0.0);
+	FOR_EACH_CONST(node2, graph().adjacentList(node)){
+		values[label(node2.first)]+=node2.second;
+	}
+
+}
+
 double Data::computeDegreeOfLabel(size_t const &l) const {
 	double res(0);
 	FOR_EACH_CONST(n ,list(l)) {

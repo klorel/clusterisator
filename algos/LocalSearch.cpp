@@ -83,7 +83,7 @@ bool LocalSearch::run() {
 bool LocalSearch::loop() {
 	bool improvementDone(false);
 	FOR_EACH_CONST(seed,_neighborhood){
-		if (_neighborhood.findBest(seed, _score, _scores)) {
+		if (_neighborhood.findBest(seed, _score)) {
 			display(seed, std::cout << std::setw(6)<<"node");
 			check();
 			improvementDone = true;

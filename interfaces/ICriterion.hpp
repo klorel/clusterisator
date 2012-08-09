@@ -31,6 +31,15 @@ public:
 	virtual bool isPartitioning() const = 0;
 
 	virtual ~ICriterion();
+public:
+	virtual bool canShift(IExtendedPartition const & data, size_t const & node,
+			size_t const & newLabel) const=0;
+	virtual Double2 getDelta2Shift(IExtendedPartition const & data,
+			size_t const & node, size_t const & newLabel,
+			DoubleVector const & intra) const = 0;
+	virtual double getDeltaShift(IExtendedPartition const & data,
+			size_t const & node, size_t const & newLabel,
+			DoubleVector const & intra) const = 0;
 
 };
 

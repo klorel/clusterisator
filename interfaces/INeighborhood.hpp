@@ -26,8 +26,7 @@ public:
 	//
 	virtual bool findFirst(size_t const &) = 0;
 	//
-	virtual bool findBest(size_t const & seed, double & score,
-			DoubleVector & scores) = 0;
+	virtual bool findBest(size_t const & seed, double & score) = 0;
 	//
 	virtual void findAny(size_t const &) = 0;
 public:
@@ -36,9 +35,6 @@ public:
 	ICriterion const & criterion() const;
 	IndexedList const & nodes() const;
 	IndexedList const & labels() const;
-
-	DoubleVector & scores();
-	DoubleVector const & scores() const;
 public:
 	INeighborhood(IExtendedPartition& data, ICriterion const & criterion,
 			IndexedList const & nodes, IndexedList const & labels);
@@ -71,7 +67,7 @@ inline IndexedList const & INeighborhood::labels() const {
 inline INeighborhood::INeighborhood(IExtendedPartition& data,
 		ICriterion const & criterion, IndexedList const & nodes,
 		IndexedList const & labels) :
-		_data(data), _criterion(criterion), _nodes(nodes), _labels(labels) {
+				_data(data), _criterion(criterion), _nodes(nodes), _labels(labels) {
 }
 inline INeighborhood::~INeighborhood() {
 

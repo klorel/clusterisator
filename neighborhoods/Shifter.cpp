@@ -12,6 +12,7 @@
 Shifter::Shifter(IExtendedPartition& data, ICriterion const & criterion,
 		IndexedList const & nodes, IndexedList const & labels) :
 		INeighborhood(data, criterion, nodes, labels) {
+	_intra.assign(1, DoubleVector(data.nbNodes(), 0));
 
 }
 
@@ -34,50 +35,32 @@ bool Shifter::findFirst(size_t const & node) {
 	return improvement;
 }
 
-bool Shifter::findBest(size_t const & node, double & bestScore,
-		DoubleVector & scores) {
-	bool improvement(false);
+bool Shifter::findBest(size_t const & node, double & score) {
 	size_t const from(data().label(node));
-
-	double candidateScore(bestScore);
-	double bestFromScore(bestScore);
-	double bestToScore(bestScore);
 	size_t bestTo(from);
-
-	candidateScore -= scores[from];
-
-	FOR_EACH_CONST(to ,labels()) {
-		if (to != from) {
-			candidateScore -= scores[to];
-			data().shift(node, to);
-			double const newFrom(criterion().eval(data(), from));
-			double const newTo(criterion().eval(data(), to));
-			data().shift(node, from);
-
-			candidateScore += newFrom;
-			candidateScore += newTo;
-			if (criterion().isBetter(bestScore, candidateScore)) {
-				improvement = true;
-				bestScore = candidateScore;
-				bestFromScore = newFrom;
-				bestToScore = newTo;
-				bestTo = to;
+	DoubleVector & intra(_intra[0]);
+	if (data().sizeOfLabel(from) > 1) {
+		data().intra(node, intra, true);
+		double bestDelta(0);
+		FOR_EACH_CONST(to ,labels()) {
+			if (criterion().canShift(data(),node, to)) {
+				double const delta(criterion().getDeltaShift(data(), node, to,intra));
+				if (criterion().isBetter(delta, bestDelta)) {
+					bestDelta = delta;
+					bestTo = to;
+				}
 			}
-			candidateScore -= newFrom;
-			candidateScore -= newTo;
-			candidateScore += scores[to];
 		}
+		if (bestTo != from) {
+			std::cout << node << " : " << from << " --> " << bestTo << "\n";
+			data().shift(node, bestTo);
+			score += bestDelta;
+		}
+		//	FOR_EACH_CONST(node2, _data.graph().adjacentList(node)){
+		//		intra[_data.label(node2.first)]=0;
+		//	}
 	}
-
-	if (improvement) {
-		std::cout << node << " : " << from << " --> " << bestTo << "\n";
-		data().shift(node, bestTo);
-		scores[from] = bestFromScore;
-		scores[bestTo] = bestToScore;
-
-		bestScore = candidateScore;
-	}
-	return improvement;
+	return bestTo != from;
 }
 
 void Shifter::findAny(size_t const & node) {
