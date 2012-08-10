@@ -10,18 +10,19 @@
 
 #include "RawData.hpp"
 #include "IBuilder.hpp"
+#include "Env.hpp"
 
 int main(int argc, char ** argv) {
 
-	if (argc != 3) {
-		std::cout << "kmeans <graphFile> <k>\n";
-		return 0;
-	}
-	std::string dataFileName(argv[1]);
-	std::string partitionName(argv[2]);
-
-	Partition partition;
-	IBuilder::Get<IPartition>(partition, partitionName);
-
+//	if (argc != 3) {
+//		std::cout << "kmeans <graphFile> <k>\n";
+//		return 0;
+//	}
+//	std::string dataFileName(argv[1]);
+//	std::string partitionName(argv[2]);
+//
+//	Partition partition;
+//	IBuilder::Get<IPartition>(partition, partitionName);
+	Env::Get() << std::endl;
 	return 0;
 }

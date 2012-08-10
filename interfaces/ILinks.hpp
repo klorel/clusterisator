@@ -15,9 +15,12 @@ typedef std::vector<std::pair<size_t, double> > Links;
 
 class ILinks {
 public:
+	enum Kind {
+		Similarity, Disimilarity, Other
+	};
 public:
-	size_t nbLinks() const;
-	size_t nbObs() const;
+	virtual size_t nbLinks() const = 0;
+	virtual size_t nbObs() const = 0;
 	// return elements linked to i
 	virtual LinksIterator links(size_t i) const = 0;
 	// return the links between i and j

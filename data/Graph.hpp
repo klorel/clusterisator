@@ -7,7 +7,7 @@
 class Graph: public ILinks {
 public:
 	Graph(size_t = 0);
-	Graph(std::string const &, std::ostream * = 0);
+	Graph(std::string const &);
 
 	virtual ~Graph();
 
@@ -15,7 +15,7 @@ public:
 
 	void buildDegrees();
 
-	void read(std::string const &, std::ostream * = 0);
+	void read(std::string const &);
 
 	double const & squareDegree() const;
 

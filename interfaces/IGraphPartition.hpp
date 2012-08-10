@@ -24,7 +24,7 @@ public:
 	virtual double intra(size_t const & label) = 0;
 	virtual double intra(size_t const & node, size_t const & label) = 0;
 public:
-	IGraphPartition(ILinks const & iGraph);
+	IGraphPartition(ILinks const & iLinks);
 	virtual ~IGraphPartition();
 
 	ILinks const & graph() const;
@@ -32,8 +32,8 @@ private:
 	ILinks const & _iGraph;
 };
 
-inline IGraphPartition::IGraphPartition(ILinks const & iGraph) :
-		_iGraph(iGraph) {
+inline IGraphPartition::IGraphPartition(ILinks const & iLinks) :
+		_iGraph(iLinks) {
 
 }
 inline IGraphPartition::~IGraphPartition() {

@@ -1,11 +1,7 @@
 #include "Graph.hpp"
-#include <iostream>
-#include <sstream>
-#include <fstream>
-#include <vector>
-#include <map>
+#include "Env.hpp"
 
-void Graph::read(const std::string & fileName, std::ostream * out) {
+void Graph::read(const std::string & fileName) {
 	std::string line;
 	std::string tempString;
 
@@ -16,21 +12,20 @@ void Graph::read(const std::string & fileName, std::ostream * out) {
 	if (file.is_open()) {
 		std::getline(file, line);
 		std::istringstream in(line);
-		if (!(in >> nbObs) && out != 0) {
-			*out << "n'a pas pu lire le nombre d'elements" << std::endl;
+		if (!(in >> nbObs)) {
+			Env::Get() << "n'a pas pu lire le nombre d'elements" << "\n";
 		}
-		if (!(in >> _nbEdge) && out != 0) {
-			*out << "n'a pas pu lire le nombre d'arêtes" << std::endl;
+		if (!(in >> _nbEdge)) {
+			Env::Get() << "n'a pas pu lire le nombre d'arêtes" << "\n";
 		}
 		in >> _isEdgeWeighted;
-		if (out != 0) {
-			*out << std::endl;
-			*out << std::setw(20) << "Nodes" << std::setw(10) << nbObs << "\n";
-			*out << std::setw(20) << "Edges" << std::setw(10) << _nbEdge
-					<< "\n";
-			*out << std::setw(20)
-					<< (_isEdgeWeighted ? "WEIGHTED" : "UNWEIGHTED") << "\n";
-		}
+//		Env::Get() << "\n";
+//		Env::Get() << std::setw(20) << "Nodes" << std::setw(10) << nbObs
+//				<< "\n";
+//		Env::Get() << std::setw(20) << "Edges" << std::setw(10) << _nbEdge
+//				<< "\n";
+//		Env::Get() << std::setw(20)
+//				<< (_isEdgeWeighted ? "WEIGHTED" : "UNWEIGHTED") << "\n";
 
 		allocate(nbObs);
 		// While there are points
@@ -40,12 +35,12 @@ void Graph::read(const std::string & fileName, std::ostream * out) {
 		while (std::getline(file, line)) {
 			_begin.push_back(_edges.size());
 			std::istringstream lineStream(line);
-			//       out<<lineNumber<< std::endl;
+			//       out<<lineNumber<< "\n";
 			while (lineStream >> tempPoint) {
 				if (_isEdgeWeighted) {
-					if (!(lineStream >> tempSimilarity) && out != 0) {
-						*out << "probleme de format l." << lineNumber
-								<< std::endl;
+					if (!(lineStream >> tempSimilarity)) {
+						Env::Get() << "probleme de format l." << lineNumber
+								<< "\n";
 					}
 				} else
 					tempSimilarity = 1.0;
@@ -61,7 +56,8 @@ void Graph::read(const std::string & fileName, std::ostream * out) {
 		buildDegrees();
 
 	} else {
-		*out << "impossible d'ouvrir le fichier : " << fileName << std::endl;
+		Env::Get() << "impossible d'ouvrir le fichier : " << fileName
+				<< "\n";
 		exit(0);
 	}
 
@@ -70,11 +66,10 @@ Graph::Graph(size_t i) {
 	allocate(i);
 }
 
-Graph::Graph(std::string const& fileName, std::ostream * out) {
+Graph::Graph(std::string const& fileName) {
 
-	if (out != 0)
-		*out << std::endl << "Reading " << fileName;
-	read(fileName, out);
+	Env::Get() << "\nReading " << fileName;
+	read(fileName);
 	buildDegrees();
 }
 
@@ -104,13 +99,13 @@ void Graph::buildDegrees() {
 	}
 }
 std::ostream & operator<<(std::ostream &out, Graph const&g) {
-	//	out << "nbObs:\t" << g.nbNodes() << std::endl;
+	//	out << "nbObs:\t" << g.nbNodes() << "\n";
 	//	for (size_t id(0); id < g.nbNodes(); ++id) {
 	//		out << std::setw(4) << id << " | ";
 	//		FOR_EACH_CONST(e , g.links(id)) {
 	//		out << e.first << " , " << e.second << " ; ";
 	//	}
-	//		out << std::endl;
+	//		out << "\n";
 	//	}
 	return out;
 }
