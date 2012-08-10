@@ -10,7 +10,7 @@
 
 #include "common.h"
 #include "ICriterion.hpp"
-#include "IExtendedPartition.hpp"
+#include "IGraphPartition.hpp"
 
 template<ICriterion::Sense sense, ICriterion::Kind kind>
 class AbstractCriterion: public ICriterion {
@@ -20,7 +20,7 @@ public:
 	bool isBetter(double const & candidate, double const & ref) const;
 	bool isPartitioning() const;
 
-	bool canShift(IExtendedPartition const & data, size_t const & node,
+	bool canShift(IGraphPartition const & data, size_t const & node,
 			size_t const & newLabel) const;
 };
 
@@ -42,7 +42,7 @@ inline AbstractCriterion<sense, kind>::~AbstractCriterion() {
 
 template<ICriterion::Sense sense, ICriterion::Kind kind>
 inline bool AbstractCriterion<sense, kind>::canShift(
-		IExtendedPartition const & data, size_t const & node,
+		IGraphPartition const & data, size_t const & node,
 		size_t const & newLabel) const {
 	size_t const oldLabel(data.label(node));
 	// In any cas, a shift is consider if oldLabel != newLabel

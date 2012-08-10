@@ -7,12 +7,12 @@
 
 #include "LocalSearch.hpp"
 #include "INeighborhood.hpp"
-#include "IExtendedPartition.hpp"
+#include "IGraphPartition.hpp"
 #include "ICriterion.hpp"
 
 LocalSearch::LocalSearch(INeighborhood & neighborhood) :
 _neighborhood(neighborhood), _score(0), _scores(
-		neighborhood.data().nbNodes(), 0) {
+		neighborhood.data().nbObs(), 0) {
 
 }
 
@@ -24,7 +24,7 @@ void LocalSearch::init() {
 }
 void LocalSearch::init(double & score, DoubleVector & scores) const {
 	score = 0;
-	scores.assign(_neighborhood.data().nbNodes(), 0);
+	scores.assign(_neighborhood.data().nbObs(), 0);
 	FOR_EACH_CONST(label, _neighborhood.data().used()) {
 		scores[label] = _neighborhood.criterion().eval(_neighborhood.data(),
 				label);
@@ -47,7 +47,7 @@ void LocalSearch::check() const {
 		std::cout << "Wrong _score, " << _score << " != " << score << "\n";
 		exit(0);
 	}
-	for (size_t i(0); i < _neighborhood.data().nbNodes(); ++i)
+	for (size_t i(0); i < _neighborhood.data().nbObs(); ++i)
 		if (fabs(scores[i] - _scores[i]) > 1e-10) {
 			std::cout << "Wrong _scores[" << i << "], " << _scores[i] << " != "
 					<< scores[i] << "\n";

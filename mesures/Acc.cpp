@@ -17,9 +17,9 @@ Acc::~Acc() {
 double Acc::compute(IPartition const & real, IPartition const & candidate) {
 	// pas de traitement supplémentaire
 	double score(0);
-	for (size_t i(0); i < real.nbNodes(); ++i) {
+	for (size_t i(0); i < real.nbObs(); ++i) {
 		if (real.label(i) == candidate.label(i))
 			++score;
 	}
-	return score / static_cast<double>(real.nbNodes());
+	return score / static_cast<double>(real.nbObs());
 }

@@ -7,7 +7,7 @@
 
 #include "common.h"
 #include "Graph.hpp"
-#include "Data.hpp"
+#include "GraphPartition.hpp"
 #include "NormalizedCut.hpp"
 
 #include "Shifter.hpp"
@@ -23,18 +23,18 @@ int main(int argc, char ** argv) {
 	std::string partitionName(argv[2]);
 
 	Graph graph(graphFileName);
-
-	Partition partition(partitionName);
-
-	Data data(graph);
-	data.startWith(partition);
-
-	NormalizedCut ncut;
-	std::cout << "Ncut value : " << ncut.eval(data) << "\n";
-	IndexedList nodes(graph.nbNodes(), true);
-
-	Shifter shifter(data, ncut, nodes, data.used());
-	LocalSearch ls(shifter);
-	ls.run();
+//
+//	Partition partition(partitionName);
+//
+//	Data data(graph);
+//	data.set(partition);
+//
+//	NormalizedCut ncut;
+//	std::cout << "Ncut value : " << ncut.eval(data) << "\n";
+//	IndexedList nodes(graph.nbNodes(), true);
+//
+//	Shifter shifter(data, ncut, nodes, data.used());
+//	LocalSearch ls(shifter);
+//	ls.run();
 	return 0;
 }

@@ -7,8 +7,8 @@
 
 #include "KMeansData.hpp"
 #include "IndexedList.hpp"
-KMeansData::KMeansData(size_t const & n, size_t const & m, size_t const & k) :
-		RawData(n, m), _clusters(k) {
+KMeansData::KMeansData(IRawData const & data, size_t const & k) :
+		_data(data), _clusters(k) {
 	buildDiag();
 }
 
@@ -16,22 +16,19 @@ KMeansData::~KMeansData() {
 }
 
 void KMeansData::buildDiag() {
-	_kii.assign(getN(), 0);
-	for (size_t i(0); i < getN(); ++i)
-		_kii[i] += get(i);
+	_kii.assign(_data.getN(), 0);
+	for (size_t i(0); i < _data.getN(); ++i)
+		_kii[i] += _data.get(i);
 }
 void KMeansData::init(IntVector const & x) {
 	_x = x;
 	_clusters.assign(_clusters.size(), ClusterData());
-	for (size_t i(0); i < getN(); ++i) {
+	for (size_t i(0); i < _data.getN(); ++i) {
 		size_t const c(_x[i]);
-		_clusters[c].weight += _weights[i];
+		_clusters[c].weight += _data.weight(i);
 		_clusters[c].list.push_front(i);
 		_position[i] = _clusters[c].list.begin();
 	}
-}
-void KMeansData::setWeights(DoubleVector const & weights) {
-	_weights = weights;
 }
 size_t KMeansData::getK() const {
 	return _clusters.size();
@@ -42,7 +39,8 @@ double KMeansData::getIntra(size_t const & c) const {
 	for (auto const & i : _clusters[c].list) {
 		for (auto const & j : _clusters[c].list) {
 			if (i < j) {
-				result += 2 * _weights[i] * _weights[j] * get(i, j);
+				result += 2 * _data.weight(i) * _data.weight(j)
+						* _data.get(i, j);
 			}
 		}
 	}
@@ -55,7 +53,7 @@ void KMeansData::getIntra() {
 double KMeansData::getLinearPart(size_t const & i, size_t const & c) const {
 	double result(0);
 	for (auto const & j : _clusters[c].list) {
-		result -= (2 * _weights[j] * get(i, j));
+		result -= (2 * _data.weight(j) * _data.get(i, j));
 	}
 	return result / _clusters[c].weight;
 
@@ -77,10 +75,10 @@ void KMeansData::initLoop() {
 }
 void KMeansData::move(size_t const & i, size_t const & c) {
 	if (_x[i] != c) {
-		_clusters[_x[i]].weight -= _weights[i];
+		_clusters[_x[i]].weight -= _data.weight(i);
 		_clusters[_x[i]].list.erase(_position[i]);
 
-		_clusters[c].weight += _weights[i];
+		_clusters[c].weight += _data.weight(i);
 		_clusters[c].list.push_back(i);
 
 		_position[i] = _clusters[c].list.begin();
@@ -108,7 +106,7 @@ bool KMeansData::loop(size_t const & maxIte) {
 bool KMeansData::loop(IndexedList const & sub, size_t const & maxIte) {
 	bool improvement(false);
 	std::vector<std::pair<size_t, size_t> > moves;
-	moves.reserve(getN());
+	moves.reserve(_data.getN());
 	size_t ite(0);
 	do {
 		++ite;

@@ -6,16 +6,16 @@
  */
 
 #include "CheegerCut.hpp"
-#include "IExtendedPartition.hpp"
-#include "IGraph.hpp"
+#include "IGraphPartition.hpp"
+#include "ILinks.hpp"
 
 
 
-double CheegerCut::eval(IExtendedPartition const & data) const {
-	DoubleVector cut(data.nbNodes(), 0);
+double CheegerCut::eval(IGraphPartition const & data) const {
+	DoubleVector cut(data.nbObs(), 0);
 	getCut(data, cut);
 	double value(0);
-	double minSize(data.nbNodes());
+	double minSize(data.nbObs());
 	FOR_EACH_CONST(label ,data.used()) {
 		value += cut[label];
 		minSize = (
@@ -25,10 +25,10 @@ double CheegerCut::eval(IExtendedPartition const & data) const {
 	return value / minSize;
 }
 
-double CheegerCut::eval(IExtendedPartition const & data,
+double CheegerCut::eval(IGraphPartition const & data,
 		size_t const & l) const {
 	double cut(getCut(data, l));
-	double minSize(data.nbNodes());
+	double minSize(data.nbObs());
 	FOR_EACH_CONST(label ,data.used()) {
 		minSize = (
 				minSize > data.sizeOfLabel(label) ?

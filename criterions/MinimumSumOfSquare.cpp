@@ -6,11 +6,11 @@
  */
 
 #include "MinimumSumOfSquare.hpp"
-#include "IExtendedPartition.hpp"
-#include "IGraph.hpp"
+#include "IGraphPartition.hpp"
+#include "ILinks.hpp"
 
-double MinimumSumOfSquare::eval(IExtendedPartition const & data) const {
-	DoubleVector cut(data.nbNodes(), 0);
+double MinimumSumOfSquare::eval(IGraphPartition const & data) const {
+	DoubleVector cut(data.nbObs(), 0);
 	getCut(data, cut);
 	double value(0);
 	FOR_EACH_CONST(label , data.used()) {
@@ -19,7 +19,7 @@ double MinimumSumOfSquare::eval(IExtendedPartition const & data) const {
 	return value;
 }
 
-double MinimumSumOfSquare::eval(IExtendedPartition const & data,
+double MinimumSumOfSquare::eval(IGraphPartition const & data,
 		size_t const & label) const {
 	double cut(getCut(data, label));
 	return cut / static_cast<double>(data.sizeOfLabel(label));

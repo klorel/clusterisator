@@ -10,20 +10,28 @@
 
 #include <common.h>
 
-class RawData {
+#include "IRawData.hpp"
+
+class RawData: public IRawData {
 public:
-	RawData(size_t const & n = 0, size_t const & m = 0);
+	RawData(size_t const & m = 0);
 	virtual ~RawData();
 public:
+	void allocate(size_t const & m);
 	void allocate(size_t const & n, size_t const & m);
-	double get(size_t const & i, size_t const & j)const;
-	double get(size_t const & i)const;
-	size_t  getN()const;
-	size_t  getM()const;
+	void reserve(size_t const & n);
+	double get(size_t const & i, size_t const & j) const;
+	double get(size_t const & i) const;
+	size_t getN() const;
+	size_t getM() const;
+
+	void add(std::vector<double> const &, double const & w = 1.0);
+	double weight(size_t const & i) const;
+	void setWeights(DoubleVector const & weights);
 private:
-	size_t _n;
 	size_t _m;
 	DoubleMatrix _observations;
+	DoubleVector _weights;
 };
 
 #endif /* RAWDATA_HPP_ */

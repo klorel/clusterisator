@@ -10,7 +10,7 @@
 
 #include "common.h"
 #include "IndexedList.hpp"
-#include "IExtendedPartition.hpp"
+#include "IGraphPartition.hpp"
 
 class INeighborhood {
 public:
@@ -30,28 +30,28 @@ public:
 	//
 	virtual void findAny(size_t const &) = 0;
 public:
-	IExtendedPartition & data();
-	IExtendedPartition const & data() const;
+	IGraphPartition & data();
+	IGraphPartition const & data() const;
 	ICriterion const & criterion() const;
 	IndexedList const & nodes() const;
 	IndexedList const & labels() const;
 public:
-	INeighborhood(IExtendedPartition& data, ICriterion const & criterion,
+	INeighborhood(IGraphPartition& data, ICriterion const & criterion,
 			IndexedList const & nodes, IndexedList const & labels);
-	INeighborhood(IExtendedPartition& data, ICriterion const & criterion);
+	INeighborhood(IGraphPartition& data, ICriterion const & criterion);
 	virtual ~INeighborhood();
 private:
-	IExtendedPartition & _data;
+	IGraphPartition & _data;
 	ICriterion const & _criterion;
 	IndexedList const & _nodes;
 	IndexedList const & _labels;
 
 };
 
-inline IExtendedPartition & INeighborhood::data() {
+inline IGraphPartition & INeighborhood::data() {
 	return _data;
 }
-inline IExtendedPartition const & INeighborhood::data() const {
+inline IGraphPartition const & INeighborhood::data() const {
 	return _data;
 }
 inline ICriterion const & INeighborhood::criterion() const {
@@ -64,7 +64,7 @@ inline IndexedList const & INeighborhood::nodes() const {
 inline IndexedList const & INeighborhood::labels() const {
 	return _labels;
 }
-inline INeighborhood::INeighborhood(IExtendedPartition& data,
+inline INeighborhood::INeighborhood(IGraphPartition& data,
 		ICriterion const & criterion, IndexedList const & nodes,
 		IndexedList const & labels) :
 				_data(data), _criterion(criterion), _nodes(nodes), _labels(labels) {

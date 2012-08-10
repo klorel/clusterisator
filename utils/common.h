@@ -45,11 +45,11 @@ typedef std::vector<DoubleVector> DoubleMatrix;
 typedef std::vector<IntList> IntListVector;
 typedef std::map<size_t, double> Int2Double;
 
-typedef std::pair<double,double> Double2;
+typedef std::pair<double, double> Double2;
 // forward declaration of interfaces
-class IGraph;
+class ILinks;
 class IPartition;
-class IExtendedPartition;
+class IGraphPartition;
 class ICriterion;
 class IMesure;
 class IAlgo;
@@ -57,10 +57,10 @@ class INeighborhood;
 
 // forward declaration of implementations
 class Graph;
-class Data;
+class GraphPartition;
 class Number;
 class IndexedList;
-class Data;
+class GraphPartition;
 class Density;
 class Modularity;
 class MultiStart;
@@ -93,5 +93,14 @@ IntVector SortLocation(IntVector const &location);
 
 void Random(IntVector &);
 IntVector Random(size_t const & n);
+
+struct Values {
+	struct Double {
+		static double const Zero;
+	};
+	struct Int {
+		static size_t const Zero;
+	};
+};
 
 #endif /* COMMON_H_ */

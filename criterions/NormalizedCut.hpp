@@ -14,15 +14,15 @@
 class NormalizedCut: public AbstractCriterion<ICriterion::Maximization, ICriterion::Partitioning>, Cut {
 public:
 	// calcul brut
-	double eval(IExtendedPartition const & data) const;
+	double eval(IGraphPartition const & data) const;
 	// calcul de la composante associé au label
-	double eval(IExtendedPartition const & data, size_t const & label) const;
+	double eval(IGraphPartition const & data, size_t const & label) const;
 public:
 	virtual ~NormalizedCut();
 public:
-	Double2 getDelta2Shift(IExtendedPartition const & data, size_t const & node,
+	Double2 getDelta2Shift(IGraphPartition const & data, size_t const & node,
 			size_t const & newLabel, DoubleVector const & intra) const;
-	double getDeltaShift(IExtendedPartition const & data,
+	double getDeltaShift(IGraphPartition const & data,
 				size_t const & node, size_t const & newLabel,
 				DoubleVector const & intra) const;
 

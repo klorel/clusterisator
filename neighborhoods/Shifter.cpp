@@ -9,10 +9,10 @@
 #include "IndexedList.hpp"
 #include "ICriterion.hpp"
 
-Shifter::Shifter(IExtendedPartition& data, ICriterion const & criterion,
+Shifter::Shifter(IGraphPartition& data, ICriterion const & criterion,
 		IndexedList const & nodes, IndexedList const & labels) :
 		INeighborhood(data, criterion, nodes, labels) {
-	_intra.assign(1, DoubleVector(data.nbNodes(), 0));
+	_intra.assign(1, DoubleVector(data.nbObs(), 0));
 
 }
 

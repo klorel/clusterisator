@@ -14,13 +14,13 @@ class Cut {
 public:
 public:
 	// calcul brut
-	void getCut(IExtendedPartition const & data, DoubleVector &) const;
+	void getCut(IGraphPartition const & data, DoubleVector &) const;
 	// calcul de la composante associé au label
-	double getCut(IExtendedPartition const & data, size_t const & label) const;
+	double getCut(IGraphPartition const & data, size_t const & label) const;
 	//
-	Double2 getDeltaShift(IExtendedPartition const & data, size_t const & node,
+	Double2 getDeltaShift(IGraphPartition const & data, size_t const & node,
 			size_t const & newLabel) const;
-	 Double2 getDeltaShift(IExtendedPartition const & data,
+	 Double2 getDeltaShift(IGraphPartition const & data,
 			size_t const & node, size_t const & newLabel,
 			DoubleVector const & intra) const;
 

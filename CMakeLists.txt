@@ -1,22 +1,24 @@
-cmake_minimum_required(VERSION 2.6)
-project(clusterisator)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+PROJECT(clusterisator)
 
-INCLUDE_DIRECTORIES( gmock-1.6.0/gtest/include  algos criterions interfaces  mesures neighborhoods utils   )
+INCLUDE_DIRECTORIES( gmock-1.6.0/gtest/include  algos criterions data interfaces kmeans mesures neighborhoods utils   )
 
-set ( EXECUTABLE_OUTPUT_PATH  ../bin )
-set ( LIBRARY_OUTPUT_PATH  ../lib    )
-set ( CMAKE_BUILD_TYPE "RELEASE"     )
+SET ( EXECUTABLE_OUTPUT_PATH  ../bin )
+SET ( LIBRARY_OUTPUT_PATH  ../lib    )
+SET ( CMAKE_BUILD_TYPE "RELEASE"     )
 
-option( WITH_TESTS "Build tests" OFF)
-if( WITH_TESTS )
-add_subdirectory(gmock-1.6.0)
-endif( WITH_TESTS )
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -pedantic -fmessage-length=0  -fPIC" )
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-strict-aliasing -Wno-unused-parameter")
 
-#add_subdirectory(graclus1.2)
-add_subdirectory(clustering)
+OPTION( WITH_TESTS "Build tests" ON)
 
-if( WITH_TESTS )
-add_subdirectory(tests)
-endif( WITH_TESTS )
 
-add_subdirectory(programs)
+ADD_SUBDIRECTORY(clustering)
+ADD_SUBDIRECTORY(programs)
+
+IF( WITH_TESTS )
+    ADD_SUBDIRECTORY(gmock-1.6.0)
+    ADD_SUBDIRECTORY(tests)
+ENDIF( WITH_TESTS )
+

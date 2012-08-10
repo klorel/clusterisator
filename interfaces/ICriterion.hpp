@@ -20,9 +20,9 @@ public:
 	};
 public:
 	// calcul brut
-	virtual double eval(IExtendedPartition const & data) const = 0;
+	virtual double eval(IGraphPartition const & data) const = 0;
 	// calcul de la composante associé au label
-	virtual double eval(IExtendedPartition const & data,
+	virtual double eval(IGraphPartition const & data,
 			size_t const & label) const = 0;
 
 	virtual bool isBetter(double const & candidate,
@@ -32,12 +32,12 @@ public:
 
 	virtual ~ICriterion();
 public:
-	virtual bool canShift(IExtendedPartition const & data, size_t const & node,
+	virtual bool canShift(IGraphPartition const & data, size_t const & node,
 			size_t const & newLabel) const=0;
-	virtual Double2 getDelta2Shift(IExtendedPartition const & data,
+	virtual Double2 getDelta2Shift(IGraphPartition const & data,
 			size_t const & node, size_t const & newLabel,
 			DoubleVector const & intra) const = 0;
-	virtual double getDeltaShift(IExtendedPartition const & data,
+	virtual double getDeltaShift(IGraphPartition const & data,
 			size_t const & node, size_t const & newLabel,
 			DoubleVector const & intra) const = 0;
 

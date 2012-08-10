@@ -14,9 +14,9 @@ class Density: public AbstractCriterion<ICriterion::Maximization, ICriterion::Fr
 {
 public:
 	// calcul brut
-	double eval(IExtendedPartition const & data) const;
+	double eval(IGraphPartition const & data) const;
 	// calcul de la composante associé au label
-	double eval(IExtendedPartition const & data, size_t const & label) const;
+	double eval(IGraphPartition const & data, size_t const & label) const;
 public:
 	virtual ~Density();
 };
