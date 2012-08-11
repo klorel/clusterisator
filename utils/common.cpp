@@ -36,5 +36,3 @@ IntVector Random(size_t const & n) {
 	return v;
 }
 
-double const Values::Double::Zero = 0.0;
-size_t const Values::Int::Zero = 0.0;

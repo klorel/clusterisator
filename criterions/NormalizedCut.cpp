@@ -9,19 +9,19 @@
 #include "IGraphPartition.hpp"
 #include "ILinks.hpp"
 
-double NormalizedCut::eval(IGraphPartition const & data) const {
+Double NormalizedCut::eval(IGraphPartition const & data) const {
 	DoubleVector cut(data.nbObs(), 0);
 	getCut(data, cut);
-	double value(0);
-	FOR_EACH_CONST( label ,data.used()) {
+	Double value(0);
+	for (auto const & label :data.used()) {
 	value += cut[label] / data.degreeOfLabel(label);
 }
 	return value;
 }
 
-double NormalizedCut::eval(IGraphPartition const & data,
+Double NormalizedCut::eval(IGraphPartition const & data,
 		size_t const & label) const {
-	double cut(getCut(data, label));
+	Double cut(getCut(data, label));
 	return cut / data.degreeOfLabel(label);
 }
 
@@ -41,7 +41,7 @@ Double2 NormalizedCut::getDelta2Shift(IGraphPartition const & data,
 	return delta;
 }
 
-double NormalizedCut::getDeltaShift(IGraphPartition const & data,
+Double NormalizedCut::getDeltaShift(IGraphPartition const & data,
 		size_t const & node, size_t const & newLabel,
 		DoubleVector const & intra) const {
 	Double2 delta(getDelta2Shift(data, node, newLabel, intra));

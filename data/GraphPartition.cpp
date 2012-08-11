@@ -71,15 +71,15 @@ GraphPartition::~GraphPartition() {
 //	}
 //}
 
-double GraphPartition::intra(size_t label) {
-	double result(0);
-	FOR_EACH_CONST(node1, list(label)){
-	result+=intra(node1,label);
-}
+Double GraphPartition::intra(size_t label) {
+	Double result(0);
+	for (auto const & node1 : list(label)) {
+		result += intra(node1, label);
+	}
 	return result;
 }
-double GraphPartition::intra(size_t node, size_t l) {
-	double result(0);
+Double GraphPartition::intra(size_t node, size_t l) {
+	Double result(0);
 	LinksIterator ite(graph().links(node));
 	while (ite.goNext()) {
 		if (l == label(ite.index())) {
@@ -100,33 +100,33 @@ void GraphPartition::intra(size_t node, DoubleVector & values,
 	}
 }
 
-double GraphPartition::computeDegreeOfLabel(size_t l) const {
-	double res(0);
-	FOR_EACH_CONST(n ,list(l)) {
-	res += graph().weight(n);
-}
+Double GraphPartition::computeDegreeOfLabel(size_t l) const {
+	Double res(0);
+	for (auto const & n : list(l)) {
+		res += graph().weight(n);
+	}
 	return res;
 }
 
 bool GraphPartition::checkPosition() const {
-	FOR_EACH_CONST(l ,usedLabel()) {
-	//		TRACE_N(*l);
-	DisplayContainer(std::cout << "\nlabel " << l << " : ", list(l));
-}
-std::cout << std::endl;
-FOR_EACH_CONST(l , usedLabel()) {
-	assert(sizeOfLabel(l)>0);
-	FOR_EACH_CONST(n , list(l)) {
-		if (label(n) != l) {
-			std::cout << n;
-			std::cout << " not in " << l;
-			std::cout << " but in " << label(n);
-			std::cout << std::endl;
-			assert(false);
+	for (auto const & l : usedLabel()) {
+		//		TRACE_N(*l);
+		DisplayContainer(std::cout << "\nlabel " << l << " : ", list(l));
+	}
+	std::cout << std::endl;
+	for (auto const & l : usedLabel()) {
+		assert(sizeOfLabel(l)>0);
+		for (auto const & n : list(l)) {
+			if (label(n) != l) {
+				std::cout << n;
+				std::cout << " not in " << l;
+				std::cout << " but in " << label(n);
+				std::cout << std::endl;
+				assert(false);
+			}
 		}
 	}
-}
-return true;
+	return true;
 }
 bool GraphPartition::check() const {
 	checkDegrees();
@@ -141,13 +141,14 @@ bool GraphPartition::checkDegrees() const {
 }
 
 bool GraphPartition::checkDegree(size_t const l) const {
-	double verif(0);
-	//		TRACE("LABEL "<<l<<std::endl);
-	FOR_EACH_CONST( n , list(l)) {
-	//			TRACE_N(*n);
-	verif += graph().weight(n);
-}
-	if (fabs(verif - degreeOfLabel(l)) > 1e-10) {
+	Double verif(0);
+//		TRACE("LABEL "<<l<<std::endl);
+	for (auto const & n : list(l)) {
+		//			TRACE_N(*n);
+		verif += graph().weight(n);
+	}
+
+	if (std::abs(verif - degreeOfLabel(l)) > 1e-10) {
 		std::cout << "WRONG DEGREE OF LABEL " << l << " = " << degreeOfLabel(l)
 				<< " sould be " << verif << std::endl;
 		return false;
@@ -170,7 +171,8 @@ void GraphPartition::shift(size_t n, size_t l) {
 size_t GraphPartition::fusion(size_t l1, size_t l2) {
 	IntSet buffer;
 	Insert(list(l1), buffer);
-	FOR_EACH_CONST(n , buffer) shift(n, l2);
+	for (auto const & n : buffer)
+		shift(n, l2);
 	return l2;
 
 }
@@ -193,11 +195,11 @@ size_t GraphPartition::sizeOfLabel(size_t l) const {
 size_t & GraphPartition::sizeOfLabel(size_t l) {
 	return _partition.sizeOfLabel(l);
 }
-double const & GraphPartition::degreeOfLabel(size_t l) const {
+Double GraphPartition::degreeOfLabel(size_t l) const {
 	return _labelDegree[l];
 }
 
-double & GraphPartition::degreeOfLabel(size_t l) {
+Double & GraphPartition::degreeOfLabel(size_t l) {
 	return _labelDegree[l];
 }
 

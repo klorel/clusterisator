@@ -9,7 +9,7 @@
 #include "IGraphPartition.hpp"
 #include "ILinks.hpp"
 
-double Density::eval(IGraphPartition const & data) const {
+Double Density::eval(IGraphPartition const & data) const {
 
 	DoubleVector intra(data.nbObs(), 0);
 	DoubleVector cut(data.nbObs(), 0);
@@ -23,17 +23,17 @@ double Density::eval(IGraphPartition const & data) const {
 	//				cut[l] += e.second;
 	//		}
 	//	}
-	double value(0);
+	Double value(0);
 	//	FOR_EACH_CONST(l , data.used()) {
 	//		value += (intra[l] - cut[l] / 2.0)
-	//				/ static_cast<double>(data.sizeOfLabel(l));
+	//				/ static_cast<Double>(data.sizeOfLabel(l));
 	//	}
 	return value;
 }
 
-double Density::eval(IGraphPartition const & data, size_t const & l) const {
-	double cut(0);
-	double intra(0);
+Double Density::eval(IGraphPartition const & data, size_t const & l) const {
+	Double cut(0);
+	Double intra(0);
 	//	FOR_EACH_CONST (n , data.list(l)) {
 	//		size_t const & l(data.label(n));
 	//		FOR_EACH_CONST(e , data.graph().links(n)) {
@@ -45,7 +45,7 @@ double Density::eval(IGraphPartition const & data, size_t const & l) const {
 	//		}
 	//	}
 
-	return (intra - cut) / static_cast<double>(data.sizeOfLabel(l));
+	return (intra - cut) / static_cast<Double>(data.sizeOfLabel(l));
 }
 Density::~Density() {
 

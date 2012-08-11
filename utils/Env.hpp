@@ -33,16 +33,4 @@ template<class T> inline std::ostream & operator<<(Env &env, T & t) {
 }
 
 
-template<template<class A, class B> class T > inline std::ostream& operator<<(Env &env, T & (*pf)(T &)) {
-	return std::cout;
-}
-template<> inline std::ostream& operator<<(Env &env,
-		std::ostream & (*pf)(std::ostream &)) {
-	if (env.get() != 0) {
-		std::ostream & stream(*env.get());
-		stream << pf(stream);
-		return stream;
-	} else
-		return std::cout;
-}
 #endif /* ENVIRONEMENT_HPP_ */

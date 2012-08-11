@@ -20,11 +20,11 @@ void Timer::restart() {
 #endif
 }
 
-double Timer::elapsed() const {
+Double Timer::elapsed() const {
 #ifdef _WIN32 	
 	return _start.elapsed();
 #else
-	return std::chrono::duration<double>(std::chrono::system_clock::now() - _start).count();
+	return std::chrono::duration<Double>(std::chrono::system_clock::now() - _start).count();
 #endif
 }
 

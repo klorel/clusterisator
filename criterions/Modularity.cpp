@@ -9,7 +9,7 @@
 #include "IGraphPartition.hpp"
 #include "ILinks.hpp"
 
-double Modularity::eval(IGraphPartition const & data) const {
+Double Modularity::eval(IGraphPartition const & data) const {
 	//	DoubleVector degree(data.nbNodes(), 0);
 	//	DoubleVector intra(data.nbNodes(), 0);
 	//
@@ -21,16 +21,16 @@ double Modularity::eval(IGraphPartition const & data) const {
 	//		//				intra[l] += e.second;
 	//		//		}
 	//	}
-	//	double value(0);
-	//	//	double const & M(data.graph().weight());
+	//	Double value(0);
+	//	//	Double  M(data.graph().weight());
 	//	//	FOR_EACH_CONST( l , data.used()) value += intra[l] / M - degree[l] / (M * M);
 	//	return value;
-	return 0;
+	return Zero<Double>();
 }
 
-double Modularity::eval(IGraphPartition const & data, size_t const & l) const {
-	//	double degree(0);
-	//	double intra(0);
+Double Modularity::eval(IGraphPartition const & data, size_t const & l) const {
+	//	Double degree(0);
+	//	Double intra(0);
 	//	FOR_EACH_CONST(n, data.list(l)) {
 	//		size_t const & l(data.label(n));
 	//		degree += data.graph().weight(n);
@@ -39,10 +39,10 @@ double Modularity::eval(IGraphPartition const & data, size_t const & l) const {
 	//				intra += e.second;
 	//		}
 	//	}
-	//	double const & M(data.graph().weight());
+	//	Double  M(data.graph().weight());
 
 	//	return intra / M - degree / (M * M);
-	return 0;
+	return Zero<Double>();
 }
 
 Modularity::~Modularity() {

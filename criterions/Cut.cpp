@@ -20,8 +20,8 @@ void Cut::getCut(IGraphPartition const & data, DoubleVector & cut) const {
 //}
 }
 
-double Cut::getCut(IGraphPartition const & data, size_t const & l) const {
-	double cut(0);
+Double Cut::getCut(IGraphPartition const & data, size_t const & l) const {
+	Double cut(0);
 //	FOR_EACH_CONST (n , data.list(l)) {
 //	size_t const & l(data.label(n));
 //	FOR_EACH_CONST( e , data.graph().links(n)) {

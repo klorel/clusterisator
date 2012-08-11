@@ -13,24 +13,21 @@ void Graph::read(const std::string & fileName) {
 		std::getline(file, line);
 		std::istringstream in(line);
 		if (!(in >> nbObs)) {
-			Env::Get() << "n'a pas pu lire le nombre d'elements" << "\n";
+			OUT<< "n'a pas pu lire le nombre d'elements" << "\n";
 		}
 		if (!(in >> _nbEdge)) {
-			Env::Get() << "n'a pas pu lire le nombre d'arêtes" << "\n";
+			OUT<< "n'a pas pu lire le nombre d'arêtes" << "\n";
 		}
 		in >> _isEdgeWeighted;
-//		Env::Get() << "\n";
-//		Env::Get() << std::setw(20) << "Nodes" << std::setw(10) << nbObs
-//				<< "\n";
-//		Env::Get() << std::setw(20) << "Edges" << std::setw(10) << _nbEdge
-//				<< "\n";
-//		Env::Get() << std::setw(20)
-//				<< (_isEdgeWeighted ? "WEIGHTED" : "UNWEIGHTED") << "\n";
+		OUT<< "\n";
+		OUT<< std::setw(20) << "Nodes" << std::setw(10) << nbObs << "\n";
+		OUT<< std::setw(20) << "Edges" << std::setw(10) << _nbEdge << "\n";
+		OUT<< std::setw(20) << (_isEdgeWeighted ? "WEIGHTED" : "UNWEIGHTED") << "\n";
 
 		allocate(nbObs);
 		// While there are points
 		size_t tempPoint;
-		double tempSimilarity;
+		Double tempSimilarity;
 		size_t lineNumber = 0;
 		while (std::getline(file, line)) {
 			_begin.push_back(_edges.size());
@@ -39,11 +36,11 @@ void Graph::read(const std::string & fileName) {
 			while (lineStream >> tempPoint) {
 				if (_isEdgeWeighted) {
 					if (!(lineStream >> tempSimilarity)) {
-						Env::Get() << "probleme de format l." << lineNumber
-								<< "\n";
+						OUT<< "probleme de format l." << lineNumber
+						<< "\n";
 					}
 				} else
-					tempSimilarity = 1.0;
+				tempSimilarity = 1.0;
 				_edges.push_back(std::make_pair(tempPoint, tempSimilarity));
 				//(*this)[lineNumber].insert(tempPoint - 1, tempSimilarity);
 				//tempGraph[lineNumber][tempPoint - 1] = tempSimilarity;
@@ -56,8 +53,7 @@ void Graph::read(const std::string & fileName) {
 		buildDegrees();
 
 	} else {
-		Env::Get() << "impossible d'ouvrir le fichier : " << fileName
-				<< "\n";
+		OUT<< "impossible d'ouvrir le fichier : " << fileName << "\n";
 		exit(0);
 	}
 
@@ -68,7 +64,7 @@ Graph::Graph(size_t i) {
 
 Graph::Graph(std::string const& fileName) {
 
-	Env::Get() << "\nReading " << fileName;
+	OUT<< "\nReading " << fileName;
 	read(fileName);
 	buildDegrees();
 }
@@ -94,7 +90,7 @@ void Graph::buildDegrees() {
 		while (ite.goNext()) {
 			_nodeWeights[p] += ite.value();
 			if (ite.index() == p)
-				_nodeWeights[p] += ite.index();
+				_nodeWeights[p] += ite.value();
 		}
 	}
 }
@@ -110,7 +106,7 @@ std::ostream & operator<<(std::ostream &out, Graph const&g) {
 	return out;
 }
 
-double const & Graph::weight(size_t nodeId) const {
+Double Graph::weight(size_t nodeId) const {
 	return _nodeWeights[nodeId];
 }
 
@@ -132,7 +128,7 @@ LinksIterator Graph::links(size_t node) const {
 
 }
 
-double const & Graph::link(size_t i, size_t j) const {
+Double Graph::link(size_t i, size_t j) const {
 	if (_size[j] < _size[i])
 		return link(j, i);
 	LinksIterator ite(links(i));
@@ -141,6 +137,5 @@ double const & Graph::link(size_t i, size_t j) const {
 			return ite.value();
 
 	}
-	return Values::Double::Zero;
-
+	return Zero<Double>();
 }

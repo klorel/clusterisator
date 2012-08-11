@@ -26,7 +26,7 @@ public:
 	//
 	virtual bool findFirst(size_t const &) = 0;
 	//
-	virtual bool findBest(size_t const & seed, double & score) = 0;
+	virtual bool findBest(size_t const & seed, Double & score) = 0;
 	//
 	virtual void findAny(size_t const &) = 0;
 public:

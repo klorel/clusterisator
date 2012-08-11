@@ -11,7 +11,7 @@
 class IPartition;
 class IMesure {
 public:
-	virtual double compute(IPartition const & real,
+	virtual Double compute(IPartition const & real,
 			IPartition const & candidate) = 0;
 	virtual ~IMesure();
 };

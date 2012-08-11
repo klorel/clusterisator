@@ -32,7 +32,7 @@ public:
 	size_t index() const {
 		return _previous->first;
 	}
-	double const & value() const {
+	Double  value() const {
 		return _previous->second;
 	}
 private:

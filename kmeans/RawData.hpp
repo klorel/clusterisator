@@ -20,13 +20,13 @@ public:
 	void allocate(size_t const & m);
 	void allocate(size_t const & n, size_t const & m);
 	void reserve(size_t const & n);
-	double get(size_t const & i, size_t const & j) const;
-	double get(size_t const & i) const;
+	Double get(size_t const & i, size_t const & j) const;
+	Double get(size_t const & i) const;
 	size_t getN() const;
 	size_t getM() const;
 
-	void add(std::vector<double> const &, double const & w = 1.0);
-	double weight(size_t const & i) const;
+	void add(std::vector<Double> const &, Double  w = 1.0);
+	Double weight(size_t const & i) const;
 	void setWeights(DoubleVector const & weights);
 private:
 	size_t _m;

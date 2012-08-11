@@ -8,6 +8,8 @@
 #ifndef TIMER_HPP_
 #define TIMER_HPP_
 
+#include "common.h"
+
 #ifdef _WIN32 
 #include <boost/timer.hpp>
 typedef boost::timer TimePoint;
@@ -21,7 +23,7 @@ public:
 	Timer();
 	virtual ~Timer();
 
-	double elapsed() const;
+	Double elapsed() const;
 	void restart();
 private:
 	TimePoint _start;

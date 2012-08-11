@@ -20,6 +20,6 @@ lib*
 .cproject
 Makefile
 build*
-
+.settings*
 #vim temporary files
 .*.sw*

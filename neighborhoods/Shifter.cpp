@@ -35,16 +35,17 @@ bool Shifter::findFirst(size_t const & node) {
 	return improvement;
 }
 
-bool Shifter::findBest(size_t const & node, double & score) {
+bool Shifter::findBest(size_t const & node, Double & score) {
 	size_t const from(data().label(node));
 	size_t bestTo(from);
 	DoubleVector & intra(_intra[0]);
 	if (data().sizeOfLabel(from) > 1) {
 		data().intra(node, intra, true);
-		double bestDelta(0);
-		FOR_EACH_CONST(to ,labels()) {
-			if (criterion().canShift(data(),node, to)) {
-				double const delta(criterion().getDeltaShift(data(), node, to,intra));
+		Double bestDelta(0);
+		for (auto const & to : labels()) {
+			if (criterion().canShift(data(), node, to)) {
+				Double const delta(
+						criterion().getDeltaShift(data(), node, to, intra));
 				if (criterion().isBetter(delta, bestDelta)) {
 					bestDelta = delta;
 					bestTo = to;

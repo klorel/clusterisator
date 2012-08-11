@@ -10,13 +10,13 @@
 
 #include "AbstractCriterion.hpp"
 
-class Density: public AbstractCriterion<ICriterion::Maximization, ICriterion::Free>
-{
+class Density: public AbstractCriterion<ICriterion::Maximization,
+		ICriterion::Free> {
 public:
 	// calcul brut
-	double eval(IGraphPartition const & data) const;
+	Double eval(IGraphPartition const & data) const;
 	// calcul de la composante associé au label
-	double eval(IGraphPartition const & data, size_t const & label) const;
+	Double eval(IGraphPartition const & data, size_t const & label) const;
 public:
 	virtual ~Density();
 };

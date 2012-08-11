@@ -23,7 +23,7 @@ public:
 	// recherche le premier movement améliorant, retourne true si un mouvement améliorant est déterminé
 	bool findFirst(size_t const &);
 	// recherche le meilleur mouvement améliorant, retourne true si un mouvement améliorant est déterminé
-	bool findBest(size_t const & node, double & score);
+	bool findBest(size_t const & node, Double & score);
 	// applique n'importe quel mouvement
 	void findAny(size_t const &);
 private:

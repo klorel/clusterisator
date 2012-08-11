@@ -18,7 +18,7 @@ public:
 	virtual ~Acc();
 public:
 
-	double compute(IPartition const & real,
+	Double compute(IPartition const & real,
 			IPartition const & candidate) ;
 };
 

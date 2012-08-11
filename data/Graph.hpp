@@ -17,7 +17,7 @@ public:
 
 	void read(std::string const &);
 
-	double const & squareDegree() const;
+	Double  squareDegree() const;
 
 	size_t & nbLinks(void);
 	size_t nbObs() const;
@@ -25,10 +25,10 @@ public:
 
 	void clear();
 
-	double const & weight(size_t) const;
+	Double  weight(size_t) const;
 
 	LinksIterator links(size_t) const;
-	double const & link(size_t i, size_t j) const;
+	Double  link(size_t i, size_t j) const;
 private:
 	bool _isEdgeWeighted;
 

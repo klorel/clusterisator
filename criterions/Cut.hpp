@@ -16,7 +16,7 @@ public:
 	// calcul brut
 	void getCut(IGraphPartition const & data, DoubleVector &) const;
 	// calcul de la composante associé au label
-	double getCut(IGraphPartition const & data, size_t const & label) const;
+	Double getCut(IGraphPartition const & data, size_t const & label) const;
 	//
 	Double2 getDeltaShift(IGraphPartition const & data, size_t const & node,
 			size_t const & newLabel) const;

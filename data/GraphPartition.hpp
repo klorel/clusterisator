@@ -37,8 +37,8 @@ public:
 	size_t & sizeOfLabel(size_t l);
 	size_t sizeOfLabel(size_t l) const;
 	// le degrés d'un label
-	double const & degreeOfLabel(size_t l) const;
-	double & degreeOfLabel(size_t l);
+	Double  degreeOfLabel(size_t l) const;
+	Double & degreeOfLabel(size_t l);
 	// récupère un label vide
 	size_t getUnUsedLabel() const;
 	// est-ce que tout les labels sont utilisés
@@ -64,11 +64,11 @@ public:
 	size_t label(size_t n) const;
 	size_t & label(size_t n);
 	// can be overloaded in other implementations
-	virtual double intra(size_t label);
-	virtual double intra(size_t node, size_t label);
+	virtual Double intra(size_t label);
+	virtual Double intra(size_t node, size_t label);
 	void intra(size_t node, DoubleVector & values, bool const & reset);
 public:
-	double computeDegreeOfLabel(size_t l) const;
+	Double computeDegreeOfLabel(size_t l) const;
 
 	bool check() const;
 	bool checkPosition() const;

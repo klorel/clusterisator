@@ -34,8 +34,8 @@ size_t KMeansData::getK() const {
 	return _clusters.size();
 }
 
-double KMeansData::getIntra(size_t const & c) const {
-	double result(0);
+Double KMeansData::getIntra(size_t const & c) const {
+	Double result(0);
 	for (auto const & i : _clusters[c].list) {
 		for (auto const & j : _clusters[c].list) {
 			if (i < j) {
@@ -50,16 +50,16 @@ void KMeansData::getIntra() {
 	for (size_t k(0); k < getK(); ++k)
 		_clusters[k].intra = getIntra(k);
 }
-double KMeansData::getLinearPart(size_t const & i, size_t const & c) const {
-	double result(0);
+Double KMeansData::getLinearPart(size_t const & i, size_t const & c) const {
+	Double result(0);
 	for (auto const & j : _clusters[c].list) {
 		result -= (2 * _data.weight(j) * _data.get(i, j));
 	}
 	return result / _clusters[c].weight;
 
 }
-double KMeansData::getD(size_t const & i, size_t const & c) const {
-	double result(0);
+Double KMeansData::getD(size_t const & i, size_t const & c) const {
+	Double result(0);
 	result += _kii[i];
 	result += getLinearPart(i, c);
 	result += getIntra(c);
@@ -88,9 +88,9 @@ void KMeansData::move(size_t const & i, size_t const & c) {
 
 size_t KMeansData::getClosest(size_t const & i) {
 	size_t bestC(getK());
-	double minD(std::numeric_limits<double>::max());
+	Double minD(std::numeric_limits<Double>::max());
 	for (size_t c(0); c < getK(); ++c) {
-		double const d(getD(i, c));
+		Double const d(getD(i, c));
 		if (d < minD) {
 			bestC = c;
 			minD = d;

@@ -41,14 +41,14 @@ void Partition::shift(size_t n, size_t l) {
 		if (sizeOfLabel(label(n)) == 0) {
 			_usedLabels.erase(label(n));
 			_unUsedLabels.insert(label(n));
-			//			std::cout << "Result : " << std::endl;
+			//			OUT << "Result : " << std::endl;
 			//			for (IndexedList::const_iterator lIte(begin()); lIte != end(); ++lIte) {
-			//				std::cout << std::setw(4) << *lIte;
-			//				std::cout << std::setw(4) << sizeOfLabel(*lIte);
-			//				std::cout << std::setw(4) << isUsed(*lIte);
-			//				std::cout << std::endl;
+			//				OUT << std::setw(4) << *lIte;
+			//				OUT << std::setw(4) << sizeOfLabel(*lIte);
+			//				OUT << std::setw(4) << isUsed(*lIte);
+			//				OUT << std::endl;
 			//			}
-			//			std::cout << "-----------------" << std::endl;
+			//			OUT << "-----------------" << std::endl;
 		}
 		if (sizeOfLabel(l) == 0) {
 			_unUsedLabels.erase(l);
@@ -134,15 +134,15 @@ size_t & Partition::label(size_t n) {
 	return _labels[n];
 }
 bool Partition::checkLists() const {
-	FOR_EACH_CONST(l , usedLabel()) {
-	//		TRACE_N(*l);
-	if (sizeOfLabel(l) == 0)
-	std::cout << "error on size of label " << l << "\n";
-	FOR_EACH_CONST( n , list(l)) {
-		if (n != *_nodePosition[n]) {
-			std::cout << n << " iterator in label " << l << " is wrong\n";
+	for (auto const & l : usedLabel()) {
+		//		TRACE_N(*l);
+		if (sizeOfLabel(l) == 0)
+			OUT << "error on size of label " << l << "\n";
+		for (auto const & n : list(l)) {
+			if (n != *_nodePosition[n]) {
+				OUT << n << " iterator in label " << l << " is wrong\n";
+			}
 		}
 	}
-}
-return true;
+	return true;
 }

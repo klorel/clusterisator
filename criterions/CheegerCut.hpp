@@ -15,9 +15,9 @@ class CheegerCut: public AbstractCriterion<ICriterion::Minimization,
 		ICriterion::Partitioning>, Cut {
 public:
 	// calcul brut
-	double eval(IGraphPartition const & data) const;
+	Double eval(IGraphPartition const & data) const;
 	// calcul de la composante associé au label
-	double eval(IGraphPartition const & data, size_t const & label) const;
+	Double eval(IGraphPartition const & data, size_t const & label) const;
 
 public:
 

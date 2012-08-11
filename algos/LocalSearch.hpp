@@ -18,7 +18,7 @@ public:
 public:
 	bool run();
 private:
-	void init(double & score, DoubleVector & scores) const;
+	void init(Double & score, DoubleVector & scores) const;
 	void init();
 	bool loop();
 	void check() const;
@@ -26,7 +26,7 @@ private:
 private:
 	INeighborhood & _neighborhood;
 
-	double _score;
+	Double _score;
 	DoubleVector _scores;
 };
 

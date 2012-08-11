@@ -17,7 +17,7 @@ class AbstractCriterion: public ICriterion {
 public:
 	virtual ~AbstractCriterion();
 public:
-	bool isBetter(double const & candidate, double const & ref) const;
+	bool isBetter(Double  candidate, Double  ref) const;
 	bool isPartitioning() const;
 
 	bool canShift(IGraphPartition const & data, size_t const & node,
@@ -25,8 +25,8 @@ public:
 };
 
 template<ICriterion::Sense sense, ICriterion::Kind kind> inline
-bool AbstractCriterion<sense, kind>::isBetter(double const & candidate,
-		double const & ref) const {
+bool AbstractCriterion<sense, kind>::isBetter(Double  candidate,
+		Double  ref) const {
 	return sense == Maximization ?
 			candidate > ref + 1e-10 : candidate < ref - 1e-10;
 }

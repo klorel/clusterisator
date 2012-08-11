@@ -13,9 +13,9 @@
 
 struct ClusterData {
 	//
-	double weight;
+	Double weight;
 	//
-	double intra;
+	Double intra;
 	//
 	IntList list;
 
@@ -37,12 +37,12 @@ public:
 	size_t getK() const;
 	void init(IntVector const &);
 private:
-	double getD(size_t const & i, size_t const & c) const;
+	Double getD(size_t const & i, size_t const & c) const;
 	void move(size_t const & i, size_t const & c);
 	void initLoop();
 	void getIntra();
-	double getLinearPart(size_t const & i, size_t const & c) const;
-	double getIntra(size_t const & c) const;
+	Double getLinearPart(size_t const & i, size_t const & c) const;
+	Double getIntra(size_t const & c) const;
 private:
 	void buildDiag();
 

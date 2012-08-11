@@ -23,6 +23,6 @@ int main(int argc, char ** argv) {
 //
 //	Partition partition;
 //	IBuilder::Get<IPartition>(partition, partitionName);
-	Env::Get() << std::endl;
+	OUT<< std::endl;
 	return 0;
 }

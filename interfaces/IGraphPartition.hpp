@@ -16,13 +16,13 @@ public:
 	// the number of edges
 	virtual size_t nbLinks() const = 0;
 	// the degree of a label
-	virtual double const & degreeOfLabel(size_t const & label) const = 0;
-	virtual double & degreeOfLabel(size_t const & label)= 0;
+	virtual Double  degreeOfLabel(size_t const & label) const = 0;
+	virtual Double & degreeOfLabel(size_t const & label)= 0;
 public:
 	virtual void intra(size_t const & node, DoubleVector & values,
 			bool const & reset) = 0;
-	virtual double intra(size_t const & label) = 0;
-	virtual double intra(size_t const & node, size_t const & label) = 0;
+	virtual Double intra(size_t const & label) = 0;
+	virtual Double intra(size_t const & node, size_t const & label) = 0;
 public:
 	IGraphPartition(ILinks const & iLinks);
 	virtual ~IGraphPartition();
