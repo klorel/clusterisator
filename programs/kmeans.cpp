@@ -21,6 +21,7 @@ int main(int argc, char ** argv) {
 	KMeansAlgo kmeans(data);
 	kmeans.set(k);
 	kmeans.random();
+	kmeans.run(1000);
 
 //	OUT<< data;
 //	if (argc != 3) {
