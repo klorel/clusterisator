@@ -5,10 +5,10 @@
  *      Author: manuel
  */
 
-#include "LocalSearch.hpp"
-#include "INeighborhood.hpp"
-#include "IGraphPartition.hpp"
-#include "ICriterion.hpp"
+#include "../algos/LocalSearch.hpp"
+#include "../interfaces/INeighborhood.hpp"
+#include "../interfaces/IGraphPartition.hpp"
+#include "../interfaces/ICriterion.hpp"
 
 LocalSearch::LocalSearch(INeighborhood & neighborhood) :
 		_neighborhood(neighborhood), _score(0), _scores(

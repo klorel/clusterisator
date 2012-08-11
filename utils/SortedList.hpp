@@ -8,7 +8,7 @@
 #ifndef SORTEDLIST_HPP_
 #define SORTEDLIST_HPP_
 
-#include "common.h"
+#include "../utils/common.h"
 
 class SortedList {
 public:

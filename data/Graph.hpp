@@ -1,8 +1,8 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
-#include "common.h"
-#include "ILinks.hpp"
+#include "../utils/common.h"
+#include "../interfaces/ILinks.hpp"
 
 class Graph: public ILinks {
 public:

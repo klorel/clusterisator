@@ -8,9 +8,9 @@
 #ifndef PARTITION_HPP_
 #define PARTITION_HPP_
 
-#include "common.h"
+#include "../utils/common.h"
 
-#include "IPartition.hpp"
+#include "../interfaces/IPartition.hpp"
 
 class Partition: public IPartition {
 public:
@@ -23,6 +23,7 @@ public:
 	// fusion of two label, return the used label
 	size_t fusion(size_t const & label1, size_t const & label2);
 public:
+	void contigusLabels();
 	void set(std::vector<size_t> const &);
 	// le nombre de noeuds
 	size_t nbObs() const;

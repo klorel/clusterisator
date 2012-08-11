@@ -6,8 +6,8 @@
  */
 
 #include "Modularity.hpp"
-#include "IGraphPartition.hpp"
-#include "ILinks.hpp"
+#include "../interfaces/IGraphPartition.hpp"
+#include "../interfaces/ILinks.hpp"
 
 Double Modularity::eval(IGraphPartition const & data) const {
 	//	DoubleVector degree(data.nbNodes(), 0);

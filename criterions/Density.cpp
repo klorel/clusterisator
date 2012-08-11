@@ -6,8 +6,8 @@
  */
 
 #include "Density.hpp"
-#include "IGraphPartition.hpp"
-#include "ILinks.hpp"
+#include "../interfaces/IGraphPartition.hpp"
+#include "../interfaces/ILinks.hpp"
 
 Double Density::eval(IGraphPartition const & data) const {
 

@@ -8,7 +8,7 @@
 #ifndef CUT_HPP_
 #define CUT_HPP_
 
-#include "common.h"
+#include "../utils/common.h"
 
 class Cut {
 public:

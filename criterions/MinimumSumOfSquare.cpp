@@ -6,8 +6,8 @@
  */
 
 #include "MinimumSumOfSquare.hpp"
-#include "IGraphPartition.hpp"
-#include "ILinks.hpp"
+#include "../interfaces/IGraphPartition.hpp"
+#include "../interfaces/ILinks.hpp"
 
 Double MinimumSumOfSquare::eval(IGraphPartition const & data) const {
 	DoubleVector cut(data.nbObs(), 0);

@@ -6,7 +6,7 @@
  */
 
 #include "Acc.hpp"
-#include "IPartition.hpp"
+#include "../interfaces/IPartition.hpp"
 
 Acc::Acc() {
 }

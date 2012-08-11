@@ -5,13 +5,13 @@
  *      Author: manuel
  */
 
-#include "common.h"
-#include "Graph.hpp"
-#include "GraphPartition.hpp"
-#include "NormalizedCut.hpp"
+#include "../utils/common.h"
+#include "../data/Graph.hpp"
+#include "../data/GraphPartition.hpp"
+#include "../criterions/NormalizedCut.hpp"
 
-#include "Shifter.hpp"
-#include "LocalSearch.hpp"
+#include "../neighborhoods/Shifter.hpp"
+#include "../algos/LocalSearch.hpp"
 
 int main(int argc, char ** argv) {
 

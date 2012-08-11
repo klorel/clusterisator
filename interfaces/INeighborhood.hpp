@@ -8,9 +8,9 @@
 #ifndef I_NEIGHBORHOOD_HPP_
 #define I_NEIGHBORHOOD_HPP_
 
-#include "common.h"
-#include "IndexedList.hpp"
-#include "IGraphPartition.hpp"
+#include "../utils/common.h"
+#include "../utils/IndexedList.hpp"
+#include "../interfaces/IGraphPartition.hpp"
 
 class INeighborhood {
 public:
@@ -67,7 +67,7 @@ inline IndexedList const & INeighborhood::labels() const {
 inline INeighborhood::INeighborhood(IGraphPartition& data,
 		ICriterion const & criterion, IndexedList const & nodes,
 		IndexedList const & labels) :
-				_data(data), _criterion(criterion), _nodes(nodes), _labels(labels) {
+		_data(data), _criterion(criterion), _nodes(nodes), _labels(labels) {
 }
 inline INeighborhood::~INeighborhood() {
 

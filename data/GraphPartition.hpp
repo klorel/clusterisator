@@ -8,11 +8,11 @@
 #ifndef DATA_HPP_
 #define DATA_HPP_
 
-#include "common.h"
+#include "../utils/common.h"
 
-#include "IndexedList.hpp"
+#include "../utils/IndexedList.hpp"
 #include "Graph.hpp"
-#include "IGraphPartition.hpp"
+#include "../interfaces/IGraphPartition.hpp"
 #include "Partition.hpp"
 
 class GraphPartition: public IGraphPartition {

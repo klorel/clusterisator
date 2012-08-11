@@ -8,12 +8,12 @@
 #ifndef I_LINKS_HPP_
 #define I_LINKS_HPP_
 
-#include "common.h"
+#include "../utils/common.h"
 
 typedef std::pair<size_t, Double> Link;
 typedef std::vector<std::pair<size_t, Double> > Links;
 
-#include "LinksIterator.hpp"
+#include "../data/LinksIterator.hpp"
 
 class ILinks {
 public:
@@ -26,9 +26,9 @@ public:
 	// return elements linked to i
 	virtual LinksIterator links(size_t i) const = 0;
 	// return the links between i and j
-	virtual Double  link(size_t i, size_t j) const = 0;
+	virtual Double link(size_t i, size_t j) const = 0;
 	// return the weight of element i
-	virtual Double  weight(size_t i) const = 0;
+	virtual Double weight(size_t i) const = 0;
 	//
 	virtual ~ILinks();
 };

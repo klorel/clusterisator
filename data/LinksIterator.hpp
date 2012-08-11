@@ -8,7 +8,7 @@
 #ifndef LINKITERATOR_HPP_
 #define LINKITERATOR_HPP_
 
-#include "common.h"
+#include "../utils/common.h"
 
 class LinksIterator {
 public:

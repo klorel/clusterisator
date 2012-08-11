@@ -15,7 +15,7 @@ IF( WITH_TESTS )
     ADD_SUBDIRECTORY(gmock-1.6.0)
 ENDIF( WITH_TESTS )
 
-INCLUDE_DIRECTORIES( algos criterions data interfaces kmeans mesures neighborhoods utils   )
+#INCLUDE_DIRECTORIES(  )
 
 
 OPTION( WITH_TESTS "Build tests" ON)

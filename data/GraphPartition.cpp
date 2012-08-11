@@ -7,7 +7,7 @@
 
 #include "GraphPartition.hpp"
 //#include "Modularity.hpp"
-#include "ILinks.hpp"
+#include "../interfaces/ILinks.hpp"
 //#include "Utils.hpp"
 
 GraphPartition::GraphPartition(ILinks const & _graph) :

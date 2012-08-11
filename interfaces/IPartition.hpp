@@ -11,7 +11,7 @@
  * IPartition is aimed to be used in general clustering
  */
 
-#include "IndexedList.hpp"
+#include "../utils/IndexedList.hpp"
 
 class IPartition {
 public:
@@ -22,6 +22,8 @@ public:
 	typedef IndexedList::iterator iterator;
 	typedef IndexedList::const_iterator const_iterator;
 public:
+	//
+	virtual void contigusLabels() = 0;
 	virtual void set(std::vector<size_t> const &) = 0;
 	// the number of nodes
 	virtual size_t nbObs() const = 0;
@@ -56,7 +58,6 @@ public:
 	virtual void shift(size_t node, size_t newLabel) = 0;
 	// fusion of two label, return the used label
 	virtual size_t fusion(size_t const & label1, size_t const & label2) = 0;
-
 	virtual ~IPartition();
 };
 

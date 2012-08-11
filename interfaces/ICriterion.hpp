@@ -8,7 +8,7 @@
 #ifndef ICRITERION_HPP_
 #define ICRITERION_HPP_
 
-#include "common.h"
+#include "../utils/common.h"
 class ICriterion {
 public:
 	enum Sense {

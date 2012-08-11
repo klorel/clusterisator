@@ -8,7 +8,7 @@
 #ifndef SHIFTER_HPP_
 #define SHIFTER_HPP_
 
-#include "INeighborhood.hpp"
+#include "../interfaces/INeighborhood.hpp"
 
 class Shifter: public INeighborhood {
 public:

@@ -8,9 +8,9 @@
 #ifndef ABSTRACTCRITERION_HPP_
 #define ABSTRACTCRITERION_HPP_
 
-#include "common.h"
-#include "ICriterion.hpp"
-#include "IGraphPartition.hpp"
+#include "../utils/common.h"
+#include "../interfaces/ICriterion.hpp"
+#include "../interfaces/IGraphPartition.hpp"
 
 template<ICriterion::Sense sense, ICriterion::Kind kind>
 class AbstractCriterion: public ICriterion {

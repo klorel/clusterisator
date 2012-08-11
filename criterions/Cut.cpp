@@ -6,8 +6,8 @@
  */
 
 #include "Cut.hpp"
-#include "IGraphPartition.hpp"
-#include "ILinks.hpp"
+#include "../interfaces/IGraphPartition.hpp"
+#include "../interfaces/ILinks.hpp"
 
 void Cut::getCut(IGraphPartition const & data, DoubleVector & cut) const {
 	cut.assign(data.nbObs(), 0);

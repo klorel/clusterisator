@@ -8,7 +8,7 @@
 #ifndef LOCALSEARCH_HPP_
 #define LOCALSEARCH_HPP_
 
-#include "common.h"
+#include "../utils/common.h"
 
 class LocalSearch {
 public:

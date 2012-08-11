@@ -1,5 +1,5 @@
-#include "Graph.hpp"
-#include "Env.hpp"
+#include "../data/Graph.hpp"
+#include "../utils/Env.hpp"
 
 void Graph::read(const std::string & fileName) {
 	std::string line;

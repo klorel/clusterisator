@@ -5,7 +5,7 @@
  *      Author: manuel
  */
 
-#include "common.h"
+#include "../utils/common.h"
 #include "Number.hpp"
 
 IntVector SortLocation(IntVector const &location) {

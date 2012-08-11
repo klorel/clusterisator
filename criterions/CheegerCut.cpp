@@ -6,8 +6,8 @@
  */
 
 #include "CheegerCut.hpp"
-#include "IGraphPartition.hpp"
-#include "ILinks.hpp"
+#include "../interfaces/IGraphPartition.hpp"
+#include "../interfaces/ILinks.hpp"
 
 Double CheegerCut::eval(IGraphPartition const & data) const {
 	DoubleVector cut(data.nbObs(), 0);

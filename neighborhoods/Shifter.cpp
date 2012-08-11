@@ -6,8 +6,8 @@
  */
 
 #include "Shifter.hpp"
-#include "IndexedList.hpp"
-#include "ICriterion.hpp"
+#include "../utils/IndexedList.hpp"
+#include "../interfaces/ICriterion.hpp"
 
 Shifter::Shifter(IGraphPartition& data, ICriterion const & criterion,
 		IndexedList const & nodes, IndexedList const & labels) :

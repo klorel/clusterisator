@@ -8,8 +8,8 @@
 #ifndef I_EXTENDED_PARTITION_HPP_
 #define I_EXTENDED_PARTITION_HPP_
 
-#include "common.h"
-#include "IPartition.hpp"
+#include "../utils/common.h"
+#include "../interfaces/IPartition.hpp"
 
 class IGraphPartition: public IPartition {
 public:

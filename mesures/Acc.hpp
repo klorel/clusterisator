@@ -8,8 +8,8 @@
 #ifndef ACC_HPP_
 #define ACC_HPP_
 
-#include "common.h"
-#include "IMesure.hpp"
+#include "../utils/common.h"
+#include "../interfaces/IMesure.hpp"
 
 
 class Acc: public IMesure {
