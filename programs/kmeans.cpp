@@ -12,6 +12,7 @@
 #include "../kmeans/RawData.hpp"
 #include "../interfaces/IBuilder.hpp"
 #include "../utils/Env.hpp"
+#include "../utils/Number.hpp"
 
 int main(int argc, char ** argv) {
 	std::string const dataFileName(argv[1]);
@@ -20,8 +21,9 @@ int main(int argc, char ** argv) {
 	RectMatrix data(ReadRawData(dataFileName));
 	KMeansAlgo kmeans(data);
 	kmeans.set(k);
+	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
 	kmeans.random();
-	kmeans.run(1000);
+	kmeans.run(600);
 
 //	OUT<< data;
 //	if (argc != 3) {

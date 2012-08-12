@@ -8,7 +8,6 @@
 #ifndef TYPEDEF_H_
 #define TYPEDEF_H_
 
-
 #include <algorithm>
 #include <numeric>
 #include <cmath>
@@ -25,6 +24,7 @@
 #include <vector>
 #include <string>
 
+#undef NDEBUG
 #include <cassert>
 
 #if __LP64__
@@ -75,7 +75,5 @@ class Vnds;
 
 class ICriterion;
 class INeighborhood;
-
-
 
 #endif /* TYPEDEF_H_ */

@@ -17,7 +17,7 @@
 class KMeansAlgo {
 public:
 	typedef std::pair<size_t, Double> CentroidData;
-	typedef std::pair<size_t, CentroidData> Move;
+	typedef std::pair<size_t, size_t> Move;
 	typedef std::vector<Move> Moves;
 public:
 	KMeansAlgo(RectMatrix const &);
@@ -37,16 +37,18 @@ public:
 	void out(std::ostream &, size_t ite, Double old) const;
 private:
 	Double size(size_t k) const;
-	void computeCenters();
+	void computeCenters(RectMatrix &) const;
 	void computeCost();
 	void apply(Move const &);
+	void apply(Moves const &);
+	void check(std::string const & = "") const;
 private:
 	RectMatrix const & _input;
 	// current centers
 	RectMatrix _centers;
 	//
 	Partition _partition;
-	DoubleVector _d;
+//	DoubleVector _d;
 	Double _cost;
 };
 

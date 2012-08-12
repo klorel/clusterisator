@@ -19,7 +19,7 @@ RectMatrix::~RectMatrix() {
 void RectMatrix::allocate(size_t n, size_t m) {
 	_n = n;
 	_m = m;
-	_matix.assign(n * m, Zero<Double>());
+	_matrix.assign(n * m, Zero<Double>());
 }
 
 size_t RectMatrix::key(size_t i, size_t j) const {
@@ -27,14 +27,17 @@ size_t RectMatrix::key(size_t i, size_t j) const {
 }
 
 Double RectMatrix::get(size_t i, size_t j) const {
-	return _matix[key(i, j)];
+	return _matrix[key(i, j)];
+}
+Double & RectMatrix::get(size_t i, size_t j) {
+	return _matrix[key(i, j)];
 }
 void RectMatrix::set(size_t i, size_t j, Double v) {
-	_matix[key(i, j)] = v;
+	_matrix[key(i, j)] = v;
 }
 
 void RectMatrix::plus(size_t i, size_t j, Double v) {
-	_matix[key(i, j)] += v;
+	_matrix[key(i, j)] += v;
 }
 size_t RectMatrix::getN() const {
 	return _n;
@@ -44,7 +47,8 @@ size_t RectMatrix::getM() const {
 }
 
 void RectMatrix::assign(Double v) {
-	_matix.assign(_matix.size(), v);
+	std::fill_n(_matrix.begin(), _matrix.size(), v);
+//	_matrix.assign(_matrix.size(), v);
 }
 Double RectMatrix::get(size_t i, DoubleVector const & point) const {
 	Double square_distance(0);
@@ -63,4 +67,10 @@ std::ostream & operator<<(std::ostream & stream, RectMatrix const & rhs) {
 		stream << "\n";
 	}
 	return stream;
+}
+bool RectMatrix::operator!=(RectMatrix const & rhs) const {
+	return !((*this) == rhs);
+}
+bool RectMatrix::operator==(RectMatrix const & rhs) const {
+	return (_matrix == rhs._matrix);
 }
