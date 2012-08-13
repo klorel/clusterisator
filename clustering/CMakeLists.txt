@@ -5,6 +5,7 @@ clustering_files
 ../algos/*.cpp
 ../criterions/*.cpp
 ../data/*.cpp
+../interfaces/*.cpp
 ../kmeans/*.cpp
 ../mesures/*.cpp 
 ../neighborhoods/*.cpp

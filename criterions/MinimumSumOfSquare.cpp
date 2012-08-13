@@ -6,23 +6,25 @@
  */
 
 #include "MinimumSumOfSquare.hpp"
-#include "../interfaces/IGraphPartition.hpp"
+#include "../interfaces/ISolution.hpp"
 #include "../interfaces/ILinks.hpp"
 
-Double MinimumSumOfSquare::eval(IGraphPartition const & data) const {
-	DoubleVector cut(data.nbObs(), 0);
-	getCut(data, cut);
+Double MinimumSumOfSquare::eval(ISolution const & solution) const {
+//	DoubleVector cut(solution.partition().nbObs(), 0);
+//	getCut(solution, cut);
 	Double value(0);
-	for (auto const & label : data.used()) {
-		value += cut[label] / static_cast<Double>(data.sizeOfLabel(label));
-	}
+//	for (auto const & label : solution.partition().used()) {
+//		value += cut[label]
+//				/ static_cast<Double>(solution.partition().sizeOfLabel(label));
+//	}
 	return value;
 }
 
-Double MinimumSumOfSquare::eval(IGraphPartition const & data,
+Double MinimumSumOfSquare::eval(ISolution const & solution,
 		size_t const & label) const {
-	Double cut(getCut(data, label));
-	return cut / static_cast<Double>(data.sizeOfLabel(label));
+//	Double cut(getCut(solution, label));
+//	return cut / static_cast<Double>(solution.partition().sizeOfLabel(label));
+	return 0;
 }
 
 MinimumSumOfSquare::~MinimumSumOfSquare() {

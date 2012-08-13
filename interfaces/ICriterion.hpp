@@ -9,6 +9,12 @@
 #define ICRITERION_HPP_
 
 #include "../utils/common.h"
+#include "../interfaces/ISolution.hpp"
+
+/*
+ * à templatiser sur ISolution
+ */
+
 class ICriterion {
 public:
 	enum Sense {
@@ -20,10 +26,9 @@ public:
 	};
 public:
 	// calcul brut
-	virtual Double eval(IGraphPartition const & data) const = 0;
+	virtual Double eval(ISolution const & data) const = 0;
 	// calcul de la composante associé au label
-	virtual Double eval(IGraphPartition const & data,
-			size_t const & label) const = 0;
+	virtual Double eval(ISolution const & data, size_t const & label) const = 0;
 
 	virtual bool isBetter(Double candidate, Double ref) const = 0;
 
@@ -31,14 +36,12 @@ public:
 
 	virtual ~ICriterion();
 public:
-	virtual bool canShift(IGraphPartition const & data, size_t const & node,
+	virtual bool canShift(ISolution const & data, size_t const & node,
 			size_t const & newLabel) const=0;
-	virtual Double2 getDelta2Shift(IGraphPartition const & data,
-			size_t const & node, size_t const & newLabel,
-			DoubleVector const & intra) const = 0;
-	virtual Double getDeltaShift(IGraphPartition const & data,
-			size_t const & node, size_t const & newLabel,
-			DoubleVector const & intra) const = 0;
+	virtual Double2 getDelta2Shift(ISolution const & data, size_t const & node,
+			size_t const & newLabel) const = 0;
+	virtual Double getDeltaShift(ISolution const & data, size_t const & node,
+			size_t const & newLabel) const = 0;
 
 };
 

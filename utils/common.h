@@ -46,4 +46,6 @@ template<class T> bool CheckEqual(T const & t1, T const & t2) {
 	return IsEqual(t1, t2);
 }
 
+
+
 #endif /* COMMON_H_ */

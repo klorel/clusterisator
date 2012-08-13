@@ -5,57 +5,51 @@
  *      Author: manuel
  */
 
-#include "KMeansAlgo.hpp"
+#include "KMAlgo.hpp"
 
-KMeansAlgo::KMeansAlgo(RectMatrix const & input) :
-		_input(input), _partition(input.getN()), _cost(0) {
+KMAlgo::KMAlgo(RectMatrix const & input) :
+		_input(input), _partition(input.getN()), _d(input.getN(), 0), _cost(0) {
 
 }
 
-KMeansAlgo::~KMeansAlgo() {
+KMAlgo::~KMAlgo() {
 }
 
-size_t KMeansAlgo::getK() const {
+size_t KMAlgo::getK() const {
 	return _centers.getN();
 }
-void KMeansAlgo::set(size_t k) {
+void KMAlgo::set(size_t k) {
 	_centers.allocate(k, _input.getM());
 }
-void KMeansAlgo::set(Partition const & partition) {
+void KMAlgo::set(Partition const & partition) {
 	_partition = partition;
 	set(_partition.nbLabels());
 	computeCenters(_centers);
 	computeCost();
 }
 
-Double KMeansAlgo::size(size_t k) const {
+Double KMAlgo::size(size_t k) const {
 	return static_cast<Double>(_partition.sizeOfLabel(k));
 }
 // we suppose to have
-void KMeansAlgo::computeCost() {
+void KMAlgo::computeCost() {
 	_cost = 0;
 	for (size_t i(0); i < _input.getN(); ++i) {
-		size_t const l(_partition.label(i));
-		//		_d[i] = getDistance(i, l);
-		//		_cost += _d[i];
-		_cost += getDistance(i, l);
-
+		_d[i] = getDistance(i, _partition.label(i));
+		_cost += _d[i];
 	}
 }
-void KMeansAlgo::computeCenters(RectMatrix & centers) const {
-	centers.assign(0);
+void KMAlgo::computeCenters(RectMatrix & centers) const {
+	centers.assign(Zero<Double>());
 	for (size_t i(0); i < _input.getN(); ++i) {
 		for (size_t d(0); d < _input.getM(); ++d) {
 			centers.plus(_partition.label(i), d, _input.get(i, d));
 		}
 	}
-	for (size_t k(0); k < getK(); ++k)
-		for (size_t d(0); d < _input.getM(); ++d)
-			centers.get(k, d) /= size(k);
 }
 
-void KMeansAlgo::random() {
-	if (getK() > 0) {
+void KMAlgo::random() {
+	if (getK() > 0 && _partition.nbObs() >= getK()) {
 		IndexedList nodes(_partition.nbObs(), true);
 		for (size_t k(0); k < getK(); ++k) {
 			size_t const n(nodes.pop_random());
@@ -63,23 +57,20 @@ void KMeansAlgo::random() {
 		}
 		for (auto const & n : nodes)
 			_partition.shift(n, Number::Generator() % getK());
-		computeCenters(_centers);
-		computeCost();
 	}
 }
 
-Double KMeansAlgo::getDistance(size_t i, size_t k) const {
+Double KMAlgo::getDistance(size_t i, size_t k) const {
 	Double result(0);
 	for (size_t d(0); d < _input.getM(); ++d) {
-		result += std::pow(_input.get(i, d) - _centers.get(k, d), 2);
+		result += std::pow(_input.get(i, d) - _centers.get(k, d) / size(k), 2);
 	}
-	return std::sqrt(result);
+//	return std::sqrt(result);
+	return result;
 }
 
-KMeansAlgo::CentroidData KMeansAlgo::getNearest(size_t i) const {
-	CentroidData min(
-			std::make_pair(_partition.label(i),
-					getDistance(i, _partition.label(i))));
+KMAlgo::CentroidData KMAlgo::getNearest(size_t i) const {
+	CentroidData min(std::make_pair(_partition.label(i), _d[i]));
 	for (size_t k(0); k < getK(); ++k) {
 		if (k != _partition.label(i)) {
 			CentroidData const d(std::make_pair(k, getDistance(i, k)));
@@ -91,7 +82,7 @@ KMeansAlgo::CentroidData KMeansAlgo::getNearest(size_t i) const {
 	return min;
 }
 
-void KMeansAlgo::loop(Moves & moves) {
+void KMAlgo::loop(Moves & moves) {
 	moves.clear();
 	for (size_t i(0); i < _input.getN(); ++i) {
 		CentroidData const k(getNearest(i));
@@ -104,7 +95,11 @@ void KMeansAlgo::loop(Moves & moves) {
 	}
 }
 
-void KMeansAlgo::run(size_t maxIte) {
+void KMAlgo::run(size_t maxIte) {
+	out(OUT, "---------------", "");
+	out(OUT, "nbObs", _partition.nbObs());
+	out(OUT, "nbCluster", _partition.nbLabels());
+	out(OUT, "---------------", "");
 	size_t ite(0);
 	Moves moves;
 	moves.reserve(_partition.nbObs());
@@ -112,47 +107,46 @@ void KMeansAlgo::run(size_t maxIte) {
 
 	computeCenters(_centers);
 	computeCost();
+	out(OUT, ite, 0);
 	do {
 //		assert(_partition.nbLabels() == getK());
 		++ite;
 		loop(moves);
+		Double old(_cost);
 		if (moves.empty()) {
 			stop = true;
 		} else {
-			Double old(_cost);
 			apply(moves);
-
-			out(OUT, ite, old);
 		}
+		out(OUT, ite, old);
 	} while (ite != maxIte && !stop);
 }
 
-void KMeansAlgo::apply(Moves const & moves) {
+void KMAlgo::apply(Moves const & moves) {
 	if (!moves.empty()) {
 		for (auto const & move : moves) {
 			apply(move);
 		}
-		computeCenters(_centers);
 		computeCost();
 	}
 
 }
-void KMeansAlgo::apply(Move const & move) {
+void KMAlgo::apply(Move const & move) {
 	size_t const i(move.first);
 	size_t const from(_partition.label(i));
 	size_t const to(move.second);
 	// update centroids
-	//	for (size_t d(0); d < _input.getM(); ++d) {
-	//		_centers.plus(from, d, -_input.get(i, d));
-	//		_centers.plus(to, d, _input.get(i, d));
-	//	}
-	//	_cost -= _d[i];
-	//	_d[i] = move.second.second;
-	//	_cost += _d[i];
+	for (size_t d(0); d < _input.getM(); ++d) {
+		if (size(from) == 1)
+			_centers.get(from, d) = 0;
+		else
+			_centers.plus(from, d, -_input.get(i, d));
+		_centers.plus(to, d, _input.get(i, d));
+	}
 	_partition.shift(i, to);
 }
 
-void KMeansAlgo::out(std::ostream & stream, size_t ite, Double old) const {
+void KMAlgo::out(std::ostream & stream, size_t ite, Double old) const {
 	stream << std::setw(6) << ite;
 	stream << std::setw(6) << _partition.nbLabels();
 	stream << std::setw(20) << std::setprecision(10) << _cost;
@@ -160,7 +154,7 @@ void KMeansAlgo::out(std::ostream & stream, size_t ite, Double old) const {
 		stream << std::setw(20) << (old - _cost) / old * 100;
 	stream << std::endl;
 }
-void KMeansAlgo::check(std::string const & text) const {
+void KMAlgo::check(std::string const & text) const {
 	// centroids
 	//	RectMatrix mat(getK(), _input.getM());
 	//	computeCenters(mat);
@@ -181,5 +175,15 @@ void KMeansAlgo::check(std::string const & text) const {
 	//			assert(false && "Bug dans les distances");
 	//		}
 	//	}
+
+}
+void KMAlgo::newMustLink(size_t i, size_t j) {
+	_mustLink.push_back(std::make_pair(i, j));
+}
+void KMAlgo::newCannotLink(size_t i, size_t j) {
+	_cannotLink.push_back(std::make_pair(i, j));
+}
+
+void KMAlgo::check(size_t k) const {
 
 }

@@ -7,11 +7,7 @@
 
 #include "../utils/common.h"
 #include "../data/Graph.hpp"
-#include "../data/GraphPartition.hpp"
-#include "../criterions/NormalizedCut.hpp"
-
-#include "../neighborhoods/Shifter.hpp"
-#include "../algos/LocalSearch.hpp"
+#include "../data/Solution.hpp"
 
 int main(int argc, char ** argv) {
 

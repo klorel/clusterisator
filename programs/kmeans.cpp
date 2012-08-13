@@ -8,7 +8,7 @@
 #include "../utils/common.h"
 #include "../data/Partition.hpp"
 
-#include "../kmeans/KMeansAlgo.hpp"
+#include "../kmeans/KMAlgo.hpp"
 #include "../kmeans/RawData.hpp"
 #include "../interfaces/IBuilder.hpp"
 #include "../utils/Env.hpp"
@@ -19,7 +19,7 @@ int main(int argc, char ** argv) {
 	size_t const k(atoi(argv[2]));
 
 	RectMatrix data(ReadRawData(dataFileName));
-	KMeansAlgo kmeans(data);
+	KMAlgo kmeans(data);
 	kmeans.set(k);
 	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
 	kmeans.random();

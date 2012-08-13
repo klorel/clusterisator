@@ -56,18 +56,20 @@ typedef std::pair<Double, Double> Double2;
 // forward declaration of interfaces
 class ILinks;
 class IPartition;
-class IGraphPartition;
+class ISolution;
 class ICriterion;
 class IMesure;
 class IAlgo;
 class INeighborhood;
+class Problem;
+class ISolution;
 
 // forward declaration of implementations
 class Graph;
-class GraphPartition;
+class Solution;
 class Number;
 class IndexedList;
-class GraphPartition;
+class Solution;
 class Density;
 class Modularity;
 class MultiStart;

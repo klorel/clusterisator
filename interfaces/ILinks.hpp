@@ -29,6 +29,8 @@ public:
 	virtual Double link(size_t i, size_t j) const = 0;
 	// return the weight of element i
 	virtual Double weight(size_t i) const = 0;
+	// return the weight of element i
+	virtual Double sumOfNodeLinks(size_t i) const = 0;
 	//
 	virtual ~ILinks();
 };

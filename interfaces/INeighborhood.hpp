@@ -10,67 +10,48 @@
 
 #include "../utils/common.h"
 #include "../utils/IndexedList.hpp"
-#include "../interfaces/IGraphPartition.hpp"
+#include "../interfaces/ISolution.hpp"
+#include "../interfaces/ICriterion.hpp"
 
 class INeighborhood {
 public:
-	typedef IndexedList Container;
-	typedef Container::iterator iterator;
-	typedef Container::const_iterator const_iterator;
-public:
+	// admettons que l'on fasse du déplacement bete et méchant :)
+	struct Move;
+	struct MoveCompare;
+	typedef std::map<Double, Move, MoveCompare> Moves;
+	typedef std::vector<std::list<Moves::iterator> > LinkedMoves;
 
-	virtual const_iterator begin() const= 0;
-	virtual const_iterator end() const= 0;
+	struct Move {
+		size_t const node;
+		size_t from;
+		size_t to;
 
-	virtual size_t random() const = 0;
-	//
-	virtual bool findFirst(size_t const &) = 0;
-	//
-	virtual bool findBest(size_t const & seed, Double & score) = 0;
-	//
-	virtual void findAny(size_t const &) = 0;
+		Moves * container;
+		Move(size_t node, Moves * rhs) :
+				node(node), from(node), to(node), container(rhs) {
+
+		}
+	};
+
+	struct MoveCompare {
+		MoveCompare(ICriterion const & criterion) :
+				criterion(criterion) {
+		}
+		ICriterion const & criterion;
+
+		bool operator()(Double const & a, Double const & b) const {
+			return criterion.isBetter(a, b);
+		}
+	};
+
 public:
-	IGraphPartition & data();
-	IGraphPartition const & data() const;
-	ICriterion const & criterion() const;
-	IndexedList const & nodes() const;
-	IndexedList const & labels() const;
-public:
-	INeighborhood(IGraphPartition& data, ICriterion const & criterion,
-			IndexedList const & nodes, IndexedList const & labels);
-	INeighborhood(IGraphPartition& data, ICriterion const & criterion);
+	void build(Moves &, ISolution &);
+	// calcule le meilleur déplacement
+	void compute(Move & move, ISolution & solution);
+
+	void apply(Move const & move, ISolution & solution, LinkedMoves  &);
+
 	virtual ~INeighborhood();
-private:
-	IGraphPartition & _data;
-	ICriterion const & _criterion;
-	IndexedList const & _nodes;
-	IndexedList const & _labels;
-
 };
-
-inline IGraphPartition & INeighborhood::data() {
-	return _data;
-}
-inline IGraphPartition const & INeighborhood::data() const {
-	return _data;
-}
-inline ICriterion const & INeighborhood::criterion() const {
-	return _criterion;
-}
-
-inline IndexedList const & INeighborhood::nodes() const {
-	return _nodes;
-}
-inline IndexedList const & INeighborhood::labels() const {
-	return _labels;
-}
-inline INeighborhood::INeighborhood(IGraphPartition& data,
-		ICriterion const & criterion, IndexedList const & nodes,
-		IndexedList const & labels) :
-		_data(data), _criterion(criterion), _nodes(nodes), _labels(labels) {
-}
-inline INeighborhood::~INeighborhood() {
-
-}
 
 #endif /* INEIGHBORHOOD_HPP_ */

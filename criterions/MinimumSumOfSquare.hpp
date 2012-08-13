@@ -9,14 +9,14 @@
 #define MINIMUM_SUM_OF_SQUARE_HPP_
 
 #include "AbstractCriterion.hpp"
-#include "Cut.hpp"
+
 class MinimumSumOfSquare: public AbstractCriterion<ICriterion::Minimization,
-		ICriterion::Partitioning>, Cut {
+		ICriterion::Partitioning> {
 public:
 	// calcul brut
-	Double eval(IGraphPartition const & data) const;
+	Double eval(ISolution const & data) const;
 	// calcul de la composante associé au label
-	Double eval(IGraphPartition const & data, size_t const & label) const;
+	Double eval(ISolution const & data, size_t const & label) const;
 public:
 	virtual ~MinimumSumOfSquare();
 };

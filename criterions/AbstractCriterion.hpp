@@ -10,23 +10,26 @@
 
 #include "../utils/common.h"
 #include "../interfaces/ICriterion.hpp"
-#include "../interfaces/IGraphPartition.hpp"
+#include "../interfaces/ISolution.hpp"
 
+/*
+ * à templatiser sur ISolution
+ */
 template<ICriterion::Sense sense, ICriterion::Kind kind>
 class AbstractCriterion: public ICriterion {
 public:
 	virtual ~AbstractCriterion();
 public:
-	bool isBetter(Double  candidate, Double  ref) const;
+	bool isBetter(Double candidate, Double ref) const;
 	bool isPartitioning() const;
 
-	bool canShift(IGraphPartition const & data, size_t const & node,
+	bool canShift(ISolution const & solution, size_t const & node,
 			size_t const & newLabel) const;
 };
 
 template<ICriterion::Sense sense, ICriterion::Kind kind> inline
-bool AbstractCriterion<sense, kind>::isBetter(Double  candidate,
-		Double  ref) const {
+bool AbstractCriterion<sense, kind>::isBetter(Double candidate,
+		Double ref) const {
 	return sense == Maximization ?
 			candidate > ref + 1e-10 : candidate < ref - 1e-10;
 }
@@ -41,15 +44,15 @@ inline AbstractCriterion<sense, kind>::~AbstractCriterion() {
 }
 
 template<ICriterion::Sense sense, ICriterion::Kind kind>
-inline bool AbstractCriterion<sense, kind>::canShift(
-		IGraphPartition const & data, size_t const & node,
-		size_t const & newLabel) const {
-	size_t const oldLabel(data.label(node));
+inline bool AbstractCriterion<sense, kind>::canShift(ISolution const & solution,
+		size_t const & node, size_t const & newLabel) const {
+	size_t const oldLabel(solution.partition().label(node));
 	// In any cas, a shift is consider if oldLabel != newLabel
 	// When partitioning, we cannot destroy a label or create a new one
 	if (kind == Partitioning)
-		return oldLabel != newLabel && data.sizeOfLabel(oldLabel) > 1
-				&& data.sizeOfLabel(newLabel) > 0;
+		return oldLabel != newLabel
+				&& solution.partition().sizeOfLabel(oldLabel) > 1
+				&& solution.partition().sizeOfLabel(newLabel) > 0;
 	else
 		return oldLabel != newLabel;
 }

@@ -13,11 +13,11 @@ public:
 
 	void allocate(size_t);
 
-	void buildDegrees();
+	void buildSumOfLinks();
 
 	void read(std::string const &);
 
-	Double  squareDegree() const;
+	Double squareDegree() const;
 
 	size_t & nbLinks(void);
 	size_t nbObs() const;
@@ -25,10 +25,12 @@ public:
 
 	void clear();
 
-	Double  weight(size_t) const;
+	Double weight(size_t) const;
 
 	LinksIterator links(size_t) const;
-	Double  link(size_t i, size_t j) const;
+	Double link(size_t i, size_t j) const;
+
+	Double sumOfNodeLinks(size_t i) const;
 private:
 	bool _isEdgeWeighted;
 
@@ -38,6 +40,7 @@ private:
 	IntVector _size;
 	Links _edges;
 	DoubleVector _nodeWeights;
+	DoubleVector _sumOfLinks;
 };
 
 #endif /* GRAPH_HPP */

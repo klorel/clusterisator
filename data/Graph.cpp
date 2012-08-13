@@ -50,7 +50,7 @@ void Graph::read(const std::string & fileName) {
 
 		}
 		file.close();
-		buildDegrees();
+		buildSumOfLinks();
 
 	} else {
 		OUT<< "impossible d'ouvrir le fichier : " << fileName << "\n";
@@ -66,7 +66,7 @@ Graph::Graph(std::string const& fileName) {
 
 	OUT<< "\nReading " << fileName;
 	read(fileName);
-	buildDegrees();
+	buildSumOfLinks();
 }
 
 Graph::~Graph() {
@@ -82,7 +82,7 @@ void Graph::allocate(size_t n) {
 	_size.reserve(n);
 }
 
-void Graph::buildDegrees() {
+void Graph::buildSumOfLinks() {
 	_nodeWeights.resize(nbObs());
 	for (size_t p = 0; p < nbObs(); ++p) {
 		_nodeWeights[p] = 0;
@@ -138,4 +138,8 @@ Double Graph::link(size_t i, size_t j) const {
 
 	}
 	return Zero<Double>();
+}
+
+Double Graph::sumOfNodeLinks(size_t i) const {
+	return _sumOfLinks[i];
 }
