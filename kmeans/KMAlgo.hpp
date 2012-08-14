@@ -33,6 +33,7 @@ public:
 
 	CentroidData getNearest(size_t i) const;
 	Double getDistance(size_t i, size_t k) const;
+	Double getDistance(size_t i) const;
 	void loop(Moves &);
 
 	void run(size_t maxIte);
@@ -48,12 +49,18 @@ public:
 private:
 	Double size(size_t k) const;
 	void computeCenters(RectMatrix &) const;
-	void computeCost();
+	void computeDistances();
 	void apply(Move const &);
 	void apply(Moves const &);
+	void move(size_t node, size_t to);
+
 	void check(std::string const & = "") const;
 	void check(size_t) const;
+	bool checkCost() const;
+
 	void getObs(IntSet &);
+
+	Double computeCost() const;
 private:
 	RectMatrix const & _input;
 	// current centers
@@ -71,6 +78,9 @@ private:
 
 	KMConstraints _mustLink;
 	KMConstraints _cannotLink;
+
+	std::multimap<Double, size_t, std::greater<Double> > _distances;
+	IntList _empty;
 
 	// à faire : créer les graphes des contraintes associés à chaque type pour pouvoir tester par noeud
 };
@@ -90,6 +100,9 @@ inline Double KMAlgo::size(size_t k) const {
 	return static_cast<Double>(_partition.sizeOfLabel(k));
 }
 
+inline Double KMAlgo::getDistance(size_t i) const {
+	return getDistance(i, _partition.label(i));
+}
 inline Double KMAlgo::getDistance(size_t i, size_t k) const {
 	Double result(0);
 	for (size_t d(0); d < _input.getM(); ++d) {
