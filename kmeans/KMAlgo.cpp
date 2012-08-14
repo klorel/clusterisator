@@ -17,9 +17,6 @@ KMAlgo::KMAlgo(RectMatrix const & input) :
 KMAlgo::~KMAlgo() {
 }
 
-size_t KMAlgo::getK() const {
-	return _centers.getN();
-}
 void KMAlgo::set(size_t k) {
 	_centers.allocate(k, _input.getM());
 }
@@ -30,9 +27,6 @@ void KMAlgo::set(Partition const & partition) {
 	computeCost();
 }
 
-Double KMAlgo::size(size_t k) const {
-	return static_cast<Double>(_partition.sizeOfLabel(k));
-}
 // we suppose to have
 void KMAlgo::computeCost() {
 	_cost = 0;
@@ -62,15 +56,6 @@ void KMAlgo::random() {
 	}
 }
 
-Double KMAlgo::getDistance(size_t i, size_t k) const {
-	Double result(0);
-	for (size_t d(0); d < _input.getM(); ++d) {
-		result += std::pow(_input.get(i, d) - _centers.get(k, d) / size(k), 2);
-	}
-//	return std::sqrt(result);
-	return result;
-}
-
 KMAlgo::CentroidData KMAlgo::getNearest(size_t i) const {
 	CentroidData min(std::make_pair(_partition.label(i), _d[i]));
 	for (size_t k(0); k < getK(); ++k) {
@@ -86,13 +71,12 @@ KMAlgo::CentroidData KMAlgo::getNearest(size_t i) const {
 
 void KMAlgo::loop(Moves & moves) {
 	moves.clear();
+
 	for (size_t i(0); i < _input.getN(); ++i) {
 		CentroidData const k(getNearest(i));
 		if (k.first != _partition.label(i)) {
-			//			OUT<< std::setw(4) << i;
-			//			OUT <<std::setw(15)<< k.second - getDistance(i, _partition.label(i));
-			//			OUT<<"\n";
 			moves.push_back(std::make_pair(i, k.first));
+//			std::cout << i << " --> " << k.first << "\n";
 		}
 	}
 }
@@ -100,7 +84,7 @@ void KMAlgo::loop(Moves & moves) {
 void KMAlgo::run(size_t maxIte) {
 	_timer.restart();
 	headers(OUT);
-	size_t ite(0);
+
 	Moves moves;
 	moves.reserve(_partition.nbObs());
 	bool stop(false);
@@ -114,9 +98,12 @@ void KMAlgo::run(size_t maxIte) {
 	_old = _cost;
 
 	out(OUT);
+	_pertLabels.clear();
+	for (auto const & label : _partition.used())
+		_pertLabels.insert(label);
 	do {
 //		assert(_partition.nbLabels() == getK());
-		++ite;
+		++_ite;
 		loop(moves);
 		_old = _cost;
 		if (moves.empty()) {
@@ -125,7 +112,7 @@ void KMAlgo::run(size_t maxIte) {
 			apply(moves);
 		}
 		out(OUT);
-	} while (ite != maxIte && !stop);
+	} while (_ite != maxIte && !stop);
 }
 
 void KMAlgo::apply(Moves const & moves) {
@@ -147,6 +134,7 @@ void KMAlgo::apply(Move const & move) {
 	_pertObs.insert(i);
 	_pertLabels.insert(from);
 	_pertLabels.insert(to);
+
 	// update centroids
 	for (size_t d(0); d < _input.getM(); ++d) {
 		if (size(from) == 1)

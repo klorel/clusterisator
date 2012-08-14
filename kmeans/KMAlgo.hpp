@@ -53,7 +53,7 @@ private:
 	void apply(Moves const &);
 	void check(std::string const & = "") const;
 	void check(size_t) const;
-
+	void getObs(IntSet &);
 private:
 	RectMatrix const & _input;
 	// current centers
@@ -68,6 +68,7 @@ private:
 	IntSet _pertObs;
 	IntSet _pertLabels;
 	Timer _timer;
+
 	Constraints _mustLink;
 	Constraints _cannotLink;
 
@@ -80,6 +81,21 @@ void KMAlgo::out(std::ostream & stream, std::string const & name,
 	stream << std::setw(25) << name;
 	stream << std::setw(15) << value;
 	stream << "\n";
+}
+
+inline size_t KMAlgo::getK() const {
+	return _centers.getN();
+}
+inline Double KMAlgo::size(size_t k) const {
+	return static_cast<Double>(_partition.sizeOfLabel(k));
+}
+inline Double KMAlgo::getDistance(size_t i, size_t k) const {
+	Double result(0);
+	for (size_t d(0); d < _input.getM(); ++d) {
+		result += std::pow(_input.get(i, d) - _centers.get(k, d) / size(k), 2);
+	}
+//	return std::sqrt(result);
+	return result;
 }
 
 #endif /* KMEANSALGO_HPP_ */

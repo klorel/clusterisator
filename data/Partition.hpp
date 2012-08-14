@@ -71,4 +71,67 @@ private:
 	IndexedList _unUsedLabels;
 };
 
+inline size_t Partition::nbObs() const {
+	return _labels.size();
+}
+inline size_t Partition::nbLabels() const {
+	return _usedLabels.size();
+}
+
+inline size_t Partition::sizeOfLabel(size_t l) const {
+	return _size[l];
+}
+
+inline size_t & Partition::sizeOfLabel(size_t l) {
+	return _size[l];
+}
+
+inline IndexedList const & Partition::usedLabel() const {
+	return _usedLabels;
+}
+inline IndexedList const & Partition::unUsedLabel() const {
+	return _unUsedLabels;
+}
+
+inline IntList & Partition::list(size_t label) {
+	return _labelLists[label];
+}
+inline IntList const & Partition::list(size_t label) const {
+	return _labelLists[label];
+}
+
+inline size_t Partition::getUnUsedLabel() const {
+	return _unUsedLabels.front();
+}
+
+inline bool Partition::allLabelsUsed() const {
+	return _unUsedLabels.empty();
+}
+
+inline bool Partition::isUsed(size_t l) const {
+	return _usedLabels.contains(l);
+}
+
+inline IndexedList & Partition::unUsed() {
+	return _unUsedLabels;
+}
+
+inline IndexedList const & Partition::unUsed() const {
+	return _unUsedLabels;
+}
+
+inline IndexedList & Partition::used() {
+	return _usedLabels;
+}
+
+inline IndexedList const & Partition::used() const {
+	return _usedLabels;
+}
+inline size_t Partition::label(size_t n) const {
+	return _labels[n];
+}
+inline size_t & Partition::label(size_t n) {
+	return _labels[n];
+}
+
 #endif /* PARTITION_HPP_ */

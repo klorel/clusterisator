@@ -81,68 +81,6 @@ void Partition::setNbObs(size_t n) {
 	_usedLabels.reset(n);
 	_unUsedLabels.reset(n);
 }
-size_t Partition::nbObs() const {
-	return _labels.size();
-}
-size_t Partition::nbLabels() const {
-	return _usedLabels.size();
-}
-
-size_t Partition::sizeOfLabel(size_t l) const {
-	return _size[l];
-}
-
-size_t & Partition::sizeOfLabel(size_t l) {
-	return _size[l];
-}
-
-IndexedList const & Partition::usedLabel() const {
-	return _usedLabels;
-}
-IndexedList const & Partition::unUsedLabel() const {
-	return _unUsedLabels;
-}
-
-IntList & Partition::list(size_t label) {
-	return _labelLists[label];
-}
-IntList const & Partition::list(size_t label) const {
-	return _labelLists[label];
-}
-
-size_t Partition::getUnUsedLabel() const {
-	return _unUsedLabels.front();
-}
-
-bool Partition::allLabelsUsed() const {
-	return _unUsedLabels.empty();
-}
-
-bool Partition::isUsed(size_t l) const {
-	return _usedLabels.contains(l);
-}
-
-IndexedList & Partition::unUsed() {
-	return _unUsedLabels;
-}
-
-IndexedList const & Partition::unUsed() const {
-	return _unUsedLabels;
-}
-
-IndexedList & Partition::used() {
-	return _usedLabels;
-}
-
-IndexedList const & Partition::used() const {
-	return _usedLabels;
-}
-size_t Partition::label(size_t n) const {
-	return _labels[n];
-}
-size_t & Partition::label(size_t n) {
-	return _labels[n];
-}
 bool Partition::checkLists() const {
 	for (auto const & l : usedLabel()) {
 		//		TRACE_N(*l);
