@@ -8,7 +8,8 @@
 #include "KMAlgo.hpp"
 
 KMAlgo::KMAlgo(RectMatrix const & input) :
-		_input(input), _partition(input.getN()), _d(input.getN(), 0), _cost(0) {
+		_input(input), _partition(input.getN()), _d(input.getN(), 0), _cost(0), _mustLink(
+				input.getN()), _cannotLink(_input.getN()) {
 	_ite = 0;
 	_nbLabels = 0;
 	_old = 0;
@@ -59,7 +60,7 @@ void KMAlgo::random() {
 KMAlgo::CentroidData KMAlgo::getNearest(size_t i) const {
 	CentroidData min(std::make_pair(_partition.label(i), _d[i]));
 	for (auto const & k : _partition.used()) {
-//		for (size_t k(0); k < getK(); ++k) {
+		//		for (size_t k(0); k < getK(); ++k) {
 		if (k != _partition.label(i)) {
 			CentroidData const d(std::make_pair(k, getDistance(i, k)));
 			if (d.second < min.second) {
@@ -77,7 +78,7 @@ void KMAlgo::loop(Moves & moves) {
 		CentroidData const k(getNearest(i));
 		if (k.first != _partition.label(i)) {
 			moves.push_back(std::make_pair(i, k.first));
-//			std::cout << i << " --> " << k.first << "\n";
+			//			std::cout << i << " --> " << k.first << "\n";
 		}
 	}
 }
@@ -103,7 +104,7 @@ void KMAlgo::run(size_t maxIte) {
 	for (auto const & label : _partition.used())
 		_pertLabels.insert(label);
 	do {
-//		assert(_partition.nbLabels() == getK());
+		//		assert(_partition.nbLabels() == getK());
 		++_ite;
 		loop(moves);
 		_old = _cost;
@@ -198,10 +199,10 @@ void KMAlgo::check(std::string const & text) const {
 
 }
 void KMAlgo::newMustLink(size_t i, size_t j) {
-	_mustLink.push_back(std::make_pair(i, j));
+	_mustLink.newCtr(i, j);
 }
 void KMAlgo::newCannotLink(size_t i, size_t j) {
-	_cannotLink.push_back(std::make_pair(i, j));
+	_cannotLink.newCtr(i, j);
 }
 
 void KMAlgo::check(size_t k) const {

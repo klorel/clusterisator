@@ -13,13 +13,13 @@
 #include "../data/RectMatrix.hpp"
 #include "../data/Partition.hpp"
 #include "../utils/Timer.hpp"
+#include "../kmeans/KMConstraints.hpp"
+
 class KMAlgo {
 public:
 	typedef std::pair<size_t, Double> CentroidData;
 	typedef std::pair<size_t, size_t> Move;
 	typedef std::vector<Move> Moves;
-	typedef std::pair<size_t, size_t> Constraint;
-	typedef std::vector<Constraint> Constraints;
 
 public:
 	KMAlgo(RectMatrix const &);
@@ -69,8 +69,8 @@ private:
 	IntSet _pertLabels;
 	Timer _timer;
 
-	Constraints _mustLink;
-	Constraints _cannotLink;
+	KMConstraints _mustLink;
+	KMConstraints _cannotLink;
 
 	// à faire : créer les graphes des contraintes associés à chaque type pour pouvoir tester par noeud
 };
