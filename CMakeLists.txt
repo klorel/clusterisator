@@ -11,7 +11,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -pedantic -fmessage-length=0 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wconversion")
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-strict-aliasing -Wno-unused-parameter")
 
-OPTION( WITH_TESTS "Build tests" ON)
+OPTION( WITH_TESTS "Build tests" OFF)
 
 
 ADD_SUBDIRECTORY(clustering)
