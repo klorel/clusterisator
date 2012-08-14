@@ -58,7 +58,8 @@ void KMAlgo::random() {
 
 KMAlgo::CentroidData KMAlgo::getNearest(size_t i) const {
 	CentroidData min(std::make_pair(_partition.label(i), _d[i]));
-	for (size_t k(0); k < getK(); ++k) {
+	for (auto const & k : _partition.used()) {
+//		for (size_t k(0); k < getK(); ++k) {
 		if (k != _partition.label(i)) {
 			CentroidData const d(std::make_pair(k, getDistance(i, k)));
 			if (d.second < min.second) {

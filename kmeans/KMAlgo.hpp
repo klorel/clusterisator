@@ -89,6 +89,7 @@ inline size_t KMAlgo::getK() const {
 inline Double KMAlgo::size(size_t k) const {
 	return static_cast<Double>(_partition.sizeOfLabel(k));
 }
+
 inline Double KMAlgo::getDistance(size_t i, size_t k) const {
 	Double result(0);
 	for (size_t d(0); d < _input.getM(); ++d) {
