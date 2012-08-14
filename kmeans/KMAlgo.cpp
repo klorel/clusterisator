@@ -9,7 +9,9 @@
 
 KMAlgo::KMAlgo(RectMatrix const & input) :
 		_input(input), _partition(input.getN()), _d(input.getN(), 0), _cost(0) {
-
+	_ite = 0;
+	_nbLabels = 0;
+	_old = 0;
 }
 
 KMAlgo::~KMAlgo() {
@@ -96,10 +98,8 @@ void KMAlgo::loop(Moves & moves) {
 }
 
 void KMAlgo::run(size_t maxIte) {
-	out(OUT, "---------------", "");
-	out(OUT, "nbObs", _partition.nbObs());
-	out(OUT, "nbCluster", _partition.nbLabels());
-	out(OUT, "---------------", "");
+	_timer.restart();
+	headers(OUT);
 	size_t ite(0);
 	Moves moves;
 	moves.reserve(_partition.nbObs());
@@ -107,34 +107,46 @@ void KMAlgo::run(size_t maxIte) {
 
 	computeCenters(_centers);
 	computeCost();
-	out(OUT, ite, 0);
+	_ite = 0;
+	_nbLabels = _partition.nbLabels();
+	_pertObs.clear();
+	_pertLabels.clear();
+	_old = _cost;
+
+	out(OUT);
 	do {
 //		assert(_partition.nbLabels() == getK());
 		++ite;
 		loop(moves);
-		Double old(_cost);
+		_old = _cost;
 		if (moves.empty()) {
 			stop = true;
 		} else {
 			apply(moves);
 		}
-		out(OUT, ite, old);
+		out(OUT);
 	} while (ite != maxIte && !stop);
 }
 
 void KMAlgo::apply(Moves const & moves) {
+	_pertObs.clear();
+	_pertLabels.clear();
 	if (!moves.empty()) {
 		for (auto const & move : moves) {
 			apply(move);
 		}
 		computeCost();
 	}
-
+	_nbLabels = _partition.nbLabels();
 }
 void KMAlgo::apply(Move const & move) {
+
 	size_t const i(move.first);
 	size_t const from(_partition.label(i));
 	size_t const to(move.second);
+	_pertObs.insert(i);
+	_pertLabels.insert(from);
+	_pertLabels.insert(to);
 	// update centroids
 	for (size_t d(0); d < _input.getM(); ++d) {
 		if (size(from) == 1)
@@ -146,12 +158,31 @@ void KMAlgo::apply(Move const & move) {
 	_partition.shift(i, to);
 }
 
-void KMAlgo::out(std::ostream & stream, size_t ite, Double old) const {
-	stream << std::setw(6) << ite;
-	stream << std::setw(6) << _partition.nbLabels();
+void KMAlgo::out(std::ostream & stream) const {
+	stream << std::setw(10) << _timer.elapsed();
+	stream << std::setw(10) << _ite;
+	stream << std::setw(10) << _nbLabels;
 	stream << std::setw(20) << std::setprecision(10) << _cost;
-	if (old != Zero<Double>())
-		stream << std::setw(20) << (old - _cost) / old * 100;
+	if (_old != Zero<Double>())
+		stream << std::setw(20) << (_old - _cost) / _old * 100;
+
+	stream << std::setw(15) << _pertObs.size();
+	stream << std::setw(15) << _pertLabels.size();
+	stream << std::endl;
+}
+
+void KMAlgo::headers(std::ostream & stream) const {
+	out(OUT, "---------------", "");
+	out(OUT, "nbObs", _partition.nbObs());
+	out(OUT, "nbCluster", _partition.nbLabels());
+	out(OUT, "---------------", "");
+	stream << std::setw(10) << "TIME";
+	stream << std::setw(10) << "ITERATION";
+	stream << std::setw(10) << "NB LABELS";
+	stream << std::setw(20) << "COST";
+	stream << std::setw(20) << "DELTA(%)";
+	stream << std::setw(15) << "PERT OBS";
+	stream << std::setw(15) << "PERT LABELS";
 	stream << std::endl;
 }
 void KMAlgo::check(std::string const & text) const {

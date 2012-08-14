@@ -24,7 +24,7 @@ public:
 public:
 	//
 	virtual void contigusLabels() = 0;
-	virtual void set(std::vector<size_t> const &) = 0;
+	virtual void set(IntVector const &) = 0;
 	// the number of nodes
 	virtual size_t nbObs() const = 0;
 	virtual void setNbObs(size_t) = 0;

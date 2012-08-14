@@ -12,7 +12,7 @@
 
 #include "../data/RectMatrix.hpp"
 #include "../data/Partition.hpp"
-
+#include "../utils/Timer.hpp"
 class KMAlgo {
 public:
 	typedef std::pair<size_t, Double> CentroidData;
@@ -20,6 +20,7 @@ public:
 	typedef std::vector<Move> Moves;
 	typedef std::pair<size_t, size_t> Constraint;
 	typedef std::vector<Constraint> Constraints;
+
 public:
 	KMAlgo(RectMatrix const &);
 	virtual ~KMAlgo();
@@ -42,7 +43,8 @@ public:
 	template<class T>
 	void out(std::ostream &, std::string const &, T const&) const;
 
-	void out(std::ostream &, size_t ite, Double old) const;
+	void out(std::ostream &) const;
+	void headers(std::ostream &) const;
 private:
 	Double size(size_t k) const;
 	void computeCenters(RectMatrix &) const;
@@ -60,7 +62,12 @@ private:
 	Partition _partition;
 	DoubleVector _d;
 	Double _cost;
-
+	Double _old;
+	size_t _ite;
+	size_t _nbLabels;
+	IntSet _pertObs;
+	IntSet _pertLabels;
+	Timer _timer;
 	Constraints _mustLink;
 	Constraints _cannotLink;
 

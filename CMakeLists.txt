@@ -1,7 +1,12 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(clusterisator)
 
-INCLUDE_DIRECTORIES( gmock-1.6.0/gtest/include   )
+OPTION( WITH_TESTS "Build tests" OFF)
+
+
+IF( WITH_TESTS )
+    INCLUDE_DIRECTORIES( gmock-1.6.0/gtest/include   )
+ENDIF( WITH_TESTS )
 
 SET ( EXECUTABLE_OUTPUT_PATH  ../bin )
 SET ( LIBRARY_OUTPUT_PATH  ../lib    )
@@ -16,10 +21,6 @@ IF( WITH_TESTS )
 ENDIF( WITH_TESTS )
 
 #INCLUDE_DIRECTORIES(  )
-
-
-OPTION( WITH_TESTS "Build tests" ON)
-
 
 ADD_SUBDIRECTORY(clustering)
 ADD_SUBDIRECTORY(programs)

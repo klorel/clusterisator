@@ -24,7 +24,7 @@ public:
 	size_t fusion(size_t const & label1, size_t const & label2);
 public:
 	void contigusLabels();
-	void set(std::vector<size_t> const &);
+	void set(IntVector const &);
 	// le nombre de noeuds
 	size_t nbObs() const;
 	void setNbObs(size_t);
