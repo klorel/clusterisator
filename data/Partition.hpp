@@ -14,22 +14,23 @@
 
 class Partition: public IPartition {
 public:
-	Partition(size_t n = 0);
+	Partition(size_t n, size_t k);
 	Partition(IntVector const &);
 	virtual ~Partition();
 public:
+	void allocate(size_t n, size_t k);
+	void set(IntVector const & v);
 	// déplacement d'un noeud
 	void shift(size_t n, size_t p);
 	// fusion of two label, return the used label
 	size_t fusion(size_t const & label1, size_t const & label2);
 public:
-	void contigusLabels();
-	void set(IntVector const &);
 	// le nombre de noeuds
 	size_t nbObs() const;
-	void setNbObs(size_t);
+
 	// le nombre de labels utilisé dans la solution courante
 	size_t nbLabels() const;
+	size_t maxNbLabels() const;
 	// le nombre de noeud ayant la label l
 	size_t & sizeOfLabel(size_t l);
 	size_t sizeOfLabel(size_t l) const;
@@ -55,7 +56,9 @@ public:
 	size_t label(size_t n) const;
 	size_t & label(size_t n);
 public:
-
+	Partition & operator=(Partition const & rhs);
+	void random(size_t k);
+public:
 	bool checkLists() const;
 private:
 	IntVector _labels;
@@ -78,6 +81,9 @@ inline size_t Partition::nbLabels() const {
 	return _usedLabels.size();
 }
 
+inline size_t Partition::maxNbLabels() const {
+	return _size.size();
+}
 inline size_t Partition::sizeOfLabel(size_t l) const {
 	return _size[l];
 }

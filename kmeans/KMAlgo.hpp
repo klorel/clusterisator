@@ -20,23 +20,34 @@ public:
 	typedef std::pair<size_t, Double> CentroidData;
 	typedef std::pair<size_t, size_t> Move;
 	typedef std::vector<Move> Moves;
+	typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
 
 public:
-	KMAlgo(RectMatrix const &);
+	KMAlgo(RectMatrix const &, size_t k);
 	virtual ~KMAlgo();
 
 	size_t getK() const;
-	void set(size_t k);
+
 	void set(Partition const &);
 
 	void random();
 
-	CentroidData getNearest(size_t i) const;
+	CentroidData getClosest(size_t i) const;
+
+	CentroidData getBest(size_t i) const;
+
+	Double getDelta(size_t i, size_t l, size_t j) const;
+	void testDelta();
+	template<bool isInsertion>
+	Double getCoeff(size_t k) const;
+
 	Double getDistance(size_t i, size_t k) const;
 	Double getDistance(size_t i) const;
 	void loop(Moves &);
+	void singleton();
 
 	void run(size_t maxIte);
+	void run2();
 
 	void newMustLink(size_t, size_t);
 	void newCannotLink(size_t, size_t);
@@ -48,14 +59,13 @@ public:
 	void headers(std::ostream &) const;
 private:
 	Double size(size_t k) const;
+	void computeCenters();
 	void computeCenters(RectMatrix &) const;
 	void computeDistances();
 	void apply(Move const &);
 	void apply(Moves const &);
 	void move(size_t node, size_t to);
 
-	void check(std::string const & = "") const;
-	void check(size_t) const;
 	bool checkCost() const;
 
 	void getObs(IntSet &);
@@ -71,15 +81,16 @@ private:
 	Double _cost;
 	Double _old;
 	size_t _ite;
-	size_t _nbLabels;
-	IntSet _pertObs;
-	IntSet _pertLabels;
+
+	IndexedList _pertObs;
+	IndexedList _pertLabels;
 	Timer _timer;
 
 	KMConstraints _mustLink;
 	KMConstraints _cannotLink;
 
-	std::multimap<Double, size_t, std::greater<Double> > _distances;
+	Distances _distances;
+
 	IntList _empty;
 
 	// à faire : créer les graphes des contraintes associés à chaque type pour pouvoir tester par noeud
@@ -110,6 +121,13 @@ inline Double KMAlgo::getDistance(size_t i, size_t k) const {
 	}
 //	return std::sqrt(result);
 	return result;
+}
+
+template<> inline Double KMAlgo::getCoeff<true>(size_t k) const {
+	return size(k) / (size(k) + 1);
+}
+template<> inline Double KMAlgo::getCoeff<false>(size_t k) const {
+	return size(k) / (size(k) -1);
 }
 
 #endif /* KMEANSALGO_HPP_ */

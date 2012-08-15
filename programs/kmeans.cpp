@@ -19,11 +19,12 @@ int main(int argc, char ** argv) {
 	size_t const k(atoi(argv[2]));
 
 	RectMatrix data(ReadRawData(dataFileName));
-	KMAlgo kmeans(data);
-	kmeans.set(k);
+	KMAlgo kmeans(data, k);
 	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
 	kmeans.random();
 	kmeans.run(600);
+//	kmeans.testDelta();
+	kmeans.run2();
 
 //	OUT<< data;
 //	if (argc != 3) {

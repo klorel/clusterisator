@@ -7,42 +7,44 @@
 
 #include "Partition.hpp"
 
-Partition::Partition(size_t n) {
-	IntVector bigOne(n, 0);
-	set(bigOne);
-	//	startWith(IntVector(nbNodes(), 0));
-}
-Partition::Partition(IntVector const & rhs) {
-	set(rhs);
+Partition::Partition(size_t n, size_t k) :
+		IPartition(n, k) {
+	allocate(n, k);
 }
 Partition::~Partition() {
 
 }
-void Partition::contigusLabels() {
-	IntVector labels(nbObs(), -1);
-	size_t i(0);
-	for (auto const & l : used()) {
-		for (auto const & n : list(l))
-			labels[n] = i;
-		++i;
-	}
-	set(labels);
-}
-void Partition::set(std::vector<size_t> const & v) {
-	setNbObs(v.size());
-	_size.assign(nbObs(), 0);
+
+void Partition::allocate(size_t n, size_t k) {
+	_labelLists.assign(k, IntList());
+	_size.assign(k, 0);
+	_usedLabels.reset(k);
+	_unUsedLabels.reset(k);
+
+	_nodePosition.assign(n, _labelLists[0].end());
+
+	_labels.assign(n, 0);
+
 	_usedLabels.clear();
+	_usedLabels.insert(0);
+
 	_unUsedLabels.fill();
-	_labelLists.assign(nbObs(), IntList());
+	_unUsedLabels.erase(0);
+
 	for (size_t n(0); n < nbObs(); ++n) {
-		size_t const l(v[n]);
-		_labels[n] = l;
-		_usedLabels.insert(l);
-		_unUsedLabels.erase(l);
-		_labelLists[l].push_front(n);
-		_nodePosition[n] = _labelLists[l].begin();
-		++_size[l];
+		_labelLists[0].push_front(n);
+		_nodePosition[n] = _labelLists[0].begin();
 	}
+	_size[0] = n;
+}
+
+void Partition::set(IntVector const & v) {
+	for (size_t i(0); i < v.size(); ++i) {
+		assert(
+				v[i]<maxNbLabels() && "you must provide labels l : 0<=l<maxNbLabels()");
+		shift(i, v[i]);
+	}
+
 }
 void Partition::shift(size_t n, size_t l) {
 	if (label(n) != l) {
@@ -51,14 +53,6 @@ void Partition::shift(size_t n, size_t l) {
 		if (sizeOfLabel(label(n)) == 0) {
 			_usedLabels.erase(label(n));
 			_unUsedLabels.insert(label(n));
-			//			OUT << "Result : " << std::endl;
-			//			for (IndexedList::const_iterator lIte(begin()); lIte != end(); ++lIte) {
-			//				OUT << std::setw(4) << *lIte;
-			//				OUT << std::setw(4) << sizeOfLabel(*lIte);
-			//				OUT << std::setw(4) << isUsed(*lIte);
-			//				OUT << std::endl;
-			//			}
-			//			OUT << "-----------------" << std::endl;
 		}
 		if (sizeOfLabel(l) == 0) {
 			_unUsedLabels.erase(l);
@@ -73,14 +67,6 @@ void Partition::shift(size_t n, size_t l) {
 size_t Partition::fusion(size_t const & label1, size_t const & label2) {
 	return -1;
 }
-void Partition::setNbObs(size_t n) {
-	_labels.resize(n, n);
-	_labelLists.resize(n);
-	_nodePosition.resize(n);
-	_size.resize(n, 0);
-	_usedLabels.reset(n);
-	_unUsedLabels.reset(n);
-}
 bool Partition::checkLists() const {
 	for (auto const & l : usedLabel()) {
 		//		TRACE_N(*l);
@@ -94,3 +80,25 @@ bool Partition::checkLists() const {
 		}
 		return true;
 	}
+
+Partition & Partition::operator=(Partition const & rhs) {
+	if (this != &rhs) {
+		if (rhs.nbObs() != nbObs() || rhs.nbLabels() != rhs.nbLabels())
+			allocate(rhs.nbObs(), rhs.nbLabels());
+		for (size_t n(0); n < nbObs(); ++n)
+			shift(n, rhs.label(n));
+	}
+	return *this;
+
+}
+void Partition::random(size_t k) {
+	allocate(nbObs(), k);
+	IndexedList nodes(nbObs(), true);
+	for (size_t i(0); i < maxNbLabels(); ++i) {
+		size_t const n(nodes.pop_random());
+		shift(n, i);
+	}
+	for (auto const & n : nodes)
+		shift(n, Number::Generator() % maxNbLabels());
+
+}

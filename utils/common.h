@@ -19,11 +19,16 @@ template<class T> inline void DisplayContainer(std::ostream & stream,
 		T const & t) {
 	std::copy(t.begin(), t.end(),
 			std::ostream_iterator<typename T::value_type>(stream, " "));
+	stream << "\n";
 }
 
 template<class T, class U> inline void Insert(T const & t, U & u) {
 	for (auto const & it : t)
 		u.insert(it);
+}
+template<class T, class U> inline void PushBack(T const & t, U & u) {
+	for (auto const & it : t)
+		u.push_back(it);
 }
 
 IntVector SortLocation(IntVector const &location);
@@ -45,7 +50,5 @@ template<class T> bool IsEqual(T const & t1, T const & t2) {
 template<class T> bool CheckEqual(T const & t1, T const & t2) {
 	return IsEqual(t1, t2);
 }
-
-
 
 #endif /* COMMON_H_ */

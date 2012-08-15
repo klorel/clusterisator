@@ -23,13 +23,12 @@ public:
 	typedef IndexedList::const_iterator const_iterator;
 public:
 	//
-	virtual void contigusLabels() = 0;
 	virtual void set(IntVector const &) = 0;
 	// the number of nodes
 	virtual size_t nbObs() const = 0;
-	virtual void setNbObs(size_t) = 0;
 	// the number of used labels
 	virtual size_t nbLabels() const = 0;
+	virtual size_t maxNbLabels() const=0;
 	// clustering information
 	virtual size_t & label(size_t node) = 0;
 	virtual size_t label(size_t node) const = 0;
@@ -58,9 +57,13 @@ public:
 	virtual void shift(size_t node, size_t newLabel) = 0;
 	// fusion of two label, return the used label
 	virtual size_t fusion(size_t const & label1, size_t const & label2) = 0;
+	IPartition(size_t nbObs, size_t k);
 	virtual ~IPartition();
 };
 
 inline IPartition::~IPartition() {
+}
+inline IPartition::IPartition(size_t nbObs, size_t k) {
+
 }
 #endif /* IPARTITION_HPP_ */
