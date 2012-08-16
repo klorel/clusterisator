@@ -10,10 +10,10 @@
 
 #include "../src/common.h"
 
+#include "../src/KMInstance.hpp"
 #include "../src/RectMatrix.hpp"
 #include "../src/Partition.hpp"
 #include "../src/Timer.hpp"
-#include "../src/KMConstraints.hpp"
 
 class KMAlgo {
 public:
@@ -23,7 +23,8 @@ public:
 	typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
 
 public:
-	KMAlgo(RectMatrix const &, size_t k);
+
+	KMAlgo(KMInstance const &, size_t k);
 	virtual ~KMAlgo();
 
 	size_t getK() const;
@@ -48,10 +49,6 @@ public:
 
 	void run(size_t maxIte);
 	void run2();
-
-	void newMustLink(size_t, size_t);
-	void newCannotLink(size_t, size_t);
-
 	template<class T>
 	void out(std::ostream &, std::string const &, T const&) const;
 
@@ -73,7 +70,7 @@ private:
 	Double computeCost() const;
 	Double computeCost(size_t k) const;
 private:
-	RectMatrix const & _input;
+	KMInstance const & _input;
 	// current centers
 	RectMatrix _centers;
 	//
@@ -86,9 +83,6 @@ private:
 	IndexedList _pertObs;
 	IndexedList _pertLabels;
 	Timer _timer;
-
-	KMConstraints _mustLink;
-	KMConstraints _cannotLink;
 
 	Distances _distances;
 
@@ -117,7 +111,7 @@ inline Double KMAlgo::getDistance(size_t i) const {
 }
 inline Double KMAlgo::getDistance(size_t i, size_t k) const {
 	Double result(0);
-	for (size_t d(0); d < _input.getM(); ++d) {
+	for (size_t d(0); d < _input.nbAtt(); ++d) {
 		result += std::pow(_input.get(i, d) - _centers.get(k, d) / size(k), 2);
 	}
 //	return std::sqrt(result);
@@ -128,7 +122,7 @@ template<> inline Double KMAlgo::getCoeff<true>(size_t k) const {
 	return size(k) / (size(k) + 1);
 }
 template<> inline Double KMAlgo::getCoeff<false>(size_t k) const {
-	return size(k) / (size(k) -1);
+	return size(k) / (size(k) - 1);
 }
 
 #endif /* KMEANSALGO_HPP_ */
