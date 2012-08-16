@@ -1,5 +1,5 @@
 /*
- * RawData.hpp
+ * KMInstance.hpp
  *
  *  Created on: 9 août 2012
  *      Author: manuel
@@ -12,9 +12,9 @@
 #include "../src/RectMatrix.hpp"
 #include "../src/KMConstraints.hpp"
 
-typedef std::list<IntSet> Agregations;
+typedef std::vector<IntSet> Agregations;
+
 class KMInstance {
-public:
 public:
 	void readData(std::string const &);
 	void readConstraints(std::string const &);
@@ -24,14 +24,16 @@ public:
 	size_t nbAtt() const;
 	Double get(size_t, size_t) const;
 
+	Double cst() const;
+
 	DoubleVector const & weights() const;
 	Double weight(size_t) const;
 	Double & weight(size_t);
 
 	void mustLink(size_t i, size_t j);
 	void cannotLink(size_t i, size_t j);
-	void buildMustLink(Agregations &) const;
-
+	void buildMustLink(Agregations &, IntVector&) const;
+	void allocate(size_t n, size_t m);
 	/*
 	 * on propage (i,j) (j,k) --> i,k
 	 */
@@ -41,7 +43,7 @@ public:
 	KMConstraints const & cannotLinks() const;
 
 	KMInstance();
-	KMInstance(KMInstance const & , Agregations const & );
+	KMInstance(KMInstance const &, Agregations const &, IntVector&);
 public:
 	RectMatrix _data;
 	Double _cst;

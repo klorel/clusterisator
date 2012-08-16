@@ -54,6 +54,7 @@ public:
 
 	void out(std::ostream &) const;
 	void headers(std::ostream &) const;
+	Double computeCost() const;
 private:
 	Double size(size_t k) const;
 	void computeCenters();
@@ -67,7 +68,6 @@ private:
 
 	void getObs(IntSet &);
 
-	Double computeCost() const;
 	Double computeCost(size_t k) const;
 private:
 	KMInstance const & _input;

@@ -293,7 +293,7 @@ void KMAlgo::headers(std::ostream & stream) const {
 }
 
 Double KMAlgo::computeCost() const {
-	Double result(0);
+	Double result(_input.cst());
 	for (size_t i(0); i < _input.nbObs(); ++i)
 		result += getDistance(i);
 	return result;
