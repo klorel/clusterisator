@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../utils/SortedList.hpp"
+#include "../src/SortedList.hpp"
 #include <set>
 
 void call_set(SortedList & list, size_t const & i, size_t const & j) {
