@@ -10,6 +10,7 @@
 
 #include "../src/KMAlgo.hpp"
 #include "../src/KMInstance.hpp"
+#include "../src/KMConstraints.hpp"
 
 #include "../src/Env.hpp"
 #include "../src/Number.hpp"
@@ -20,10 +21,15 @@ int main(int argc, char ** argv) {
 
 	KMInstance instance;
 	instance.readData(dataFileName);
+	Agregations agregations;
+	instance.mustLink(0, 1);
+	instance.mustLink(0, 2);
+	instance.mustLink(0, 3);
+	instance.buildMustLink(agregations);
 	KMAlgo kmeans(instance, k);
-	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
-	kmeans.random();
-	kmeans.run(600);
+//	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
+//	kmeans.random();
+//	kmeans.run(600);
 
 //	kmeans.run2();
 //	OUT<< data;

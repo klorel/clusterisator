@@ -7,6 +7,16 @@
 
 #include "KMInstance.hpp"
 
+KMInstance::KMInstance() {
+	_cst = 0;
+}
+
+// on agrège
+KMInstance::KMInstance(KMInstance const & instance,
+		Agregations const & agregations) {
+	_cst = 0;
+}
+
 RectMatrix const & KMInstance::data() const {
 	return _data;
 }
@@ -40,6 +50,7 @@ void KMInstance::readData(std::string const & fileName) {
 		file >> n;
 		file >> m;
 		_data = RectMatrix(n, m);
+		_cst = Zero<Double>();
 		_weights.assign(n, Zero<Double>());
 		_must = KMConstraints(n);
 		_cannot = KMConstraints(n);
@@ -54,3 +65,33 @@ void KMInstance::readData(std::string const & fileName) {
 		OUT<< "unable to open file "<<fileName<<"\n";
 	}
 }
+
+void KMInstance::buildMustLink(Agregations & agregations) const {
+	agregations.clear();
+	std::vector<Agregations::iterator> temp(nbObs(), agregations.end());
+	for (size_t i(0); i < nbObs(); ++i) {
+		Agregations::iterator it(temp[i]);
+		if (it == agregations.end()) {
+			agregations.push_front(IntSet());
+			temp[i] = agregations.begin();
+		}
+		for (auto const & j : _must.get(i)) {
+			temp[j] = temp[i];
+		}
+	}
+	OUT<< "found "<<agregations.size()<<" agregated point\n";
+}
+
+void KMInstance::mustLink(size_t i, size_t j) {
+	_must.newCtr(i, j);
+}
+void KMInstance::cannotLink(size_t i, size_t j) {
+	_cannot.newCtr(i, j);
+}
+KMConstraints const & KMInstance::mustLinks() const {
+	return _must;
+}
+KMConstraints const & KMInstance::cannotLinks() const {
+	return _cannot;
+}
+
