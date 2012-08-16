@@ -48,6 +48,7 @@ void Partition::set(IntVector const & v) {
 
 }
 void Partition::shift(size_t n, size_t to) {
+	assert(n<nbObs());
 	size_t const from(_labels[n]);
 	if (from != to) {
 		--_size[from];
@@ -74,18 +75,31 @@ size_t Partition::fusion(size_t const & label1, size_t const & label2) {
 }
 bool Partition::checkLists() const {
 	for (auto const & l : usedLabel()) {
-		//		TRACE_N(*l);
-		if (sizeOfLabel(l) == 0)
+		if (sizeOfLabel(l) == 0) {
 			OUT<< "error on size of label " << l << "\n";
-			for (auto const & n : list(l)) {
-				if (n != *_nodePosition[n]) {
-					OUT << n << " iterator in label " << l << " is wrong\n";
-				}
+		}
+		for (auto const & n : list(l)) {
+			if (n != *_nodePosition[n]) {
+				OUT << n << " iterator in label " << l << " is wrong\n";
 			}
 		}
-		return true;
 	}
+	return true;
+}
 
+bool Partition::checkWeights() const {
+	for (auto const & l : used()) {
+		Double w(Zero<Double>());
+		for (auto const & n : _labelLists[l])
+			w += obsWeight(n);
+		if (!IsEqual(w, labelWeight(l))) {
+			OUT<< "wrong label weight of "<<l << " : ";
+			OUT << labelWeight(l) << " != "<<w<<"\n";
+			return false;
+		}
+	}
+	return true;
+}
 Partition & Partition::operator=(Partition const & rhs) {
 	if (this != &rhs) {
 		if (rhs.nbObs() != nbObs() || rhs.nbLabels() != rhs.nbLabels())

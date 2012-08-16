@@ -18,14 +18,15 @@ KMInstance::KMInstance(KMInstance const & instance,
 	std::fill_n(_weights.begin(), _weights.size(), Zero<Double>());
 
 	for (size_t i(0); i < agregations.size(); ++i) {
-		for (auto const & j : agregations[i]) {
+		for (auto const & j : agregations[i])
 			for (size_t d(0); d < nbAtt(); ++d)
 				_data.plus(i, d, instance.get(j, d));
 
-		}
+		assert(agregations[i].size() > 0);
 		_weights[i] = static_cast<Double>(agregations[i].size());
+		assert(_weights[i]> 0);
 		for (size_t d(0); d < nbAtt(); ++d)
-			_data.get(i, d) /= _weights[d];
+			_data.get(i, d) /= _weights[i];
 		if (_weights[i] > 1) {
 			for (auto const & j : agregations[i])
 				for (size_t d(0); d < nbAtt(); ++d)
@@ -70,7 +71,7 @@ DoubleVector const & KMInstance::weights() const {
 void KMInstance::allocate(size_t n, size_t m) {
 	_data = RectMatrix(n, m);
 	_cst = Zero<Double>();
-	_weights.assign(n, Zero<Double>());
+	_weights.assign(n, One<Double>());
 	_must = KMConstraints(n);
 	_cannot = KMConstraints(n);
 }
@@ -99,22 +100,29 @@ void KMInstance::buildMustLink(Agregations & result, IntVector & newIds) const {
 	std::vector<std::list<IntSet>::iterator> temp(nbObs(), agregations.end());
 	size_t n(0);
 	newIds.assign(nbObs(), -1);
+
 	for (size_t i(0); i < nbObs(); ++i) {
 		auto it(temp[i]);
 		if (it == agregations.end()) {
-			++n;
 			agregations.push_front(IntSet());
 			temp[i] = agregations.begin();
+			temp[i]->insert(i);
 			newIds[i] = n;
+			++n;
 		}
 		for (auto const & j : _must.get(i)) {
 			temp[j] = temp[i];
-			newIds[j] = n;
+			newIds[j] = newIds[i];
+			temp[j]->insert(j);
 		}
 	}
+
 	OUT<< "found "<<n<<" agregated point\n";
 	result.assign(n, IntSet());
-	std::copy(agregations.begin(), agregations.end(), result.begin());
+	std::copy(agregations.rbegin(), agregations.rend(), result.begin());
+	for (auto const & id : newIds) {
+		assert(id < n);
+	}
 }
 
 void KMInstance::mustLink(size_t i, size_t j) {
@@ -130,3 +138,8 @@ KMConstraints const & KMInstance::cannotLinks() const {
 	return _cannot;
 }
 
+std::ostream & operator<<(std::ostream &stream, KMInstance const &rhs) {
+	stream << rhs.data();
+	return stream;
+
+}

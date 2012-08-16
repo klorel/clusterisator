@@ -38,9 +38,8 @@ public:
 	CentroidData getBest(size_t i) const;
 
 	Double getDelta(size_t i, size_t l, size_t j) const;
-	void test();
-	template<bool isInsertion>
-	Double getCoeff(size_t k) const;
+
+	template<bool isInsertion> Double getCoeff(size_t i, size_t k) const;
 
 	Double getDistance(size_t i, size_t k) const;
 	Double getDistance(size_t i) const;
@@ -55,20 +54,20 @@ public:
 	void out(std::ostream &) const;
 	void headers(std::ostream &) const;
 	Double computeCost() const;
-private:
+	RectMatrix const & centers() const;
+	void shift(size_t node, size_t to);
+
 	Double size(size_t k) const;
 	void computeCenters();
 	void computeCenters(RectMatrix &) const;
 	void computeDistances();
 	void apply(Move const &);
 	void apply(Moves const &);
-	void move(size_t node, size_t to);
 
 	bool checkCost() const;
-
+	bool checkWeights() const;
 	void getObs(IntSet &);
 
-	Double computeCost(size_t k) const;
 private:
 	KMInstance const & _input;
 	// current centers
@@ -112,17 +111,25 @@ inline Double KMAlgo::getDistance(size_t i) const {
 inline Double KMAlgo::getDistance(size_t i, size_t k) const {
 	Double result(0);
 	for (size_t d(0); d < _input.nbAtt(); ++d) {
-		result += std::pow(_input.get(i, d) - _centers.get(k, d) / size(k), 2);
+		if (_partition.labelWeight(k) == Zero<Double>())
+			result += std::pow(_input.get(i, d), 2);
+		else
+			result += std::pow(
+					_input.get(i, d)
+							- _centers.get(k, d) / _partition.labelWeight(k),
+					2);
 	}
 //	return std::sqrt(result);
 	return result;
 }
 
-template<> inline Double KMAlgo::getCoeff<true>(size_t k) const {
-	return size(k) / (size(k) + 1);
+template<> inline Double KMAlgo::getCoeff<true>(size_t i, size_t k) const {
+	return _partition.labelWeight(k)
+			/ (_partition.labelWeight(k) + _partition.obsWeight(i));
 }
-template<> inline Double KMAlgo::getCoeff<false>(size_t k) const {
-	return size(k) / (size(k) - 1);
+template<> inline Double KMAlgo::getCoeff<false>(size_t i, size_t k) const {
+	return _partition.labelWeight(k)
+			/ (_partition.labelWeight(k) - _partition.obsWeight(i));
 }
 
 #endif /* KMEANSALGO_HPP_ */

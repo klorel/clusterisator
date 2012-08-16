@@ -31,6 +31,7 @@ public:
 
 	bool operator!=(RectMatrix const & rhs) const;
 	bool operator==(RectMatrix const & rhs) const;
+
 private:
 	size_t key(size_t i, size_t j) const;
 	size_t _n;
@@ -106,7 +107,10 @@ inline bool RectMatrix::operator!=(RectMatrix const & rhs) const {
 	return !((*this) == rhs);
 }
 inline bool RectMatrix::operator==(RectMatrix const & rhs) const {
-	return (_matrix == rhs._matrix);
+	for (size_t i(0); i < rhs._matrix.size(); ++i)
+		if (!IsEqual(_matrix[i], rhs._matrix[i]))
+			return false;
+	return true;
 }
 
 #endif /* RECTMATRIX_HPP_ */

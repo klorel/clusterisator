@@ -13,7 +13,9 @@
 #include "../src/KMConstraints.hpp"
 
 typedef std::vector<IntSet> Agregations;
+class KMInstance;
 
+std::ostream & operator<<(std::ostream & , KMInstance const &);
 class KMInstance {
 public:
 	void readData(std::string const &);

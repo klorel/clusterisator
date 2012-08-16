@@ -15,15 +15,16 @@ KMAlgo::KMAlgo(KMInstance const & input, size_t k) :
 	_pertLabels = IndexedList(k);
 	_pertObs = IndexedList(input.nbObs());
 	_partition.setWeights(_input.weights());
+	computeCenters();
+
 }
 
 KMAlgo::~KMAlgo() {
 }
 
 void KMAlgo::set(Partition const & partition) {
-	_partition = partition;
-	computeCenters();
-	computeDistances();
+	for (size_t i(0); i < partition.nbObs(); ++i)
+		shift(i, partition.label(i));
 }
 
 // we suppose to have
@@ -39,7 +40,7 @@ void KMAlgo::computeDistances() {
 		if (_partition.sizeOfLabel(_partition.label(obs)) == 1)
 			_d[obs] = Zero<Double>();
 		else
-			_d[obs] = getDistance(obs);
+			_d[obs] = getDistance(obs) * _partition.obsWeight(obs);
 		_cost += _d[obs];
 		_distances.insert(std::make_pair(_d[obs], obs));
 	}
@@ -51,8 +52,14 @@ void KMAlgo::computeCenters(RectMatrix & centers) const {
 	centers.assign(Zero<Double>());
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		for (size_t d(0); d < _input.nbAtt(); ++d) {
-			centers.plus(_partition.label(i), d, _input.get(i, d));
+			centers.plus(_partition.label(i), d,
+					_input.get(i, d) * _partition.obsWeight(i));
 		}
+//		std::cout << "center " << i << " : ";
+//
+//		for (size_t d(0); d < _input.nbAtt(); ++d)
+//			std::cout << centers.get(i, d) << " ";
+//		std::cout << "\n";
 	}
 }
 
@@ -60,19 +67,21 @@ void KMAlgo::random() {
 	_partition.random(getK());
 }
 Double KMAlgo::getDelta(size_t i, size_t l, size_t j) const {
-	return getDistance(i, j) * getCoeff<true>(j)
-			- getDistance(i, l) * getCoeff<false>(l);
+	assert(_partition.label(i)==l);
+	return _partition.obsWeight(i)
+			* (getDistance(i, j) * getCoeff<true>(i, j)
+					- getDistance(i, l) * getCoeff<false>(i, l));
 }
 KMAlgo::CentroidData KMAlgo::getBest(size_t i) const {
 	size_t const l(_partition.label(i));
 	CentroidData min(std::make_pair(l, 0));
 
 	if (_partition.sizeOfLabel(l) != 1) {
-		Double const cst(-getDistance(i) * getCoeff<false>(l));
+		Double const cst(-getDistance(i) * getCoeff<false>(i, l));
 		for (size_t j(0); j < getK(); ++j) {
 			if (j != l) {
 				Double delta(cst);
-				delta += getDistance(i, j) * getCoeff<true>(j);
+				delta += getDistance(i, j) * getCoeff<true>(i, j);
 				assert(IsEqual(delta, getDelta(i,l,j)));
 				if (delta < min.second) {
 					min.first = j;
@@ -134,7 +143,7 @@ void KMAlgo::singleton() {
 	while (!_empty.empty()) {
 		assert(!_partition.isUsed(_empty.back()));
 		assert(_distances.begin()->first>Zero<Double>());
-		move(_distances.begin()->second, _empty.back());
+		shift(_distances.begin()->second, _empty.back());
 		_cost -= _distances.begin()->first;
 		assert(_partition.isUsed(_empty.back()));
 		_empty.pop_back();
@@ -209,7 +218,7 @@ void KMAlgo::run2() {
 			CentroidData delta(getBest(obs));
 			if (delta.second < 0) {
 				_cost += delta.second;
-				move(obs, delta.first);
+				shift(obs, delta.first);
 				improvement = true;
 				//				assert(checkCost());
 			}
@@ -229,6 +238,7 @@ bool KMAlgo::checkCost() const {
 	}
 	return true;
 }
+
 void KMAlgo::apply(Moves const & moves) {
 	_pertObs.clear();
 	_pertLabels.clear();
@@ -241,28 +251,22 @@ void KMAlgo::apply(Moves const & moves) {
 void KMAlgo::apply(Move const & m) {
 	size_t const node(m.first);
 	size_t const to(m.second);
-	move(node, to);
+	shift(node, to);
 
 }
 
-void KMAlgo::move(size_t node, size_t to) {
+void KMAlgo::shift(size_t node, size_t to) {
 	size_t const from(_partition.label(node));
-
 	_pertObs.insert(node);
 	_pertLabels.insert(from);
 	_pertLabels.insert(to);
-
 	// update centroids
 	for (size_t d(0); d < _input.nbAtt(); ++d) {
-		if (size(from) == 1)
-			_centers.get(from, d) = 0;
-		else
-			_centers.plus(from, d, -_input.get(node, d));
-		_centers.plus(to, d, _input.get(node, d));
+		_centers.plus(from, d,
+				-_input.get(node, d) * _partition.obsWeight(node));
+		_centers.plus(to, d, _input.get(node, d) * _partition.obsWeight(node));
 	}
-
 	_partition.shift(node, to);
-
 }
 
 void KMAlgo::out(std::ostream & stream) const {
@@ -294,61 +298,14 @@ void KMAlgo::headers(std::ostream & stream) const {
 
 Double KMAlgo::computeCost() const {
 	Double result(_input.cst());
-	for (size_t i(0); i < _input.nbObs(); ++i)
-		result += getDistance(i);
-	return result;
-}
-Double KMAlgo::computeCost(size_t k) const {
-	Double result(0);
-	for (auto const & n : _partition.list(k))
-		result += getDistance(n);
-	return result;
-}
-
-void KMAlgo::test() {
-	computeCenters();
-	//	for (auto const & l : _partition.used())
-	//		std::cout << l << " : " << size(l) << "\n";
-	size_t const label(100);
-	IndexedList list(_partition.nbObs());
-	Insert(_partition.list(label), list);
-	Double cost(computeCost(label));
-	IntList must;
-	// deux éléments contraint
-	while (!list.empty())
-		//	must.push_back(list.pop_random());
-		must.push_back(list.pop_random());
-	DisplayContainer(std::cout << "must.size() = " << must.size() << " : ",
-			must);
-	// calcul du point moyen
-	DoubleVector merged(_input.nbAtt(), 0);
-	for (auto const & i : must)
-		for (size_t d(0); d < _input.nbAtt(); ++d) {
-			merged[d] += _input.get(i, d);
-		}
-	for (size_t d(0); !must.empty() && d < _input.nbAtt(); ++d)
-		merged[d] /= (Double) must.size();
-
-	// calcul du nouveau centroid
-	DoubleVector centroid(_input.nbAtt(), 0);
-	for (size_t d(0); d < _input.nbAtt(); ++d)
-		centroid[d] += merged[d] * must.size();
-	for (auto const & i : list)
-		for (size_t d(0); d < _input.nbAtt(); ++d)
-			centroid[d] += _input.get(i, d);
-
-	for (size_t d(0); d < _input.nbAtt(); ++d)
-		centroid[d] /= (Double) (list.size() + must.size());
-	assert(list.size() + must.size() == _partition.sizeOfLabel(label));
-
-	Double newCost(0);
-	for (auto const & i : list) {
-		for (size_t d(0); d < _input.nbAtt(); ++d)
-			newCost += std::pow(_input.get(i, d) - centroid[d], 2);
+	for (size_t i(0); i < _input.nbObs(); ++i) {
+		result += _partition.obsWeight(i) * getDistance(i);
+		assert(IsEqual(_partition.obsWeight(i), _input.weight(i)));
+		assert(_input.weight(i)>0);
 	}
-	if (!must.empty())
-		for (size_t d(0); d < _input.nbAtt(); ++d)
-			newCost += must.size() * std::pow(merged[d] - centroid[d], 2);
-	std::cout << "cost : " << cost << "\n";
-	std::cout << "newCost : " << newCost << "\n";
+	return result;
+}
+
+RectMatrix const & KMAlgo::centers() const {
+	return _centers;
 }

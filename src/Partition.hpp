@@ -68,6 +68,7 @@ public:
 	void random(size_t k);
 public:
 	bool checkLists() const;
+	bool checkWeights()const;
 private:
 	IntVector _labels;
 	// la composition de chaque label
