@@ -1,8 +1,13 @@
 
+FILE(  GLOB  main_files   ./*.cpp )
 
+SET( prog_names )
+FOREACH( main ${main_files} ) 
+	SET(prog "")
+	GET_FILENAME_COMPONENT(prog ${main} NAME_WE)
 
-add_executable( ncut  ncut.cpp )
-target_link_libraries(ncut  clustering )
-
-add_executable( kmeans  kmeans.cpp )
-target_link_libraries(kmeans  clustering )
+	MESSAGE( "prog found : ${prog}" ) 
+	ADD_EXECUTABLE( ${prog}  ${prog}.cpp )
+	TARGET_LINK_LIBRARIES(${prog}  clustering )
+	
+ENDFOREACH( main )

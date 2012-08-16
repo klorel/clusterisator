@@ -2,6 +2,7 @@
 FILE(GLOB_RECURSE tests_files ./*.cc )
 
 ADD_EXECUTABLE(unittests ${tests_files} )
+ADD_TEST(utests ../bin/unittests)
 
 #To have the flag -
 FIND_PACKAGE (Threads)
