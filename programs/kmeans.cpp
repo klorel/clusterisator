@@ -5,14 +5,14 @@
  *      Author: manuel
  */
 
-#include "../utils/common.h"
-#include "../data/Partition.hpp"
+#include "../src/common.h"
+#include "../src/Partition.hpp"
 
-#include "../kmeans/KMAlgo.hpp"
-#include "../kmeans/RawData.hpp"
+#include "../src/KMAlgo.hpp"
+#include "../src/RawData.hpp"
 
-#include "../utils/Env.hpp"
-#include "../utils/Number.hpp"
+#include "../src/Env.hpp"
+#include "../src/Number.hpp"
 
 int main(int argc, char ** argv) {
 	std::string const dataFileName(argv[1]);

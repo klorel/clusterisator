@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <set>
-#include "../utils/IndexedList.hpp"
+#include "../src/IndexedList.hpp"
 
 TEST(IndexedList, containsAndErase) {
 	IndexedList list(4);

@@ -9,7 +9,7 @@ IF( WITH_TESTS )
 INCLUDE_DIRECTORIES( gmock-1.6.0/gtest/include )
 ENDIF( WITH_TESTS )
 
-INCLUDE_DIRECTORIES( algos criterions data interfaces kmeans mesures neighborhoods utils   )
+INCLUDE_DIRECTORIES( src   )
 
 
 SET ( EXECUTABLE_OUTPUT_PATH  ../bin )
@@ -29,9 +29,6 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-strict-aliasing -Wno-unused-paramet
 IF( WITH_TESTS )
     ADD_SUBDIRECTORY(gmock-1.6.0)
 ENDIF( WITH_TESTS )
-
-INCLUDE_DIRECTORIES( algos criterions data interfaces kmeans mesures neighborhoods utils   )
-
 
 IF( WITH_PROF )
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
