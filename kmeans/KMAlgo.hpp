@@ -37,7 +37,7 @@ public:
 	CentroidData getBest(size_t i) const;
 
 	Double getDelta(size_t i, size_t l, size_t j) const;
-	void testDelta();
+	void test();
 	template<bool isInsertion>
 	Double getCoeff(size_t k) const;
 
@@ -71,6 +71,7 @@ private:
 	void getObs(IntSet &);
 
 	Double computeCost() const;
+	Double computeCost(size_t k) const;
 private:
 	RectMatrix const & _input;
 	// current centers

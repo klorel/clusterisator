@@ -23,9 +23,8 @@ int main(int argc, char ** argv) {
 	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
 	kmeans.random();
 	kmeans.run(600);
-//	kmeans.testDelta();
-	kmeans.run2();
 
+//	kmeans.run2();
 //	OUT<< data;
 //	if (argc != 3) {
 //		std::cout << "kmeans <graphFile> <k>\n";

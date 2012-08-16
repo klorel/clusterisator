@@ -66,8 +66,8 @@ Double KMAlgo::getDelta(size_t i, size_t l, size_t j) const {
 }
 KMAlgo::CentroidData KMAlgo::getBest(size_t i) const {
 	size_t const l(_partition.label(i));
-
 	CentroidData min(std::make_pair(l, 0));
+
 	if (_partition.sizeOfLabel(l) != 1) {
 		Double const cst(-getDistance(i) * getCoeff<false>(l));
 		for (size_t j(0); j < getK(); ++j) {
@@ -82,7 +82,6 @@ KMAlgo::CentroidData KMAlgo::getBest(size_t i) const {
 			}
 		}
 	}
-
 	return min;
 }
 KMAlgo::CentroidData KMAlgo::getClosest(size_t i) const {
@@ -126,10 +125,10 @@ void KMAlgo::singleton() {
 
 	_empty.clear();
 	PushBack(_partition.unUsed(), _empty);
-//		DisplayContainer(OUT<<"\nused : ", _partition.used());
-//		DisplayContainer(OUT<<"empty : ", _empty);
-//		DisplayContainer(OUT<<"unUsed : ", _partition.unUsed());
-//	_partition.checkLists();
+	//		DisplayContainer(OUT<<"\nused : ", _partition.used());
+	//		DisplayContainer(OUT<<"empty : ", _empty);
+	//		DisplayContainer(OUT<<"unUsed : ", _partition.unUsed());
+	//	_partition.checkLists();
 	assert(_empty.size() == _partition.unUsed().size());
 	assert(_empty.size() + _partition.nbLabels() == getK());
 
@@ -199,22 +198,26 @@ void KMAlgo::run2() {
 	assert(checkCost());
 	_ite = 0;
 	out(OUT);
+	_pertLabels.clear();
+	for (auto const & label : _partition.used())
+		_pertLabels.insert(label);
+	_pertObs.fill();
 	do {
 		_old = _cost;
 		++_ite;
 		improvement = false;
-		_pertObs.clear();
-		_pertLabels.clear();
 		for (size_t obs(0); obs < _partition.nbObs(); ++obs) {
 			CentroidData delta(getBest(obs));
 			if (delta.second < 0) {
 				_cost += delta.second;
 				move(obs, delta.first);
 				improvement = true;
-				assert(checkCost());
+//				assert(checkCost());
 			}
 		}
 		out(OUT);
+		_pertObs.clear();
+		_pertLabels.clear();
 	} while (improvement);
 
 }
@@ -300,20 +303,57 @@ Double KMAlgo::computeCost() const {
 		result += getDistance(i);
 	return result;
 }
+Double KMAlgo::computeCost(size_t k) const {
+	Double result(0);
+	for (auto const & n : _partition.list(k))
+		result += getDistance(n);
+	return result;
+}
 
-void KMAlgo::testDelta() {
-	size_t const obs(0);
-	size_t const l(_partition.label(obs));
-	size_t const j(37);
+void KMAlgo::test() {
 	computeCenters();
-	Double oldCost(computeCost());
-	Double deltaCost(getDelta(obs, l, j));
-	move(obs, j);
-	computeCenters();
-	Double newCost(computeCost());
-	std::cout << std::setprecision(15) << oldCost << std::endl;
-	std::cout << std::setprecision(15) << oldCost + deltaCost << std::endl;
-	std::cout << std::setprecision(15) << newCost << std::endl;
-	std::cout << std::setprecision(15) << deltaCost << std::endl;
-	std::cout << std::setprecision(15) << newCost - oldCost << std::endl;
+	//	for (auto const & l : _partition.used())
+	//		std::cout << l << " : " << size(l) << "\n";
+	size_t const label(100);
+	IndexedList list(_partition.nbObs());
+	Insert(_partition.list(label), list);
+	Double cost(computeCost(label));
+	IntList must;
+	// deux éléments contraint
+	while (!list.empty())
+//	must.push_back(list.pop_random());
+		must.push_back(list.pop_random());
+	DisplayContainer(std::cout << "must.size() = " << must.size() << " : ",
+			must);
+	// calcul du point moyen
+	DoubleVector merged(_input.getM(), 0);
+	for (auto const & i : must)
+		for (size_t d(0); d < _input.getM(); ++d) {
+			merged[d] += _input.get(i, d);
+		}
+	for (size_t d(0); !must.empty() && d < _input.getM(); ++d)
+		merged[d] /= (Double) must.size();
+
+	// calcul du nouveau centroid
+	DoubleVector centroid(_input.getM(), 0);
+	for (size_t d(0); d < _input.getM(); ++d)
+		centroid[d] += merged[d] * must.size();
+	for (auto const & i : list)
+		for (size_t d(0); d < _input.getM(); ++d)
+			centroid[d] += _input.get(i, d);
+
+	for (size_t d(0); d < _input.getM(); ++d)
+		centroid[d] /= (Double) (list.size() + must.size());
+	assert(list.size() + must.size() == _partition.sizeOfLabel(label));
+
+	Double newCost(0);
+	for (auto const & i : list) {
+		for (size_t d(0); d < _input.getM(); ++d)
+			newCost += std::pow(_input.get(i, d) - centroid[d], 2);
+	}
+	if (!must.empty())
+		for (size_t d(0); d < _input.getM(); ++d)
+			newCost += must.size() * std::pow(merged[d] - centroid[d], 2);
+	std::cout << "cost : " << cost << "\n";
+	std::cout << "newCost : " << newCost << "\n";
 }
