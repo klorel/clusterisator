@@ -20,9 +20,10 @@ void Partition::allocate(size_t n, size_t k) {
 	_size.assign(k, 0);
 	_usedLabels.reset(k);
 	_unUsedLabels.reset(k);
+	_labelWeights.assign(k, 0);
 
 	_nodePosition.assign(n, _labelLists[0].end());
-
+	_nodeWeights.assign(n, One<Double>());
 	_labels.assign(n, 0);
 
 	_usedLabels.clear();
@@ -46,22 +47,26 @@ void Partition::set(IntVector const & v) {
 	}
 
 }
-void Partition::shift(size_t n, size_t l) {
-	if (label(n) != l) {
-		--sizeOfLabel(label(n));
-		_labelLists[label(n)].erase(_nodePosition[n]);
-		if (sizeOfLabel(label(n)) == 0) {
-			_usedLabels.erase(label(n));
-			_unUsedLabels.insert(label(n));
+void Partition::shift(size_t n, size_t to) {
+	size_t const from(_labels[n]);
+	if (from != to) {
+		--_size[from];
+		_labelLists[from].erase(_nodePosition[n]);
+		_labelWeights[from] -= _nodeWeights[n];
+
+		if (_size[from] == 0) {
+			_usedLabels.erase(from);
+			_unUsedLabels.insert(from);
 		}
-		if (sizeOfLabel(l) == 0) {
-			_unUsedLabels.erase(l);
-			_usedLabels.insert(l);
+		if (_size[to] == 0) {
+			_unUsedLabels.erase(to);
+			_usedLabels.insert(to);
 		}
-		++sizeOfLabel(l);
-		_labelLists[l].push_front(n);
-		_nodePosition[n] = _labelLists[l].begin();
-		label(n) = l;
+		++_size[to];
+		_labelLists[to].push_front(n);
+		_labelWeights[to] += _nodeWeights[n];
+		_nodePosition[n] = _labelLists[to].begin();
+		_labels[n] = to;
 	}
 }
 size_t Partition::fusion(size_t const & label1, size_t const & label2) {
@@ -101,4 +106,10 @@ void Partition::random(size_t k) {
 	for (auto const & n : nodes)
 		shift(n, Number::Generator() % maxNbLabels());
 
+}
+void Partition::setWeights(DoubleVector const & rhs) {
+	_nodeWeights = rhs;
+	_labelWeights.assign(maxNbLabels(), Zero<Double>());
+	for (size_t i(0); i < nbObs(); ++i)
+		_labelWeights[_labels[i]] += _nodeWeights[i];
 }

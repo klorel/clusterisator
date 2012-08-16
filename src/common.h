@@ -39,6 +39,9 @@ IntVector Random(size_t const & n);
 template<class T> constexpr T Zero() {
 	return static_cast<T>(0);
 }
+template<class T> constexpr T One() {
+	return static_cast<T>(1);
+}
 template<class T> constexpr T Infinity() {
 	return std::numeric_limits<T>::max();
 }

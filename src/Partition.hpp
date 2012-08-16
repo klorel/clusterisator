@@ -31,6 +31,14 @@ public:
 	// le nombre de labels utilisé dans la solution courante
 	size_t nbLabels() const;
 	size_t maxNbLabels() const;
+	//
+	void setWeights(DoubleVector const & rhs) ;
+	//
+	Double obsWeight(size_t) const;
+	Double & obsWeight(size_t);
+
+	Double labelWeight(size_t) const;
+	Double & labelWeight(size_t);
 	// le nombre de noeud ayant la label l
 	size_t & sizeOfLabel(size_t l);
 	size_t sizeOfLabel(size_t l) const;
@@ -66,6 +74,9 @@ private:
 	LabelLists _labelLists;
 	// la position de chaque noeud dans les listes de composition
 	NodePositions _nodePosition;
+	//
+	DoubleVector _nodeWeights;
+	DoubleVector _labelWeights;
 	// la taille des labels
 	IntVector _size;
 	// les labels utilisés
@@ -140,4 +151,19 @@ inline size_t & Partition::label(size_t n) {
 	return _labels[n];
 }
 
+inline Double Partition::obsWeight(size_t i) const {
+	return _nodeWeights[i];
+}
+inline Double & Partition::obsWeight(size_t i) {
+	return _nodeWeights[i];
+}
+
+inline Double Partition::labelWeight(size_t i) const {
+	return _labelWeights[i];
+}
+inline Double & Partition::labelWeight(size_t i) {
+	return _labelWeights[i];
+}
+
 #endif /* PARTITION_HPP_ */
+

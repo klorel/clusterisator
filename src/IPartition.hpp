@@ -29,6 +29,12 @@ public:
 	// the number of used labels
 	virtual size_t nbLabels() const = 0;
 	virtual size_t maxNbLabels() const=0;
+	//
+	virtual void setWeights(DoubleVector const & rhs) = 0;
+	virtual Double obsWeight(size_t) const=0;
+	virtual Double & obsWeight(size_t)=0;
+	virtual Double labelWeight(size_t) const=0;
+	virtual Double & labelWeight(size_t)=0;
 	// clustering information
 	virtual size_t & label(size_t node) = 0;
 	virtual size_t label(size_t node) const = 0;
