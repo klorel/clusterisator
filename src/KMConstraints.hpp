@@ -28,4 +28,29 @@ private:
 	std::vector<IntSet> _byObs;
 };
 
+
+inline KMConstraints::KMConstraints(size_t n) :
+		_all(), _byObs(n) {
+
+}
+
+inline KMConstraints::~KMConstraints() {
+}
+
+inline void KMConstraints::newCtr(size_t i, size_t j) {
+	_all.insert(std::make_pair(std::min(i, j), std::max(i, j)));
+	_byObs[i].insert(j);
+	_byObs[j].insert(i);
+}
+
+inline IntSet const & KMConstraints::get(size_t obs) const {
+	return _byObs[obs];
+}
+inline void KMConstraints::clear() {
+	_all.clear();
+	for (auto & s : _byObs)
+		s.clear();
+}
+
+
 #endif /* KMCONSTRAINTS_HPP_ */

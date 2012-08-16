@@ -7,15 +7,14 @@
 
 #include "KMAlgo.hpp"
 
-KMAlgo::KMAlgo(RectMatrix const & input, size_t k) :
-		_input(input), _centers(k, _input.getM()), _partition(input.getN(), k), _d(
-				input.getN(), 0), _cost(0), _mustLink(input.getN()), _cannotLink(
-				_input.getN()) {
+KMAlgo::KMAlgo(KMInstance const & input, size_t k) :
+		_input(input), _centers(k, _input.nbAtt()), _partition(input.nbObs(),
+				k), _d(input.nbObs(), 0), _cost(0) {
 	_ite = 0;
 	_old = 0;
 	_pertLabels = IndexedList(k);
-	_pertObs = IndexedList(input.getN());
-
+	_pertObs = IndexedList(input.nbObs());
+	_partition.setWeights(_input.weights());
 }
 
 KMAlgo::~KMAlgo() {
@@ -34,7 +33,7 @@ void KMAlgo::computeDistances() {
 	//	for (auto const & label : _pertLabels)
 	//		Insert(_partition.list(label), _pertObs);
 	//	for (auto const & obs : _pertObs) {
-	for (size_t obs(0); obs < _input.getN(); ++obs) {
+	for (size_t obs(0); obs < _input.nbObs(); ++obs) {
 		//		if (_positions[obs] != _distances.end())
 		//			_distances.erase(_positions[obs]);
 		if (_partition.sizeOfLabel(_partition.label(obs)) == 1)
@@ -50,8 +49,8 @@ void KMAlgo::computeCenters() {
 }
 void KMAlgo::computeCenters(RectMatrix & centers) const {
 	centers.assign(Zero<Double>());
-	for (size_t i(0); i < _input.getN(); ++i) {
-		for (size_t d(0); d < _input.getM(); ++d) {
+	for (size_t i(0); i < _input.nbObs(); ++i) {
+		for (size_t d(0); d < _input.nbAtt(); ++d) {
 			centers.plus(_partition.label(i), d, _input.get(i, d));
 		}
 	}
@@ -111,7 +110,7 @@ KMAlgo::CentroidData KMAlgo::getClosest(size_t i) const {
 
 void KMAlgo::loop(Moves & moves) {
 	moves.clear();
-	for (size_t i(0); i < _input.getN(); ++i) {
+	for (size_t i(0); i < _input.nbObs(); ++i) {
 		CentroidData const k(getClosest(i));
 		if (k.first != _partition.label(i)) {
 			moves.push_back(std::make_pair(i, k.first));
@@ -212,7 +211,7 @@ void KMAlgo::run2() {
 				_cost += delta.second;
 				move(obs, delta.first);
 				improvement = true;
-//				assert(checkCost());
+				//				assert(checkCost());
 			}
 		}
 		out(OUT);
@@ -254,7 +253,7 @@ void KMAlgo::move(size_t node, size_t to) {
 	_pertLabels.insert(to);
 
 	// update centroids
-	for (size_t d(0); d < _input.getM(); ++d) {
+	for (size_t d(0); d < _input.nbAtt(); ++d) {
 		if (size(from) == 1)
 			_centers.get(from, d) = 0;
 		else
@@ -292,16 +291,10 @@ void KMAlgo::headers(std::ostream & stream) const {
 	stream << std::setw(15) << "PERT LABELS";
 	stream << std::endl;
 }
-void KMAlgo::newMustLink(size_t i, size_t j) {
-	_mustLink.newCtr(i, j);
-}
-void KMAlgo::newCannotLink(size_t i, size_t j) {
-	_cannotLink.newCtr(i, j);
-}
 
 Double KMAlgo::computeCost() const {
 	Double result(0);
-	for (size_t i(0); i < _input.getN(); ++i)
+	for (size_t i(0); i < _input.nbObs(); ++i)
 		result += getDistance(i);
 	return result;
 }
@@ -323,38 +316,38 @@ void KMAlgo::test() {
 	IntList must;
 	// deux éléments contraint
 	while (!list.empty())
-//	must.push_back(list.pop_random());
+		//	must.push_back(list.pop_random());
 		must.push_back(list.pop_random());
 	DisplayContainer(std::cout << "must.size() = " << must.size() << " : ",
 			must);
 	// calcul du point moyen
-	DoubleVector merged(_input.getM(), 0);
+	DoubleVector merged(_input.nbAtt(), 0);
 	for (auto const & i : must)
-		for (size_t d(0); d < _input.getM(); ++d) {
+		for (size_t d(0); d < _input.nbAtt(); ++d) {
 			merged[d] += _input.get(i, d);
 		}
-	for (size_t d(0); !must.empty() && d < _input.getM(); ++d)
+	for (size_t d(0); !must.empty() && d < _input.nbAtt(); ++d)
 		merged[d] /= (Double) must.size();
 
 	// calcul du nouveau centroid
-	DoubleVector centroid(_input.getM(), 0);
-	for (size_t d(0); d < _input.getM(); ++d)
+	DoubleVector centroid(_input.nbAtt(), 0);
+	for (size_t d(0); d < _input.nbAtt(); ++d)
 		centroid[d] += merged[d] * must.size();
 	for (auto const & i : list)
-		for (size_t d(0); d < _input.getM(); ++d)
+		for (size_t d(0); d < _input.nbAtt(); ++d)
 			centroid[d] += _input.get(i, d);
 
-	for (size_t d(0); d < _input.getM(); ++d)
+	for (size_t d(0); d < _input.nbAtt(); ++d)
 		centroid[d] /= (Double) (list.size() + must.size());
 	assert(list.size() + must.size() == _partition.sizeOfLabel(label));
 
 	Double newCost(0);
 	for (auto const & i : list) {
-		for (size_t d(0); d < _input.getM(); ++d)
+		for (size_t d(0); d < _input.nbAtt(); ++d)
 			newCost += std::pow(_input.get(i, d) - centroid[d], 2);
 	}
 	if (!must.empty())
-		for (size_t d(0); d < _input.getM(); ++d)
+		for (size_t d(0); d < _input.nbAtt(); ++d)
 			newCost += must.size() * std::pow(merged[d] - centroid[d], 2);
 	std::cout << "cost : " << cost << "\n";
 	std::cout << "newCost : " << newCost << "\n";

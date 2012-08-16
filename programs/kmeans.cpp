@@ -9,7 +9,7 @@
 #include "../src/Partition.hpp"
 
 #include "../src/KMAlgo.hpp"
-#include "../src/RawData.hpp"
+#include "../src/KMInstance.hpp"
 
 #include "../src/Env.hpp"
 #include "../src/Number.hpp"
@@ -18,8 +18,9 @@ int main(int argc, char ** argv) {
 	std::string const dataFileName(argv[1]);
 	size_t const k(atoi(argv[2]));
 
-	RectMatrix data(ReadRawData(dataFileName));
-	KMAlgo kmeans(data, k);
+	KMInstance instance;
+	instance.readData(dataFileName);
+	KMAlgo kmeans(instance, k);
 	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
 	kmeans.random();
 	kmeans.run(600);
