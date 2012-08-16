@@ -778,7 +778,7 @@ Si tous les éléments de chaque label retourné appartiennent à un seul label
 \begin_inset Formula $\left|C\right|=\left|V\right|$
 \end_inset
 
-)a necessairement la note maximal.
+) a necessairement la note maximal.
  Pour cette raison, la mesure de pureté ne permet pas de noter un clustering,
  mais par contre il permet de noter une partition.
 \end_layout
@@ -799,9 +799,9 @@ Informations mutuelles
 \end_layout
 
 \begin_layout Standard
-Issu de la théorie de l'information, la mesure d'information mutuelles permet
- de comparer les informations apportées par la partition retournée et la
- partition réelle.
+Issue de la théorie de l'information, la mesure d'information mutuelles
+ permet de comparer les informations apportées par la partition retournée
+ et la partition réelle.
 \end_layout
 
 \begin_layout Standard
@@ -811,7 +811,7 @@ En choisissant une partition totalement aléatoire, on a de forte chance
 
 \begin_layout Standard
 Par contre, on recontre le même comportement que la mesure de pureté pour
- les partitions eyant beaucoup de cluster.
+ les partitions ayant beaucoup de cluster.
  Cette mesure ne permet donc pas de noter des clustering.
  
 \end_layout
@@ -844,13 +844,13 @@ Informations mutelles normalisées
 
 \begin_layout Standard
 Pour pouvoir utiliser l'information mutuelles dans le cadre du clustering,
- on peut utiliser l'information mutuelles normalisées.
+ on peut utiliser l'information mutuelle normalisée.
  En effet, elle pénalise la partition par l'entropie de la partition retournée
  (
 \begin_inset Formula $H\left(C\right)$
 \end_inset
 
-), une valeur d'autant plus élevé que nombre de label est grand (valeur
+), une valeur d'autant plus élevée que le nombre de label est grand (valeur
  maximal quand 
 \begin_inset Formula $\left|C\right|=\left|V\right|$
 \end_inset
