@@ -82,10 +82,6 @@ int main(int argc, char ** argv) {
 
 	KMAlgo kmeans2(partition2);
 	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
-	for (size_t p(0); p < 10; ++p) {
-		std::cout << p << std::endl;
-		partition2.random(k);
-		testDelta(kmeans2);
-	}
+	kmeans2.hMeans(600);
 	return 0;
 }

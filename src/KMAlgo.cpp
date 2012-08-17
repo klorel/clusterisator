@@ -114,6 +114,8 @@ void KMAlgo::hMeans(size_t maxIte) {
 		assert(checkCost());
 		out(OUT);
 
+		assert(_old>=_cost);
+
 	} while (_ite != maxIte && !stop);
 	std::cout << computeCost() << "\n";
 }
