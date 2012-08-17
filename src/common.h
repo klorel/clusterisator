@@ -49,4 +49,12 @@ template<class T> constexpr T Infinity() {
 template<class T> bool IsEqual(T const & t1, T const & t2) {
 	return std::abs(t1 - t2) <= 1e-6;
 }
+
+template<> inline bool IsEqual<DoubleVector>(DoubleVector const & t1,
+		DoubleVector const & t2) {
+	for (size_t i(0); i < t1.size(); ++i)
+		if (!IsEqual(t1[i], t2[i]))
+			return false;
+	return true;
+}
 #endif /* COMMON_H_ */

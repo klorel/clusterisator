@@ -18,10 +18,9 @@ public:
 	Partition(IntVector const &);
 	virtual ~Partition();
 public:
-	void allocate(size_t n, size_t k);
 	void set(IntVector const & v);
 	// déplacement d'un noeud
-	void shift(size_t n, size_t p);
+	virtual void shift(size_t n, size_t p);
 	// fusion of two label, return the used label
 	size_t fusion(size_t const & label1, size_t const & label2);
 public:
@@ -32,11 +31,12 @@ public:
 	size_t nbLabels() const;
 	size_t maxNbLabels() const;
 	//
-	void setWeights(DoubleVector const & rhs) ;
+	void setWeights(DoubleVector const & rhs);
 	//
 	Double obsWeight(size_t) const;
 	Double & obsWeight(size_t);
 
+	DoubleVector const & labelWeights() const;
 	Double labelWeight(size_t) const;
 	Double & labelWeight(size_t);
 	// le nombre de noeud ayant la label l
@@ -68,7 +68,8 @@ public:
 	void random(size_t k);
 public:
 	bool checkLists() const;
-	bool checkWeights()const;
+	bool checkWeights() const;
+
 private:
 	IntVector _labels;
 	// la composition de chaque label
@@ -166,5 +167,8 @@ inline Double & Partition::labelWeight(size_t i) {
 	return _labelWeights[i];
 }
 
+inline DoubleVector const & Partition::labelWeights() const {
+	return _labelWeights;
+}
 #endif /* PARTITION_HPP_ */
 

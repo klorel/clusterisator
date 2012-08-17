@@ -11,6 +11,7 @@
 #include "../src/KMAlgo.hpp"
 #include "../src/KMInstance.hpp"
 #include "../src/KMConstraints.hpp"
+#include "../src/KMPartition.hpp"
 
 #include "../src/Env.hpp"
 #include "../src/Number.hpp"
@@ -34,85 +35,64 @@ int main(int argc, char ** argv) {
 	instance.readData(dataFileName);
 
 	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
-	Partition partition(instance.nbObs(), k);
+	KMPartition partition(instance, k);
+	assert(partition.checkWeights());
+
+	RectMatrix r(k, instance.nbAtt());
+	partition.computeCenters(r);
+	assert(r == partition.centers());
+
+	std::cout << "partition.random(k);\n";
 	partition.random(k);
 
-	Agregations agregations;
-	IntVector newIds;
-
-//	for (size_t p(0); p < 5; ++p) {
+	//	for (size_t p(0); p < 5; ++p) {
 
 	instance.mustLink(0, 1);
 	partition.shift(0, partition.label(1));
-//	}
-//	instance.mustLink(0, 2);
-//	instance.mustLink(0, 3);
+	//	}
+	KMAlgo kmeans(partition);
+	std::cout << std::setprecision(15) << kmeans.computeCost() << "\n";
 
-//	partition.shift(2, partition.label(0));
-//	partition.shift(3, partition.label(0));
-
+	Agregations agregations;
+	IntVector newIds;
 	instance.buildMustLink(agregations, newIds);
-//	for (auto const & s : agregations)
-//		DisplayContainer(std::cout, s);
-//	for (size_t i(0); i < instance.nbObs(); ++i)
-//		newIds[i] = i;
 
 	KMInstance instance2(instance, agregations, newIds);
 	std::cout << std::setprecision(15) << instance2.cst() << "\n";
-//	for (size_t i(0); i < instance2.nbObs(); ++i) {
-//		std::cout << instance2.weight(i) << "\n";
-//		for (size_t d(0); d < instance2.nbAtt(); ++d)
-//			std::cout << instance2.get(i, d) << " ";
-//		std::cout << "\n";
-//	}
 
-//	assert(partition2.nbLabels()==k);
-
-//	std::cout << instance;
-//	std::cout << instance2;
-
-	KMAlgo kmeans(instance, k);
-	kmeans.set(partition);
-	std::cout << std::setprecision(15) << kmeans.computeCost() << "\n";
-
-	KMAlgo kmeans2(instance2, k);
-	RectMatrix r(k, instance.nbAtt());
-	kmeans2.computeCenters(r);
-	assert(r==kmeans2.centers());
+	KMPartition partition2(instance2, k);
 	for (size_t i(0); i < instance.nbObs(); ++i) {
-		kmeans2.shift(newIds[i], partition.label(i));
+		partition2.shift(newIds[i], partition.label(i));
 	}
-	kmeans2.computeCenters(r);
 
+	std::cout << std::setprecision(15) << kmeans.computeCost() << "\n";
 	kmeans.shift(0, 1);
 	kmeans.shift(1, 1);
 	std::cout << std::setprecision(15) << kmeans.computeCost() << "\n";
 	std::cout << "--------------\n";
 
-	assert(r==kmeans2.centers());
+	KMAlgo kmeans2(partition2);
 	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
 	std::cout << std::setprecision(15)
 			<< kmeans2.computeCost() + kmeans2.getDelta(newIds[0], 0, 1)
 			<< "\n";
 	kmeans2.shift(newIds[0], 1);
 	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
-//	assert(instance.data()==instance2.data());
-//	std::cout << kmeans.centers();
-//	std::cout << instance;
-//	std::cout << kmeans2.centers();
-//	std::cout << instance2;
-	//	kmeans.run(600);
+	//
 
-//	kmeans.run2();
-//	OUT<< data;
-//	if (argc != 3) {
-//		std::cout << "kmeans <graphFile> <k>\n";
-//		return 0;
-//	}
-//	std::string dataFileName(argv[1]);
-//	std::string partitionName(argv[2]);
-//
-//	Partition partition;
-//	IBuilder::Get<IPartition>(partition, partitionName);
+	kmeans.run(600);
+	kmeans2.run(600);
+
+	//	kmeans.run2();
+	//	OUT<< data;
+	//	if (argc != 3) {
+	//		std::cout << "kmeans <graphFile> <k>\n";
+	//		return 0;
+	//	}
+	//	std::string dataFileName(argv[1]);
+	//	std::string partitionName(argv[2]);
+	//
+	//	Partition partition;
+	//	IBuilder::Get<IPartition>(partition, partitionName);
 	return 0;
 }
