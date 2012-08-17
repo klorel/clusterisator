@@ -27,21 +27,22 @@ public:
 
 	void random();
 
-	void loop(Moves &);
+	void hMeansLoop(Moves &);
 	void singleton();
 
-	void run(size_t maxIte);
-	void run2();
-	template<class T>
-	void out(std::ostream &, std::string const &, T const&) const;
+	void hMeans(size_t maxIte);
+	void kMeans(size_t maxIte);
+public:
+	template<class T> void out(std::string const &, T const&) const;
 
 	void out(std::ostream &) const;
 	void headers(std::ostream &) const;
+
 	Double computeCost() const;
 
+	void computeDistances();
 	void shift(size_t node, size_t to);
 
-	void computeDistances();
 	void apply(Move const &);
 	void apply(Moves const &);
 
@@ -69,11 +70,10 @@ private:
 };
 
 template<class T> inline
-void KMAlgo::out(std::ostream & stream, std::string const & name,
-		T const& value) const {
-	stream << std::setw(25) << name;
-	stream << std::setw(15) << value;
-	stream << "\n";
+void KMAlgo::out(std::string const & name, T const& value) const {
+	OUT<< std::setw(25) << name;
+	OUT << std::setw(15) << value;
+	OUT << "\n";
 }
 
 #endif /* KMEANSALGO_HPP_ */

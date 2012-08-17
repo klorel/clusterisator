@@ -80,8 +80,8 @@ int main(int argc, char ** argv) {
 	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
 	//
 
-	kmeans.run(600);
-	kmeans2.run(600);
+	kmeans.hMeans(600);
+	kmeans2.hMeans(600);
 
 	//	kmeans.run2();
 	//	OUT<< data;

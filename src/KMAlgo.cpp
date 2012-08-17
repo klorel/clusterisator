@@ -21,7 +21,7 @@ KMAlgo::~KMAlgo() {
 
 // we suppose to have
 void KMAlgo::computeDistances() {
-	_cost = 0;
+	_cost = _input.cst();
 	_distances.clear();
 	//	for (auto const & label : _pertLabels)
 	//		Insert(_input.list(label), _pertObs);
@@ -41,7 +41,7 @@ void KMAlgo::computeDistances() {
 void KMAlgo::random() {
 	_input.random(_input.getK());
 }
-void KMAlgo::loop(Moves & moves) {
+void KMAlgo::hMeansLoop(Moves & moves) {
 	moves.clear();
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		std::pair<size_t, Double> k(getClosest(i));
@@ -54,7 +54,6 @@ void KMAlgo::loop(Moves & moves) {
 }
 
 void KMAlgo::singleton() {
-
 	_empty.clear();
 	PushBack(_input.unUsed(), _empty);
 	//		DisplayContainer(OUT<<"\nused : ", _input.used());
@@ -75,7 +74,7 @@ void KMAlgo::singleton() {
 		_distances.erase(_distances.begin());
 	}
 }
-void KMAlgo::run(size_t maxIte) {
+void KMAlgo::hMeans(size_t maxIte) {
 	_timer.restart();
 	headers(OUT);
 
@@ -100,7 +99,7 @@ void KMAlgo::run(size_t maxIte) {
 	do {
 		assert(checkCost());
 		++_ite;
-		loop(moves);
+		hMeansLoop(moves);
 		_old = _cost;
 		if (moves.empty()) {
 			stop = true;
@@ -119,7 +118,7 @@ void KMAlgo::run(size_t maxIte) {
 	std::cout << computeCost() << "\n";
 }
 
-void KMAlgo::run2() {
+void KMAlgo::kMeans(size_t maxIte) {
 	_timer.restart();
 	headers(OUT);
 
@@ -149,7 +148,7 @@ void KMAlgo::run2() {
 		out(OUT);
 		_pertObs.clear();
 		_pertLabels.clear();
-	} while (improvement);
+	} while (_ite != maxIte && improvement);
 
 }
 bool KMAlgo::checkCost() const {
@@ -200,10 +199,10 @@ void KMAlgo::out(std::ostream & stream) const {
 }
 
 void KMAlgo::headers(std::ostream & stream) const {
-	out(OUT, "---------------", "");
-	out(OUT, "nbObs", _input.nbObs());
-	out(OUT, "nbCluster", _input.nbLabels());
-	out(OUT, "---------------", "");
+	out("---------------", "");
+	out("nbObs", _input.nbObs());
+	out("nbCluster", _input.nbLabels());
+	out("---------------", "");
 	stream << std::setw(10) << "TIME";
 	stream << std::setw(10) << "ITERATION";
 	stream << std::setw(20) << "COST";
