@@ -12,10 +12,10 @@
 
 class RectMatrix {
 public:
-	RectMatrix(size_t n = 0, size_t m = 0);
+	RectMatrix(size_t n = 0, size_t m = 0, Double v = Zero<Double>());
 	virtual ~RectMatrix();
 
-	void allocate(size_t n, size_t m);
+	void allocate(size_t n, size_t m, Double v = Zero<Double>());
 
 	Double get(size_t i, size_t j) const;
 	Double & get(size_t i, size_t j);
@@ -41,8 +41,8 @@ private:
 
 std::ostream & operator<<(std::ostream &, RectMatrix const &);
 
-inline RectMatrix::RectMatrix(size_t n, size_t m) {
-	allocate(n, m);
+inline RectMatrix::RectMatrix(size_t n, size_t m, Double v) {
+	allocate(n, m, v);
 
 }
 
@@ -50,10 +50,10 @@ inline RectMatrix::~RectMatrix() {
 
 }
 
-inline void RectMatrix::allocate(size_t n, size_t m) {
+inline void RectMatrix::allocate(size_t n, size_t m, Double v) {
 	_n = n;
 	_m = m;
-	_matrix.assign(n * m, Zero<Double>());
+	_matrix.assign(n * m, v);
 }
 
 inline size_t RectMatrix::key(size_t i, size_t j) const {

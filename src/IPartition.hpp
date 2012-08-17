@@ -63,13 +63,9 @@ public:
 	virtual void shift(size_t node, size_t newLabel) = 0;
 	// fusion of two label, return the used label
 	virtual size_t fusion(size_t const & label1, size_t const & label2) = 0;
-	IPartition(size_t nbObs, size_t k);
 	virtual ~IPartition();
 };
 
 inline IPartition::~IPartition() {
-}
-inline IPartition::IPartition(size_t nbObs, size_t k) {
-
 }
 #endif /* IPARTITION_HPP_ */

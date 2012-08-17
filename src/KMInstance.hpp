@@ -12,14 +12,21 @@
 #include "../src/RectMatrix.hpp"
 #include "../src/KMConstraints.hpp"
 
-typedef std::vector<IntSet> Agregations;
+
+class Agregations{
+public :
+	std::vector<IntSet> v;
+	IntVector newIds;
+};
 class KMInstance;
 
-std::ostream & operator<<(std::ostream & , KMInstance const &);
+std::ostream & operator<<(std::ostream &, KMInstance const &);
 class KMInstance {
 public:
 	void readData(std::string const &);
 	void readConstraints(std::string const &);
+
+	bool feasible(IPartition const &) const;
 
 	RectMatrix const & data() const;
 	size_t nbObs() const;
@@ -34,7 +41,7 @@ public:
 
 	void mustLink(size_t i, size_t j);
 	void cannotLink(size_t i, size_t j);
-	void buildMustLink(Agregations &, IntVector&) const;
+	void buildMustLink(Agregations &) const;
 	void allocate(size_t n, size_t m);
 	/*
 	 * on propage (i,j) (j,k) --> i,k
@@ -45,7 +52,7 @@ public:
 	KMConstraints const & cannotLinks() const;
 
 	KMInstance();
-	KMInstance(KMInstance const &, Agregations const &, IntVector&);
+	KMInstance(KMInstance const &, Agregations const &);
 public:
 	RectMatrix _data;
 	Double _cst;

@@ -9,12 +9,16 @@
 #define PARTITION_HPP_
 
 #include "../src/common.h"
-
 #include "../src/IPartition.hpp"
 
+class Partition;
+
+void operator>>(std::istream &, Partition &);
+void operator>>(std::string const &, Partition &);
 class Partition: public IPartition {
 public:
-	Partition(size_t n, size_t k);
+
+	Partition(size_t n, size_t k = 1);
 	Partition(IntVector const &);
 	virtual ~Partition();
 public:
@@ -24,6 +28,7 @@ public:
 	// fusion of two label, return the used label
 	size_t fusion(size_t const & label1, size_t const & label2);
 public:
+	void oneLabel(size_t n, size_t k);
 	// le nombre de noeuds
 	size_t nbObs() const;
 

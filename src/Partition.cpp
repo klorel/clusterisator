@@ -7,8 +7,13 @@
 
 #include "Partition.hpp"
 
-Partition::Partition(size_t n, size_t k) :
-		IPartition(n, k) {
+Partition::Partition(size_t n, size_t k) {
+	oneLabel(n, k);
+}
+Partition::~Partition() {
+
+}
+void Partition::oneLabel(size_t n, size_t k) {
 	_labelLists.assign(k, IntList());
 	_size.assign(k, 0);
 	_usedLabels.reset(k);
@@ -30,9 +35,6 @@ Partition::Partition(size_t n, size_t k) :
 		_nodePosition[n] = _labelLists[0].begin();
 	}
 	_size[0] = n;
-}
-Partition::~Partition() {
-
 }
 
 void Partition::set(IntVector const & v) {
@@ -98,8 +100,8 @@ bool Partition::checkWeights() const {
 }
 Partition & Partition::operator=(Partition const & rhs) {
 	if (this != &rhs) {
-		if (rhs.nbObs() != nbObs() || rhs.nbLabels() != rhs.nbLabels()) {
-			*this = Partition(rhs.nbObs(), rhs.nbLabels());
+		if (rhs.nbObs() != nbObs() || rhs.maxNbLabels() != maxNbLabels()) {
+			oneLabel(rhs.nbObs(), rhs.maxNbLabels());
 		}
 		for (size_t n(0); n < nbObs(); ++n)
 			shift(n, rhs.label(n));
@@ -108,7 +110,6 @@ Partition & Partition::operator=(Partition const & rhs) {
 
 }
 void Partition::random(size_t k) {
-
 	IndexedList nodes(nbObs(), true);
 	for (size_t i(0); i < maxNbLabels(); ++i) {
 		size_t const n(nodes.pop_random());
@@ -116,7 +117,6 @@ void Partition::random(size_t k) {
 	}
 	for (auto const & n : nodes)
 		shift(n, Number::Generator() % maxNbLabels());
-
 }
 void Partition::setWeights(DoubleVector const & rhs) {
 	_nodeWeights = rhs;

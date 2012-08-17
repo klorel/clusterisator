@@ -5,7 +5,8 @@
  *      Author: manuel
  */
 
-#include "KMInstance.hpp"
+#include "../src/KMInstance.hpp"
+#include "../src/IPartition.hpp"
 
 KMInstance::KMInstance() {
 	_cst = 0;
@@ -13,22 +14,22 @@ KMInstance::KMInstance() {
 
 // on agrège
 KMInstance::KMInstance(KMInstance const & instance,
-		Agregations const & agregations, IntVector& newIds) {
-	allocate(agregations.size(), instance.nbAtt());
+		Agregations const & agregations) {
+	allocate(agregations.v.size(), instance.nbAtt());
 	std::fill_n(_weights.begin(), _weights.size(), Zero<Double>());
 
-	for (size_t i(0); i < agregations.size(); ++i) {
-		for (auto const & j : agregations[i])
+	for (size_t i(0); i < agregations.v.size(); ++i) {
+		for (auto const & j : agregations.v[i])
 			for (size_t d(0); d < nbAtt(); ++d)
 				_data.plus(i, d, instance.get(j, d));
 
-		assert(agregations[i].size() > 0);
-		_weights[i] = static_cast<Double>(agregations[i].size());
+		assert(agregations.v[i].size() > 0);
+		_weights[i] = static_cast<Double>(agregations.v[i].size());
 		assert(_weights[i]> 0);
 		for (size_t d(0); d < nbAtt(); ++d)
 			_data.get(i, d) /= _weights[i];
 		if (_weights[i] > 1) {
-			for (auto const & j : agregations[i])
+			for (auto const & j : agregations.v[i])
 				for (size_t d(0); d < nbAtt(); ++d)
 					_cst += std::pow(get(i, d) - instance.get(j, d), 2);
 		}
@@ -36,7 +37,7 @@ KMInstance::KMInstance(KMInstance const & instance,
 	// les contraintes cannot link
 	for (size_t i(0); i < instance.nbObs(); ++i) {
 		for (auto const & j : instance.cannotLinks().get(i))
-			cannotLink(newIds[i], newIds[j]);
+			cannotLink(agregations.newIds[i], agregations.newIds[j]);
 
 	}
 }
@@ -95,11 +96,26 @@ void KMInstance::readData(std::string const & fileName) {
 	}
 }
 
-void KMInstance::buildMustLink(Agregations & result, IntVector & newIds) const {
+void KMInstance::readConstraints(std::string const & fileName) {
+	std::ifstream file(fileName.c_str());
+	if (file.good()) {
+		size_t i;
+		size_t j;
+		int v;
+		while (file >> i && file >> j && file >> v) {
+			if (v > 0)
+				_must.newCtr(i, j);
+			else
+				_cannot.newCtr(i, j);
+		}
+	}
+}
+
+void KMInstance::buildMustLink(Agregations & result) const {
 	std::list<IntSet> agregations;
 	std::vector<std::list<IntSet>::iterator> temp(nbObs(), agregations.end());
 	size_t n(0);
-	newIds.assign(nbObs(), -1);
+	result.newIds.assign(nbObs(), -1);
 
 	for (size_t i(0); i < nbObs(); ++i) {
 		auto it(temp[i]);
@@ -107,20 +123,20 @@ void KMInstance::buildMustLink(Agregations & result, IntVector & newIds) const {
 			agregations.push_front(IntSet());
 			temp[i] = agregations.begin();
 			temp[i]->insert(i);
-			newIds[i] = n;
+			result.newIds[i] = n;
 			++n;
 		}
 		for (auto const & j : _must.get(i)) {
 			temp[j] = temp[i];
-			newIds[j] = newIds[i];
+			result.newIds[j] = result.newIds[i];
 			temp[j]->insert(j);
 		}
 	}
 
 	OUT<< "found "<<n<<" agregated point\n";
-	result.assign(n, IntSet());
-	std::copy(agregations.rbegin(), agregations.rend(), result.begin());
-	for (auto const & id : newIds) {
+	result.v.assign(n, IntSet());
+	std::copy(agregations.rbegin(), agregations.rend(), result.v.begin());
+	for (auto const & id : result.newIds) {
 		assert(id < n);
 	}
 }
@@ -131,10 +147,12 @@ void KMInstance::mustLink(size_t i, size_t j) {
 void KMInstance::cannotLink(size_t i, size_t j) {
 	_cannot.newCtr(i, j);
 }
-KMConstraints const & KMInstance::mustLinks() const {
+KMConstraints
+const & KMInstance::mustLinks() const {
 	return _must;
 }
-KMConstraints const & KMInstance::cannotLinks() const {
+KMConstraints
+const & KMInstance::cannotLinks() const {
 	return _cannot;
 }
 
@@ -142,4 +160,20 @@ std::ostream & operator<<(std::ostream &stream, KMInstance const &rhs) {
 	stream << rhs.data();
 	return stream;
 
+}
+
+bool KMInstance::feasible(IPartition const & p) const {
+	for (auto const & ctr : _must) {
+		if (p.label(ctr.first) != p.label(ctr.second)) {
+			OUT<< ctr.first << " should be with "<<ctr.second<<"\n";
+			return false;
+		}
+	}
+	for(auto const & ctr : _cannot) {
+		if (p.label(ctr.first) == p.label(ctr.second)) {
+			OUT << ctr.first << " should not be with "<<ctr.second<<"\n";
+			return false;
+		}
+	}
+	return true;
 }

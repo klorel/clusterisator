@@ -12,16 +12,18 @@
 #include "../src/Partition.hpp"
 #include "../src/KMInstance.hpp"
 
+class KMPartition;
+
 class KMPartition: public Partition {
 public:
-	KMPartition(KMInstance const &, size_t k);
+	KMPartition(KMInstance const &, size_t k = 1);
 	virtual ~KMPartition();
 
 	void computeCenters();
 	void computeCenters(RectMatrix &) const;
 
 	RectMatrix const & centers() const;
-
+	KMInstance const & instance() const;
 	Double cst() const;
 
 	virtual void shift(size_t node, size_t to);
@@ -31,6 +33,7 @@ public:
 
 	Double getDistance(size_t i, size_t k) const;
 	Double getDistance(size_t i) const;
+	KMPartition & operator=(KMPartition const &);
 private:
 	KMInstance const & _input;
 	RectMatrix _centers;
@@ -71,5 +74,7 @@ inline Double KMPartition::cst() const {
 inline RectMatrix const & KMPartition::centers() const {
 	return _centers;
 }
-
+inline KMInstance const & KMPartition::instance() const {
+	return _input;
+}
 #endif /* KMPARTITION_HPP_ */

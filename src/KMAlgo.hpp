@@ -20,7 +20,8 @@ public:
 	typedef std::pair<size_t, size_t> Move;
 	typedef std::vector<Move> Moves;
 	typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
-
+public:
+	static Double ComputeMssc(IPartition const &, KMInstance const &);
 public:
 	KMAlgo(KMPartition &);
 	virtual ~KMAlgo();
@@ -32,6 +33,8 @@ public:
 
 	void hMeans(size_t maxIte);
 	void kMeans(size_t maxIte);
+
+	KMPartition & partition();
 public:
 	template<class T> void out(std::string const &, T const&) const;
 
@@ -52,6 +55,7 @@ public:
 	std::pair<size_t, Double> getClosest(size_t i) const;
 	std::pair<size_t, Double> getBest(size_t i) const;
 	Double getDelta(size_t i, size_t l, size_t j) const;
+	Double getDelta(size_t i, size_t j) const;
 private:
 	KMPartition & _input;
 

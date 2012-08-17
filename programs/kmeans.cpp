@@ -16,83 +16,76 @@
 #include "../src/Env.hpp"
 #include "../src/Number.hpp"
 
-//template<typename T>
-//std::ostream& write(std::ostream& os, const T& value) {
-//	return os.write(reinterpret_cast<const char*>(&value), sizeof(T));
-//}
-//
-//template<typename T>
-//std::istream & read(std::istream& is, T& value) {
-//	return is.read(reinterpret_cast<char*>(&value), sizeof(T));
-//}
+/*
+ * to do :
+ * tirer aléatoirement des partitions agrégés et vérifier les objectifs et delta par rapport au modèle classique
+ */
+
+void testDelta(KMAlgo & algo) {
+	Timer timer;
+	Double const obj(
+			KMAlgo::ComputeMssc(algo.partition(), algo.partition().instance()));
+	for (size_t i(0); i < algo.partition().nbObs(); ++i) {
+		if (i % 100 == 0)
+			algo.partition().computeCenters();
+		size_t const l(algo.partition().label(i));
+
+		for (size_t k(0); k < algo.partition().nbLabels(); ++k) {
+			Double const delta(algo.getDelta(i, k));
+			algo.shift(i, k);
+			if (!IsEqual(
+					KMAlgo::ComputeMssc(algo.partition(),
+							algo.partition().instance()), algo.computeCost())) {
+				OUT<< std::setw(6)<<timer.elapsed();
+				OUT<< std::setw(4)<<i;
+				OUT<< std::setw(4)<<l;
+				OUT<< std::setw(4)<<k;
+				OUT<<"\n";
+				OUT<<KMAlgo::ComputeMssc(algo.partition(),
+						algo.partition().instance())
+				<< " != "<< algo.computeCost()<<"\n";
+			}
+			if (!IsEqual(obj + delta, algo.computeCost())) {
+				OUT<< std::setw(6)<<timer.elapsed();
+				OUT<< std::setw(4)<<i;
+				OUT<< std::setw(4)<<l;
+				OUT<< std::setw(4)<<k;
+				OUT<<"\n";
+				OUT<< obj+delta << " != "<<algo.computeCost()<<"\n";
+				assert(false);
+			}
+			algo.shift(i, l);
+		}
+	}
+}
 
 int main(int argc, char ** argv) {
 
 	std::string const dataFileName(argv[1]);
 	size_t const k(atoi(argv[2]));
 
+	//	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
+
 	KMInstance instance;
 	instance.readData(dataFileName);
-
-	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
-	KMPartition partition(instance, k);
-	assert(partition.checkWeights());
-
-	RectMatrix r(k, instance.nbAtt());
-	partition.computeCenters(r);
-	assert(r == partition.centers());
-
-	std::cout << "partition.random(k);\n";
-	partition.random(k);
-
-	//	for (size_t p(0); p < 5; ++p) {
-
-	instance.mustLink(0, 1);
-	partition.shift(0, partition.label(1));
-	//	}
-	KMAlgo kmeans(partition);
-	std::cout << std::setprecision(15) << kmeans.computeCost() << "\n";
-
-	Agregations agregations;
-	IntVector newIds;
-	instance.buildMustLink(agregations, newIds);
-
-	KMInstance instance2(instance, agregations, newIds);
-	std::cout << std::setprecision(15) << instance2.cst() << "\n";
-
-	KMPartition partition2(instance2, k);
-	for (size_t i(0); i < instance.nbObs(); ++i) {
-		partition2.shift(newIds[i], partition.label(i));
+	if (argc > 3) {
+		std::string const ctrsFileName(argv[3]);
+		instance.readConstraints(ctrsFileName);
 	}
 
-	std::cout << std::setprecision(15) << kmeans.computeCost() << "\n";
-	kmeans.shift(0, 1);
-	kmeans.shift(1, 1);
-	std::cout << std::setprecision(15) << kmeans.computeCost() << "\n";
-	std::cout << "--------------\n";
+	Agregations agregations;
+
+	instance.buildMustLink(agregations);
+	// agrégation
+	KMInstance instance2(instance, agregations);
+	KMPartition partition2(instance2, k);
 
 	KMAlgo kmeans2(partition2);
 	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
-	std::cout << std::setprecision(15)
-			<< kmeans2.computeCost() + kmeans2.getDelta(newIds[0], 0, 1)
-			<< "\n";
-	kmeans2.shift(newIds[0], 1);
-	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
-	//
-
-	kmeans.hMeans(600);
-	kmeans2.hMeans(600);
-
-	//	kmeans.run2();
-	//	OUT<< data;
-	//	if (argc != 3) {
-	//		std::cout << "kmeans <graphFile> <k>\n";
-	//		return 0;
-	//	}
-	//	std::string dataFileName(argv[1]);
-	//	std::string partitionName(argv[2]);
-	//
-	//	Partition partition;
-	//	IBuilder::Get<IPartition>(partition, partitionName);
+	for (size_t p(0); p < 10; ++p) {
+		std::cout << p << std::endl;
+		partition2.random(k);
+		testDelta(kmeans2);
+	}
 	return 0;
 }

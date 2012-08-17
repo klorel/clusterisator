@@ -14,6 +14,7 @@ class KMConstraints {
 public:
 	typedef std::pair<size_t, size_t> Constraint;
 	typedef std::set<Constraint> Constraints;
+	typedef Constraints::const_iterator const_iterator;
 public:
 	KMConstraints(size_t n = 0);
 	virtual ~KMConstraints();
@@ -25,6 +26,8 @@ public:
 	IntSet const & get(size_t obs) const;
 
 	size_t size() const;
+	const_iterator begin() const;
+	const_iterator end() const;
 
 private:
 	Constraints _all;
@@ -58,6 +61,14 @@ inline void KMConstraints::clear() {
 
 inline size_t KMConstraints::size() const {
 	return _all.size();
+}
+
+inline KMConstraints::const_iterator KMConstraints::begin() const {
+	return _all.begin();
+}
+inline KMConstraints::const_iterator KMConstraints::end() const {
+	return _all.end();
+
 }
 
 #endif /* KMCONSTRAINTS_HPP_ */

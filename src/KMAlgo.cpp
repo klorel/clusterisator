@@ -222,9 +222,17 @@ Double KMAlgo::computeCost() const {
 
 Double KMAlgo::getDelta(size_t i, size_t l, size_t j) const {
 	assert(_input.label(i)==l);
-	return _input.obsWeight(i)
-			* (_input.getDistance(i, j) * _input.getCoeff<true>(i, j)
-					- _input.getDistance(i, l) * _input.getCoeff<false>(i, l));
+	if (l != j)
+		return _input.obsWeight(i)
+				* (_input.getDistance(i, j) * _input.getCoeff<true>(i, j)
+						- _input.getDistance(i, l)
+								* _input.getCoeff<false>(i, l));
+	else
+		return Zero<Double>();
+}
+Double KMAlgo::getDelta(size_t i, size_t j) const {
+	size_t const l(_input.label(i));
+	return getDelta(i, l, j);
 }
 
 std::pair<size_t, Double> KMAlgo::getBest(size_t i) const {
@@ -275,3 +283,32 @@ std::pair<size_t, Double> KMAlgo::getClosest(size_t i) const {
 	return min;
 }
 
+Double KMAlgo::ComputeMssc(IPartition const & x, KMInstance const & instance) {
+	RectMatrix centers(x.maxNbLabels(), instance.nbAtt());
+	centers.assign(0);
+	DoubleVector weights(x.maxNbLabels(), Zero<Double>());
+	for (auto const & l : x.used()) {
+		for (auto const & i : x.list(l)) {
+			weights[l] += instance.weight(i);
+			for (size_t d(0); d < instance.nbAtt(); ++d)
+				centers.plus(l, d, instance.get(i, d) * instance.weight(i));
+		}
+	}
+	Double result(Zero<Double>());
+	for (size_t i(0); i < instance.nbObs(); ++i) {
+		size_t const l(x.label(i));
+		for (size_t d(0); d < instance.nbAtt(); ++d)
+			result += instance.weight(i)
+					* std::pow(
+							instance.get(i, d) - centers.get(l, d) / weights[l],
+							2);
+
+	}
+
+	return result;
+}
+
+KMPartition & KMAlgo::partition() {
+	return _input;
+
+}
