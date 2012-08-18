@@ -19,18 +19,20 @@
 
 template<AvailableInstances id> void launch() {
 	GetInstance<id> instance;
-	std::cout << std::setw(25) << std::left << instance.name << std::right;
+	std::cout << std::setw(25) << std::left << instance.name;
 	Partition real(instance.real());
-	OUT<< std::setprecision(15) << KMAlgo::ComputeMssc(real,instance) << "\n";
-//	Agregations agregations;
-//	instance.buildMustLink(agregations);
-//	// agrégation
-//	KMInstance instance2(instance, agregations);
-//	KMPartition partition2(instance2, k);
-//	partition2.random(k);
-//	KMAlgo kmeans2(partition2);
-//
-//	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
+	size_t const k(real.nbLabels());
+	OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(real,instance) << "\n";
+	Agregations agregations;
+	instance.buildMustLink(agregations);
+	// agrégation
+	KMInstance instance2(instance, agregations);
+	KMPartition partition2(instance2, k);
+	partition2.random(k);
+	KMAlgo kmeans2(partition2);
+	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
+	kmeans2.hMeans(600);
+	kmeans2.kMeans(600);
 }
 
 template<AvailableInstances No> struct run {
