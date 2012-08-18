@@ -17,6 +17,7 @@ class KMPartition;
 class KMPartition: public Partition {
 public:
 	KMPartition(KMInstance const &, size_t k = 1);
+	KMPartition(KMInstance const &, Partition const &);
 	virtual ~KMPartition();
 
 	void computeCenters();

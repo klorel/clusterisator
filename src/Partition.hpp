@@ -19,7 +19,7 @@ class Partition: public IPartition {
 public:
 
 	Partition(size_t n, size_t k = 1);
-	Partition(IntVector const &);
+	Partition(Partition const &);
 	virtual ~Partition();
 public:
 	void set(IntVector const & v);

@@ -64,7 +64,8 @@ int main(int argc, char ** argv) {
 	std::string const dataFileName(argv[1]);
 	size_t const k(atoi(argv[2]));
 
-	//	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
+	Number::SetSeed(0);
+//	Number::SetSeed(argc > 3 ? atoi(argv[3]) : 0);
 
 	KMInstance instance;
 	instance.readData(dataFileName);
@@ -79,8 +80,9 @@ int main(int argc, char ** argv) {
 	// agrégation
 	KMInstance instance2(instance, agregations);
 	KMPartition partition2(instance2, k);
-
+	partition2.random(k);
 	KMAlgo kmeans2(partition2);
+
 	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
 	kmeans2.hMeans(600);
 	return 0;

@@ -38,6 +38,9 @@ int main(int argc, char ** argv) {
 	}
 	Partition partition(NB_OBS);
 	partFileName >> partition;
+	OUT<< std::left<<"Nb observations : "<<partition.nbObs()<<"\n";
+	OUT<< std::left<<"Nb labels       : "<<partition.nbLabels()<<"\n";
+	OUT<< std::right;
 	if (instance.feasible(partition)) {
 		OUT<<"MSSC : "<< std::setprecision(15)<<KMAlgo::ComputeMssc(partition, instance)<<"\n";
 	}

@@ -56,6 +56,8 @@ public:
 	std::pair<size_t, Double> getBest(size_t i) const;
 	Double getDelta(size_t i, size_t l, size_t j) const;
 	Double getDelta(size_t i, size_t j) const;
+	void checkDelta(size_t i, size_t j);
+	void checkCenters()const;
 private:
 	KMPartition & _input;
 
@@ -63,9 +65,10 @@ private:
 	Double _cost;
 	Double _old;
 	size_t _ite;
-
+#if 0
 	IndexedList _pertObs;
 	IndexedList _pertLabels;
+#endif
 	Timer _timer;
 
 	Distances _distances;

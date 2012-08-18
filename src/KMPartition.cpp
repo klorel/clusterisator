@@ -12,7 +12,12 @@ KMPartition::KMPartition(KMInstance const & input, size_t k) :
 	setWeights(_input.weights());
 	computeCenters();
 }
-
+KMPartition::KMPartition(KMInstance const &input, Partition const &rhs) :
+		Partition(rhs), _input(input), _centers(rhs.maxNbLabels(),
+				input.nbAtt()) {
+	setWeights(_input.weights());
+	computeCenters();
+}
 KMPartition::~KMPartition() {
 
 }

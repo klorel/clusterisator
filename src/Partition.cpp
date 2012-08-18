@@ -10,6 +10,24 @@
 Partition::Partition(size_t n, size_t k) {
 	oneLabel(n, k);
 }
+Partition::Partition(Partition const & rhs) {
+	oneLabel(rhs.nbObs(), rhs.maxNbLabels());
+	for (size_t n(0); n < nbObs(); ++n)
+		shift(n, rhs.label(n));
+}
+
+Partition & Partition::operator=(Partition const & rhs) {
+	if (this != &rhs) {
+		if (rhs.nbObs() != nbObs() || rhs.maxNbLabels() != maxNbLabels()) {
+			oneLabel(rhs.nbObs(), rhs.maxNbLabels());
+		}
+		for (size_t n(0); n < nbObs(); ++n)
+			shift(n, rhs.label(n));
+	}
+	return *this;
+
+}
+
 Partition::~Partition() {
 
 }
@@ -97,17 +115,6 @@ bool Partition::checkWeights() const {
 		}
 	}
 	return true;
-}
-Partition & Partition::operator=(Partition const & rhs) {
-	if (this != &rhs) {
-		if (rhs.nbObs() != nbObs() || rhs.maxNbLabels() != maxNbLabels()) {
-			oneLabel(rhs.nbObs(), rhs.maxNbLabels());
-		}
-		for (size_t n(0); n < nbObs(); ++n)
-			shift(n, rhs.label(n));
-	}
-	return *this;
-
 }
 void Partition::random(size_t k) {
 	IndexedList nodes(nbObs(), true);
