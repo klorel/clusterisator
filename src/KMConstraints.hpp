@@ -17,6 +17,7 @@ public:
 	typedef Constraints::const_iterator const_iterator;
 public:
 	KMConstraints(size_t n = 0);
+	KMConstraints(size_t n, IntVector const &);
 	virtual ~KMConstraints();
 
 	void newCtr(size_t i, size_t j);
@@ -37,6 +38,14 @@ private:
 inline KMConstraints::KMConstraints(size_t n) :
 		_all(), _byObs(n) {
 
+}
+inline KMConstraints::KMConstraints(size_t n, IntVector const & values) :
+		_all(), _byObs(n) {
+	size_t i(0);
+	while (i < values.size() && i + 1 < values.size()) {
+		newCtr(values[i], values[i + 1]);
+		i += 2;
+	}
 }
 
 inline KMConstraints::~KMConstraints() {

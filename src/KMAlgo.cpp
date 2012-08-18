@@ -13,10 +13,10 @@ KMAlgo::KMAlgo(KMPartition & input) :
 		_input(input), _d(input.nbObs(), 0), _cost(0) {
 	_ite = 0;
 	_old = 0;
-#if 0
+
 	_pertLabels = IndexedList(input.getK());
-	_pertObs = IndexedList(input.nbObs());
-#endif
+	_pertNodes = IndexedList(input.nbObs());
+	_buffer.reserve(input.nbObs());
 
 }
 
@@ -42,27 +42,24 @@ void KMAlgo::computeDistances() {
 	}
 }
 
-void KMAlgo::random() {
-	_input.random(_input.getK());
-}
 void KMAlgo::hMeansLoop(Moves & moves) {
 	moves.clear();
 	for (size_t i(0); i < _input.nbObs(); ++i) {
-		std::pair<size_t, Double> k(getClosest(i));
+		std::pair<size_t, Double> const k(getClosest(i));
 		if (k.first != _input.label(i)) {
 			moves.push_back(std::make_pair(i, k.first));
 			assert(getDelta(i,k.first)<0);
-//#ifdef LOCAL_DEBUG
-//			OUT<< i << " : "<<_input.label(i) << " --> " << k.first<<" : "<<getDelta(i,k.first)<<"\n";
-//			OUT<< _d[i]<<" | "<<k.second<<"\n";
-//			OUT<<"\n";
-//			checkDelta(i, k.first);
-//			checkCenters();
-//			OUT<<_input.centers();
-//			assert(getDelta(i,k.first)<0);
-//
-//			break;
-//#endif
+			//#ifdef LOCAL_DEBUG
+			//			OUT<< i << " : "<<_input.label(i) << " --> " << k.first<<" : "<<getDelta(i,k.first)<<"\n";
+			//			OUT<< _d[i]<<" | "<<k.second<<"\n";
+			//			OUT<<"\n";
+			//			checkDelta(i, k.first);
+			//			checkCenters();
+			//			OUT<<_input.centers();
+			//			assert(getDelta(i,k.first)<0);
+			//
+			//			break;
+			//#endif
 			//					<< _pertLabels.contains(k.first) << "\n";
 		}
 	}
@@ -82,22 +79,22 @@ void KMAlgo::checkCenters() const {
 	assert(centers==_input.centers());
 }
 void KMAlgo::singleton() {
-	_empty.clear();
-	PushBack(_input.unUsed(), _empty);
+	_buffer.clear();
+	PushBack(_input.unUsed(), _buffer);
 	//		DisplayContainer(OUT<<"\nused : ", _input.used());
 	//		DisplayContainer(OUT<<"empty : ", _empty);
 	//		DisplayContainer(OUT<<"unUsed : ", _input.unUsed());
 	//	_input.checkLists();
-	assert(_empty.size() == _input.unUsed().size());
-	assert(_empty.size() + _input.nbLabels() == _input.getK());
+	assert(_buffer.size() == _input.unUsed().size());
+	assert(_buffer.size() + _input.nbLabels() == _input.getK());
 
-	while (!_empty.empty()) {
-		assert(!_input.isUsed(_empty.back()));
+	while (!_buffer.empty()) {
+		assert(!_input.isUsed(_buffer.back()));
 		assert(_distances.begin()->first>Zero<Double>());
-		shift(_distances.begin()->second, _empty.back());
+		shift(_distances.begin()->second, _buffer.back());
 		_cost -= _distances.begin()->first;
-		assert(_input.isUsed(_empty.back()));
-		_empty.pop_back();
+		assert(_input.isUsed(_buffer.back()));
+		_buffer.pop_back();
 
 		_distances.erase(_distances.begin());
 	}
@@ -113,12 +110,10 @@ void KMAlgo::kMeans(size_t maxIte) {
 	assert(checkCost());
 	_ite = 0;
 	out(OUT);
-#if 0
+	_pertNodes.fill();
 	_pertLabels.clear();
 	for (auto const & label : _input.used())
-	_pertLabels.insert(label);
-	_pertObs.fill();
-#endif
+		_pertLabels.insert(label);
 	do {
 		_old = _cost;
 		++_ite;
@@ -133,10 +128,9 @@ void KMAlgo::kMeans(size_t maxIte) {
 			}
 		}
 		out(OUT);
-#if 0
-		_pertObs.clear();
 		_pertLabels.clear();
-#endif
+		_pertNodes.clear();
+
 	} while (_ite != maxIte && improvement);
 
 }
@@ -151,10 +145,8 @@ bool KMAlgo::checkCost() const {
 }
 
 void KMAlgo::apply(Moves const & moves) {
-#if 0
-	_pertObs.clear();
 	_pertLabels.clear();
-#endif
+	_pertNodes.clear();
 	if (!moves.empty()) {
 		for (auto const & move : moves) {
 			apply(move);
@@ -169,28 +161,26 @@ void KMAlgo::apply(Move const & m) {
 }
 
 void KMAlgo::shift(size_t node, size_t to) {
-
-#if 0
-	size_t const from(_input.label(node));
-	_pertObs.insert(node);
-	_pertLabels.insert(from);
-	_pertLabels.insert(to);
-#endif
-	_input.shift(node, to);
+	if (feasible(node, to)) {
+		size_t const from(_input.label(node));
+		_pertLabels.insert(from);
+		_pertLabels.insert(to);
+		_pertNodes.insert(node);
+		_input.shift(node, to);
+	}
 }
 
 void KMAlgo::out(std::ostream & stream) const {
 	stream << std::setw(10) << _timer.elapsed();
 	stream << std::setw(10) << _ite;
-	stream << std::setw(6) << _input.nbLabels();
+	stream << std::setw(10) << _input.nbLabels();
 	stream << std::setw(20) << std::setprecision(10) << _cost;
 
 	stream << std::setw(20)
 			<< (IsEqual(_cost, _old) ? 0 : (_old - _cost) / _old * 100);
-#if 0
-	stream << std::setw(15) << _pertObs.size();
+	stream << std::setw(15) << _pertNodes.size();
 	stream << std::setw(15) << _pertLabels.size();
-#endif
+
 	stream << std::endl;
 }
 
@@ -201,6 +191,7 @@ void KMAlgo::headers(std::ostream & stream) const {
 	out("---------------", "");
 	stream << std::setw(10) << "TIME";
 	stream << std::setw(10) << "ITERATION";
+	stream << std::setw(10) << "NB LABELS";
 	stream << std::setw(20) << "COST";
 	stream << std::setw(20) << "DELTA(%)";
 	stream << std::setw(15) << "PERT OBS";
@@ -238,9 +229,10 @@ std::pair<size_t, Double> KMAlgo::getBest(size_t i) const {
 	if (_input.sizeOfLabel(l) != 1) {
 		Double const cst(-_input.getDistance(i) * _input.getCoeff<false>(i, l));
 		for (size_t j(0); j < _input.getK(); ++j) {
-			if (j != l) {
+			if (j != l && feasible(i, j)) {
 				Double delta(cst);
 				delta += _input.getDistance(i, j) * _input.getCoeff<true>(i, j);
+				delta *= _input.obsWeight(i);
 				assert(IsEqual(delta, getDelta(i,l,j)));
 				if (delta < min.second) {
 					min.first = j;
@@ -254,27 +246,26 @@ std::pair<size_t, Double> KMAlgo::getBest(size_t i) const {
 std::pair<size_t, Double> KMAlgo::getClosest(size_t i) const {
 	size_t const l(_input.label(i));
 	std::pair<size_t, Double> min(l, _d[i]);
-	//	if (_pertLabels.contains(l)) {
-	for (size_t k(0); k < _input.getK(); ++k) {
-		if (k != l) {
-			std::pair<size_t, Double> const d(k, _input.getDistance(i, k));
-			if (d.second < min.second) {
-				min = d;
+	if (_pertLabels.contains(l)) {
+		for (size_t k(0); k < _input.getK(); ++k) {
+			if (k != l) {
+				std::pair<size_t, Double> const d(k, _input.getDistance(i, k));
+				if (d.second < min.second) {
+					min = d;
+				}
+			}
+		}
+	} else {
+		for (auto const & k : _pertLabels) {
+			//		for (size_t k(0); k < _input.getK(); ++k) {
+			if (k != l) {
+				std::pair<size_t, Double> const d(k, _input.getDistance(i, k));
+				if (d.second < min.second) {
+					min = d;
+				}
 			}
 		}
 	}
-	//	} else {
-	//		for (auto const & k : _pertLabels) {
-	//			//		for (size_t k(0); k < _input.getK(); ++k) {
-	//			if (k != l) {
-	//				std::pair<size_t, Double> const d(
-	//						std::make_pair(k, _input.getDistance(i, k)));
-	//				if (d.second < min.second) {
-	//					min = d;
-	//				}
-	//			}
-	//		}
-	//	}
 	return min;
 }
 
@@ -317,21 +308,16 @@ void KMAlgo::hMeans(size_t maxIte) {
 
 	bool stop(false);
 	_ite = 0;
-#if 0
-	_pertObs.clear();
 	_pertLabels.clear();
-#endif
+	_pertNodes.clear();
 	computeDistances();
 	_old = _cost;
 	out(OUT);
-#if 0
-	_pertLabels.clear();
-	for (auto const & label : _input.used())
-	_pertLabels.insert(label);
-	_pertObs.fill();
-#endif
 
-	_empty.clear();
+	for (auto const & label : _input.used())
+		_pertLabels.insert(label);
+	_pertNodes.fill();
+	_buffer.clear();
 	do {
 		assert(checkCost());
 		++_ite;
@@ -341,10 +327,12 @@ void KMAlgo::hMeans(size_t maxIte) {
 			stop = true;
 		} else {
 			apply(moves);
+			if (_pertLabels.empty())
+				stop = true;
 		}
 		computeDistances();
-		singleton();
-		computeDistances();
+//		singleton();
+//		computeDistances();
 
 		assert(checkCost());
 		out(OUT);
@@ -353,6 +341,18 @@ void KMAlgo::hMeans(size_t maxIte) {
 
 	} while (_ite != maxIte && !stop);
 	std::cout << computeCost() << "\n";
+}
+
+bool KMAlgo::feasible(size_t i, size_t j) const {
+	for (auto const & n : _input.mustLinks(i)) {
+		if (_input.label(n) != j)
+			return false;
+	}
+	for (auto const & n : _input.cannotLinks(i)) {
+		if (_input.label(n) == j)
+			return false;
+	}
+	return true;
 }
 
 #undef LOCAL_DEBUG

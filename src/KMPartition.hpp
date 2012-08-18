@@ -35,6 +35,10 @@ public:
 	Double getDistance(size_t i, size_t k) const;
 	Double getDistance(size_t i) const;
 	KMPartition & operator=(KMPartition const &);
+	KMConstraints const & mustLinks() const;
+	KMConstraints const & cannotLinks() const;
+	IntSet const & mustLinks(size_t i) const;
+	IntSet const & cannotLinks(size_t i) const;
 private:
 	KMInstance const & _input;
 	RectMatrix _centers;
@@ -77,5 +81,17 @@ inline RectMatrix const & KMPartition::centers() const {
 }
 inline KMInstance const & KMPartition::instance() const {
 	return _input;
+}
+inline KMConstraints const & KMPartition::mustLinks() const {
+	return _input.mustLinks();
+}
+inline KMConstraints const & KMPartition::cannotLinks() const {
+	return _input.cannotLinks();
+}
+inline IntSet const & KMPartition::mustLinks(size_t i) const {
+	return _input.mustLinks().get(i);
+}
+inline IntSet const & KMPartition::cannotLinks(size_t i) const {
+	return _input.cannotLinks().get(i);
 }
 #endif /* KMPARTITION_HPP_ */

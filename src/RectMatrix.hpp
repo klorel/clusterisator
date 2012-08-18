@@ -13,6 +13,7 @@
 class RectMatrix {
 public:
 	RectMatrix(size_t n = 0, size_t m = 0, Double v = Zero<Double>());
+	RectMatrix(size_t n, size_t, DoubleVector const&);
 	virtual ~RectMatrix();
 
 	void allocate(size_t n, size_t m, Double v = Zero<Double>());
@@ -21,17 +22,19 @@ public:
 	Double & get(size_t i, size_t j);
 	void set(size_t i, size_t j, Double v);
 	void plus(size_t i, size_t j, Double v);
-	Double get(size_t i, DoubleVector const & point) const;
 
 	size_t getN() const;
 	size_t getM() const;
 
 	DoubleVector const& getRow(size_t i) const;
+	DoubleVector const & matrix() const;
 	void assign(Double v);
 
 	bool operator!=(RectMatrix const & rhs) const;
 	bool operator==(RectMatrix const & rhs) const;
 
+	void read(std::string const &);
+	void read(size_t i, std::string const &);
 private:
 	size_t key(size_t i, size_t j) const;
 	size_t _n;
@@ -45,7 +48,10 @@ inline RectMatrix::RectMatrix(size_t n, size_t m, Double v) {
 	allocate(n, m, v);
 
 }
+inline RectMatrix::RectMatrix(size_t n, size_t m, DoubleVector const &matrix) :
+		_n(n), _m(m), _matrix(matrix) {
 
+}
 inline RectMatrix::~RectMatrix() {
 
 }
@@ -84,13 +90,6 @@ inline void RectMatrix::assign(Double v) {
 	std::fill_n(_matrix.begin(), _matrix.size(), v);
 //	_matrix.assign(_matrix.size(), v);
 }
-inline Double RectMatrix::get(size_t i, DoubleVector const & point) const {
-	Double square_distance(0);
-	for (size_t d(0); d < getM(); ++d) {
-		square_distance += std::pow(get(i, d) - point[d], 2);
-	}
-	return square_distance;
-}
 
 inline std::ostream & operator<<(std::ostream & stream,
 		RectMatrix const & rhs) {
@@ -112,5 +111,21 @@ inline bool RectMatrix::operator==(RectMatrix const & rhs) const {
 			return false;
 	return true;
 }
+inline void RectMatrix::read(size_t i, std::string const & values) {
+	std::stringstream stream(values);
+	for (size_t d(0); d < _m; ++d)
+		stream >> get(i, d);
+}
 
+inline void RectMatrix::read(std::string const & values) {
+	std::stringstream stream(values);
+	for (size_t i(0); i < _n; ++i)
+		for (size_t d(0); d < _m; ++d)
+			stream >> get(i, d);
+
+}
+
+inline DoubleVector const &RectMatrix::matrix() const {
+	return _matrix;
+}
 #endif /* RECTMATRIX_HPP_ */

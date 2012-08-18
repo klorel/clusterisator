@@ -45,6 +45,9 @@ KMInstance::KMInstance(KMInstance const & instance,
 RectMatrix const & KMInstance::data() const {
 	return _data;
 }
+RectMatrix & KMInstance::data() {
+	return _data;
+}
 size_t KMInstance::nbObs() const {
 	return _data.getN();
 }
@@ -66,6 +69,10 @@ Double & KMInstance::weight(size_t i) {
 }
 
 DoubleVector const & KMInstance::weights() const {
+	return _weights;
+}
+
+DoubleVector & KMInstance::weights() {
 	return _weights;
 }
 
@@ -147,12 +154,16 @@ void KMInstance::mustLink(size_t i, size_t j) {
 void KMInstance::cannotLink(size_t i, size_t j) {
 	_cannot.newCtr(i, j);
 }
-KMConstraints
-const & KMInstance::mustLinks() const {
+KMConstraints const & KMInstance::mustLinks() const {
 	return _must;
 }
-KMConstraints
-const & KMInstance::cannotLinks() const {
+KMConstraints const & KMInstance::cannotLinks() const {
+	return _cannot;
+}
+KMConstraints & KMInstance::mustLinks() {
+	return _must;
+}
+KMConstraints & KMInstance::cannotLinks() {
 	return _cannot;
 }
 
@@ -176,4 +187,30 @@ bool KMInstance::feasible(IPartition const & p) const {
 		}
 	}
 	return true;
+}
+
+void KMInstance::cpp(std::ostream & stream) const {
+	std::string s;
+
+	stream << "_weights.assign(" << nbObs() << ",One<Double>());\n";
+	stream << "_must = KMConstraints( ";
+	stream << nbObs() << " , ";
+	stream << " {";
+	for (auto const & p : _must) {
+		stream << p.first << " , " << p.second << " , ";
+	}
+	stream << " } );\n";
+	stream << "_cannot = KMConstraints( ";
+	stream << nbObs() << " , ";
+	stream << " {";
+	for (auto const & p : _cannot) {
+		stream << p.first << " , " << p.second << " , ";
+	}
+	stream << " } );\n";
+	stream << "_cst = Zero<Double>();\n";
+	stream << "_data  = RectMatrix(";
+	stream << nbObs() << " , " << 13 << " , { ";
+	std::copy(_data.matrix().begin(), _data.matrix().end(),
+			std::ostream_iterator<Double>(stream, " , "));
+	stream << "} );\n";
 }

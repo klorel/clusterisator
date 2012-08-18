@@ -26,12 +26,11 @@ public:
 	KMAlgo(KMPartition &);
 	virtual ~KMAlgo();
 
-	void random();
-
 	void hMeansLoop(Moves &);
+	void hMeans(size_t maxIte);
+
 	void singleton();
 
-	void hMeans(size_t maxIte);
 	void kMeans(size_t maxIte);
 
 	KMPartition & partition();
@@ -54,10 +53,11 @@ public:
 
 	std::pair<size_t, Double> getClosest(size_t i) const;
 	std::pair<size_t, Double> getBest(size_t i) const;
+	bool feasible(size_t i, size_t j)const;
 	Double getDelta(size_t i, size_t l, size_t j) const;
 	Double getDelta(size_t i, size_t j) const;
 	void checkDelta(size_t i, size_t j);
-	void checkCenters()const;
+	void checkCenters() const;
 private:
 	KMPartition & _input;
 
@@ -65,15 +65,16 @@ private:
 	Double _cost;
 	Double _old;
 	size_t _ite;
-#if 0
-	IndexedList _pertObs;
+
 	IndexedList _pertLabels;
-#endif
+	IndexedList _pertNodes;
+
 	Timer _timer;
 
 	Distances _distances;
 
-	IntList _empty;
+	IntVector _buffer;
+
 };
 
 template<class T> inline

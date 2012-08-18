@@ -12,9 +12,8 @@
 #include "../src/RectMatrix.hpp"
 #include "../src/KMConstraints.hpp"
 
-
-class Agregations{
-public :
+class Agregations {
+public:
 	std::vector<IntSet> v;
 	IntVector newIds;
 };
@@ -28,6 +27,7 @@ public:
 
 	bool feasible(IPartition const &) const;
 
+	RectMatrix & data();
 	RectMatrix const & data() const;
 	size_t nbObs() const;
 	size_t nbAtt() const;
@@ -35,6 +35,7 @@ public:
 
 	Double cst() const;
 
+	DoubleVector & weights();
 	DoubleVector const & weights() const;
 	Double weight(size_t) const;
 	Double & weight(size_t);
@@ -51,8 +52,13 @@ public:
 	KMConstraints const & mustLinks() const;
 	KMConstraints const & cannotLinks() const;
 
+	KMConstraints & mustLinks();
+	KMConstraints & cannotLinks();
+
 	KMInstance();
 	KMInstance(KMInstance const &, Agregations const &);
+
+	void cpp(std::ostream &) const;
 public:
 	RectMatrix _data;
 	Double _cst;
