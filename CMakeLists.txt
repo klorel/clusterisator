@@ -3,7 +3,7 @@ PROJECT(clusterisator)
 
 OPTION( WITH_TESTS "Build tests" OFF)
 OPTION( WITH_PROF "Build with profiling" OFF)
-OPTION( WITH_DEBUG "Build with profiling" OFF)
+OPTION( WITH_DEBUG "Build in debug mode" OFF)
 
 IF( WITH_TESTS )
 INCLUDE_DIRECTORIES( gmock-1.6.0/gtest/include )
