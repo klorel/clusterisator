@@ -1,10 +1,3 @@
-/*
- * instances.hxx
- *
- *  Created on: 20 août 2012
- *      Author: manuel
- */
-
 // C++ code to generate GetInstances class
 //
 // REGISTER_INSTANCE(EnumName, DataFileName without extension .dat )

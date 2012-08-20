@@ -46,8 +46,13 @@ template<class T> constexpr T Infinity() {
 	return std::numeric_limits<T>::max();
 }
 
-template<class T> bool IsEqual(T const & t1, T const & t2) {
+template<class T> inline bool IsEqual(T const & t1, T const & t2) {
 	return std::abs(t1 - t2) <= 1e-6;
+}
+template<> inline bool IsEqual(Double const & t1, Double const & t2) {
+	Double const bigger(std::max(std::abs(t1), std::abs(t2)));
+	return std::abs(t1 - t2) / (bigger > One<Double>() ? bigger : One<Double>())
+			<= 1e-6;
 }
 
 template<> inline bool IsEqual<DoubleVector>(DoubleVector const & t1,
@@ -58,5 +63,5 @@ template<> inline bool IsEqual<DoubleVector>(DoubleVector const & t1,
 	return true;
 }
 
-void operator>>(std::istream & , IntVector & );
+void operator>>(std::istream &, IntVector &);
 #endif /* COMMON_H_ */

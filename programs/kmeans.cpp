@@ -15,44 +15,65 @@
 
 #include "../src/Env.hpp"
 #include "../src/Number.hpp"
-#include "../src/GetInstance.hpp"
+#include "../src/RegisteredInstance.hpp"
 
-template<AvailableInstances id> void launch() {
-	GetInstance<id> instance;
-	std::cout << std::setw(25) << std::left << instance.name;
-	Partition real(instance.real());
-	size_t const k(real.nbLabels());
-	OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(real,instance) << "\n";
-	Agregations agregations;
-	instance.buildMustLink(agregations);
-	// agrégation
-	KMInstance instance2(instance, agregations);
-	KMPartition partition2(instance2, k);
-	partition2.random(k);
-	KMAlgo kmeans2(partition2);
-	std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
-	kmeans2.hMeans(600);
-	kmeans2.kMeans(600);
-}
+class ILauncher {
+public:
+	virtual void run(AvailableInstances id)=0;
+	virtual ~ILauncher() {
+	}
+};
 
-template<AvailableInstances No> struct run {
+class Launcher: public ILauncher {
+public:
+	void run(AvailableInstances id) {
+		RegisteredInstance instance(id);
+//		KMInstance instance(Info::Get(id));
+		std::cout << std::setw(25) << std::left << instance.name;
+		Partition real(instance.real());
+		size_t const k(real.nbLabels());
+		OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(real,instance) << "\n";
+		Agregations agregations;
+		instance.buildMustLink(agregations);
+		// agrégation
+		KMInstance instance2(instance, agregations);
+		KMPartition partition2(instance2, k);
+
+		partition2.random(k);
+		KMAlgo kmeans2(partition2);
+		std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
+		kmeans2.headers(OUT);
+		kmeans2.hMeans(600);
+		kmeans2.kMeans(600);
+	}
+
+	virtual ~Launcher() {
+	}
+};
+
+template<AvailableInstances No> class RunAllFrom {
+public:
 	enum {
 		value = No
 	};
+
+	template<class LaunchT>
 	void go() {
 		// on lance ce run
-		launch<No>();
+		LaunchT().run(No);
 		// on lance le suivant
-		run<static_cast<AvailableInstances const>(No + 1)> t;
-		t.go();
+		RunAllFrom<static_cast<AvailableInstances const>(No + 1)> t;
+		t.go<LaunchT>();
 	}
 };
 
 // termination condition
-template<> struct run<AvailableInstances::SIZE> {
+template<> class RunAllFrom<AvailableInstances::SIZE> {
+public:
 	enum {
 		value = AvailableInstances::SIZE
 	};
+	template<class LaunchT>
 	void go() {
 
 	}
@@ -61,17 +82,11 @@ template<> struct run<AvailableInstances::SIZE> {
 int main(int argc, char ** argv) {
 	Number::SetSeed(0);
 
-	run<AvailableInstances::yeast> f;
-	f.go();
-//	launch<wine>();
-//	launch<wine1>();
-//	launch<wine2>();
-//	launch<balance_scale>();
-//	launch<balance_scale1>();
-//	launch<balance_scale2>();
-//	launch<iris>();
-//	launch<iris1>();
-//	launch<iris2>();
+//	RunAllFrom<AvailableInstances::wine> f;
+//	f.go<Launcher>();
+
+	Launcher().run(AvailableInstances::iris);
+
 	return 0;
 }
 
