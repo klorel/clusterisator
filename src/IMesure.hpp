@@ -8,6 +8,8 @@
 #ifndef IMESURE_HPP_
 #define IMESURE_HPP_
 
+#include "../src/common.h"
+
 class IPartition;
 class IMesure {
 public:

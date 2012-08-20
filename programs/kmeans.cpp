@@ -16,6 +16,7 @@
 #include "../src/Env.hpp"
 #include "../src/Number.hpp"
 #include "../src/RegisteredInstance.hpp"
+#include "../src/RandIndex.hpp"
 
 class ILauncher {
 public:
@@ -28,9 +29,9 @@ class Launcher: public ILauncher {
 public:
 	void run(AvailableInstances id) {
 		RegisteredInstance instance(id);
-//		KMInstance instance(Info::Get(id));
-		std::cout << std::setw(25) << std::left << instance.name;
+		OUT<< std::setw(25) << std::left << instance.name;
 		Partition real(instance.real());
+
 		size_t const k(real.nbLabels());
 		OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(real,instance) << "\n";
 		Agregations agregations;
@@ -45,6 +46,15 @@ public:
 		kmeans2.headers(OUT);
 		kmeans2.hMeans(600);
 		kmeans2.kMeans(600);
+
+		Partition candidate(real);
+		for (size_t i(0); i < real.nbObs(); ++i)
+			candidate.shift(i, partition2.label(agregations.newIds[i]));
+		OUT<< std::setw(25) << std::left << instance.name;
+		OUT<< std::setw(25) << std::left << RandIndex().compute(real, real);
+		OUT<< std::setw(25) << std::left << RandIndex().compute(real, candidate);
+		OUT<< "\n";
+
 	}
 
 	virtual ~Launcher() {
@@ -85,7 +95,7 @@ int main(int argc, char ** argv) {
 //	RunAllFrom<AvailableInstances::wine> f;
 //	f.go<Launcher>();
 
-	Launcher().run(AvailableInstances::iris);
+	Launcher().run(AvailableInstances::iris1);
 
 	return 0;
 }
