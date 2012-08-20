@@ -233,7 +233,12 @@ std::pair<size_t, Double> KMAlgo::getBest(size_t i) const {
 				Double delta(cst);
 				delta += _input.getDistance(i, j) * _input.getCoeff<true>(i, j);
 				delta *= _input.obsWeight(i);
-				assert(IsEqual(delta, getDelta(i,l,j)));
+//				if (!IsEqual(delta, getDelta(i, l, j))) {
+//					OUT<<std::setprecision(15)<<delta - getDelta(i,l,j)<<"\n";
+//					OUT<<std::setprecision(15)<<delta<<"\n";
+//					OUT<<std::setprecision(15)<< getDelta(i,l,j)<<"\n";
+//					assert(IsEqual(delta, getDelta(i, l, j)));
+//				}
 				if (delta < min.second) {
 					min.first = j;
 					min.second = delta;

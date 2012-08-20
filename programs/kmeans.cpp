@@ -61,7 +61,7 @@ template<> struct run<AvailableInstances::SIZE> {
 int main(int argc, char ** argv) {
 	Number::SetSeed(0);
 
-	run<AvailableInstances::wine> f;
+	run<AvailableInstances::yeast> f;
 	f.go();
 //	launch<wine>();
 //	launch<wine1>();
