@@ -67,4 +67,37 @@ inline void RegisteredInstance::setNames(AvailableInstances id) {
 		ctrsName = "";
 }
 
+class ILauncher {
+public:
+	virtual void run(AvailableInstances id)=0;
+	virtual ~ILauncher() {
+	}
+};
+template<AvailableInstances No> class RunAllFrom {
+public:
+	enum {
+		value = No
+	};
+
+	template<class LaunchT>
+	void go() {
+		// on lance ce run
+		LaunchT().run(No);
+		// on lance le suivant
+		RunAllFrom<static_cast<AvailableInstances const>(No + 1)> t;
+		t.go<LaunchT>();
+	}
+};
+
+// termination condition
+template<> class RunAllFrom<AvailableInstances::SIZE> {
+public:
+	enum {
+		value = AvailableInstances::SIZE
+	};
+	template<class LaunchT>
+	void go() {
+
+	}
+};
 #endif

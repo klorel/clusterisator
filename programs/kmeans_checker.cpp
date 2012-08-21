@@ -12,7 +12,6 @@
 #include "../src/KMPartition.hpp"
 #include "../src/KMAlgo.hpp"
 
-#include "../src/Env.hpp"
 #include "../src/Number.hpp"
 
 //template<typename T>
@@ -25,30 +24,35 @@
 //	return is.read(reinterpret_cast<char*>(&value), sizeof(T));
 //}
 
-int main(int argc, char ** argv) {
+void usage() {
+	OUT<< "kmeans_checker <data> <partition> <constraints (optional)>\n";
+	exit(0);
+}
 
+int main(int argc, char ** argv) {
+	if (argc < 3) {
+		OUT<< "kmeans_checker <data> <partition> <constraints (optional)>\n";
+	}
 	std::string const dataFileName(argv[1]);
 	std::string const partFileName(argv[2]);
+	std::string const ctrsFileName(argc>3?argv[3]:"");
+
 	KMInstance instance;
 	instance.readData(dataFileName);
-	size_t const NB_OBS(instance.nbObs());
-	if (argc > 3) {
-		std::string const ctrsFileName(argv[3]);
+
+	if (!ctrsFileName.empty()) {
 		instance.readConstraints(ctrsFileName);
 	}
-	Partition partition(NB_OBS);
-	partFileName >> partition;
-	OUT<< std::left<<"Nb observations : "<<partition.nbObs()<<"\n";
-	OUT<< std::left<<"Nb labels       : "<<partition.nbLabels()<<"\n";
-	OUT<< std::right;
-	if (instance.feasible(partition)) {
-		OUT<<"MSSC : "<< std::setprecision(15)<<KMAlgo::ComputeMssc(partition, instance)<<"\n";
-	}
+	KMPartition kmpartition(instance);
+	partFileName >> kmpartition;
+	OUT<< std::left<<std::setw(20)<<"Nb observations"<<kmpartition.nbObs()<<"\n";
+	OUT<< std::left<<std::setw(20)<<"Nb labels"<<kmpartition.nbLabels()<<"\n";
 
-//	KMPartition kmpartition(instance);
-//	partFileName >> kmpartition;
-//	if (instance.feasible(kmpartition)) {
-//		OUT<<"MSSC : "<< std::setprecision(15)<<mssc(kmpartition, instance)<<"\n";
-//	}
+	if (instance.feasible(kmpartition)) {
+		OUT<<std::left<<std::setw(20)<<"MSSC"<< std::setprecision(15)<<KMAlgo::ComputeMssc(kmpartition, instance)<<"\n";
+		OUT<< std::right;
+	} else {
+		OUT<<"Infeasible solution\n";
+	}
 	return 0;
 }

@@ -10,7 +10,7 @@
 Vns::Vns(KMAlgo & algo) :
 		_algo(algo), _best(algo.partition(), algo.computeCost()), _nodes(
 				_best.first.nbObs()) {
-
+	_ite = 0;
 	for (size_t i(0); i < _nodes.size(); ++i)
 		_nodes[i] = i;
 }
@@ -49,6 +49,7 @@ void Vns::shake(size_t mag) {
 
 void Vns::run(size_t maxIte, size_t magMax) {
 	_ite = 0;
+	_algo.isTraceOn() = false;
 	do {
 		_k = 0;
 		do {
@@ -56,9 +57,12 @@ void Vns::run(size_t maxIte, size_t magMax) {
 			restart();
 			shake(++_k);
 			_algo.hMeans(0);
+			_algo.kMeans(0);
+			out();
 			if (_best.second > 1e-10 + _algo.cost()) {
 				save();
 				out();
+//				assert(false);
 			}
 		} while (_k < magMax);
 	} while (_ite < maxIte);
@@ -69,7 +73,8 @@ void Vns::out() const {
 	OUT<< std::setw(6)<<_timer.elapsed();
 	OUT<< std::setw(6)<<_ite;
 	OUT<< std::setw(6)<<_k;
-	OUT<< std::setw(6)<<_best.second;
+	OUT<< std::setw(25)<<_best.second;
+	OUT<< std::setw(25)<<_algo.cost();
 	OUT<<"\n";
 	OUT<< "----------------------------------------\n";
 }

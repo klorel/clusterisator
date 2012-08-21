@@ -9,16 +9,15 @@
 #define COMMON_H_
 
 #include "typedef.h"
-#include "Env.hpp"
 
-#define OUT Env::Get()<<""
+#define OUT std::cout
 
 std::ostream & operator<<(std::ostream &out, Graph const&);
 
 template<class T> inline void DisplayContainer(std::ostream & stream,
-		T const & t) {
+		T const & t, char const * str = " ") {
 	std::copy(t.begin(), t.end(),
-			std::ostream_iterator<typename T::value_type>(stream, " "));
+			std::ostream_iterator<typename T::value_type>(stream, str));
 	stream << "\n";
 }
 

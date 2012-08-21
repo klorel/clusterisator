@@ -10,6 +10,14 @@
 #define LOCAL_DEBUG
 std::string const KMAlgo::HMEANS = "H-MEANS";
 std::string const KMAlgo::KMEANS = "K-MEANS";
+
+bool & KMAlgo::isTraceOn() {
+	return _isTraceOn;
+}
+bool KMAlgo::isTraceOn() const {
+	return _isTraceOn;
+}
+
 KMAlgo::KMAlgo(KMPartition & input) :
 		_input(input), _d(input.nbObs(), 0), _cost(0) {
 	_ite = 0;
@@ -74,6 +82,7 @@ void KMAlgo::checkDelta(size_t i, size_t j) {
 	shift(i, l);
 
 }
+
 void KMAlgo::checkCenters() const {
 	RectMatrix centers(_input.centers());
 	_input.computeCenters(centers);
@@ -134,42 +143,46 @@ void KMAlgo::shift(size_t node, size_t to) {
 		_pertLabels.insert(to);
 		_pertNodes.insert(node);
 		_input.shift(node, to);
+	} else
+		assert(false);
+}
+
+void KMAlgo::out() const {
+	if (_isTraceOn) {
+		OUT<< std::setw(10) << _name;
+		OUT << std::setw(10) << _timer.elapsed();
+		OUT << std::setw(10) << _ite;
+//	OUT << std::setw(10) << _input.nbLabels();
+		OUT << std::setw(20) << std::setprecision(10) << _cost;
+
+		OUT << std::setw(20)
+		<< (IsEqual(_cost, _old) ? 0 : (_old - _cost) / _old * 100);
+		OUT << std::setw(15) << _pertNodes.size();
+		OUT << std::setw(15) << _pertLabels.size();
+		OUT << std::endl;
 	}
 }
 
-void KMAlgo::out(std::ostream & stream) const {
-	stream << std::setw(10) << _name;
-	stream << std::setw(10) << _timer.elapsed();
-	stream << std::setw(10) << _ite;
-//	stream << std::setw(10) << _input.nbLabels();
-	stream << std::setw(20) << std::setprecision(10) << _cost;
-
-	stream << std::setw(20)
-			<< (IsEqual(_cost, _old) ? 0 : (_old - _cost) / _old * 100);
-	stream << std::setw(15) << _pertNodes.size();
-	stream << std::setw(15) << _pertLabels.size();
-
-	stream << std::endl;
-}
-
-void KMAlgo::headers(std::ostream & stream) {
-	out("---------------", "");
-	out("nbObs", _input.nbObs());
-	out("nbCluster", _input.nbLabels());
-	out("---------------", "");
-	stream << std::setw(10) << "ALGO";
-	stream << std::setw(10) << "TIME";
-	stream << std::setw(10) << "ITERATION";
-//	stream << std::setw(10) << "NB LABELS";
-	stream << std::setw(20) << "COST";
-	stream << std::setw(20) << "DELTA(%)";
-	stream << std::setw(15) << "PERT OBS";
-	stream << std::setw(15) << "PERT LABELS";
-	stream << std::endl;
+void KMAlgo::headers() {
+	if (_isTraceOn) {
+		out("---------------", "");
+		out("nbObs", _input.nbObs());
+		out("nbCluster", _input.nbLabels());
+		out("---------------", "");
+		OUT<< std::setw(10) << "ALGO";
+		OUT<< std::setw(10) << "TIME";
+		OUT<< std::setw(10) << "ITERATION";
+//	OUT << std::setw(10) << "NB LABELS";
+		OUT<< std::setw(20) << "COST";
+		OUT<< std::setw(20) << "DELTA(%)";
+		OUT<< std::setw(15) << "PERT OBS";
+		OUT<< std::setw(15) << "PERT LABELS";
+		OUT<< "\n";
+	}
 	_timer.restart();
 	_ite = 0;
 }
-Double KMAlgo::cost()const{
+Double KMAlgo::cost() const {
 	return _cost;
 }
 Double KMAlgo::computeCost() const {
@@ -310,17 +323,17 @@ void KMAlgo::hMeans(size_t maxIte) {
 				stop = true;
 		}
 		computeDistances();
-//		singleton();
-//		computeDistances();
+		singleton();
+		computeDistances();
 
 		assert(checkCost());
 		if (!stop)
-			out(OUT);
+			out();
 
 		assert(_old>=_cost);
 
 	} while (_ite != maxIte && !stop);
-//	std::cout << computeCost() << "\n";
+//	OUT << computeCost() << "\n";
 }
 
 void KMAlgo::kMeans(size_t maxIte) {
@@ -351,7 +364,7 @@ void KMAlgo::kMeans(size_t maxIte) {
 			}
 		}
 		if (_ite != maxIte && improvement)
-			out(OUT);
+			out();
 		_pertLabels.clear();
 		_pertNodes.clear();
 

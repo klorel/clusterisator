@@ -37,11 +37,11 @@ public:
 public:
 	template<class T> void out(std::string const &, T const&) const;
 
-	void out(std::ostream &) const;
-	void headers(std::ostream &);
+	void out() const;
+	void headers();
 
 	Double computeCost() const;
-Double cost()const;
+	Double cost() const;
 	void computeDistances();
 	void shift(size_t node, size_t to);
 
@@ -58,6 +58,8 @@ Double cost()const;
 	Double getDelta(size_t i, size_t j) const;
 	void checkDelta(size_t i, size_t j);
 	void checkCenters() const;
+	bool & isTraceOn();
+	bool  isTraceOn()const;
 private:
 	KMPartition & _input;
 
@@ -74,7 +76,7 @@ private:
 	Distances _distances;
 
 	IntVector _buffer;
-
+	bool _isTraceOn;
 	static std::string const HMEANS;
 	static std::string const KMEANS;
 

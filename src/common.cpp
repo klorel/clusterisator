@@ -36,8 +36,9 @@ IntVector Random(size_t n) {
 	return v;
 }
 
-size_t Random(IntVector & v, size_t & n) {
+size_t PopRandom(IntVector & v, size_t & n) {
 	std::swap(v.back(), v[Number::Generator() % n]);
 	--n;
 	return v.back();
 }
+
