@@ -13,15 +13,29 @@
 
 class Vns {
 public:
-	Vns(KMAlgo & );
+	Vns(KMAlgo &);
 	virtual ~Vns();
 public:
-	void shake(size_t );
+	// simply moves n observations to random vertices
+	void shake(size_t);
+	// set instance in _algo to best
 	void restart();
+	//
+	void save();
+	//
+	void run(size_t maxIte, size_t magMax);
+
+	void out()const;
 private:
 	KMAlgo & _algo;
 	// (point, valeur)
-	std::pair<IntVector, Double> _best;
+	std::pair<Partition, Double> _best;
+
+	IntVector _nodes;
+
+	size_t _ite;
+	size_t _k;
+	Timer _timer;
 };
 
 #endif /* VNS_HPP_ */

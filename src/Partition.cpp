@@ -63,6 +63,10 @@ void Partition::set(IntVector const & v) {
 	}
 
 }
+void Partition::set(Partition const & rhs) {
+//	assert()
+	set(rhs._labels);
+}
 void Partition::shift(size_t n, size_t to) {
 	assert(n<nbObs());
 	size_t const from(_labels[n]);

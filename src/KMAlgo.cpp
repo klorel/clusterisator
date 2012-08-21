@@ -169,7 +169,9 @@ void KMAlgo::headers(std::ostream & stream) {
 	_timer.restart();
 	_ite = 0;
 }
-
+Double KMAlgo::cost()const{
+	return _cost;
+}
 Double KMAlgo::computeCost() const {
 	Double result(_input.cst());
 	for (size_t i(0); i < _input.nbObs(); ++i) {

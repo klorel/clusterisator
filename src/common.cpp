@@ -30,9 +30,14 @@ void Random(IntVector & v) {
 		it = Number::Generator() % v.size();
 
 }
-IntVector Random(size_t const & n) {
+IntVector Random(size_t n) {
 	IntVector v(n);
 	Random(v);
 	return v;
 }
 
+size_t Random(IntVector & v, size_t & n) {
+	std::swap(v.back(), v[Number::Generator() % n]);
+	--n;
+	return v.back();
+}

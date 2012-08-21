@@ -41,7 +41,7 @@ public:
 	void headers(std::ostream &);
 
 	Double computeCost() const;
-
+Double cost()const;
 	void computeDistances();
 	void shift(size_t node, size_t to);
 

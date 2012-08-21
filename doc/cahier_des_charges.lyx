@@ -838,10 +838,6 @@ MI\left(P,P^{*}\right)={\displaystyle \sum_{C\in P}\left(\sum_{C^{*}\in P^{*}}\f
 
 \end_layout
 
-\begin_layout Paragraph
-Informations mutelles normalisées
-\end_layout
-
 \begin_layout Standard
 Pour pouvoir utiliser l'information mutuelles dans le cadre du clustering,
  on peut utiliser l'information mutuelle normalisée.
@@ -856,6 +852,10 @@ Pour pouvoir utiliser l'information mutuelles dans le cadre du clustering,
 \end_inset
 
 ).
+\end_layout
+
+\begin_layout Paragraph
+Informations mutelles normalisées
 \end_layout
 
 \begin_layout Standard

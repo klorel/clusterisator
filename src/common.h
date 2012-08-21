@@ -34,7 +34,9 @@ template<class T, class U> inline void PushBack(T const & t, U & u) {
 IntVector SortLocation(IntVector const &location);
 
 void Random(IntVector &);
-IntVector Random(size_t const & n);
+IntVector Random(size_t n);
+
+size_t PopRandom(IntVector &, size_t & n);
 
 template<class T> constexpr T Zero() {
 	return static_cast<T>(0);

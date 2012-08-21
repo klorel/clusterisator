@@ -22,6 +22,7 @@ public:
 	Partition(Partition const &);
 	virtual ~Partition();
 public:
+	void set(Partition const & );
 	void set(IntVector const & v);
 	// déplacement d'un noeud
 	virtual void shift(size_t n, size_t p);
