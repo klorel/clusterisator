@@ -37,12 +37,11 @@ public:
 		for (size_t i(0); i < instance.nbObs(); ++i)
 			partition2.shift(agregations.newIds[i], real.label(i));
 //		partition2.set(real);
-		KMAlgo kmeans2(partition2);
-
-		std::cout << std::setprecision(15) << kmeans2.computeCost() << "\n";
-		kmeans2.headers();
-		kmeans2.hMeans(600);
-//		kmeans2.kMeans(600);
+		Input input(partition2);
+		OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(partition2,instance2) << "\n";
+		input.headers();
+		KMAlgo::HMeans(input);
+		KMAlgo::KMeans(input);
 
 		Partition candidate(real);
 		for (size_t i(0); i < real.nbObs(); ++i)

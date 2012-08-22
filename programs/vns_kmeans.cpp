@@ -25,11 +25,6 @@ struct DoubleComparator {
 	}
 };
 
-class Launcher: public ILauncher {
-public:
-	void run(AvailableInstances id) {
-
-		RegisteredInstance instance(id);
 //		std::cout << "param sizeN := " << instance.nbObs() << ";\n";
 //		std::cout << "param sizeK := " << instance.nbObs() << ";\n";
 //		std::cout << "param sizeD := " << instance.nbAtt() << ";\n";
@@ -40,12 +35,13 @@ public:
 //						<< "\n";
 //		std::cout << ";\n";
 //		exit(0);
-		OUT<< std::setw(25) << std::left << instance.name;
-		Partition real(instance.real());
 
-//		size_t const k(real.nbLabels());
-		size_t const k(3);
-//		OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(real,instance) << "\n";
+class Launcher: public ILauncher {
+public:
+	void run(AvailableInstances id, size_t k) {
+
+		RegisteredInstance instance(id);
+		instance.out();
 
 		Agregations agregations;
 		instance.buildMustLink(agregations);
@@ -53,24 +49,24 @@ public:
 		KMInstance instance2(instance, agregations);
 		KMPartition partition2(instance2, k);
 
-		size_t const p(1000);
-		std::set<Double, DoubleComparator> results;
+		size_t const p(1);
 		for (size_t i(0); i < p; ++i) {
 			//			partition.random(k);
 			partition2.random(k);
 			//		for (size_t i(0); i < instance.nbObs(); ++i)
 			//			partition2.shift(agregations.newIds[i], real.label(i));
 			//		partition2.set(real);
-			KMAlgo kmeans2(partition2);
-			kmeans2.isTraceOn() = false;
-			kmeans2.headers();
-			kmeans2.hMeans(0);
-//			kmeans2.kMeans(0);
-//			Vns vns(kmeans2);
-//			vns.run(1000, 150);
-			results.insert(kmeans2.computeCost());
-			assert(
-					IsEqual(kmeans2.computeCost(), KMAlgo::ComputeMssc(kmeans2.partition(),instance2)));
+
+			Input input(partition2);
+//			input.headers();
+//			KMAlgo::HMeans(input);
+//			KMAlgo::KMeans(input);
+//			kmeans2.kMeans();
+			Vns vns(input);
+			vns.run<true>(25, 150);
+//			results.insert(kmeans2.computeCost());
+//			assert(
+//					IsEqual(kmeans2.computeCost(), KMAlgo::ComputeMssc(kmeans2.partition(),instance2)));
 			//		Partition candidate(real);
 			//		for (size_t i(0); i < real.nbObs(); ++i)
 			//			candidate.shift(i, partition2.label(agregations.newIds[i]));
@@ -79,21 +75,41 @@ public:
 			//		OUT<< std::setw(25) << std::left << RandIndex().compute(real, candidate);
 			//		OUT<< "\n";
 		}
-		DisplayContainer(std::cout << std::setprecision(25), results, "\n");
 	}
 
 	virtual ~Launcher() {
 	}
 };
-class Env2: public std::streambuf {
 
-};
+void usage() {
+	std::cout << "Available instances : \n";
+	for (size_t i(0); i < AvailableInstances::SIZE; ++i) {
+		AvailableInstances id(static_cast<AvailableInstances>(i));
+		RegisteredInstance instance(id);
+		std::cout << std::setw(3) << i;
+		std::cout << " : ";
+		std::cout << std::setw(30) << std::left << instance.name << std::right;
+
+		std::cout << "\n";
+	}
+	std::cout << "<exe> <id of selected instance> <number of labels>\n";
+
+}
+
 int main(int argc, char ** argv) {
 	//	RunAllFrom<AvailableInstances::wine> f;
 	//	f.go<Launcher>();
+	if (argc == 1)
+		usage();
+	else {
 
-	Launcher().run(AvailableInstances::iris);
-
+		size_t const i(atoi(argv[1]));
+		size_t const k(atoi(argv[2]));
+		if (i < AvailableInstances::SIZE) {
+			AvailableInstances id(static_cast<AvailableInstances>(i));
+			Launcher().run(id, k);
+		}
+	}
 	return 0;
 }
 

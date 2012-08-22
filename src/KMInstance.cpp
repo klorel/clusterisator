@@ -42,40 +42,6 @@ KMInstance::KMInstance(KMInstance const & instance,
 	}
 }
 
-RectMatrix const & KMInstance::data() const {
-	return _data;
-}
-RectMatrix & KMInstance::data() {
-	return _data;
-}
-size_t KMInstance::nbObs() const {
-	return _data.getN();
-}
-size_t KMInstance::nbAtt() const {
-	return _data.getM();
-}
-
-Double KMInstance::cst() const {
-	return _cst;
-}
-Double KMInstance::get(size_t i, size_t j) const {
-	return _data.get(i, j);
-}
-Double KMInstance::weight(size_t i) const {
-	return _weights[i];
-}
-Double & KMInstance::weight(size_t i) {
-	return _weights[i];
-}
-
-DoubleVector const & KMInstance::weights() const {
-	return _weights;
-}
-
-DoubleVector & KMInstance::weights() {
-	return _weights;
-}
-
 void KMInstance::allocate(size_t n, size_t m) {
 	_data = RectMatrix(n, m);
 	_cst = Zero<Double>();
@@ -146,30 +112,6 @@ void KMInstance::buildMustLink(Agregations & result) const {
 	}
 }
 
-void KMInstance::mustLink(size_t i, size_t j) {
-	_must.newCtr(i, j);
-}
-void KMInstance::cannotLink(size_t i, size_t j) {
-	_cannot.newCtr(i, j);
-}
-KMConstraints const & KMInstance::mustLinks() const {
-	return _must;
-}
-KMConstraints const & KMInstance::cannotLinks() const {
-	return _cannot;
-}
-KMConstraints & KMInstance::mustLinks() {
-	return _must;
-}
-KMConstraints & KMInstance::cannotLinks() {
-	return _cannot;
-}
-
-std::ostream & operator<<(std::ostream &stream, KMInstance const &rhs) {
-	stream << rhs.data();
-	return stream;
-
-}
 
 bool KMInstance::feasible(IPartition const & p) const {
 	for (auto const & ctr : _must) {
@@ -211,4 +153,9 @@ void KMInstance::cpp(std::ostream & stream) const {
 	std::copy(_data.matrix().begin(), _data.matrix().end(),
 			std::ostream_iterator<Double>(stream, " , "));
 	stream << "} );\n";
+}
+std::ostream & operator<<(std::ostream &stream, KMInstance const &rhs) {
+	stream << rhs.data();
+	return stream;
+
 }

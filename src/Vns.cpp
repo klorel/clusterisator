@@ -7,10 +7,11 @@
 
 #include "Vns.hpp"
 
-Vns::Vns(KMAlgo & algo) :
-		_algo(algo), _best(algo.partition(), algo.computeCost()), _nodes(
-				_best.first.nbObs()) {
+Vns::Vns(Input & input) :
+		_input(input), _best(input.partition(),
+				input.partition().computeCost()), _nodes(_best.first.nbObs()) {
 	_ite = 0;
+	_globalIte = 0;
 	_k = 0;
 	for (size_t i(0); i < _nodes.size(); ++i)
 		_nodes[i] = i;
@@ -21,13 +22,13 @@ Vns::~Vns() {
 }
 
 void Vns::restart() {
-	_algo.partition().set(_best.first);
+	_input.partition().set(_best.first);
 }
 
 void Vns::save() {
-	_best.first.set(_algo.partition());
-	_best.second = _algo.cost();
-	_k = 0;
+	_best.first.set(_input.partition());
+	_best.second = _input.cost();
+
 }
 void Vns::shake(size_t mag) {
 	size_t n(_nodes.size());
@@ -37,45 +38,22 @@ void Vns::shake(size_t mag) {
 		bool success(false);
 		do {
 			++ite;
-			size_t const k(Number::Generator() % _algo.partition().getK());
-			if (k != _algo.partition().label(obs)) {
-				_algo.shift(i, k);
+			size_t const k(Number::Generator() % _input.partition().getK());
+			if (k != _input.partition().label(obs)) {
+				_input.partition().shift(i, k);
 				success = true;
 			}
-			if (ite > 10 * _algo.partition().getK())
-				std::cout << "ite > 10 * _algo.partition().getK())\n";
+			if (ite > 10 * _input.partition().getK())
+				std::cout << "ite > 10 * _input.partition().getK())\n";
 		} while (!success);
 	}
 }
 
-void Vns::run(size_t maxIte, size_t magMax) {
-	_ite = 0;
-	_algo.isTraceOn() = true;
-	do {
-		_k = 0;
-		do {
-			++_ite;
-			restart();
-			shake(++_k);
-			_algo.hMeans(0);
-//			_algo.kMeans(0);
-			out();
-			if (_best.second > 1e-10 + _algo.cost()) {
-				save();
-				out();
-//				assert(false);
-			}
-		} while (_k < magMax);
-	} while (_ite < maxIte);
-}
-
 void Vns::out() const {
-	OUT<< "----------------------------------------\n";
-	OUT<< std::setw(6)<<_timer.elapsed();
-	OUT<< std::setw(6)<<_ite;
-	OUT<< std::setw(6)<<_k;
+	OUT<< std::setw(10)<<_timer.elapsed();
+	OUT<< std::setw(10)<<_globalIte;
+	OUT<< std::setw(10)<<_ite;
+	OUT<< std::setw(10)<<_k;
 	OUT<< std::setw(25)<<_best.second;
-	OUT<< std::setw(25)<<_algo.cost();
 	OUT<<"\n";
-	OUT<< "----------------------------------------\n";
 }

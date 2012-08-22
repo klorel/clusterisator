@@ -13,29 +13,54 @@
 
 class Vns {
 public:
-	Vns(KMAlgo &);
+	Vns(Input &);
 	virtual ~Vns();
 public:
-	// simply moves n observations to random vertices
 	void shake(size_t);
-	// set instance in _algo to best
 	void restart();
-	//
 	void save();
-	//
-	void run(size_t maxIte, size_t magMax);
 
-	void out()const;
+	template<bool isTraceOn = false> void run(size_t maxIte, size_t magMax);
+
+	void out() const;
 private:
-	KMAlgo & _algo;
+	Input & _input;
 	// (point, valeur)
 	std::pair<Partition, Double> _best;
 
 	IntVector _nodes;
 
+	size_t _globalIte;
 	size_t _ite;
 	size_t _k;
 	Timer _timer;
 };
+
+template<bool isTraceOn> inline void Vns::run(size_t maxIte, size_t magMax) {
+	_ite = 0;
+	_globalIte = 0;
+	do {
+		_k = 0;
+		do {
+			++_ite;
+			++_globalIte;
+			restart();
+			shake(++_k);
+			KMAlgo::HMeans<false>(_input);
+			KMAlgo::KMeans<false>(_input);
+
+			if (_best.second > 1e-10 + _input.cost()) {
+
+				save();
+				if (isTraceOn)
+					out();
+				_k = 0;
+				_ite = 0;
+			}
+		} while (_k < magMax);
+	} while (_ite < maxIte);
+	if (isTraceOn)
+		out();
+}
 
 #endif /* VNS_HPP_ */

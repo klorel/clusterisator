@@ -60,7 +60,7 @@ public:
 	virtual IntList const & list(size_t label) const = 0;
 
 	// change the label of one node
-	virtual void shift(size_t node, size_t newLabel) = 0;
+	virtual bool shift(size_t node, size_t newLabel) = 0;
 	// fusion of two label, return the used label
 	virtual size_t fusion(size_t const & label1, size_t const & label2) = 0;
 	virtual ~IPartition();

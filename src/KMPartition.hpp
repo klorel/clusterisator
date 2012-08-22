@@ -9,12 +9,17 @@
 #define KMPARTITION_HPP_
 
 #include "../src/common.h"
+#include "../src/Timer.hpp"
 #include "../src/Partition.hpp"
 #include "../src/KMInstance.hpp"
 
 class KMPartition;
 
 class KMPartition: public Partition {
+public:
+	typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
+	typedef std::pair<size_t, size_t> Move;
+	typedef std::vector<Move> Moves;
 public:
 	KMPartition(KMInstance const &, size_t k = 1);
 	KMPartition(KMInstance const &, Partition const &);
@@ -27,7 +32,10 @@ public:
 	KMInstance const & instance() const;
 	Double cst() const;
 
-	void shift(size_t obs, size_t to);
+	bool shift(size_t obs, size_t to);
+
+	bool shift(Move const &);
+	bool shift(Moves const &);
 
 	size_t getK() const;
 	template<bool isInsertion> Double getCoeff(size_t i, size_t k) const;
@@ -41,10 +49,8 @@ public:
 	IntSet const & cannotLinks(size_t i) const;
 
 public:
-	void out() const;
-	void headers();
-
 	Double computeCost() const;
+	Double & cost();
 	Double cost() const;
 	void computeDistances();
 
@@ -63,6 +69,10 @@ public:
 
 	bool & isTraceOn();
 	bool isTraceOn() const;
+	Distances & distances();
+	Distances const & distances() const;
+
+	Double d(size_t) const;
 private:
 	KMInstance const & _input;
 	// les centroids
@@ -74,7 +84,7 @@ private:
 	// l'ancien cout
 	Double _old;
 	// les distances triées des noeuds au centroid
-	std::multimap<Double, size_t, std::greater<Double> > _distances;
+	Distances _distances;
 };
 
 inline size_t KMPartition::getK() const {
@@ -125,5 +135,16 @@ inline IntSet const & KMPartition::mustLinks(size_t i) const {
 }
 inline IntSet const & KMPartition::cannotLinks(size_t i) const {
 	return _input.cannotLinks().get(i);
+}
+
+inline KMPartition::Distances & KMPartition::distances() {
+	return _distances;
+}
+inline KMPartition::Distances const & KMPartition::distances() const {
+	return _distances;
+}
+
+inline Double KMPartition::d(size_t obs) const {
+	return _d[obs];
 }
 #endif /* KMPARTITION_HPP_ */

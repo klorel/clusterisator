@@ -15,119 +15,133 @@
 #include "../src/Partition.hpp"
 #include "../src/Timer.hpp"
 
+class Input {
+public:
+	Input(KMPartition & rhs) :
+			_partition(rhs), _timer(), _ite(0) {
+
+	}
+
+	void out(std::string const & name) const;
+	void headers();
+	KMPartition & partition();
+	KMPartition const& partition() const;
+	Double cost() const;
+	size_t & ite();
+	size_t ite() const;
+private:
+	KMPartition & _partition;
+	Timer _timer;
+	size_t _ite;
+
+};
+
 class KMAlgo {
 public:
 	typedef std::pair<size_t, size_t> Move;
 	typedef std::vector<Move> Moves;
-	typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
 public:
 	static Double ComputeMssc(IPartition const &, KMInstance const &);
+	template<bool isTraceOn = true> static bool KMeans(Input & input);
+	template<bool isTraceOn = true> static bool HMeans(Input & input);
+	static bool HMeansLoop(Input & input, Moves & moves);
+	static bool Singleton(Input & input);
+
 public:
-	KMAlgo(KMPartition &);
-	virtual ~KMAlgo();
-
-	void hMeansLoop(Moves &);
-	void hMeans(size_t maxIte);
-
-	void singleton();
-
-	void kMeans(size_t maxIte);
-
-	KMPartition & partition();
-public:
-	void out() const;
-	void headers();
-
-	Double computeCost() const;
-	Double cost() const;
-	void computeDistances();
-
-	bool shift(size_t node, size_t to);
-	bool apply(Move const &);
-	bool apply(Moves const &);
-
-	bool checkCost() const;
-	bool checkWeights() const;
-
-	std::pair<size_t, Double> getClosest(size_t i) const;
-	std::pair<size_t, Double> getBest(size_t i) const;
-
-	bool feasible(size_t i, size_t j) const;
-
-	Double getDelta(size_t i, size_t l, size_t j) const;
-	Double getDelta(size_t i, size_t j) const;
-	void checkDelta(size_t i, size_t j);
-	void checkCenters() const;
-	bool & isTraceOn();
-	bool isTraceOn() const;
+//	void checkDelta(size_t i, size_t j);
+//	void checkCenters() const;
 private:
-	KMPartition & _input;
+	static IntVector _Buffer;
 
-	DoubleVector _d;
-	Double _cost;
-	Double _old;
-	size_t _ite;
-
-	//	IndexedList _pertLabels;
-	//	IndexedList _pertNodes;
-
-	Timer _timer;
-	std::string _name;
-	Distances _distances;
-
-	IntVector _buffer;
-	bool _isTraceOn;
 	static std::string const HMEANS;
 	static std::string const KMEANS;
 
 };
+template<bool isTraceOn>
+inline bool KMAlgo::KMeans(Input & input) {
+	KMPartition & partition(input.partition());
+	bool improvement(false);
+	partition.computeDistances();
+	do {
+		++input.ite();
+		improvement = false;
+		for (size_t obs(0); obs < partition.nbObs(); ++obs) {
+			std::pair<size_t, Double> delta(partition.getBest(obs));
+			if (delta.second < 0) {
+				partition.cost() += delta.second;
+				partition.shift(obs, delta.first);
+				improvement = true;
+			}
+		}
+		if (improvement && isTraceOn)
+			input.out(KMEANS);
 
-class MsscData {
-public:
-	typedef std::pair<size_t, size_t> Move;
-	typedef std::vector<Move> Moves;
-	typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
-public:
-	void out() const;
-	void headers();
+	} while (improvement);
+	return improvement;
+}
 
-	Double computeCost() const;
-	Double cost() const;
-	void computeDistances();
+inline bool KMAlgo::HMeansLoop(Input & input, Moves & moves) {
+	moves.clear();
+	for (size_t i(0); i < input.partition().nbObs(); ++i) {
+		std::pair<size_t, Double> const k(input.partition().getClosest(i));
+		if (k.first != input.partition().label(i)) {
+			moves.push_back(std::make_pair(i, k.first));
+//			assert(_input.getDelta(i,k.first)<0);
+		}
+	}
+	return !moves.empty();
+}
+template<bool isTraceOn>
+inline bool KMAlgo::HMeans(Input & input) {
+	KMPartition & partition(input.partition());
+	Moves moves;
+	moves.reserve(partition.nbObs());
 
-	void shift(size_t node, size_t to);
+	bool stop(false);
+	partition.computeDistances();
 
-	void apply(Move const &);
-	void apply(Moves const &);
+	do {
+		++input.ite();
+		HMeansLoop(input, moves);
+		if (moves.empty()) {
+			stop = true;
+		} else {
+			if (!partition.shift(moves))
+				stop = true;
 
-	std::pair<size_t, Double> getClosest(size_t i) const;
-	std::pair<size_t, Double> getBest(size_t i) const;
+		}
+		partition.computeDistances();
+		Singleton(input);
+		partition.computeDistances();
 
-	bool feasible(size_t i, size_t j) const;
+		if (!stop && isTraceOn)
+			input.out(HMEANS);
+	} while (!stop);
+	return true;
+}
+inline bool KMAlgo::Singleton(Input & input) {
+	KMPartition & partition(input.partition());
 
-	Double getDelta(size_t i, size_t l, size_t j) const;
-	Double getDelta(size_t i, size_t j) const;
+	_Buffer.clear();
+//	PushBack(partition.unUsed(), _Buffer,
+//			partition.getK() - partition.nbLabels());
+	PushBack(partition.unUsed(), _Buffer);
 
-	bool checkCost() const;
-	bool checkWeights() const;
-	void checkDelta(size_t i, size_t j);
-	void checkCenters() const;
+	assert(_Buffer.size() == partition.unUsed().size());
+	assert(_Buffer.size() + partition.nbLabels() == partition.getK());
 
-	bool & isTraceOn();
-	bool isTraceOn() const;
+	while (!_Buffer.empty()) {
+		assert(!partition.isUsed(_Buffer.back()));
+		assert(partition.distances().begin()->first>Zero<Double>());
+		partition.shift(partition.distances().begin()->second, _Buffer.back());
+		partition.cost() -= partition.distances().begin()->first;
+		assert(partition.isUsed(_Buffer.back()));
+		_Buffer.pop_back();
 
-public:
-	KMPartition _input;
-	// les distances au centroids
-	DoubleVector _d;
-	// le cout
-	Double _cost;
-	// l'ancien cout
-	Double _old;
-	// les distances triées des noeuds au centroid
-	Distances _distances;
-
-};
+		partition.distances().erase(partition.distances().begin());
+	}
+	return true;
+}
 
 #endif /* KMEANSALGO_HPP_ */
 

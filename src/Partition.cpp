@@ -67,7 +67,7 @@ void Partition::set(Partition const & rhs) {
 //	assert()
 	set(rhs._labels);
 }
-void Partition::shift(size_t n, size_t to) {
+bool Partition::shift(size_t n, size_t to) {
 	assert(n<nbObs());
 	size_t const from(_labels[n]);
 	if (from != to) {
@@ -89,6 +89,7 @@ void Partition::shift(size_t n, size_t to) {
 		_nodePosition[n] = _labelLists[to].begin();
 		_labels[n] = to;
 	}
+	return true;
 }
 size_t Partition::fusion(size_t const & label1, size_t const & label2) {
 	return -1;

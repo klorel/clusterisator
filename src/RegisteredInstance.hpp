@@ -20,6 +20,7 @@ public:
 	void setNames(AvailableInstances id);
 public:
 	std::string name;
+	void out() const;
 private:
 	std::string dataName;
 	std::string ctrsName;
@@ -35,7 +36,14 @@ public:
 };
 
 std::string const Info::InstancesPath = "../instances/";
-
+void RegisteredInstance::out() const {
+	OUT<<"Instance name is "<<name<<"\n";
+	OUT<<"Data were read from "<<Info::InstancesPath + dataName + ".dat"<<"\n";
+	if (ctrsName.empty())
+	OUT<<"No constraints were read\n";
+	else
+	OUT<<"Constraints were read from "<<Info::InstancesPath + ctrsName + ".ctrs"<<"\n";
+}
 inline RegisteredInstance::RegisteredInstance(AvailableInstances id) {
 	setNames(id);
 	readData(Info::InstancesPath + dataName + ".dat");
@@ -69,7 +77,7 @@ inline void RegisteredInstance::setNames(AvailableInstances id) {
 
 class ILauncher {
 public:
-	virtual void run(AvailableInstances id)=0;
+	virtual void run(AvailableInstances id, size_t k)=0;
 	virtual ~ILauncher() {
 	}
 };

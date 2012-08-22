@@ -68,4 +68,57 @@ public:
 	KMConstraints _cannot;
 };
 
+inline RectMatrix const & KMInstance::data() const {
+	return _data;
+}
+inline RectMatrix & KMInstance::data() {
+	return _data;
+}
+inline size_t KMInstance::nbObs() const {
+	return _data.getN();
+}
+inline size_t KMInstance::nbAtt() const {
+	return _data.getM();
+}
+
+inline Double KMInstance::cst() const {
+	return _cst;
+}
+inline Double KMInstance::get(size_t i, size_t j) const {
+	return _data.get(i, j);
+}
+inline Double KMInstance::weight(size_t i) const {
+	return _weights[i];
+}
+inline Double & KMInstance::weight(size_t i) {
+	return _weights[i];
+}
+
+inline DoubleVector const & KMInstance::weights() const {
+	return _weights;
+}
+
+inline DoubleVector & KMInstance::weights() {
+	return _weights;
+}
+
+inline void KMInstance::mustLink(size_t i, size_t j) {
+	_must.newCtr(i, j);
+}
+inline void KMInstance::cannotLink(size_t i, size_t j) {
+	_cannot.newCtr(i, j);
+}
+inline KMConstraints const & KMInstance::mustLinks() const {
+	return _must;
+}
+inline KMConstraints const & KMInstance::cannotLinks() const {
+	return _cannot;
+}
+inline KMConstraints & KMInstance::mustLinks() {
+	return _must;
+}
+inline KMConstraints & KMInstance::cannotLinks() {
+	return _cannot;
+}
+
 #endif /* RAWDATA_HPP_ */

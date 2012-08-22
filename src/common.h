@@ -29,6 +29,14 @@ template<class T, class U> inline void PushBack(T const & t, U & u) {
 	for (auto const & it : t)
 		u.push_back(it);
 }
+template<class T, class U> inline void PushBack(T const & t, U & u, size_t n) {
+	auto it(t.begin());
+	size_t i(0);
+	while (it != t.end() && i < n) {
+		u.push_back(*it);
+		++i;
+	}
+}
 
 IntVector SortLocation(IntVector const &location);
 
