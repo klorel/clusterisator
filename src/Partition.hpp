@@ -18,6 +18,10 @@ void operator>>(std::string const &, Partition &);
 class Partition: public IPartition {
 public:
 
+  /**
+   * @param n nb observations
+   * @param k nb max labels
+   */
 	Partition(size_t n, size_t k = 1);
 	Partition(Partition const &);
 	virtual ~Partition();

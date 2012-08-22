@@ -37,6 +37,7 @@ void Partition::oneLabel(size_t n, size_t k) {
 	_usedLabels.reset(k);
 	_unUsedLabels.reset(k);
 	_labelWeights.assign(k, 0);
+  _labelWeights[0] = n;
 
 	_nodePosition.assign(n, _labelLists[0].end());
 	_nodeWeights.assign(n, One<Double>());
