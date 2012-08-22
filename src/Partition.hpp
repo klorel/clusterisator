@@ -22,10 +22,10 @@ public:
 	Partition(Partition const &);
 	virtual ~Partition();
 public:
-	void set(Partition const & );
+	void set(Partition const &);
 	void set(IntVector const & v);
 	// déplacement d'un noeud
-	virtual void shift(size_t n, size_t p);
+	void shift(size_t n, size_t p);
 	// fusion of two label, return the used label
 	size_t fusion(size_t const & label1, size_t const & label2);
 public:

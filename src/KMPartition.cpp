@@ -41,11 +41,10 @@ void KMPartition::computeCenters(RectMatrix & centers) const {
 }
 void KMPartition::shift(size_t node, size_t to) {
 	size_t const from(label(node));
-
+	// recomputing centers is needed
 	if (_centers.getN() != maxNbLabels()) {
 		computeCenters();
 	} else {
-
 		for (size_t d(0); d < _input.nbAtt(); ++d) {
 			_centers.plus(from, d, -_input.get(node, d) * obsWeight(node));
 			_centers.plus(to, d, _input.get(node, d) * obsWeight(node));

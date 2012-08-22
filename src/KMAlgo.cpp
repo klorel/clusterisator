@@ -23,8 +23,8 @@ KMAlgo::KMAlgo(KMPartition & input) :
 	_ite = 0;
 	_old = 0;
 	_isTraceOn = true;
-	_pertLabels = IndexedList(input.getK());
-	_pertNodes = IndexedList(input.nbObs());
+//	_pertLabels = IndexedList(input.getK());
+//	_pertNodes = IndexedList(input.nbObs());
 	_buffer.reserve(input.nbObs());
 
 }
@@ -120,30 +120,35 @@ bool KMAlgo::checkCost() const {
 	return true;
 }
 
-void KMAlgo::apply(Moves const & moves) {
-	_pertLabels.clear();
-	_pertNodes.clear();
+bool KMAlgo::apply(Moves const & moves) {
+//	_pertLabels.clear();
+//	_pertNodes.clear();
+	bool success(false);
 	if (!moves.empty()) {
 		for (auto const & move : moves) {
-			apply(move);
+			if (apply(move))
+				success = true;
 		}
 	}
+	return success;
 }
-void KMAlgo::apply(Move const & m) {
+bool KMAlgo::apply(Move const & m) {
 	size_t const node(m.first);
 	size_t const to(m.second);
-	shift(node, to);
+	return shift(node, to);
 
 }
 
-void KMAlgo::shift(size_t node, size_t to) {
+bool KMAlgo::shift(size_t node, size_t to) {
 	if (feasible(node, to)) {
-		size_t const from(_input.label(node));
-		_pertLabels.insert(from);
-		_pertLabels.insert(to);
-		_pertNodes.insert(node);
+//		size_t const from(_input.label(node));
+//		_pertLabels.insert(from);
+//		_pertLabels.insert(to);
+//		_pertNodes.insert(node);
 		_input.shift(node, to);
-	}
+		return true;
+	} else
+		return false;
 }
 
 void KMAlgo::out() const {
@@ -156,26 +161,28 @@ void KMAlgo::out() const {
 
 		OUT << std::setw(20)
 		<< (IsEqual(_cost, _old) ? 0 : (_old - _cost) / _old * 100);
-		OUT << std::setw(15) << _pertNodes.size();
-		OUT << std::setw(15) << _pertLabels.size();
+//		OUT << std::setw(15) << _pertNodes.size();
+//		OUT << std::setw(15) << _pertLabels.size();
 		OUT << std::endl;
 	}
 }
 
 void KMAlgo::headers() {
 	if (_isTraceOn) {
-		out("---------------", "");
-		out("nbObs", _input.nbObs());
-		out("nbCluster", _input.nbLabels());
-		out("---------------", "");
+		OUT<< std::setw(25) <<"---------------\n";
+		OUT<< std::setw(25) <<"nbObs";
+		OUT<< std::setw(25) <<_input.nbObs();
+		OUT<< std::setw(25) <<"nbCluster";
+		OUT<< std::setw(15) <<_input.nbLabels();
+		OUT<< std::setw(25) <<"---------------\n";
 		OUT<< std::setw(10) << "ALGO";
 		OUT<< std::setw(10) << "TIME";
 		OUT<< std::setw(10) << "ITERATION";
 		//	OUT << std::setw(10) << "NB LABELS";
 		OUT<< std::setw(20) << "COST";
 		OUT<< std::setw(20) << "DELTA(%)";
-		OUT<< std::setw(15) << "PERT OBS";
-		OUT<< std::setw(15) << "PERT LABELS";
+//		OUT<< std::setw(15) << "PERT OBS";
+//		OUT<< std::setw(15) << "PERT LABELS";
 		OUT<< "\n";
 	}
 	_timer.restart();
@@ -240,26 +247,34 @@ std::pair<size_t, Double> KMAlgo::getBest(size_t i) const {
 std::pair<size_t, Double> KMAlgo::getClosest(size_t i) const {
 	size_t const l(_input.label(i));
 	std::pair<size_t, Double> min(l, _d[i]);
-	if (_pertLabels.contains(l)) {
-		for (size_t k(0); k < _input.getK(); ++k) {
-			if (k != l) {
-				std::pair<size_t, Double> const d(k, _input.getDistance(i, k));
-				if (d.second < min.second) {
-					min = d;
-				}
-			}
-		}
-	} else {
-		for (auto const & k : _pertLabels) {
-//	for (size_t k(0); k < _input.getK(); ++k) {
-			if (k != l) {
-				std::pair<size_t, Double> const d(k, _input.getDistance(i, k));
-				if (d.second < min.second) {
-					min = d;
-				}
+	for (size_t k(0); k < _input.getK(); ++k) {
+		if (k != l) {
+			std::pair<size_t, Double> const d(k, _input.getDistance(i, k));
+			if (d.second < min.second) {
+				min = d;
 			}
 		}
 	}
+//	if (_pertLabels.contains(l)) {
+//		for (size_t k(0); k < _input.getK(); ++k) {
+//			if (k != l) {
+//				std::pair<size_t, Double> const d(k, _input.getDistance(i, k));
+//				if (d.second < min.second) {
+//					min = d;
+//				}
+//			}
+//		}
+//	} else {
+//		for (auto const & k : _pertLabels) {
+////	for (size_t k(0); k < _input.getK(); ++k) {
+//			if (k != l) {
+//				std::pair<size_t, Double> const d(k, _input.getDistance(i, k));
+//				if (d.second < min.second) {
+//					min = d;
+//				}
+//			}
+//		}
+//	}
 	return min;
 }
 
@@ -300,14 +315,14 @@ void KMAlgo::hMeans(size_t maxIte) {
 	moves.reserve(_input.nbObs());
 
 	bool stop(false);
-	_pertLabels.clear();
-	_pertNodes.clear();
+//	_pertLabels.clear();
+//	_pertNodes.clear();
 	computeDistances();
 	_old = _cost;
 
-	for (auto const & label : _input.used())
-		_pertLabels.insert(label);
-	_pertNodes.fill();
+//	for (auto const & label : _input.used())
+//		_pertLabels.insert(label);
+//	_pertNodes.fill();
 	_buffer.clear();
 	do {
 //		_input.computeCenters();
@@ -319,9 +334,10 @@ void KMAlgo::hMeans(size_t maxIte) {
 		if (moves.empty()) {
 			stop = true;
 		} else {
-			apply(moves);
-			if (_pertLabels.empty())
+			if (!apply(moves))
 				stop = true;
+//			if (_pertLabels.empty())
+//				stop = true;
 		}
 		computeDistances();
 		singleton();
@@ -347,10 +363,10 @@ void KMAlgo::kMeans(size_t maxIte) {
 	computeDistances();
 	assert(checkCost());
 	//	out(OUT);
-	_pertNodes.fill();
-	_pertLabels.clear();
-	for (auto const & label : _input.used())
-		_pertLabels.insert(label);
+//	_pertNodes.fill();
+//	_pertLabels.clear();
+//	for (auto const & label : _input.used())
+//		_pertLabels.insert(label);
 	do {
 		_old = _cost;
 		++_ite;
@@ -366,8 +382,8 @@ void KMAlgo::kMeans(size_t maxIte) {
 		}
 		if (_ite != maxIte && improvement)
 			out();
-		_pertLabels.clear();
-		_pertNodes.clear();
+//		_pertLabels.clear();
+//		_pertNodes.clear();
 
 	} while (_ite != maxIte && improvement);
 

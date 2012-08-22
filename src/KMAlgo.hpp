@@ -35,18 +35,16 @@ public:
 
 	KMPartition & partition();
 public:
-	template<class T> void out(std::string const &, T const&) const;
-
 	void out() const;
 	void headers();
 
 	Double computeCost() const;
 	Double cost() const;
 	void computeDistances();
-	void shift(size_t node, size_t to);
 
-	void apply(Move const &);
-	void apply(Moves const &);
+	bool shift(size_t node, size_t to);
+	bool apply(Move const &);
+	bool apply(Moves const &);
 
 	bool checkCost() const;
 	bool checkWeights() const;
@@ -61,7 +59,7 @@ public:
 	void checkDelta(size_t i, size_t j);
 	void checkCenters() const;
 	bool & isTraceOn();
-	bool  isTraceOn()const;
+	bool isTraceOn() const;
 private:
 	KMPartition & _input;
 
@@ -70,8 +68,8 @@ private:
 	Double _old;
 	size_t _ite;
 
-	IndexedList _pertLabels;
-	IndexedList _pertNodes;
+	//	IndexedList _pertLabels;
+	//	IndexedList _pertNodes;
 
 	Timer _timer;
 	std::string _name;
@@ -84,12 +82,52 @@ private:
 
 };
 
-template<class T> inline
-void KMAlgo::out(std::string const & name, T const& value) const {
-	OUT<< std::setw(25) << name;
-	OUT << std::setw(15) << value;
-	OUT << "\n";
-}
+class MsscData {
+public:
+	typedef std::pair<size_t, size_t> Move;
+	typedef std::vector<Move> Moves;
+	typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
+public:
+	void out() const;
+	void headers();
+
+	Double computeCost() const;
+	Double cost() const;
+	void computeDistances();
+
+	void shift(size_t node, size_t to);
+
+	void apply(Move const &);
+	void apply(Moves const &);
+
+	std::pair<size_t, Double> getClosest(size_t i) const;
+	std::pair<size_t, Double> getBest(size_t i) const;
+
+	bool feasible(size_t i, size_t j) const;
+
+	Double getDelta(size_t i, size_t l, size_t j) const;
+	Double getDelta(size_t i, size_t j) const;
+
+	bool checkCost() const;
+	bool checkWeights() const;
+	void checkDelta(size_t i, size_t j);
+	void checkCenters() const;
+
+	bool & isTraceOn();
+	bool isTraceOn() const;
+
+public:
+	KMPartition _input;
+	// les distances au centroids
+	DoubleVector _d;
+	// le cout
+	Double _cost;
+	// l'ancien cout
+	Double _old;
+	// les distances triées des noeuds au centroid
+	Distances _distances;
+
+};
 
 #endif /* KMEANSALGO_HPP_ */
 

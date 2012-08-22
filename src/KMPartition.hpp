@@ -27,7 +27,7 @@ public:
 	KMInstance const & instance() const;
 	Double cst() const;
 
-	virtual void shift(size_t node, size_t to);
+	void shift(size_t obs, size_t to);
 
 	size_t getK() const;
 	template<bool isInsertion> Double getCoeff(size_t i, size_t k) const;
@@ -39,9 +39,42 @@ public:
 	KMConstraints const & cannotLinks() const;
 	IntSet const & mustLinks(size_t i) const;
 	IntSet const & cannotLinks(size_t i) const;
+
+public:
+	void out() const;
+	void headers();
+
+	Double computeCost() const;
+	Double cost() const;
+	void computeDistances();
+
+	std::pair<size_t, Double> getClosest(size_t obs) const;
+	std::pair<size_t, Double> getBest(size_t obs) const;
+
+	bool feasible(size_t obs, size_t to) const;
+
+	Double getDelta(size_t obs, size_t from, size_t to) const;
+	Double getDelta(size_t obs, size_t to) const;
+
+	bool checkCost() const;
+//	bool checkWeights() const;
+	void checkDelta(size_t obs, size_t to);
+	void checkCenters() const;
+
+	bool & isTraceOn();
+	bool isTraceOn() const;
 private:
 	KMInstance const & _input;
+	// les centroids
 	RectMatrix _centers;
+	// les distances au centroids
+	DoubleVector _d;
+	// le cout
+	Double _cost;
+	// l'ancien cout
+	Double _old;
+	// les distances triées des noeuds au centroid
+	std::multimap<Double, size_t, std::greater<Double> > _distances;
 };
 
 inline size_t KMPartition::getK() const {

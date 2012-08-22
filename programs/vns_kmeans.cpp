@@ -41,7 +41,8 @@ public:
 //		std::cout << ";\n";
 //		exit(0);
 		OUT<< std::setw(25) << std::left << instance.name;
-//		Partition real(instance.real());
+		Partition real(instance.real());
+
 //		size_t const k(real.nbLabels());
 		size_t const k(3);
 //		OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(real,instance) << "\n";
