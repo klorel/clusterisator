@@ -22,7 +22,7 @@ KMAlgo::KMAlgo(KMPartition & input) :
 		_input(input), _d(input.nbObs(), 0), _cost(0) {
 	_ite = 0;
 	_old = 0;
-
+	_isTraceOn = true;
 	_pertLabels = IndexedList(input.getK());
 	_pertNodes = IndexedList(input.nbObs());
 	_buffer.reserve(input.nbObs());
@@ -143,8 +143,7 @@ void KMAlgo::shift(size_t node, size_t to) {
 		_pertLabels.insert(to);
 		_pertNodes.insert(node);
 		_input.shift(node, to);
-	} else
-		assert(false);
+	}
 }
 
 void KMAlgo::out() const {
@@ -152,7 +151,7 @@ void KMAlgo::out() const {
 		OUT<< std::setw(10) << _name;
 		OUT << std::setw(10) << _timer.elapsed();
 		OUT << std::setw(10) << _ite;
-//	OUT << std::setw(10) << _input.nbLabels();
+		//	OUT << std::setw(10) << _input.nbLabels();
 		OUT << std::setw(20) << std::setprecision(10) << _cost;
 
 		OUT << std::setw(20)
@@ -172,7 +171,7 @@ void KMAlgo::headers() {
 		OUT<< std::setw(10) << "ALGO";
 		OUT<< std::setw(10) << "TIME";
 		OUT<< std::setw(10) << "ITERATION";
-//	OUT << std::setw(10) << "NB LABELS";
+		//	OUT << std::setw(10) << "NB LABELS";
 		OUT<< std::setw(20) << "COST";
 		OUT<< std::setw(20) << "DELTA(%)";
 		OUT<< std::setw(15) << "PERT OBS";
@@ -252,7 +251,7 @@ std::pair<size_t, Double> KMAlgo::getClosest(size_t i) const {
 		}
 	} else {
 		for (auto const & k : _pertLabels) {
-			//		for (size_t k(0); k < _input.getK(); ++k) {
+//	for (size_t k(0); k < _input.getK(); ++k) {
 			if (k != l) {
 				std::pair<size_t, Double> const d(k, _input.getDistance(i, k));
 				if (d.second < min.second) {
@@ -311,7 +310,9 @@ void KMAlgo::hMeans(size_t maxIte) {
 	_pertNodes.fill();
 	_buffer.clear();
 	do {
-		assert(checkCost());
+//		_input.computeCenters();
+//		computeDistances();
+//		assert(checkCost());
 		++_ite;
 		hMeansLoop(moves);
 		_old = _cost;
@@ -326,26 +327,26 @@ void KMAlgo::hMeans(size_t maxIte) {
 		singleton();
 		computeDistances();
 
-		assert(checkCost());
+//		assert(checkCost());
 		if (!stop)
 			out();
 
 		assert(_old>=_cost);
 
 	} while (_ite != maxIte && !stop);
-//	OUT << computeCost() << "\n";
+	//	OUT << computeCost() << "\n";
 }
 
 void KMAlgo::kMeans(size_t maxIte) {
 	_name = KMEANS;
-//	_timer.restart();
-//	headers(OUT);
+	//	_timer.restart();
+	//	headers(OUT);
 
 	bool improvement(false);
 
 	computeDistances();
 	assert(checkCost());
-//	out(OUT);
+	//	out(OUT);
 	_pertNodes.fill();
 	_pertLabels.clear();
 	for (auto const & label : _input.used())

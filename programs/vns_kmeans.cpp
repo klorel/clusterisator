@@ -19,16 +19,22 @@
 
 #include "../src/Vns.hpp"
 
+struct DoubleComparator {
+	bool operator()(Double a, Double b) const {
+		return a - b < -1e-6;
+	}
+};
+
 class Launcher: public ILauncher {
 public:
 	void run(AvailableInstances id) {
 
 		RegisteredInstance instance(id);
 		OUT<< std::setw(25) << std::left << instance.name;
-		Partition real(instance.real());
+//		Partition real(instance.real());
 //		size_t const k(real.nbLabels());
-		size_t const k(10);
-		OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(real,instance) << "\n";
+		size_t const k(250);
+//		OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(real,instance) << "\n";
 
 		Agregations agregations;
 		instance.buildMustLink(agregations);
@@ -37,7 +43,7 @@ public:
 		KMPartition partition2(instance2, k);
 
 		size_t const p(1);
-		std::set<Double> results;
+		std::set<Double, DoubleComparator> results;
 		for (size_t i(0); i < p; ++i) {
 			//			partition.random(k);
 			partition2.random(k);
@@ -45,12 +51,12 @@ public:
 			//			partition2.shift(agregations.newIds[i], real.label(i));
 			//		partition2.set(real);
 			KMAlgo kmeans2(partition2);
-			kmeans2.isTraceOn() = false;
+			kmeans2.isTraceOn() = true;
 			kmeans2.headers();
 			kmeans2.hMeans(0);
-			kmeans2.kMeans(0);
+//			kmeans2.kMeans(0);
 			Vns vns(kmeans2);
-			vns.run(10000, 150);
+			vns.run(1000, 150);
 			results.insert(kmeans2.computeCost());
 			assert(
 					IsEqual(kmeans2.computeCost(), KMAlgo::ComputeMssc(kmeans2.partition(),instance2)));
@@ -75,7 +81,7 @@ int main(int argc, char ** argv) {
 	//	RunAllFrom<AvailableInstances::wine> f;
 	//	f.go<Launcher>();
 
-	Launcher().run(AvailableInstances::iris);
+	Launcher().run(AvailableInstances::segmentation);
 
 	return 0;
 }

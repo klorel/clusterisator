@@ -11,6 +11,8 @@ REGISTER_INSTANCE(iris2,iris)
 
 REGISTER_INSTANCE(synthetic,synthetic)
 
+REGISTER_INSTANCE(segmentation,segmentation)
+
 REGISTER_INSTANCE(balance_scale,balance_scale)
 REGISTER_INSTANCE(balance_scale1,balance_scale)
 REGISTER_INSTANCE(balance_scale2,balance_scale)

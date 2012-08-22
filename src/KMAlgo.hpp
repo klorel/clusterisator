@@ -53,7 +53,9 @@ public:
 
 	std::pair<size_t, Double> getClosest(size_t i) const;
 	std::pair<size_t, Double> getBest(size_t i) const;
+
 	bool feasible(size_t i, size_t j) const;
+
 	Double getDelta(size_t i, size_t l, size_t j) const;
 	Double getDelta(size_t i, size_t j) const;
 	void checkDelta(size_t i, size_t j);
