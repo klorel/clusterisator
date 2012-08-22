@@ -60,7 +60,6 @@ inline Double KMPartition::getDistance(size_t i, size_t k) const {
 			result += std::pow(
 					_input.get(i, d) - _centers.get(k, d) / labelWeight(k), 2);
 	}
-//	return std::sqrt(result);
 	return result;
 }
 

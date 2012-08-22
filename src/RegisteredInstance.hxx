@@ -1,6 +1,7 @@
 // C++ code to generate GetInstances class
 //
-// REGISTER_INSTANCE(EnumName, DataFileName without extension .dat )
+// REGISTER_INSTANCE(EnumName==ctrs file name, DataFileName without extension .dat )
+//
 REGISTER_INSTANCE(wine,wine )
 REGISTER_INSTANCE(wine1,wine)
 REGISTER_INSTANCE(wine2,wine)

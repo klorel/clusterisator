@@ -25,6 +25,7 @@ KMPartition::~KMPartition() {
 void KMPartition::computeCenters() {
 	computeCenters(_centers);
 }
+
 void KMPartition::computeCenters(RectMatrix & centers) const {
 	centers.allocate(maxNbLabels(), _input.nbAtt());
 	for (size_t i(0); i < _input.nbObs(); ++i) {
@@ -41,9 +42,9 @@ void KMPartition::computeCenters(RectMatrix & centers) const {
 void KMPartition::shift(size_t node, size_t to) {
 	size_t const from(label(node));
 
-	if (_centers.getN() != maxNbLabels())
+	if (_centers.getN() != maxNbLabels()) {
 		computeCenters();
-	else {
+	} else {
 
 		for (size_t d(0); d < _input.nbAtt(); ++d) {
 			_centers.plus(from, d, -_input.get(node, d) * obsWeight(node));
