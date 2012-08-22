@@ -6,5 +6,5 @@ ADD_TEST(utests ../bin/unittests)
 
 #To have the flag -
 FIND_PACKAGE (Threads)
-TARGET_LINK_LIBRARIES(unittests ${CMAKE_THREAD_LIBS_INIT} gmock_main)
+TARGET_LINK_LIBRARIES(unittests ${CMAKE_THREAD_LIBS_INIT} gmock_main clustering)
 
