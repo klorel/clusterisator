@@ -43,7 +43,7 @@ public:
 		OUT<< std::setw(25) << std::left << instance.name;
 //		Partition real(instance.real());
 //		size_t const k(real.nbLabels());
-		size_t const k(1);
+		size_t const k(3);
 //		OUT<< std::setw(25) <<std::setprecision(15) << std::right<<KMAlgo::ComputeMssc(real,instance) << "\n";
 
 		Agregations agregations;
@@ -52,7 +52,7 @@ public:
 		KMInstance instance2(instance, agregations);
 		KMPartition partition2(instance2, k);
 
-		size_t const p(1);
+		size_t const p(1000);
 		std::set<Double, DoubleComparator> results;
 		for (size_t i(0); i < p; ++i) {
 			//			partition.random(k);
@@ -61,7 +61,7 @@ public:
 			//			partition2.shift(agregations.newIds[i], real.label(i));
 			//		partition2.set(real);
 			KMAlgo kmeans2(partition2);
-			kmeans2.isTraceOn() = true;
+			kmeans2.isTraceOn() = false;
 			kmeans2.headers();
 			kmeans2.hMeans(0);
 //			kmeans2.kMeans(0);

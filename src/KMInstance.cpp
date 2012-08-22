@@ -91,11 +91,9 @@ void KMInstance::readData(std::string const & fileName) {
 		file >> n;
 		file >> m;
 		allocate(n, m);
-		Double v;
 		for (size_t i(0); i < n; ++i) {
 			for (size_t j(0); j < m; ++j) {
-				file >> v;
-				_data.set(i, j, v);
+				file >> _data.get(i, j);
 			}
 		}
 	} else {
