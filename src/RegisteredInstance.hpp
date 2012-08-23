@@ -1,9 +1,9 @@
 #ifndef REGISTERED_INSTANCE_HPP_
 #define REGISTERED_INSTANCE_HPP_
 
-#include "../src/KMInstance.hpp"
+#include "src/KMInstance.hpp"
 #include "common.h"
-#include "../src/Partition.hpp"
+#include "src/Partition.hpp"
 
 enum AvailableInstances {
 #define REGISTER_INSTANCE(x,y) x,

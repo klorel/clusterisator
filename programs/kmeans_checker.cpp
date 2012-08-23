@@ -5,14 +5,14 @@
  *      Author: manuel
  */
 
-#include "../src/common.h"
-#include "../src/Partition.hpp"
+#include "src/common.h"
+#include "src/Partition.hpp"
 
-#include "../src/KMInstance.hpp"
-#include "../src/KMPartition.hpp"
-#include "../src/KMAlgo.hpp"
+#include "src/KMInstance.hpp"
+#include "src/KMPartition.hpp"
+#include "src/KMAlgo.hpp"
 
-#include "../src/Number.hpp"
+#include "src/Number.hpp"
 
 //template<typename T>
 //std::ostream& write(std::ostream& os, const T& value) {

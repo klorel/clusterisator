@@ -11,7 +11,7 @@
  * IPartition is aimed to be used in general clustering
  */
 
-#include "../src/IndexedList.hpp"
+#include "src/IndexedList.hpp"
 
 class IPartition {
 public:

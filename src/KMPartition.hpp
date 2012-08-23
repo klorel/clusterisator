@@ -8,18 +8,14 @@
 #ifndef KMPARTITION_HPP_
 #define KMPARTITION_HPP_
 
-#include "../src/common.h"
-#include "../src/Timer.hpp"
-#include "../src/Partition.hpp"
-#include "../src/KMInstance.hpp"
+#include "src/common.h"
+#include "src/Timer.hpp"
+#include "src/Partition.hpp"
+#include "src/KMInstance.hpp"
 
 class KMPartition;
 
 class KMPartition: public Partition {
-public:
-	typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
-	typedef std::pair<size_t, size_t> Move;
-	typedef std::vector<Move> Moves;
 public:
 	KMPartition(KMInstance const &, size_t k = 1);
 	KMPartition(KMInstance const &, Partition const &);
@@ -33,9 +29,7 @@ public:
 	Double cst() const;
 
 	bool shift(size_t obs, size_t to);
-
 	bool shift(Move const &);
-	bool shift(Moves const &);
 
 	size_t getK() const;
 	template<bool isInsertion> Double getCoeff(size_t i, size_t k) const;
@@ -53,9 +47,6 @@ public:
 	Double & cost();
 	Double cost() const;
 	void computeDistances();
-
-	std::pair<size_t, Double> getClosest(size_t obs) const;
-	std::pair<size_t, Double> getBest(size_t obs) const;
 
 	bool feasible(size_t obs, size_t to) const;
 
@@ -137,10 +128,10 @@ inline IntSet const & KMPartition::cannotLinks(size_t i) const {
 	return _input.cannotLinks().get(i);
 }
 
-inline KMPartition::Distances & KMPartition::distances() {
+inline Distances & KMPartition::distances() {
 	return _distances;
 }
-inline KMPartition::Distances const & KMPartition::distances() const {
+inline Distances const & KMPartition::distances() const {
 	return _distances;
 }
 

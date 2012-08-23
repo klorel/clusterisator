@@ -8,7 +8,7 @@
 #ifndef TIMER_HPP_
 #define TIMER_HPP_
 
-#include "../src/common.h"
+#include "src/common.h"
 
 #ifdef _WIN32 
 #include <boost/timer.hpp>

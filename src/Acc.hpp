@@ -8,9 +8,9 @@
 #ifndef ACC_HPP_
 #define ACC_HPP_
 
-#include "../src/common.h"
-#include "../src/IMesure.hpp"
-#include "../src/IPartition.hpp"
+#include "src/common.h"
+#include "src/IMesure.hpp"
+#include "src/IPartition.hpp"
 
 class Acc: public IMesure {
 public:

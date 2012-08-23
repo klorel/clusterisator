@@ -5,8 +5,8 @@
  *      Author: manuel
  */
 
-#include "../src/KMInstance.hpp"
-#include "../src/IPartition.hpp"
+#include "src/KMInstance.hpp"
+#include "src/IPartition.hpp"
 
 KMInstance::KMInstance() {
 	_cst = 0;

@@ -8,9 +8,9 @@
 #ifndef KM_INSTANCE_HPP_
 #define KM_INSTANCE_HPP_
 
-#include "../src/common.h"
-#include "../src/RectMatrix.hpp"
-#include "../src/KMConstraints.hpp"
+#include "src/common.h"
+#include "src/RectMatrix.hpp"
+#include "src/KMConstraints.hpp"
 
 class Agregations {
 public:

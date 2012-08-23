@@ -37,39 +37,37 @@ Double KMAlgo::ComputeMssc(IPartition const & x, KMInstance const & instance) {
 	return result;
 }
 
-void Input::out(std::string const & name) const {
-	OUT<< std::setw(10) << name;
-	OUT << std::setw(10) <<std::setprecision(6)<< _timer.elapsed();
-	OUT << std::setw(10) << _ite;
-	OUT << std::setw(20) << std::setprecision(10) << _partition.cost();
-	OUT << "\n";
+// we just need to test :
+// - obs of which label was modified
+bool KMAlgo::HMeansLoop(KMInput & input) {
+	input.clearMoves();
+	for (size_t i(0); i < input.nbObs(); ++i) {
+		std::pair<size_t, Double> const k(input.getClosest(i));
+		if (k.first != input.label(i)) {
+			input.moves().push_back(std::make_pair(i, k.first));
+			//			assert(_input.getDelta(i,k.first)<0);
+		}
+	}
+	return !input.moves().empty();
 }
-void Input::headers() {
-	OUT<< std::setw(10) << "ALGO";
-	OUT<< std::setw(10) << "TIME";
-	OUT<< std::setw(10) << "ITERATION";
-	OUT<< std::setw(20) << "COST";
-	OUT<< "\n";
-}
-KMPartition & Input::partition() {
-	return _partition;
-}
-KMPartition const& Input::partition() const {
-	return _partition;
-}
-Double Input::cost() const {
-	return _partition.cost();
+bool KMAlgo::Singleton(KMInput & input) {
+	_Buffer.clear();
+	//	PushBack(input.unUsed(), _Buffer,
+	//			input.getK() - input.nbLabels());
+	PushBack(input.unUsed(), _Buffer);
 
-}
-size_t & Input::ite() {
-	return _ite;
-}
-size_t Input::ite() const {
-	return _ite;
-}
+	assert(_Buffer.size() == input.unUsed().size());
+	assert(_Buffer.size() + input.nbLabels() == input.getK());
 
-Input::Input(KMPartition & rhs) :
-		_partition(rhs), _timer(), _ite(0), _modifiedLabels(rhs.maxNbLabels()), _modifiedObs(
-				rhs.nbObs()) {
+	while (!_Buffer.empty()) {
+		assert(!input.isUsed(_Buffer.back()));
+		assert(input.distances().begin()->first>Zero<Double>());
+		input.shift(input.distances().begin()->second, _Buffer.back());
+		input.cost() -= input.distances().begin()->first;
+		assert(input.isUsed(_Buffer.back()));
+		_Buffer.pop_back();
 
+		input.distances().erase(input.distances().begin());
+	}
+	return true;
 }

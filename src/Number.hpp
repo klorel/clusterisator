@@ -1,7 +1,7 @@
 #ifndef NUMBER_H
 #define NUMBER_H
 
-#include "../src/common.h"
+#include "src/common.h"
 
 class Number {
 public:

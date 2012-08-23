@@ -53,6 +53,11 @@ typedef std::vector<IntList> IntListVector;
 typedef std::map<size_t, Double> Int2Double;
 
 typedef std::pair<Double, Double> Double2;
+
+typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
+typedef std::pair<size_t, size_t> Move;
+typedef std::vector<Move> Moves;
+
 // forward declaration of interfaces
 class ILinks;
 class IPartition;

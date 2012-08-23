@@ -90,59 +90,6 @@ Double KMPartition::getDelta(size_t i, size_t j) const {
 	return getDelta(i, l, j);
 }
 
-std::pair<size_t, Double> KMPartition::getBest(size_t i) const {
-	size_t const l(label(i));
-	std::pair<size_t, Double> min(l, Zero<Double>());
-
-	if (sizeOfLabel(l) != 1) {
-		Double const cst(-getDistance(i) * getCoeff<false>(i, l));
-		for (size_t j(0); j < getK(); ++j) {
-			if (j != l && feasible(i, j)) {
-				Double delta(cst);
-				delta += getDistance(i, j) * getCoeff<true>(i, j);
-				delta *= obsWeight(i);
-				if (delta < min.second) {
-					min.first = j;
-					min.second = delta;
-				}
-			}
-		}
-	}
-	return min;
-}
-std::pair<size_t, Double> KMPartition::getClosest(size_t i) const {
-	size_t const l(label(i));
-	std::pair<size_t, Double> min(l, _d[i]);
-	for (size_t k(0); k < getK(); ++k) {
-		if (k != l) {
-			std::pair<size_t, Double> const d(k, getDistance(i, k));
-			if (d.second < min.second) {
-				min = d;
-			}
-		}
-	}
-//	if (_pertLabels.contains(l)) {
-//		for (size_t k(0); k < getK(); ++k) {
-//			if (k != l) {
-//				std::pair<size_t, Double> const d(k, getDistance(i, k));
-//				if (d.second < min.second) {
-//					min = d;
-//				}
-//			}
-//		}
-//	} else {
-//		for (auto const & k : _pertLabels) {
-////	for (size_t k(0); k < getK(); ++k) {
-//			if (k != l) {
-//				std::pair<size_t, Double> const d(k, getDistance(i, k));
-//				if (d.second < min.second) {
-//					min = d;
-//				}
-//			}
-//		}
-//	}
-	return min;
-}
 
 bool KMPartition::feasible(size_t i, size_t j) const {
 	for (auto const & n : mustLinks(i)) {
@@ -193,17 +140,6 @@ bool KMPartition::checkCost() const {
 		return false;
 	}
 	return true;
-}
-
-bool KMPartition::shift(Moves const & moves) {
-	bool success(false);
-	if (!moves.empty()) {
-		for (auto const & move : moves) {
-			if (shift(move))
-				success = true;
-		}
-	}
-	return success;
 }
 
 bool KMPartition::shift(Move const & m) {

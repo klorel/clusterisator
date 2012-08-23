@@ -7,9 +7,9 @@
 
 #include "Vns.hpp"
 
-Vns::Vns(Input & input) :
-		_input(input), _best(input.partition(),
-				input.partition().computeCost()), _nodes(_best.first.nbObs()) {
+Vns::Vns(KMInput & input) :
+		_input(input), _best(input, input.computeCost()), _nodes(
+				_best.first.nbObs()) {
 	_ite = 0;
 	_globalIte = 0;
 	_k = 0;
@@ -22,11 +22,11 @@ Vns::~Vns() {
 }
 
 void Vns::restart() {
-	_input.partition().set(_best.first);
+	_input.set(_best.first);
 }
 
 void Vns::save() {
-	_best.first.set(_input.partition());
+	_best.first.set(_input);
 	_best.second = _input.cost();
 
 }
@@ -38,13 +38,13 @@ void Vns::shake(size_t mag) {
 		bool success(false);
 		do {
 			++ite;
-			size_t const k(Number::Generator() % _input.partition().getK());
-			if (k != _input.partition().label(obs)) {
-				_input.partition().shift(i, k);
+			size_t const k(Number::Generator() % _input.getK());
+			if (k != _input.label(obs)) {
+				_input.shift(i, k);
 				success = true;
 			}
-			if (ite > 10 * _input.partition().getK())
-				std::cout << "ite > 10 * _input.partition().getK())\n";
+			if (ite > 10 * _input.getK())
+				std::cout << "ite > 10 * _input.getK())\n";
 		} while (!success);
 	}
 }
@@ -54,6 +54,6 @@ void Vns::out() const {
 	OUT<< std::setw(10)<<_globalIte;
 	OUT<< std::setw(10)<<_ite;
 	OUT<< std::setw(10)<<_k;
-	OUT<< std::setw(25)<<_best.second;
+	OUT<< std::setw(25)<<std::setprecision(8)<< _best.second;
 	OUT<<"\n";
 }

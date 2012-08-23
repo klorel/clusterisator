@@ -5,19 +5,19 @@
  *      Author: manuel
  */
 
-#include "../src/common.h"
-#include "../src/Partition.hpp"
+#include "src/common.h"
+#include "src/Partition.hpp"
 
-#include "../src/KMAlgo.hpp"
-#include "../src/KMInstance.hpp"
-#include "../src/KMConstraints.hpp"
-#include "../src/KMPartition.hpp"
+#include "src/KMAlgo.hpp"
+#include "src/KMInstance.hpp"
+#include "src/KMConstraints.hpp"
+#include "src/KMPartition.hpp"
 
-#include "../src/Number.hpp"
-#include "../src/RegisteredInstance.hpp"
-#include "../src/RandIndex.hpp"
+#include "src/Number.hpp"
+#include "src/RegisteredInstance.hpp"
+#include "src/RandIndex.hpp"
 
-#include "../src/Vns.hpp"
+#include "src/Vns.hpp"
 
 struct DoubleComparator {
 	bool operator()(Double a, Double b) const {
@@ -47,23 +47,23 @@ public:
 		instance.buildMustLink(agregations);
 //
 		KMInstance instance2(instance, agregations);
-		KMPartition partition2(instance2, k);
+		KMInput input(instance2, k);
 
 		size_t const p(1);
 		for (size_t i(0); i < p; ++i) {
 			//			partition.random(k);
-			partition2.random(0);
+			input.random(0);
 			//		for (size_t i(0); i < instance.nbObs(); ++i)
 			//			partition2.shift(agregations.newIds[i], real.label(i));
 			//		partition2.set(real);
 
-			Input input(partition2);
+//			Input input(partition2);
 //			input.headers();
 //			KMAlgo::HMeans(input);
 //			KMAlgo::KMeans(input);
 //			kmeans2.kMeans();
 			Vns vns(input);
-			vns.run<true>(25, 150);
+			vns.run<true>(25, 10000);
 //			results.insert(kmeans2.computeCost());
 //			assert(
 //					IsEqual(kmeans2.computeCost(), KMAlgo::ComputeMssc(kmeans2.partition(),instance2)));

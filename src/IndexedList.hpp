@@ -1,7 +1,7 @@
 #ifndef _INDEXED_LIST_HPP
 #define _INDEXED_LIST_HPP
 
-#include "../src/common.h"
+#include "src/common.h"
 
 #include "Number.hpp"
 

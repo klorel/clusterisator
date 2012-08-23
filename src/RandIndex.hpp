@@ -8,9 +8,9 @@
 #ifndef RANDINDEX_HPP_
 #define RANDINDEX_HPP_
 
-#include "../src/IMesure.hpp"
-#include "../src/common.h"
-#include "../src/IPartition.hpp"
+#include "src/IMesure.hpp"
+#include "src/common.h"
+#include "src/IPartition.hpp"
 
 class RandIndex: public IMesure {
 public:

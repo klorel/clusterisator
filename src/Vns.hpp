@@ -8,12 +8,12 @@
 #ifndef VNS_HPP_
 #define VNS_HPP_
 
-#include "../src/common.h"
-#include "../src/KMAlgo.hpp"
+#include "src/common.h"
+#include "src/KMAlgo.hpp"
 
 class Vns {
 public:
-	Vns(Input &);
+	Vns(KMInput &);
 	virtual ~Vns();
 public:
 	void shake(size_t);
@@ -24,7 +24,7 @@ public:
 
 	void out() const;
 private:
-	Input & _input;
+	KMInput & _input;
 	// (point, valeur)
 	std::pair<Partition, Double> _best;
 
@@ -47,8 +47,8 @@ template<bool isTraceOn> inline void Vns::run(size_t maxIte, size_t magMax) {
 			restart();
 			shake(++_k);
 			_input.ite() = 0;
-			KMAlgo::HMeans<true>(_input);
-			KMAlgo::KMeans<true>(_input);
+			KMAlgo::HMeans<false>(_input);
+			KMAlgo::KMeans<false>(_input);
 
 			if (_best.second > 1e-10 + _input.cost()) {
 

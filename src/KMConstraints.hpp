@@ -8,7 +8,7 @@
 #ifndef KMCONSTRAINTS_HPP_
 #define KMCONSTRAINTS_HPP_
 
-#include "../src/common.h"
+#include "src/common.h"
 
 class KMConstraints {
 public:
