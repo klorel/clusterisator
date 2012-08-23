@@ -31,13 +31,14 @@ KMInput::KMInput(KMInstance const & instance, size_t k) :
 		KMPartition(instance, k), _timer(), _ite(0), _modifiedLabels(
 				maxNbLabels()), _modifiedObs(nbObs()) {
 	_moves.reserve(nbObs());
-
+	_buffer.reset(nbObs());
 }
 
 KMInput::KMInput(KMInstance const & instance, Partition const & p) :
 		KMPartition(instance, p), _timer(), _ite(0), _modifiedLabels(
 				maxNbLabels()), _modifiedObs(nbObs()) {
 	_moves.reserve(nbObs());
+	_buffer.reset(nbObs());
 }
 
 KMInput::~KMInput() {
@@ -106,7 +107,7 @@ std::pair<size_t, Double> KMInput::getClosest(size_t i) const {
 			}
 		}
 	}
-
+//
 //	if (_modifiedLabels.contains(l)) {
 //		for (size_t k(0); k < getK(); ++k) {
 //			if (k != l) {
@@ -145,4 +146,16 @@ Moves const & KMInput::moves() const {
 void KMInput::fillModified() {
 	_modifiedLabels.fill();
 	_modifiedObs.fill();
+}
+
+// witch label should be tested for this observation
+void KMInput::writeCandidates(size_t obs) {
+	_buffer.clear();
+	// SI PAS DE CONTRAINTES
+	// -- si le label de obs a été modifié : tout les labels
+	// -- si le label de obs n'a pas été modifié : seulement ceux qui ont été modifiés
+	// SINON
+	// -- si le label de obs a été modifié : tout les labels
+	// -- si le label de obs n'a pas été modifié : seulement les labels des noeuds liés par des contraintes s'ils ont été modifiés
+
 }

@@ -41,11 +41,14 @@ public:
 
 	void fillModified();
 private:
+	void writeCandidates(size_t obs);
+private:
 	Timer _timer;
 	size_t _ite;
 	IndexedList _modifiedLabels;
 	IndexedList _modifiedObs;
 	Moves _moves;
+	IndexedList _buffer;
 
 };
 inline bool KMInput::emptyMoves() const {
