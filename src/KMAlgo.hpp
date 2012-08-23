@@ -17,11 +17,7 @@
 
 class Input {
 public:
-	Input(KMPartition & rhs) :
-			_partition(rhs), _timer(), _ite(0) {
-
-	}
-
+	Input(KMPartition & rhs);
 	void out(std::string const & name) const;
 	void headers();
 	KMPartition & partition();
@@ -33,6 +29,8 @@ private:
 	KMPartition & _partition;
 	Timer _timer;
 	size_t _ite;
+	IndexedList _modifiedLabels;
+	IndexedList _modifiedObs;
 
 };
 
@@ -46,19 +44,13 @@ public:
 	template<bool isTraceOn = true> static bool HMeans(Input & input);
 	static bool HMeansLoop(Input & input, Moves & moves);
 	static bool Singleton(Input & input);
-
-public:
-//	void checkDelta(size_t i, size_t j);
-//	void checkCenters() const;
 private:
 	static IntVector _Buffer;
-
 	static std::string const HMEANS;
 	static std::string const KMEANS;
 
 };
-template<bool isTraceOn>
-inline bool KMAlgo::KMeans(Input & input) {
+template<bool isTraceOn> inline bool KMAlgo::KMeans(Input & input) {
 	KMPartition & partition(input.partition());
 	bool improvement(false);
 	partition.computeDistances();
@@ -86,13 +78,12 @@ inline bool KMAlgo::HMeansLoop(Input & input, Moves & moves) {
 		std::pair<size_t, Double> const k(input.partition().getClosest(i));
 		if (k.first != input.partition().label(i)) {
 			moves.push_back(std::make_pair(i, k.first));
-//			assert(_input.getDelta(i,k.first)<0);
+			//			assert(_input.getDelta(i,k.first)<0);
 		}
 	}
 	return !moves.empty();
 }
-template<bool isTraceOn>
-inline bool KMAlgo::HMeans(Input & input) {
+template<bool isTraceOn> inline bool KMAlgo::HMeans(Input & input) {
 	KMPartition & partition(input.partition());
 	Moves moves;
 	moves.reserve(partition.nbObs());
@@ -123,8 +114,8 @@ inline bool KMAlgo::Singleton(Input & input) {
 	KMPartition & partition(input.partition());
 
 	_Buffer.clear();
-//	PushBack(partition.unUsed(), _Buffer,
-//			partition.getK() - partition.nbLabels());
+	//	PushBack(partition.unUsed(), _Buffer,
+	//			partition.getK() - partition.nbLabels());
 	PushBack(partition.unUsed(), _Buffer);
 
 	assert(_Buffer.size() == partition.unUsed().size());

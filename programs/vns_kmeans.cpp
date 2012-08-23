@@ -52,7 +52,7 @@ public:
 		size_t const p(1);
 		for (size_t i(0); i < p; ++i) {
 			//			partition.random(k);
-			partition2.random(k);
+			partition2.random(0);
 			//		for (size_t i(0); i < instance.nbObs(); ++i)
 			//			partition2.shift(agregations.newIds[i], real.label(i));
 			//		partition2.set(real);

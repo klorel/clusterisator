@@ -101,16 +101,6 @@ std::pair<size_t, Double> KMPartition::getBest(size_t i) const {
 				Double delta(cst);
 				delta += getDistance(i, j) * getCoeff<true>(i, j);
 				delta *= obsWeight(i);
-				if (!IsEqual(delta, getDelta(i, l, j))) {
-
-					Double const bigger(
-							std::max(std::abs(delta),
-									std::abs(getDelta(i, l, j))));
-					OUT<<std::setprecision(15)<<(delta - getDelta(i,l,j))/bigger<<"\n";
-					OUT<<std::setprecision(15)<<delta<<"\n";
-					OUT<<std::setprecision(15)<< getDelta(i,l,j)<<"\n";
-					assert(IsEqual(delta, getDelta(i, l, j)));
-				}
 				if (delta < min.second) {
 					min.first = j;
 					min.second = delta;
@@ -204,7 +194,6 @@ bool KMPartition::checkCost() const {
 	}
 	return true;
 }
-
 
 bool KMPartition::shift(Moves const & moves) {
 	bool success(false);

@@ -75,6 +75,7 @@ public:
 	size_t & label(size_t n);
 public:
 	Partition & operator=(Partition const & rhs);
+	void random();
 	void random(size_t k);
 public:
 	bool checkLists() const;

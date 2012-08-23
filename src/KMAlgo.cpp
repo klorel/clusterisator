@@ -38,9 +38,8 @@ Double KMAlgo::ComputeMssc(IPartition const & x, KMInstance const & instance) {
 }
 
 void Input::out(std::string const & name) const {
-
 	OUT<< std::setw(10) << name;
-	OUT << std::setw(10) << _timer.elapsed();
+	OUT << std::setw(10) <<std::setprecision(6)<< _timer.elapsed();
 	OUT << std::setw(10) << _ite;
 	OUT << std::setw(20) << std::setprecision(10) << _partition.cost();
 	OUT << "\n";
@@ -67,4 +66,10 @@ size_t & Input::ite() {
 }
 size_t Input::ite() const {
 	return _ite;
+}
+
+Input::Input(KMPartition & rhs) :
+		_partition(rhs), _timer(), _ite(0), _modifiedLabels(rhs.maxNbLabels()), _modifiedObs(
+				rhs.nbObs()) {
+
 }

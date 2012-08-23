@@ -37,7 +37,7 @@ void Partition::oneLabel(size_t n, size_t k) {
 	_usedLabels.reset(k);
 	_unUsedLabels.reset(k);
 	_labelWeights.assign(k, 0);
-  _labelWeights[0] = n;
+	_labelWeights[0] = n;
 
 	_nodePosition.assign(n, _labelLists[0].end());
 	_nodeWeights.assign(n, One<Double>());
@@ -122,15 +122,23 @@ bool Partition::checkWeights() const {
 	}
 	return true;
 }
-void Partition::random(size_t k) {
+
+void Partition::random() {
 	IndexedList nodes(nbObs(), true);
-	for (size_t i(0); i < maxNbLabels(); ++i) {
+	for (auto const & n : nodes)
+		shift(n, Number::Generator() % maxNbLabels());
+}
+void Partition::random(size_t k) {
+	assert(k<maxNbLabels());
+	IndexedList nodes(nbObs(), true);
+	for (size_t i(0); i < (k == 0 ? maxNbLabels() : k); ++i) {
 		size_t const n(nodes.pop_random());
 		shift(n, i);
 	}
 	for (auto const & n : nodes)
-		shift(n, Number::Generator() % maxNbLabels());
+		shift(n, Number::Generator() % (k == 0 ? maxNbLabels() : k));
 }
+
 void Partition::setWeights(DoubleVector const & rhs) {
 	_nodeWeights = rhs;
 	_labelWeights.assign(maxNbLabels(), Zero<Double>());

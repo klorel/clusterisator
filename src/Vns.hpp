@@ -46,8 +46,9 @@ template<bool isTraceOn> inline void Vns::run(size_t maxIte, size_t magMax) {
 			++_globalIte;
 			restart();
 			shake(++_k);
-			KMAlgo::HMeans<false>(_input);
-			KMAlgo::KMeans<false>(_input);
+			_input.ite() = 0;
+			KMAlgo::HMeans<true>(_input);
+			KMAlgo::KMeans<true>(_input);
 
 			if (_best.second > 1e-10 + _input.cost()) {
 
