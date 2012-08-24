@@ -99,35 +99,35 @@ std::pair<size_t, Double> KMInput::getBest(size_t i) const {
 std::pair<size_t, Double> KMInput::getClosest(size_t i) const {
 	size_t const l(label(i));
 	std::pair<size_t, Double> min(l, d(i));
-	for (size_t k(0); k < getK(); ++k) {
-		if (k != l) {
-			std::pair<size_t, Double> const d(k, getDistance(i, k));
-			if (d.second < min.second) {
-				min = d;
-			}
-		}
-	}
-//
-//	if (_modifiedLabels.contains(l)) {
-//		for (size_t k(0); k < getK(); ++k) {
-//			if (k != l) {
-//				std::pair<size_t, Double> const d(k, getDistance(i, k));
-//				if (d.second < min.second) {
-//					min = d;
-//				}
-//			}
-//		}
-//	} else {
-//		for (auto const & k : _modifiedLabels) {
-//			//	for (size_t k(0); k < getK(); ++k) {
-//			if (k != l) {
-//				std::pair<size_t, Double> const d(k, getDistance(i, k));
-//				if (d.second < min.second) {
-//					min = d;
-//				}
+//	for (size_t k(0); k < getK(); ++k) {
+//		if (k != l) {
+//			std::pair<size_t, Double> const d(k, getDistance(i, k));
+//			if (d.second < min.second) {
+//				min = d;
 //			}
 //		}
 //	}
+
+	if (_modifiedLabels.contains(l)) {
+		for (size_t k(0); k < getK(); ++k) {
+			if (k != l) {
+				std::pair<size_t, Double> const d(k, getDistance(i, k));
+				if (d.second < min.second) {
+					min = d;
+				}
+			}
+		}
+	} else {
+		for (auto const & k : _modifiedLabels) {
+			//	for (size_t k(0); k < getK(); ++k) {
+			if (k != l) {
+				std::pair<size_t, Double> const d(k, getDistance(i, k));
+				if (d.second < min.second) {
+					min = d;
+				}
+			}
+		}
+	}
 	return min;
 }
 void KMInput::clearMoves() {

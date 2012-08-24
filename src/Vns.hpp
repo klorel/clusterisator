@@ -20,7 +20,8 @@ public:
 	void restart();
 	void save();
 
-	template<bool isTraceOn = false> void run(size_t maxIte, size_t magMax);
+	template<template<bool T> class LocalSearchT, bool isTraceOn = false>
+	void run(size_t maxIte, size_t magMax);
 
 	void out() const;
 private:
@@ -36,9 +37,11 @@ private:
 	Timer _timer;
 };
 
-template<bool isTraceOn> inline void Vns::run(size_t maxIte, size_t magMax) {
+template<template<bool T> class LocalSearchT, bool isTraceOn> inline void Vns::run(
+		size_t maxIte, size_t magMax) {
 	_ite = 0;
 	_globalIte = 0;
+	LocalSearchT<false> ls;
 	do {
 		_k = 0;
 		do {
@@ -47,11 +50,9 @@ template<bool isTraceOn> inline void Vns::run(size_t maxIte, size_t magMax) {
 			restart();
 			shake(++_k);
 			_input.ite() = 0;
-			KMAlgo::HMeans<false>(_input);
-			KMAlgo::KMeans<false>(_input);
+			ls(_input);
 
-			if (_best.second > 1e-10 + _input.cost()) {
-
+			if (_best.second > 1e-6 + _input.cost()) {
 				save();
 				if (isTraceOn)
 					out();

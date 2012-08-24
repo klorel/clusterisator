@@ -54,6 +54,6 @@ void Vns::out() const {
 	OUT<< std::setw(10)<<_globalIte;
 	OUT<< std::setw(10)<<_ite;
 	OUT<< std::setw(10)<<_k;
-	OUT<< std::setw(25)<<std::setprecision(8)<< _best.second;
+	OUT<< std::setw(25)<<std::setprecision(15)<< _best.second;
 	OUT<<"\n";
 }

@@ -51,29 +51,9 @@ public:
 
 		size_t const p(1);
 		for (size_t i(0); i < p; ++i) {
-			//			partition.random(k);
 			input.random(0);
-			//		for (size_t i(0); i < instance.nbObs(); ++i)
-			//			partition2.shift(agregations.newIds[i], real.label(i));
-			//		partition2.set(real);
-
-//			Input input(partition2);
-//			input.headers();
-//			KMAlgo::HMeans(input);
-//			KMAlgo::KMeans(input);
-//			kmeans2.kMeans();
 			Vns vns(input);
-			vns.run<true>(25, 10000);
-//			results.insert(kmeans2.computeCost());
-//			assert(
-//					IsEqual(kmeans2.computeCost(), KMAlgo::ComputeMssc(kmeans2.partition(),instance2)));
-			//		Partition candidate(real);
-			//		for (size_t i(0); i < real.nbObs(); ++i)
-			//			candidate.shift(i, partition2.label(agregations.newIds[i]));
-			//		OUT<< std::setw(25) << std::left << instance.name;
-			//		OUT<< std::setw(25) << std::left << RandIndex().compute(real, real);
-			//		OUT<< std::setw(25) << std::left << RandIndex().compute(real, candidate);
-			//		OUT<< "\n";
+			vns.run<HKMeans, true>(25, 10000);
 		}
 	}
 

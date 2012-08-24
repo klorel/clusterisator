@@ -52,7 +52,7 @@ int main(int argc, char ** argv) {
 			KMInstance instance2(instance, agregations);
 			KMInput input(instance2, k);
 			input.random(0);
-			KMAlgo::HKMeans<true>(input);
+			HKMeans<true>()(input);
 
 		}
 	}
