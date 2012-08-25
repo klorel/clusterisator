@@ -111,7 +111,7 @@ TEST(Partition, fusion){
 
  Partition partition(nbObs, nbMaxLabels);
  partition.setWeights(std::vector<double>({1, 2, 1, 4, 3, 2}));
- partition.set(       std::vector<size_t>({0, 1, 1, 2, 0, 4}));
+ partition.setLabels( std::vector<size_t>({0, 1, 1, 2, 0, 4}));
 
  //Make sure we're in the correct initial state
  EXPECT_EQ((size_t) 0, partition.label(0));

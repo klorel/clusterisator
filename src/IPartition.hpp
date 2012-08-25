@@ -7,8 +7,10 @@
 
 #ifndef I_PARTITION_HPP_
 #define I_PARTITION_HPP_
-/*
+/**
  * IPartition is aimed to be used in general clustering
+ *
+ * It represents a dynamic partition of the observations
  */
 
 #include "src/IndexedList.hpp"
@@ -22,47 +24,65 @@ public:
 	typedef IndexedList::iterator iterator;
 	typedef IndexedList::const_iterator const_iterator;
 public:
-	//
-	virtual void set(IntVector const &) = 0;
-	// the number of nodes
+
+  /**
+   * Define the partition
+   *
+   * @param labels For every observation, its label. Size must equal the number of observations
+   */
+	virtual void setLabels(IntVector const & labels) = 0;
+
+  /**
+   * Define the weight of every observation.
+   *
+   * @param weights For every observation, its weights. Size mumst equal the number of observation
+   */
+	virtual void setWeights(DoubleVector const & weights) = 0;
+
+  /// Get the number of observations present in the partition
 	virtual size_t nbObs() const = 0;
-	// the number of used labels
+	/// Get the number of used labels
 	virtual size_t nbLabels() const = 0;
+  /// Get the maximum number of labels allowed.
 	virtual size_t maxNbLabels() const=0;
-	//
-	virtual void setWeights(DoubleVector const & rhs) = 0;
-	virtual Double obsWeight(size_t) const=0;
-	virtual Double & obsWeight(size_t)=0;
-	virtual Double labelWeight(size_t) const=0;
-	virtual Double & labelWeight(size_t)=0;
-	// clustering information
-	virtual size_t & label(size_t node) = 0;
-	virtual size_t label(size_t node) const = 0;
-	// the number of nodes having a label
-	virtual size_t & sizeOfLabel(size_t label) = 0;
+  /// Get the weight of a given observation
+	virtual Double obsWeight(size_t obs) const=0;
+  /// Get the sum of the weights of the observations contained in a given label
+	virtual Double labelWeight(size_t label) const=0;
+	/// Get the label in which belong a given observation
+	virtual size_t label(size_t obs) const = 0;
+	/// Get the number of observation contained in the given label
 	virtual size_t sizeOfLabel(size_t label) const = 0;
-	// one un-used label
+
+  /**
+   * Returns an arbitrary unused label, assuming one exist.
+   * If every label if used, the behavior is undefined
+   */
 	virtual size_t getUnUsedLabel() const = 0;
-	// is there any un used label
+	/// @return TRUE is every label is used, FALSE if at least one is empty
 	virtual bool allLabelsUsed() const = 0;
-	// unused label list
-	virtual IndexedList & unUsed()= 0;
+	/// @return The list of every unused labels 
 	virtual IndexedList const & unUsed() const = 0;
-	// used label list
-	virtual IndexedList & used()= 0;
-	virtual IndexedList const & used() const = 0;
-	// is the label used
+	/// @return TRUE is at least one observation has the given label 
 	virtual bool isUsed(size_t label) const = 0;
-	virtual IndexedList const & usedLabel() const =0;
-	virtual IndexedList const & unUsedLabel() const =0;
+	/// @return The list of every used label
+	virtual IndexedList const & usedLabels() const =0;
+  /// @return The list of every unused label
+	virtual IndexedList const & unUsedLabels() const =0;
 
-	virtual IntList & list(size_t label) = 0;
-	virtual IntList const & list(size_t label) const = 0;
+  /// @returns The observations contained by the given label
+	virtual IntList const & observations(size_t label) const = 0;
 
-	// change the label of one node
-	virtual bool shift(size_t node, size_t newLabel) = 0;
-	// fusion of two label, return the used label
+	/// Change the label of one observation
+	virtual bool shift(size_t observation, size_t to) = 0;
+
+	/**
+   * Merge one label into another
+   *
+   * @return The label which contains every observation (the other one is then empty)
+   */
 	virtual size_t fusion(size_t const & label1, size_t const & label2) = 0;
+
 	virtual ~IPartition();
 };
 

@@ -15,69 +15,52 @@ class Partition;
 
 void operator>>(std::istream &, Partition &);
 void operator>>(std::string const &, Partition &);
+
+/**
+ * Implementation of IPartition such that, in particular:
+ * - by default, every observation belongs to the label 0
+ * - by default, every observation as a weight 1.0
+ */
 class Partition: public IPartition {
 public:
-
-  /**
-   * @param n nb observations
-   * @param k nb max labels
-   */
-	Partition(size_t n, size_t k = 1);
+	Partition(size_t nbObs, size_t nbMaxLabels = 1);
 	Partition(Partition const &);
 	virtual ~Partition();
-public:
-	void set(Partition const &);
-	void set(IntVector const & v);
-	// déplacement d'un noeud
-	bool shift(size_t n, size_t p);
-	// fusion of two label, return the used label
+
+	void setLabels(Partition const &);
+	void setLabels(IntVector const & labels);
+	bool shift(size_t observation, size_t to);
 	size_t fusion(size_t const & label1, size_t const & label2);
-public:
-	void oneLabel(size_t n, size_t k);
-	// le nombre de noeuds
+
+	void oneLabel(size_t nbObs, size_t nbMaxLabel);
 	size_t nbObs() const;
 
-	// le nombre de labels utilisé dans la solution courante
 	size_t nbLabels() const;
 	size_t maxNbLabels() const;
-	//
-	void setWeights(DoubleVector const & rhs);
-	//
+	void setWeights(DoubleVector const & weights);
 	Double obsWeight(size_t) const;
 	Double & obsWeight(size_t);
 
 	DoubleVector const & labelWeights() const;
 	Double labelWeight(size_t) const;
 	Double & labelWeight(size_t);
-	// le nombre de noeud ayant la label l
 	size_t & sizeOfLabel(size_t l);
 	size_t sizeOfLabel(size_t l) const;
-	// récupère un label vide
 	size_t getUnUsedLabel() const;
-	// est-ce que tout les labels sont utilisés
 	bool allLabelsUsed() const;
-	// les labels libres
-	IndexedList & unUsed();
 	IndexedList const & unUsed() const;
-	// les labels utilisés
-	IndexedList & used();
-	IndexedList const & used() const;
-	// est-ce que le label est utilisé
+	IndexedList const & usedLabels() const;
+	IndexedList const & unUsedLabels() const;
 	bool isUsed(size_t l) const;
-public:
-	IndexedList const & usedLabel() const;
-	IndexedList const & unUsedLabel() const;
-
-	IntList & list(size_t label);
-	IntList const & list(size_t label) const;
+	IntList const & observations(size_t label) const;
 
 	size_t label(size_t n) const;
 	size_t & label(size_t n);
-public:
+
 	Partition & operator=(Partition const & rhs);
 	void random();
 	void random(size_t k);
-public:
+
 	bool checkLists() const;
 	bool checkWeights() const;
 
@@ -116,17 +99,14 @@ inline size_t & Partition::sizeOfLabel(size_t l) {
 	return _size[l];
 }
 
-inline IndexedList const & Partition::usedLabel() const {
+inline IndexedList const & Partition::usedLabels() const {
 	return _usedLabels;
 }
-inline IndexedList const & Partition::unUsedLabel() const {
+inline IndexedList const & Partition::unUsedLabels() const {
 	return _unUsedLabels;
 }
 
-inline IntList & Partition::list(size_t label) {
-	return _labelLists[label];
-}
-inline IntList const & Partition::list(size_t label) const {
+inline IntList const & Partition::observations(size_t label) const {
 	return _labelLists[label];
 }
 
@@ -142,21 +122,10 @@ inline bool Partition::isUsed(size_t l) const {
 	return _usedLabels.contains(l);
 }
 
-inline IndexedList & Partition::unUsed() {
-	return _unUsedLabels;
-}
-
 inline IndexedList const & Partition::unUsed() const {
 	return _unUsedLabels;
 }
 
-inline IndexedList & Partition::used() {
-	return _usedLabels;
-}
-
-inline IndexedList const & Partition::used() const {
-	return _usedLabels;
-}
 inline size_t Partition::label(size_t n) const {
 	return _labels[n];
 }
