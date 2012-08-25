@@ -31,6 +31,35 @@ Partition & Partition::operator=(Partition const & rhs) {
 Partition::~Partition() {
 
 }
+
+size_t Partition::fusion(size_t const & label1, size_t const & label2){
+  assert(label1 < maxNbLabels());
+  assert(label2 < maxNbLabels());
+
+  if ( label1 == label2 ){
+    return label1;
+  }
+
+  //Move obs from the smallest into the biggest label, to minimize movements
+  size_t destLabel, origLabel;
+  if ( label1 < label2 ){
+    destLabel = label1;
+    origLabel = label2;
+  } else {
+    destLabel = label2;
+    origLabel = label1;
+  }
+
+  //Once we'll start to actually move observation, we won't be able to iterate
+  //on this list anymore (because it will be modified) and start by copying it
+  IntList obsToMove = list(origLabel);
+  for(auto obs : obsToMove){
+    shift(obs, destLabel);
+  }
+
+  return destLabel;
+}
+
 void Partition::oneLabel(size_t n, size_t k) {
 	_labelLists.assign(k, IntList());
 	_size.assign(k, 0);
@@ -92,9 +121,7 @@ bool Partition::shift(size_t n, size_t to) {
 	}
 	return true;
 }
-size_t Partition::fusion(size_t const & label1, size_t const & label2) {
-	return -1;
-}
+
 bool Partition::checkLists() const {
 	for (auto const & l : usedLabel()) {
 		if (sizeOfLabel(l) == 0) {

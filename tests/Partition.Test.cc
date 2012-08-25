@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include <map>
 #include <set>
+#include <vector>
 #include <iostream>
 #include "src/Partition.hpp"
 
@@ -102,4 +103,172 @@ TEST(Partition, shift){
   partition.shift(3, 0);
   expected[3] = 0;
   expect_eq(expected, nbMaxLabels, partition);
+}
+
+TEST(Partition, fusion){
+ size_t nbObs(6);
+ size_t nbMaxLabels(5);
+
+ Partition partition(nbObs, nbMaxLabels);
+ partition.setWeights(std::vector<double>({1, 2, 1, 4, 3, 2}));
+ partition.set(       std::vector<size_t>({0, 1, 1, 2, 0, 4}));
+
+ //Make sure we're in the correct initial state
+ EXPECT_EQ((size_t) 0, partition.label(0));
+ EXPECT_EQ((size_t) 1, partition.label(1));
+ EXPECT_EQ((size_t) 1, partition.label(2));
+ EXPECT_EQ((size_t) 2, partition.label(3));
+ EXPECT_EQ((size_t) 0, partition.label(4));
+ EXPECT_EQ((size_t) 4, partition.label(5));
+
+ EXPECT_EQ(4, partition.labelWeight(0));
+ EXPECT_EQ(3, partition.labelWeight(1));
+ EXPECT_EQ(4, partition.labelWeight(2));
+ EXPECT_EQ(0, partition.labelWeight(3));
+ EXPECT_EQ(2, partition.labelWeight(4));
+
+ EXPECT_EQ((size_t)2, partition.sizeOfLabel(0));
+ EXPECT_EQ((size_t)2, partition.sizeOfLabel(1));
+ EXPECT_EQ((size_t)1, partition.sizeOfLabel(2));
+ EXPECT_EQ((size_t)0, partition.sizeOfLabel(3));
+ EXPECT_EQ((size_t)1, partition.sizeOfLabel(4));
+
+ EXPECT_TRUE(partition.isUsed(0));
+ EXPECT_TRUE(partition.isUsed(1));
+ EXPECT_TRUE(partition.isUsed(2));
+ EXPECT_FALSE(partition.isUsed(3));
+ EXPECT_TRUE(partition.isUsed(4));
+
+ EXPECT_EQ(nbMaxLabels, partition.maxNbLabels());
+ EXPECT_EQ(nbObs, partition.nbObs());
+
+ //Start with a standard merge
+ size_t label1 = partition.fusion(0, 1);
+ size_t labelEmptied1 = (label1 == 0 ? 1 : 0);
+ EXPECT_TRUE(label1==0 || label1==1);
+
+ EXPECT_EQ((size_t) label1, partition.label(0));
+ EXPECT_EQ((size_t) label1, partition.label(1));
+ EXPECT_EQ((size_t) label1, partition.label(2));
+ EXPECT_EQ((size_t) 2, partition.label(3));
+ EXPECT_EQ((size_t) label1, partition.label(4));
+ EXPECT_EQ((size_t) 4, partition.label(5));
+
+ EXPECT_EQ(4+3, partition.labelWeight(label1));
+ EXPECT_EQ(0, partition.labelWeight(labelEmptied1));
+ EXPECT_EQ(4, partition.labelWeight(2));
+ EXPECT_EQ(0, partition.labelWeight(3));
+ EXPECT_EQ(2, partition.labelWeight(4));
+
+ EXPECT_EQ((size_t) 2+2, partition.sizeOfLabel(label1));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(labelEmptied1));
+ EXPECT_EQ((size_t) 1, partition.sizeOfLabel(2));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(3));
+ EXPECT_EQ((size_t) 1, partition.sizeOfLabel(4));
+
+ EXPECT_TRUE(partition.isUsed(label1));
+ EXPECT_FALSE(partition.isUsed(labelEmptied1));
+ EXPECT_TRUE(partition.isUsed(2));
+ EXPECT_FALSE(partition.isUsed(3));
+ EXPECT_TRUE(partition.isUsed(4));
+
+ EXPECT_EQ(nbMaxLabels, partition.maxNbLabels());
+ EXPECT_EQ(nbObs, partition.nbObs());
+
+ //Continue with by a merge involving an already merged label
+ size_t label2 = partition.fusion(label1, 4);
+ size_t labelEmptied2 = (label2 == label1 ? 4 : label1);
+ EXPECT_TRUE(label2==label1 || label2==4);
+
+ EXPECT_EQ((size_t) label2, partition.label(0));
+ EXPECT_EQ((size_t) label2, partition.label(1));
+ EXPECT_EQ((size_t) label2, partition.label(2));
+ EXPECT_EQ((size_t) 2, partition.label(3));
+ EXPECT_EQ((size_t) label2, partition.label(4));
+ EXPECT_EQ((size_t) label2, partition.label(5));
+
+ EXPECT_EQ(4+3+2, partition.labelWeight(label2));
+ EXPECT_EQ(0, partition.labelWeight(labelEmptied1));
+ EXPECT_EQ(4, partition.labelWeight(2));
+ EXPECT_EQ(0, partition.labelWeight(3));
+ EXPECT_EQ(0, partition.labelWeight(labelEmptied2));
+
+ EXPECT_EQ((size_t) 2+2+1, partition.sizeOfLabel(label2));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(labelEmptied1));
+ EXPECT_EQ((size_t) 1, partition.sizeOfLabel(2));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(3));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(labelEmptied2));
+
+ EXPECT_TRUE(partition.isUsed(label2));
+ EXPECT_FALSE(partition.isUsed(labelEmptied1));
+ EXPECT_TRUE(partition.isUsed(2));
+ EXPECT_FALSE(partition.isUsed(3));
+ EXPECT_FALSE(partition.isUsed(labelEmptied2));
+
+ EXPECT_EQ(nbMaxLabels, partition.maxNbLabels());
+ EXPECT_EQ(nbObs, partition.nbObs());
+
+ //Then, a merge involving empty labels
+ size_t label3 = partition.fusion(3, labelEmptied2);
+ EXPECT_TRUE( label3==3 || label3==labelEmptied2);
+
+ EXPECT_EQ((size_t) label2, partition.label(0));
+ EXPECT_EQ((size_t) label2, partition.label(1));
+ EXPECT_EQ((size_t) label2, partition.label(2));
+ EXPECT_EQ((size_t) 2, partition.label(3));
+ EXPECT_EQ((size_t) label2, partition.label(4));
+ EXPECT_EQ((size_t) label2, partition.label(5));
+
+ EXPECT_EQ(4+3+2, partition.labelWeight(label2));
+ EXPECT_EQ(0, partition.labelWeight(labelEmptied1));
+ EXPECT_EQ(4, partition.labelWeight(2));
+ EXPECT_EQ(0, partition.labelWeight(3));
+ EXPECT_EQ(0, partition.labelWeight(labelEmptied2));
+
+ EXPECT_EQ((size_t) 2+2+1, partition.sizeOfLabel(label2));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(labelEmptied1));
+ EXPECT_EQ((size_t) 1, partition.sizeOfLabel(2));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(3));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(labelEmptied2));
+
+ EXPECT_TRUE(partition.isUsed(label2));
+ EXPECT_FALSE(partition.isUsed(labelEmptied1));
+ EXPECT_TRUE(partition.isUsed(2));
+ EXPECT_FALSE(partition.isUsed(3));
+ EXPECT_FALSE(partition.isUsed(labelEmptied2));
+
+ EXPECT_EQ(nbMaxLabels, partition.maxNbLabels());
+ EXPECT_EQ(nbObs, partition.nbObs());
+
+ //Now, try to merge a label and itself
+ EXPECT_EQ((size_t) 2, partition.fusion(2, 2));
+
+ EXPECT_EQ((size_t) label2, partition.label(0));
+ EXPECT_EQ((size_t) label2, partition.label(1));
+ EXPECT_EQ((size_t) label2, partition.label(2));
+ EXPECT_EQ((size_t) 2, partition.label(3));
+ EXPECT_EQ((size_t) label2, partition.label(4));
+ EXPECT_EQ((size_t) label2, partition.label(5));
+
+ EXPECT_EQ(4+3+2, partition.labelWeight(label2));
+ EXPECT_EQ(0, partition.labelWeight(labelEmptied1));
+ EXPECT_EQ(4, partition.labelWeight(2));
+ EXPECT_EQ(0, partition.labelWeight(3));
+ EXPECT_EQ(0, partition.labelWeight(labelEmptied2));
+
+ EXPECT_EQ((size_t) 2+2+1, partition.sizeOfLabel(label2));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(labelEmptied1));
+ EXPECT_EQ((size_t) 1, partition.sizeOfLabel(2));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(3));
+ EXPECT_EQ((size_t) 0, partition.sizeOfLabel(labelEmptied2));
+
+ EXPECT_TRUE(partition.isUsed(label2));
+ EXPECT_FALSE(partition.isUsed(labelEmptied1));
+ EXPECT_TRUE(partition.isUsed(2));
+ EXPECT_FALSE(partition.isUsed(3));
+ EXPECT_FALSE(partition.isUsed(labelEmptied2));
+
+ EXPECT_EQ(nbMaxLabels, partition.maxNbLabels());
+ EXPECT_EQ(nbObs, partition.nbObs());
+
 }
