@@ -4,5 +4,5 @@ Here dwell the tests. We use the framework googlemock (http://code.google.com/p/
 ===== Compiling and running the tests=====
 To compile and run the tests:
   - Set the CMake option WITH_TEST to ON
-  - Build the whole clusterisator project as usual: it should build the file code/tests
+  - Build the whole clusterisator project as usual: it should build an additional binary containing the unit tests
   - Run 'make test' or 'make test ARGS="-V"'
