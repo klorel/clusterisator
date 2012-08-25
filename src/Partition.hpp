@@ -32,9 +32,16 @@ public:
 	bool shift(size_t observation, size_t to);
 	size_t fusion(size_t const & label1, size_t const & label2);
 
+  /**
+   * Reinitialize the partition with the new given number of observations and
+   * the new number of maximum labels
+   *
+   * The weights are reinitialized to 1.0 too, and every observation is put in
+   * the label 0
+   */
 	void oneLabel(size_t nbObs, size_t nbMaxLabel);
-	size_t nbObs() const;
 
+	size_t nbObs() const;
 	size_t nbLabels() const;
 	size_t maxNbLabels() const;
 	void setWeights(DoubleVector const & weights);

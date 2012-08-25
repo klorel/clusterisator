@@ -2,8 +2,8 @@
 #include <map>
 #include <set>
 #include <vector>
-#include <iostream>
 #include "src/Partition.hpp"
+using namespace std;
 
 TEST(Partition, initialState){
   size_t nbObs(6);
@@ -270,5 +270,35 @@ TEST(Partition, fusion){
 
  EXPECT_EQ(nbMaxLabels, partition.maxNbLabels());
  EXPECT_EQ(nbObs, partition.nbObs());
+}
 
+TEST(Partition, weights){
+  size_t nbObs(5);
+  size_t nbMaxLabels(4);
+  vector<double> w({1.1, 2.3, 3.1, -2.1, 3});
+
+  Partition partition(nbObs, nbMaxLabels);
+  partition.setWeights(w);
+  partition.setLabels({1, 2, 0, 0, 1});
+
+  //Check initial state
+  for ( size_t obs=0 ; obs < nbObs ; obs++ ){
+    EXPECT_DOUBLE_EQ(w[obs], partition.obsWeight(obs));
+  }
+
+  EXPECT_DOUBLE_EQ(w[2] + w[3], partition.labelWeight(0));
+  EXPECT_DOUBLE_EQ(w[0] + w[4], partition.labelWeight(1));
+  EXPECT_DOUBLE_EQ(w[1]       , partition.labelWeight(2));
+  EXPECT_DOUBLE_EQ(0          , partition.labelWeight(3));
+
+  //Make sure we still have correct weights after moving some observation
+  partition.shift(2, 3);
+  for ( size_t obs=0 ; obs < nbObs ; obs++ ){
+    EXPECT_DOUBLE_EQ(w[obs], partition.obsWeight(obs));
+  }
+
+  EXPECT_DOUBLE_EQ(w[3]       , partition.labelWeight(0));
+  EXPECT_DOUBLE_EQ(w[0] + w[4], partition.labelWeight(1));
+  EXPECT_DOUBLE_EQ(w[1]       , partition.labelWeight(2));
+  EXPECT_DOUBLE_EQ(w[2]       , partition.labelWeight(3));
 }
