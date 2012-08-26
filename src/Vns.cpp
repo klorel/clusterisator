@@ -22,11 +22,11 @@ Vns::~Vns() {
 }
 
 void Vns::restart() {
-	_input.set(_best.first);
+	_input.setLabels(_best.first);
 }
 
 void Vns::save() {
-	_best.first.set(_input);
+	_best.first.setLabels(_input);
 	_best.second = _input.cost();
 
 }
