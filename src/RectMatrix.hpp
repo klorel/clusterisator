@@ -10,24 +10,37 @@
 
 #include "src/common.h"
 
+/**
+ * Represent a rectangular matrix of Double
+ */
 class RectMatrix {
 public:
 	RectMatrix(size_t n = 0, size_t m = 0, Double v = Zero<Double>());
 	RectMatrix(size_t n, size_t, DoubleVector const&);
 	virtual ~RectMatrix();
 
+  /**
+	 * Reset the dimension and the content of the matrix. Set every coefficient to the same value
+	 */
 	void allocate(size_t n, size_t m, Double v = Zero<Double>());
 
 	Double get(size_t i, size_t j) const;
 	Double & get(size_t i, size_t j);
 	void set(size_t i, size_t j, Double v);
+
+	/**
+	 * Add the given value to the given element
+	 */
 	void plus(size_t i, size_t j, Double v);
 
 	size_t getN() const;
 	size_t getM() const;
 
-	DoubleVector const& getRow(size_t i) const;
 	DoubleVector const & matrix() const;
+
+	/**
+	 * Set every coefficient to the given value
+	 */
 	void assign(Double v);
 
 	bool operator!=(RectMatrix const & rhs) const;
@@ -50,7 +63,7 @@ inline RectMatrix::RectMatrix(size_t n, size_t m, Double v) {
 }
 inline RectMatrix::RectMatrix(size_t n, size_t m, DoubleVector const &matrix) :
 		_n(n), _m(m), _matrix(matrix) {
-
+  assert(n*m == matrix.size());
 }
 inline RectMatrix::~RectMatrix() {
 
@@ -88,17 +101,16 @@ inline size_t RectMatrix::getM() const {
 
 inline void RectMatrix::assign(Double v) {
 	std::fill_n(_matrix.begin(), _matrix.size(), v);
-//	_matrix.assign(_matrix.size(), v);
 }
 
 inline std::ostream & operator<<(std::ostream & stream,
 		RectMatrix const & rhs) {
-	stream << rhs.getN() << " " << rhs.getM() << "\n";
+	stream << rhs.getN() << " " << rhs.getM() << std::endl;
 	for (size_t i(0); i < rhs.getN(); ++i) {
 		for (size_t j(0); j < rhs.getM(); ++j) {
 			stream << rhs.get(i, j) << " ";
 		}
-		stream << "\n";
+		stream << std::endl;
 	}
 	return stream;
 }
