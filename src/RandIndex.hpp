@@ -8,11 +8,11 @@
 #ifndef RANDINDEX_HPP_
 #define RANDINDEX_HPP_
 
-#include "src/IMesure.hpp"
+#include "src/IMeasure.hpp"
 #include "src/common.h"
 #include "src/IPartition.hpp"
 
-class RandIndex: public IMesure {
+class RandIndex: public IMeasure {
 public:
 	RandIndex();
 	virtual ~RandIndex();

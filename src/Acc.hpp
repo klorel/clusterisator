@@ -9,10 +9,10 @@
 #define ACC_HPP_
 
 #include "src/common.h"
-#include "src/IMesure.hpp"
+#include "src/IMeasure.hpp"
 #include "src/IPartition.hpp"
 
-class Acc: public IMesure {
+class Acc: public IMeasure {
   public:
     virtual ~Acc();
 

@@ -12,24 +12,23 @@ KMInstance::KMInstance() {
 	_cst = 0;
 }
 
-// on agrège
 KMInstance::KMInstance(KMInstance const & instance,
-		Agregations const & agregations) {
-	allocate(agregations.v.size(), instance.nbAtt());
+		Aggregations const & aggregations) {
+	allocate(aggregations.v.size(), instance.nbAtt());
 	std::fill_n(_weights.begin(), _weights.size(), Zero<Double>());
 
-	for (size_t i(0); i < agregations.v.size(); ++i) {
-		for (auto const & j : agregations.v[i])
+	for (size_t i(0); i < aggregations.v.size(); ++i) {
+		for (auto const & j : aggregations.v[i])
 			for (size_t d(0); d < nbAtt(); ++d)
 				_data.plus(i, d, instance.get(j, d));
 
-		assert(agregations.v[i].size() > 0);
-		_weights[i] = static_cast<Double>(agregations.v[i].size());
+		assert(aggregations.v[i].size() > 0);
+		_weights[i] = static_cast<Double>(aggregations.v[i].size());
 		assert(_weights[i]> 0);
 		for (size_t d(0); d < nbAtt(); ++d)
 			_data.get(i, d) /= _weights[i];
 		if (_weights[i] > 1) {
-			for (auto const & j : agregations.v[i])
+			for (auto const & j : aggregations.v[i])
 				for (size_t d(0); d < nbAtt(); ++d)
 					_cst += std::pow(get(i, d) - instance.get(j, d), 2);
 		}
@@ -37,7 +36,7 @@ KMInstance::KMInstance(KMInstance const & instance,
 	// les contraintes cannot link
 	for (size_t i(0); i < instance.nbObs(); ++i) {
 		for (auto const & j : instance.cannotLinks().get(i))
-			cannotLink(agregations.newIds[i], agregations.newIds[j]);
+			addCannotLink(aggregations.newIds[i], aggregations.newIds[j]);
 
 	}
 }
@@ -82,17 +81,17 @@ void KMInstance::readConstraints(std::string const & fileName) {
 	}
 }
 
-void KMInstance::buildMustLink(Agregations & result) const {
-	std::list<IntSet> agregations;
-	std::vector<std::list<IntSet>::iterator> temp(nbObs(), agregations.end());
+void KMInstance::buildMustLink(Aggregations & result) const {
+	std::list<IntSet> aggregations;
+	std::vector<std::list<IntSet>::iterator> temp(nbObs(), aggregations.end());
 	size_t n(0);
 	result.newIds.assign(nbObs(), -1);
 
 	for (size_t i(0); i < nbObs(); ++i) {
 		auto it(temp[i]);
-		if (it == agregations.end()) {
-			agregations.push_front(IntSet());
-			temp[i] = agregations.begin();
+		if (it == aggregations.end()) {
+			aggregations.push_front(IntSet());
+			temp[i] = aggregations.begin();
 			temp[i]->insert(i);
 			result.newIds[i] = n;
 			++n;
@@ -104,9 +103,9 @@ void KMInstance::buildMustLink(Agregations & result) const {
 		}
 	}
 
-	OUT<< "found "<<n<<" agregated point\n";
+	OUT<< "found "<<n<<" aggregated point\n";
 	result.v.assign(n, IntSet());
-	std::copy(agregations.rbegin(), agregations.rend(), result.v.begin());
+	std::copy(aggregations.rbegin(), aggregations.rend(), result.v.begin());
 	for (auto const & id : result.newIds) {
 		assert(id < n);
 	}

@@ -12,7 +12,7 @@
 #include "src/RectMatrix.hpp"
 #include "src/KMConstraints.hpp"
 
-class Agregations {
+class Aggregations {
 public:
 	std::vector<IntSet> v;
 	IntVector newIds;
@@ -40,10 +40,10 @@ public:
 	Double weight(size_t) const;
 	Double & weight(size_t);
 
-	void mustLink(size_t i, size_t j);
-	void cannotLink(size_t i, size_t j);
-	void buildMustLink(Agregations &) const;
-	void allocate(size_t n, size_t m);
+	void addMustLink(size_t i, size_t j);
+	void addCannotLink(size_t i, size_t j);
+	void buildMustLink(Aggregations &) const;
+	void allocate(size_t nbObs, size_t nbAtt);
 	/*
 	 * on propage (i,j) (j,k) --> i,k
 	 */
@@ -56,7 +56,7 @@ public:
 	KMConstraints & cannotLinks();
 
 	KMInstance();
-	KMInstance(KMInstance const &, Agregations const &);
+	KMInstance(KMInstance const &, Aggregations const &);
 
 	void cpp(std::ostream &) const;
 public:
@@ -102,10 +102,10 @@ inline DoubleVector & KMInstance::weights() {
 	return _weights;
 }
 
-inline void KMInstance::mustLink(size_t i, size_t j) {
+inline void KMInstance::addMustLink(size_t i, size_t j) {
 	_must.newCtr(i, j);
 }
-inline void KMInstance::cannotLink(size_t i, size_t j) {
+inline void KMInstance::addCannotLink(size_t i, size_t j) {
 	_cannot.newCtr(i, j);
 }
 inline KMConstraints const & KMInstance::mustLinks() const {
