@@ -13,28 +13,21 @@
 #include "src/IPartition.hpp"
 
 class Acc: public IMesure {
-public:
-	Acc();
-	virtual ~Acc();
-public:
+  public:
+    virtual ~Acc();
 
-	Double compute(IPartition const & real, IPartition const & candidate);
+    Double compute(IPartition const & actual, IPartition const & candidate);
 };
 
-Acc::Acc() {
-}
+Acc::~Acc() {}
 
-Acc::~Acc() {
-}
-
-Double Acc::compute(IPartition const & real, IPartition const & candidate) {
-	// pas de traitement supplémentaire
+Double Acc::compute(IPartition const & actual, IPartition const & candidate) {
 	Double score(0);
-	for (size_t i(0); i < real.nbObs(); ++i) {
-		if (real.label(i) == candidate.label(i))
+	for (size_t i(0); i < actual.nbObs(); ++i) {
+		if (actual.label(i) == candidate.label(i))
 			++score;
 	}
-	return score / static_cast<Double>(real.nbObs());
+	return score / static_cast<Double>(actual.nbObs());
 }
 
 #endif /* ACC_HPP_ */

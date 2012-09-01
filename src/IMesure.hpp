@@ -11,11 +11,17 @@
 #include "src/common.h"
 
 class IPartition;
+
+/**
+ * Abstraction which let compute a metric to compare two partitions of a same graph
+ */
 class IMesure {
 public:
-	virtual Double compute(IPartition const & real,
-			IPartition const & candidate) = 0;
-	virtual ~IMesure();
+  /**
+   * Compute the metric
+   */
+  virtual Double compute(IPartition const & actual, IPartition const & candidate) = 0;
+  virtual ~IMesure();
 };
 
 inline IMesure::~IMesure() {
