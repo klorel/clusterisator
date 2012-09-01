@@ -1,5 +1,5 @@
 
-FILE(GLOB_RECURSE tests_files ./*.cc )
+FILE(GLOB_RECURSE tests_files ./*.cpp )
 
 ADD_EXECUTABLE(unittests ${tests_files} )
 ADD_TEST(utests ../bin/unittests)
