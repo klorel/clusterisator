@@ -48,10 +48,6 @@ public:
 	void addCannotLink(size_t i, size_t j);
 	void buildMustLink(Aggregations &) const;
 	void allocate(size_t nbObs, size_t nbAtt);
-	/*
-	 * on propage (i,j) (j,k) --> i,k
-	 */
-	void propagateMust();
 
 	KMConstraints const & mustLinks() const;
 	KMConstraints const & cannotLinks() const;
