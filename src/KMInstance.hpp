@@ -47,7 +47,6 @@ public:
 	void addMustLink(size_t i, size_t j);
 	void addCannotLink(size_t i, size_t j);
 	void buildMustLink(Aggregations &) const;
-	void allocate(size_t nbObs, size_t nbAtt);
 
 	KMConstraints const & mustLinks() const;
 	KMConstraints const & cannotLinks() const;
@@ -61,6 +60,8 @@ public:
 	void cpp(std::ostream &) const;
 
 private:
+	void allocate(size_t nbObs, size_t nbAtt);
+
   /**
    * Store an observation by row. Hence:
    * - The number of row equals the number of observations
