@@ -22,10 +22,14 @@ class KMInstance;
 std::ostream & operator<<(std::ostream &, KMInstance const &);
 class KMInstance {
 public:
-	void readData(std::string const &);
-	void readConstraints(std::string const &);
+	void readData(std::string const & filename);
+	void readConstraints(std::string const & filename);
 
-	bool feasible(IPartition const &) const;
+  /**
+   * Check that the given partition respect the constraints of this instance.
+   * @return TRUE if every constraint is respected. FALSE otherwise.
+   */
+	bool feasible(IPartition const & p) const;
 
 	RectMatrix & data();
 	RectMatrix const & data() const;
@@ -55,11 +59,17 @@ public:
 	KMConstraints & mustLinks();
 	KMConstraints & cannotLinks();
 
-	KMInstance();
+	KMInstance(size_t nbObs=0, size_t nbAtt=0);
 	KMInstance(KMInstance const &, Aggregations const &);
 
 	void cpp(std::ostream &) const;
-public:
+
+private:
+  /**
+   * Store an observation by row. Hence:
+   * - The number of row equals the number of observations
+   * - The number of column equals the number of attributes
+   */
 	RectMatrix _data;
 	Double _cst;
 	DoubleVector _weights;

@@ -8,8 +8,8 @@
 #include "src/KMInstance.hpp"
 #include "src/IPartition.hpp"
 
-KMInstance::KMInstance() {
-	_cst = 0;
+KMInstance::KMInstance(size_t nbObs, size_t nbAtt){
+  allocate(nbObs, nbAtt);
 }
 
 KMInstance::KMInstance(KMInstance const & instance,
@@ -41,12 +41,12 @@ KMInstance::KMInstance(KMInstance const & instance,
 	}
 }
 
-void KMInstance::allocate(size_t n, size_t m) {
-	_data = RectMatrix(n, m);
+void KMInstance::allocate(size_t nbObs, size_t nbAtt) {
+	_data = RectMatrix(nbObs, nbAtt);
 	_cst = Zero<Double>();
-	_weights.assign(n, One<Double>());
-	_must = KMConstraints(n);
-	_cannot = KMConstraints(n);
+	_weights.assign(nbObs, One<Double>());
+	_must = KMConstraints(nbObs);
+	_cannot = KMConstraints(nbObs);
 }
 void KMInstance::readData(std::string const & fileName) {
 	std::ifstream file(fileName.c_str());
@@ -113,18 +113,22 @@ void KMInstance::buildMustLink(Aggregations & result) const {
 
 
 bool KMInstance::feasible(IPartition const & p) const {
+  assert(p.nbObs() == nbObs());
+
 	for (auto const & ctr : _must) {
 		if (p.label(ctr.first) != p.label(ctr.second)) {
 			OUT<< ctr.first << " should be with "<<ctr.second<<"\n";
 			return false;
 		}
 	}
+
 	for(auto const & ctr : _cannot) {
 		if (p.label(ctr.first) == p.label(ctr.second)) {
 			OUT << ctr.first << " should not be with "<<ctr.second<<"\n";
 			return false;
 		}
 	}
+
 	return true;
 }
 
