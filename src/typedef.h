@@ -63,7 +63,7 @@ class ILinks;
 class IPartition;
 class ISolution;
 class ICriterion;
-class IMesure;
+class IMeasure;
 class IAlgo;
 class INeighborhood;
 class Problem;
