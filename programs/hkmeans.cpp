@@ -46,10 +46,10 @@ int main(int argc, char ** argv) {
 			RegisteredInstance instance(id);
 			instance.out();
 
-			Agregations agregations;
-			instance.buildMustLink(agregations);
+			Aggregations aggregations;
+			instance.buildMustLink(aggregations);
 			//
-			KMInstance instance2(instance, agregations);
+			KMInstance instance2(instance, aggregations);
 			KMInput input(instance2, k);
 			input.random(0);
 			HKMeans<true>()(input);
@@ -68,11 +68,11 @@ int main(int argc, char ** argv) {
 //	AvailableInstances id(static_cast<AvailableInstances>(i));
 //	GetInstance<id> instance;
 //	std::cout << "TREATING : " << instance.Name << "\n";
-//	Agregations agregations;
+//	Aggregations aggregations;
 //
-//	instance.buildMustLink(agregations);
+//	instance.buildMustLink(aggregations);
 //	// agrégation
-//	KMInstance instance2(instance, agregations);
+//	KMInstance instance2(instance, aggregations);
 //	KMPartition partition2(instance2, k);
 //	partition2.random(k);
 //	KMAlgo kmeans2(partition2);

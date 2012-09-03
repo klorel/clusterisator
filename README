@@ -6,6 +6,10 @@ Clustering framework.
 =====Build=====
 
 To build the project :
-- create a repository at the root and go there
-- cmake ..
-- make
+> mkdir build
+> cd build
+> cmake ..
+> make
+
+Optionally, to run the tests:
+> make test
