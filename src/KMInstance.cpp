@@ -8,8 +8,8 @@
 #include "src/KMInstance.hpp"
 #include "src/IPartition.hpp"
 
-KMInstance::KMInstance(size_t nbObs, size_t nbAtt){
-  allocate(nbObs, nbAtt);
+KMInstance::KMInstance(size_t nbObs, size_t nbAtt) {
+	allocate(nbObs, nbAtt);
 }
 
 KMInstance::KMInstance(KMInstance const & instance,
@@ -111,9 +111,8 @@ void KMInstance::buildMustLink(Aggregations & result) const {
 	}
 }
 
-
 bool KMInstance::feasible(IPartition const & p) const {
-  assert(p.nbObs() == nbObs());
+	assert(p.nbObs() == nbObs());
 
 	for (auto const & ctr : _must) {
 		if (p.label(ctr.first) != p.label(ctr.second)) {
@@ -122,9 +121,9 @@ bool KMInstance::feasible(IPartition const & p) const {
 		}
 	}
 
-	for(auto const & ctr : _cannot) {
+	for (auto const & ctr : _cannot) {
 		if (p.label(ctr.first) == p.label(ctr.second)) {
-			OUT << ctr.first << " should not be with "<<ctr.second<<"\n";
+			OUT<< ctr.first << " should not be with "<<ctr.second<<"\n";
 			return false;
 		}
 	}

@@ -159,8 +159,8 @@ void Partition::random() {
 }
 void Partition::random(size_t k) {
 	assert(k<maxNbLabels());
+	assert(nbObs()>0);
 	IndexedList nodes(nbObs(), true);
-	std::cout << maxNbLabels() << "\n";
 	for (size_t i(0); i < (k == 0 ? maxNbLabels() : k); ++i) {
 		size_t const n(nodes.pop_random());
 //		OUT<< n << " "<<i<<"\n";
