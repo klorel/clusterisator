@@ -2,6 +2,8 @@
 //
 // REGISTER_INSTANCE(EnumName==ctrs file name, DataFileName without extension .dat )
 //
+REGISTER_INSTANCE(Fisher154,Fisher154)
+
 REGISTER_INSTANCE(wine,wine )
 REGISTER_INSTANCE(wine1,wine)
 REGISTER_INSTANCE(wine2,wine)

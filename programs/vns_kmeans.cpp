@@ -53,7 +53,7 @@ public:
 		for (size_t i(0); i < p; ++i) {
 			input.random(0);
 			Vns vns(input);
-			vns.run<HKMeans, true>(25, 10000);
+			vns.run<HKMeans, true>(5, 10000);
 		}
 	}
 
