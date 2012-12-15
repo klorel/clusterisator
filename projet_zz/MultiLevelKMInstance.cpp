@@ -8,7 +8,7 @@
 #include "../projet_zz/MultiLevelKMInstance.h"
 #include "../src/HMeans.hpp"
 #include "../src/KMAlgo.hpp"
-
+#include "../src/Timer.hpp"
 MultiLevelAlgo::MultiLevelAlgo(KMInstance const & instance, size_t k) :
 	_instance(instance), _input(_instance, k) {
 }
@@ -49,6 +49,7 @@ void MultiLevelAlgo::refine() {
 	// Pour le premier faire un appel à random(0);
 	KMInstance instance;
 	Aggregations aggregations;	
+	Timer timer;
 	// pour chaque level
 	for (size_t level(0); level <= _multiLevelConstraints.size(); ++level) {
 		// ! on parcours à l'envers
@@ -67,7 +68,12 @@ void MultiLevelAlgo::refine() {
 			}
 		}
 		// on lance l'algo
-		HMeans<true>()(input);
+		HMeans<false>()(input);
+		std::cout << std::setw(10)<<_multiLevelConstraints.size() - level;
+		std::cout << std::setw(10)<<input.ite();
+		std::cout << std::setw(10)<<timer.elapsed();
+		std::cout << std::setw(20)<<input.cost();
+		std::cout << std::endl;
 		// suavegarde de la solution
 		input.computeCenters();
 		for (size_t i(0); i < _input.nbObs(); ++i) {
