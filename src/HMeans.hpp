@@ -18,6 +18,8 @@ public:
 		bool stop(false);
 		input.computeDistances();
 		input.fillModified();
+		if (isTraceOn)
+			input.out("HMEANS");
 		do {
 			++input.ite();
 			HMeansLoop(input);

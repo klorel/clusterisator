@@ -41,6 +41,8 @@ int main(int argc, char ** argv) {
 
 		size_t const i(atoi(argv[1]));
 		size_t const k(atoi(argv[2]));
+		size_t const seed(argc > 3 ? atoi(argv[3]) : 0);
+		Number::SetSeed(seed);
 		if (i < AvailableInstances::SIZE) {
 			AvailableInstances id(static_cast<AvailableInstances>(i));
 			RegisteredInstance instance(id);
@@ -51,7 +53,7 @@ int main(int argc, char ** argv) {
 			KMInstance instance2(instance, aggregations);
 			KMInput input(instance2, k);
 			input.random(0);
-			HKMeans<true>()(input);
+			HMeans<true>()(input);
 		}
 	}
 	return 0;
