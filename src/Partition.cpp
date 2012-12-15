@@ -69,7 +69,7 @@ void Partition::oneLabel(size_t nbObs, size_t nbMaxLabels) {
 	_labelWeights[0] = nbObs;
 
 	_nodePosition.assign(nbObs, _labelLists[0].end());
-	_nodeWeights.assign(nbObs, One<Double>());
+	_nodeWeights.assign(nbObs, 1);
 	_labels.assign(nbObs, 0);
 
 	_usedLabels.clear();
@@ -78,9 +78,9 @@ void Partition::oneLabel(size_t nbObs, size_t nbMaxLabels) {
 	_unUsedLabels.fill();
 	_unUsedLabels.erase(0);
 
-	for (size_t nbObs(0); nbObs < this->nbObs(); ++nbObs) {
-		_labelLists[0].push_front(nbObs);
-		_nodePosition[nbObs] = _labelLists[0].begin();
+	for (size_t n(0); n < this->nbObs(); ++n) {
+		_labelLists[0].push_front(n);
+		_nodePosition[n] = _labelLists[0].begin();
 	}
 	_size[0] = nbObs;
 }
@@ -140,7 +140,7 @@ bool Partition::checkLists() const {
 
 bool Partition::checkWeights() const {
 	for (auto const & l : usedLabels()) {
-		Double w(Zero<Double>());
+		Double w(0);
 		for (auto const & n : _labelLists[l])
 			w += obsWeight(n);
 		if (!IsEqual(w, labelWeight(l))) {
@@ -174,7 +174,7 @@ void Partition::setWeights(DoubleVector const & weights) {
 	assert(weights.size() == nbObs());
 
 	_nodeWeights = weights;
-	_labelWeights.assign(maxNbLabels(), Zero<Double>());
+	_labelWeights.assign(maxNbLabels(), 0);
 	for (size_t i(0); i < nbObs(); ++i)
 		_labelWeights[_labels[i]] += _nodeWeights[i];
 }

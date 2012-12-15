@@ -1,0 +1,2782 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[algoruled]{algorithm2e}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+\end_modules
+\maintain_unincluded_children false
+\language french
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\rightmargin 2.5cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Rapport projet de 
+\begin_inset Formula $3^{ème}$
+\end_inset
+
+ année:
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+ Implémentation d'un algorithme multi-niveaux
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+
+\backslash
+
+\end_layout
+
+\end_inset
+
+ pour le problème des k-moyennes
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FloatList figure
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Définition du problème 
+\end_layout
+
+\begin_layout Subsection
+Le problème de partitionnement
+\end_layout
+
+\begin_layout Standard
+Soit un ensemble de 
+\begin_inset Formula $n$
+\end_inset
+
+ observations 
+\begin_inset Formula $V=\left(V_{i}\right)_{i=1..n}$
+\end_inset
+
+, une partition 
+\begin_inset Formula $\Pi$
+\end_inset
+
+ de 
+\begin_inset Formula $V$
+\end_inset
+
+ en 
+\begin_inset Formula $m$
+\end_inset
+
+ classes est la donnée de 
+\begin_inset Formula $m$
+\end_inset
+
+ sous ensembles 
+\begin_inset Formula $\left(C_{k=1..m}\right)\subseteq V$
+\end_inset
+
+ tel que 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+C_{k}\cap C_{k'}=\emptyset & \forall k\neq k^{'}\\
+V={\displaystyle \bigcup_{k=1}^{m}}C_{k}\\
+C_{k}\neq\emptyset & \forall k
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Soit 
+\begin_inset Formula $f$
+\end_inset
+
+ un élément de 
+\begin_inset Formula $\mathbb{R}^{\left|V\right|}\longmapsto\mathbb{R}$
+\end_inset
+
+ que nous appelrons fonction de coût, le problème de partitionnement consiste
+ à déterminer une partition de 
+\begin_inset Formula $V$
+\end_inset
+
+ minimisant 
+\begin_inset Formula $f$
+\end_inset
+
+, c'est à dire :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+{\displaystyle \min_{\Pi=\left(C_{1},...,C_{m}\right)}}{\displaystyle \sum_{k=1}^{m}}f\left(C_{k}\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Dans la suite, un sous-ensemble, une classe, un cluster sont des synonymes
+ et nous noterons 
+\begin_inset Formula $\mathcal{P}_{V}^{m}$
+\end_inset
+
+ l'ensemble des partitions de 
+\begin_inset Formula $V$
+\end_inset
+
+ en 
+\begin_inset Formula $m$
+\end_inset
+
+ éléments.
+ 
+\end_layout
+
+\begin_layout Subsection
+Problème des k-means
+\end_layout
+
+\begin_layout Standard
+Le problème des k-means est un problème de partitionnement où :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+V_{i}\in\mathbb{R}^{q} & \forall i=1..n\\
+f^{kmeans}\left(C\right)={\displaystyle \min_{Y\in\mathbb{R}^{q}}}{\displaystyle \sum_{V_{i}\in C}}\left\Vert V_{i}-Y\right\Vert ^{2}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Le problème des k-means se formule donc ainsi :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+{\displaystyle \min_{\Pi=\left(C_{1},...,C_{m}\right)}}{\displaystyle \sum_{k=1}^{m}}\min_{Y\in\mathbb{R}^{q}}{\displaystyle \sum_{V_{i}\in C}}\left\Vert V_{i}-Y\right\Vert ^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Déjà bien étudié dans la littérature, nous pouvons affirmer les choses suivantes
+ :
+\end_layout
+
+\begin_layout Theorem
+\begin_inset Formula $\forall C\subseteq V\backslash\emptyset$
+\end_inset
+
+ et 
+\begin_inset Formula $Y^{*}=\frac{1}{\left|C\right|}{\displaystyle \sum_{V_{i}\in C}}V_{i}$
+\end_inset
+
+ , 
+\begin_inset Formula $Y^{*}=arg{\displaystyle \min_{Y\in\mathbb{R}^{q}}}{\displaystyle \sum_{V_{i}\in C}}\left\Vert V_{i}-Y\right\Vert ^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Autrement dit, 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f^{kmeans}\left(C\right)=\begin{cases}
+\frac{1}{\left|C\right|}{\displaystyle \sum_{V_{i}\in C}}V_{i} & C\neq\emptyset\\
+0 & C=\emptyset
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Le problème des k-means s'exprime alors comme :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+ & {\displaystyle \min_{\Pi=\left(C_{1},...,C_{m}\right)}}{\displaystyle \sum_{k=1}^{m}}\min_{Y\in\mathbb{R}^{q}}{\displaystyle \sum_{V_{i}\in C}}\left\Vert V_{i}-Y_{k}\right\Vert ^{2}\\
+ & Y_{k}\cdot\left|C_{k}\right|={\displaystyle \sum_{V_{i}\in C_{k}}}V_{i}\\
+ & \Pi\subset\mathcal{P}_{V}^{m}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Nous pouvons aussi remarqué que pour chaque élément 
+\begin_inset Formula $V_{i}$
+\end_inset
+
+, 
+\begin_inset Formula $Y_{k}$
+\end_inset
+
+ :
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula 
+\[
+\left\Vert V_{i}-Y_{k}\right\Vert ^{2}=\left\Vert V_{i}\right\Vert ^{2}-\frac{2}{\left|C_{k}\right|}{\displaystyle \sum_{j\in C_{k}}}\left\langle V_{i},V_{j}\right\rangle +\frac{1}{\left|C_{k}\right|^{2}}{\displaystyle \sum_{j,j'\in C_{k},j\leq j'}}\left\langle V_{j},V_{j'}\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ainsi, il est important de noter que seuls les produits scalaires 
+\begin_inset Formula $\left\langle V_{i},V_{j}\right\rangle $
+\end_inset
+
+ entre les élements de 
+\begin_inset Formula $V$
+\end_inset
+
+ interviennent dans 
+\begin_inset Formula $KMEANS(V,K,m)$
+\end_inset
+
+.
+ Nous noterons 
+\begin_inset Formula $K$
+\end_inset
+
+ la matrice telle que :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+K_{ij}=\left\langle V_{i},V_{j}\right\rangle 
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Enfin, nous introduisons des variables 
+\begin_inset Formula $x_{ik}\in\left\{ 0,1\right\} $
+\end_inset
+
+ associées à la présence de 
+\begin_inset Formula $V_{i}$
+\end_inset
+
+ dans la classe 
+\begin_inset Formula $C_{k}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+KMEANS(K,m)^{*}= & {\displaystyle \sum_{i=1}^{n}}K_{ii}+{\displaystyle \min_{\Pi=\left(C_{1},...,C_{m}\right)}}{\displaystyle \sum_{k=1}^{m}}-\frac{2}{\left|C_{k}\right|}{\displaystyle \sum_{j\in C_{k}}}K_{ij}+\frac{1}{\left|C_{k}\right|^{2}}{\displaystyle \sum_{j,j'\in C_{k}}}K_{jj'}\\
+ & \Pi\in\mathcal{P}_{V}^{m}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Theorem
+\begin_inset Formula $\forall m\leq m^{'}$
+\end_inset
+
+, 
+\begin_inset Formula $KMEANS(V,K,m)^{*}\leq KMEANS(V,K,m^{'})^{*}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Theorem
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Partitionnement de graphes
+\end_layout
+
+\begin_layout Standard
+Soit 
+\begin_inset Formula $G$
+\end_inset
+
+ = (
+\begin_inset Formula $V$
+\end_inset
+
+, 
+\begin_inset Formula $E$
+\end_inset
+
+, 
+\begin_inset Formula $W$
+\end_inset
+
+ ) un graphe où 
+\series bold
+
+\begin_inset Formula $V$
+\end_inset
+
+ 
+\series default
+est
+\series bold
+ 
+\series default
+l'ensemble des noeuds,
+\series bold
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $E$
+\end_inset
+
+
+\family default
+\series bold
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ 
+\series default
+est
+\series bold
+ 
+\series default
+l'ensemble des d'arêtes et 
+\begin_inset Formula $W$
+\end_inset
+
+ est une matrice telle que 
+\begin_inset Formula $W_{ij}$
+\end_inset
+
+ est le poids de l'arêtes 
+\begin_inset Formula $\left(i,j\right)$
+\end_inset
+
+et vaut 
+\begin_inset Formula $0$
+\end_inset
+
+ si 
+\begin_inset Formula $\left(i,j\right)\notin E$
+\end_inset
+
+.
+ Le partionnement du graphe 
+\begin_inset Formula $G$
+\end_inset
+
+ est un problème de partitionnement dont le critère d'évaluation est une
+ fonction utilisant les arrêtes.
+\end_layout
+
+\begin_layout Standard
+Soit deux classes 
+\begin_inset Formula $C_{k}$
+\end_inset
+
+, 
+\begin_inset Formula $C_{k'}$
+\end_inset
+
+, nous définissons 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+links\left(C_{k},C_{k'}\right)=\sum_{i\in C_{k},j\in C_{k'}}W_{ij}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Pour illustrer cette définition :
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename Graphe.jpg
+	lyxscale 30
+	width 30text%
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Graphe pour le calcul de 
+\begin_inset Formula $links\left(C_{k},C_{k'}\right)$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Les arêtes entrant en considération pour le calcul de 
+\begin_inset Formula $links\left(C_{k},C_{k'}\right)$
+\end_inset
+
+ sont les arêtes reliant les sommets 1 et 3, 1 et 4, 2 et 3.
+ De là on déduit que 
+\begin_inset Formula $links\left(C_{k},C_{k'}\right)=4+1+1=6$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Nous definissions maintenant la fonction 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+f^{RAssoc}\left(C\right)=\frac{links\left(C,C\right)}{\left|C\right|}=\frac{{\displaystyle \sum_{i\in C,j\in C_{'}}}W_{ij}}{\left|C\right|}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+qui est un des critères des problèmes de partitionnement de graphes.
+ Nous noterons 
+\begin_inset Formula $RASSOC\left(W,m\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+RASSOC\left(W,m\right)^{*}= & {\displaystyle \min_{\Pi=\left(C_{1},...,C_{m}\right)}}{\displaystyle \sum_{k=1}^{m}}f^{RAssoc}\left(C\right)\\
+ & \Pi\in\mathcal{P}_{V}^{m}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Lien entre le problème des k-moyennes et le partitionnement de graphes
+\end_layout
+
+\begin_layout Theorem
+Résoudre 
+\begin_inset Formula $KMEANS(K,m)$
+\end_inset
+
+ est équivalent à résoudre 
+\begin_inset Formula $RASSOC\left(K,m\right)$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Proof
+Toute solution optimale de l'un est une solution optimale de l'autre.
+ 
+\series bold
+\emph on
+Attention on ne dit pas que les objectifs coïncident
+\series default
+\emph default
+.
+\end_layout
+
+\begin_layout Proof
+La littérature est remplie d'algorithme permettant de travailler dans les
+ graphes et d'optimiser les kmeans.
+\end_layout
+
+\begin_layout Section
+Les algorithmes
+\end_layout
+
+\begin_layout Subsection
+L'algorithme des kmeans
+\end_layout
+
+\begin_layout Standard
+Réaffecter chaque élément à la classe dont le centroid est le plus proche.
+ Nécessite que la matrice des noyaux soit définie positive.
+\end_layout
+
+\begin_layout Subsection
+L'algorithme spectral
+\end_layout
+
+\begin_layout Standard
+Calculer les 
+\begin_inset Formula $m$
+\end_inset
+
+ premiers vecteurs propres de la matrice des noyaux, ordonnés en fonction
+ de leur valeur propre.
+\end_layout
+
+\begin_layout Subsection
+L'algorithme de réduction de graphe
+\end_layout
+
+\begin_layout Standard
+Expliquer ce que l'on fait : on choisit un critère local pour agrégé le
+ graphe
+\end_layout
+
+\begin_layout Subsection
+L'algorithme de inverse de la réduction
+\end_layout
+
+\begin_layout Standard
+Pas grand chose à dire ici.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+L'algorithme GRACLUS
+\end_layout
+
+\begin_layout Subsection
+Déclarations/Classes/Typedef:
+\end_layout
+
+\begin_layout Subsubsection
+GraphType:
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ struct.h
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ structure rassemblant les information sur le graphe donné initialement(ex:
+ vecteurs de sommets , arêtes , poids ...) .
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les structures :
+\bar default
+ idxtype = int, RInfoType, VRInfoType, NRInfoType.
+\end_layout
+
+\begin_layout Subsubsection
+RInfoType:
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ struct.h
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ Cette structure enregistre les informations sur les degrées pour la partition
+ en K-classes.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les structures :
+\bar default
+ /
+\end_layout
+
+\begin_layout Subsubsection
+VRInfoType:
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ struct.h
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ Cette structure enregistre les informations sur les degrées pour la partition
+ en K-classes basé sur les volumes.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les structures :
+\bar default
+ /
+\end_layout
+
+\begin_layout Subsubsection
+NRInfoType:
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ struct.h
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ Cette structure enregistre les informations sur les degrées pour la partition
+ en K-classes.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les structures :
+\bar default
+ /
+\end_layout
+
+\begin_layout Subsubsection
+CtrlType;
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ struct.h
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ La structure suivante sert de passerelle d'information entre Graclus et
+ Metis
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les structures :
+\bar default
+ WorkSpaceType, timer = double
+\end_layout
+
+\begin_layout Subsubsection
+WorkSpaceType:
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ struct.h
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ Cette structure garde differentes données de l'espace de travail.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les structures :
+\bar default
+ EDegreeType, VDegreeType
+\end_layout
+
+\begin_layout Subsubsection
+EDegreeType:
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ struct.h
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ Cette structure stocke un sommet
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les structures :
+\bar default
+ /
+\end_layout
+
+\begin_layout Subsubsection
+VDegreeType:
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ struct.h
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ Cette structure stocke un sommet pour la methode volume.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les structures :
+\bar default
+ /
+\end_layout
+
+\begin_layout Subsection
+Fonctions Graclus
+\end_layout
+
+\begin_layout Subsubsection
+ReadGraph
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+ReadGraph(GraphType * graph, char * filename , int * wgtflag);
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ io.c
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ lit le fichier de données 
+\emph on
+filename
+\emph default
+ (
+\emph on
+wgtflag
+\emph default
+ permet d'identifier le format des données, à savoir : est ce qu'il ya des
+ poids sur les sommets, les arêtes, les deux ou aucun) initialise une instance
+ de la structure de 
+\emph on
+graph
+\emph default
+ à partir de ces données.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les fonctions :
+\bar default
+ InitGraph(graph)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{
+\backslash
+fill}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+MLKKM_PartGraphKway
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+MLKKM_PartGraphKway(int * nvtxs, idxtype *xadj, idxtype * adjncy, idxtype
+ * vwgt, idxtype *adjwgt, int *wgtflag, int *numflag, int *nparts, int *chainlen
+gth, int *options, int *edgecut, idxtype *part, int levels);
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ mlkkm.c
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ initialise un tableau de float 
+\emph on
+tpwgts
+\emph default
+ appelle MLKKM_WPartGraphKway
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les fonctions :
+\bar default
+ MLKKM_WPartGraphKway(nvtxs, xadj, adjncy, vwgt, adjwgt, wgtflag, numflag,
+ nparts, chainlength, tpwgts, options, edgecut, part, levels)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{
+\backslash
+fill}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+ComputePartitionBalance
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+ComputePartitionBalance(GraphType *graph, int nparts, idxtype *where, float
+ *ubvec);
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ stat.c
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ calcule l'équilibre d'une partition en fonction des poids des sommets calcule
+ une quantité (le poids moyen ?) d'une partition et place le résultat dans
+ 
+\emph on
+ubvec
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les fonctions :
+\bar default
+ N/A
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{
+\backslash
+fill}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+ComputeNCut
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+ComputeNCut(GraphType *graph, idxtype *where, int npart);
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ debug.c
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ calcule l'objectif de la coupe normalisée sur le graphe 
+\emph on
+graph
+\emph default
+ étant donnée une partition 
+\emph on
+where
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les fonctions :
+\bar default
+ N/A
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{
+\backslash
+fill}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+ComputeRAsso
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+ComputeRAsso(GraphType *graph, idxtype *where, int npart);
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fichier de définition :
+\bar default
+ debug.c
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Fonction :
+\bar default
+ calcule l'objectif de l'association par moyenne sur le graphe 
+\emph on
+graph
+\emph default
+ étant donnée une partition 
+\emph on
+where
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Appelle les fonctions :
+\bar default
+ N/A
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+hspace{
+\backslash
+fill}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+LE RESTE EST A VOTRE DISPOSITION
+\end_layout
+
+\begin_layout Subsection
+Définitions 
+\end_layout
+
+\begin_layout Subsubsection
+Voisins
+\end_layout
+
+\begin_layout Standard
+Soit 
+\begin_inset Formula $X$
+\end_inset
+
+ un point d'un graphe 
+\begin_inset Formula $G$
+\end_inset
+
+ = (
+\begin_inset Formula $\mathbb{\mathcal{V}},\mathcal{E}$
+\end_inset
+
+,
+\begin_inset Formula $\mathit{A}$
+\end_inset
+
+), on considère un point 
+\begin_inset Formula $Y\in G$
+\end_inset
+
+ voisin de 
+\begin_inset Formula $X$
+\end_inset
+
+ s'il existe un arc 
+\begin_inset Formula $(X,Y)\in\mathcal{E}$
+\end_inset
+
+.
+ On définit ainsi l'ensemble 
+\begin_inset Formula $N_{G}(X)$
+\end_inset
+
+ qui regroupe tous les voisins de 
+\begin_inset Formula $X$
+\end_inset
+
+ dans 
+\begin_inset Formula $G$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+\begin_inset Quotes eld
+\end_inset
+
+Supernoeud
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Lors de la réduction d'un graphe 
+\begin_inset Formula $G$
+\end_inset
+
+ = (
+\begin_inset Formula $\mathbb{\mathcal{V}},\mathcal{E}$
+\end_inset
+
+,
+\begin_inset Formula $\mathit{A}$
+\end_inset
+
+) en un graphe 
+\begin_inset Formula $H$
+\end_inset
+
+ = (
+\begin_inset Formula $\mathbb{\mathcal{V}}',\mathcal{E}'$
+\end_inset
+
+,
+\begin_inset Formula $\mathit{A}'$
+\end_inset
+
+), on appele 
+\begin_inset Quotes eld
+\end_inset
+
+supernoeud
+\begin_inset Quotes erd
+\end_inset
+
+ un sommet de 
+\begin_inset Formula $H$
+\end_inset
+
+ défini comme un ensemble de sommets de 
+\begin_inset Formula $G$
+\end_inset
+
+, soit 
+\begin_inset Formula $X$
+\end_inset
+
+ un tel supernoeud, on definit 
+\begin_inset Formula $N_{H}(X)$
+\end_inset
+
+ comme l'ensemble des supernoeud de 
+\begin_inset Formula $H$
+\end_inset
+
+ qui contiennent un voisin d'un élément de 
+\begin_inset Formula $X$
+\end_inset
+
+ : 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{eqnarray*}
+N_{H}(X) & = & \{Y\in\mathbb{\mathcal{V}}'/\exists(x,y)\in X\times Y,\: x\in N_{G}(y)\}
+\end{eqnarray*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Réduction du graphe
+\end_layout
+
+\begin_layout Standard
+La première étape de l'algorithme consiste à réduire la taille du graphe
+ de départ en fusionnant des sommets en 
+\begin_inset Quotes eld
+\end_inset
+
+supernoeuds
+\begin_inset Quotes erd
+\end_inset
+
+ via différentes méthodes de combinaison.
+\end_layout
+
+\begin_layout Standard
+L'intérêt de cette agrégation réside dans l'obtention d'un graphe dont la
+ taille réduite permettra d'appliquer un algorithme spectral avec une vitesse
+ d'exécution satisfaisante.
+\end_layout
+
+\begin_layout Standard
+On utilise ici l'algorithme suivant pour construire 
+\begin_inset Formula $G_{i}$
+\end_inset
+
+ à partir de 
+\begin_inset Formula $G_{i+1}$
+\end_inset
+
+ :
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+PourCh{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $x\in G_{i}$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $marque\left(x\right)\leftarrow faux$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+PourCh{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $x\in G_{i}$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+eSi{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $\forall y\in voisins\left(x\right),marque\left(y\right)=vrai$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $marque(x)\leftarrow vrai$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $G_{i}\leftarrow G_{i}\smallsetminus x$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+trouver y qui maximise 
+\begin_inset Formula $\frac{e(x,y)}{w(x)}+\frac{e(x,y)}{w(y)}$
+\end_inset
+
+ , avec 
+\begin_inset Formula $w(i)$
+\end_inset
+
+ le poids associé au sommet
+\begin_inset Formula $i$
+\end_inset
+
+ et 
+\begin_inset Formula $e(x,y)$
+\end_inset
+
+ le poids de l'arc entre 
+\begin_inset Formula $x$
+\end_inset
+
+ et 
+\begin_inset Formula $y$
+\end_inset
+
+.
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Placer 
+\begin_inset Formula $x$
+\end_inset
+
+ et 
+\begin_inset Formula $y$
+\end_inset
+
+ au sein d'un même supernoeud
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $marque(x)\leftarrow\mbox{\ensuremath{vrai}}$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $marque(y)\leftarrow vrai$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $G_{i}\leftarrow G_{i}\smallsetminus\left\{ x\right\} $
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $G_{i}\leftarrow G_{i}\smallsetminus\left\{ y\right\} $
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Phase de réduction}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Phase de partitionnement initial
+\end_layout
+
+\begin_layout Standard
+La réduction du graphe s'arrête lorsque celui-ci compte moins que 
+\begin_inset Formula $20K$
+\end_inset
+
+ sommets, où 
+\begin_inset Formula $K$
+\end_inset
+
+ est le nombre de classes désiré.
+ On peut alors obtenir un partitionnement initial de 
+\begin_inset Formula $G_{0}$
+\end_inset
+
+ en partitionnant 
+\begin_inset Formula $G_{m}$
+\end_inset
+
+, le plus petit graphe obtenu après la réduction.
+\end_layout
+
+\begin_layout Standard
+Pour ce faire l'algorithme spectral de Yu et Shi généralisé avec des pondération
+s arbitraires est bien efficace sur des problèmes de tailles raisonnables
+ car les résultats sont relativement précis et rapides.
+ Cepandant, il faudra repenser cette partie dans le cas de problème plus
+ important car l'algorithme spectral de Yu et Shi est trop couteux et donc,
+ il sera moins efficace que d'autres algorithmes.
+\end_layout
+
+\begin_layout Subsection
+Phase de raffinement
+\end_layout
+
+\begin_layout Standard
+Ce premier partitionnement ayant été obtenu, on peut le raffiner en parcourant
+ les graphes 
+\begin_inset Formula $G_{m-1}$
+\end_inset
+
+ ,..., 
+\begin_inset Formula $G_{0}$
+\end_inset
+
+ de la manière suivante : si un 
+\begin_inset Quotes eld
+\end_inset
+
+supernoeud
+\begin_inset Quotes erd
+\end_inset
+
+ de 
+\begin_inset Formula $G_{i}$
+\end_inset
+
+ est dans une partition 
+\begin_inset Formula $c$
+\end_inset
+
+, alors tous les sommets de 
+\begin_inset Formula $G_{i-1}$
+\end_inset
+
+ qui le composent sont également dans 
+\begin_inset Formula $c$
+\end_inset
+
+, ce qui mène à un partitionnement initial pour le graphe 
+\begin_inset Formula $G_{i-1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Il faut ensuite raffiner ce partitionnement pour 
+\begin_inset Formula $G_{i-1}$
+\end_inset
+
+ via l'agorithme suivant, lequel se poursuit tant qu'il permet d'améliorer
+ la fonction objectif sur le graphe 
+\begin_inset Formula $G_{i-1}$
+\end_inset
+
+ ou jusqu'à une quantité d'itérations maximale.
+ Notons, pour ce graphe, 
+\begin_inset Formula $\pi$
+\end_inset
+
+
+\begin_inset Formula $_{c}^{(0)}$
+\end_inset
+
+ le partionnement initial et 
+\begin_inset Formula $K$
+\end_inset
+
+ une matrice noyau selon la fonction objectif du partitionnement.
+ L'algorithme est alors le suivant :
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+PourCh{
+\end_layout
+
+\end_inset
+
+chaque ligne 
+\begin_inset Formula $i$
+\end_inset
+
+ de 
+\begin_inset Formula $K$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $d(i,\boldsymbol{m}_{c})\leftarrow K_{ii}-\frac{2\sum_{j\in\pi_{c}(t)}\cdot poids(j)\cdot K_{ij}}{\sum_{j\in\pi_{c}(t)}\cdot poids(j)}+\frac{\sum_{j,l\in\pi_{c}(t)}\cdot poids(j)\cdot poids(l)\cdot K_{jl}}{(\sum_{j\in\pi_{c}(t)}\cdot poids(j))^{2}}$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Trouver 
+\begin_inset Formula $c{}^{*}(i)=argmin_{c}d(i,\boldsymbol{m}_{c})$
+\end_inset
+
+ (on s'occupe des égalités de façon arbitraire)
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tq{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $((\neg$
+\end_inset
+
+ convergence
+\begin_inset Formula $)$
+\end_inset
+
+ et 
+\begin_inset Formula $($
+\end_inset
+
+seuil d'itérations pas dépassé
+\begin_inset Formula $))$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Mettre à jour les partitions :
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\pi_{c}^{(t+1)}\leftarrow\left\{ i:c^{*}(i)=c\right\} $
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $t\leftarrow t+1$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Phase de raffinement}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Notons qu'au cours du raffinement, les centres ne sont pas modifiés.
+ La mise à jour se produit en fin d'algorithme en fonction des réaffectations
+ effectuées par ce dernier.
+\end_layout
+
+\begin_layout Standard
+Ce raffinement n'est pas en soi nécessaire pour obtenir une partition de
+ 
+\begin_inset Formula $G_{0}$
+\end_inset
+
+ : le partionnement initial obtenu via l'algorithme spectral sur 
+\begin_inset Formula $G_{m-1}$
+\end_inset
+
+ peut déjà servir de partionnement pour 
+\begin_inset Formula $G_{0}$
+\end_inset
+
+.
+ La raffinnement sert donc à améliorer les résultats de ce partitionnement.
+\end_layout
+
+\begin_layout Standard
+On pourrait également raffiner directement le partionnement initial sur
+ 
+\begin_inset Formula $G_{0}$
+\end_inset
+
+, mais cette solution augmenterait le nombre d'itération de l'algorithme
+ des k-moyennes et réduirait donc l'efficacité de l'algorithme.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Algorithme de principe
+\end_layout
+
+\begin_layout Standard
+Notre algorithme général peut se décomposer en trois phases: 
+\end_layout
+
+\begin_layout Itemize
+Le première phase 
+\begin_inset Quotes eld
+\end_inset
+
+d'agrégagtion
+\begin_inset Quotes erd
+\end_inset
+
+ qui va utiliser l'algorithme 
+\begin_inset Formula $(1)$
+\end_inset
+
+ afin de reduire et d'obtenir un graphe avec 
+\begin_inset Formula $K$
+\end_inset
+
+ 
+\begin_inset Quotes eld
+\end_inset
+
+supernoeuds
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Une phase de 
+\begin_inset Quotes eld
+\end_inset
+
+partitionnement
+\begin_inset Quotes erd
+\end_inset
+
+ qui va nous façonner notre premiere et grossière partition décrite au point
+ 
+\begin_inset Formula $2.2$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+Puis vient la phase de 
+\begin_inset Quotes eld
+\end_inset
+
+raffinement
+\begin_inset Quotes erd
+\end_inset
+
+ qui, par le biais de l'algorithme 
+\begin_inset Formula $(2)$
+\end_inset
+
+, permet d'améliorer la grossière partition afin de tirer le meilleur regroupeme
+nt possible.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{algorithm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Input:
+\series default
+ 
+\begin_inset Formula $K$
+\end_inset
+
+ : nombre de partitions que l'on désire , 
+\begin_inset Formula $G_{0}$
+\end_inset
+
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ : Graphe initial , 
+\begin_inset Formula $t_{max}$
+\end_inset
+
+: nombre maximum d'itération
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Output: 
+\series default
+
+\begin_inset Formula $\{\pi_{c}\}_{c=1}^{k}$
+\end_inset
+
+: partitionnement final de notre graphe
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $k=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Tq{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $|\mathbb{\mathcal{V}}_{k}|<20K$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $G_{k+1}\leftarrow algorithm1(G_{k})$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $k\leftarrow k+1$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $\{\pi_{c}\}_{c=1}^{k}\leftarrow$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+Partitionnement primaire par l'algorithme de Yu et Shi.
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Pour{
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $i$
+\end_inset
+
+ de 
+\begin_inset Formula $k$
+\end_inset
+
+ jusqu'à 1 avec 
+\begin_inset Formula $pas=-1$
+\end_inset
+
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}{
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $Appliquer\{\pi_{c}\}_{c=1}^{k}à\: G_{k-1}$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\{\pi_{c}\}_{c=1}^{k}\leftarrow algorithm2(K,k,\omega,t_{max},\{\pi_{c}\}_{c=1}^{k})$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+;
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{Algorithme général de partitionnement
+\end_layout
+
+\end_inset
+
+
+\begin_inset Formula $(K,G_{0}=(\mathbb{\mathcal{V}}_{0},\mathcal{E}_{0},\mathit{A_{0}}),\{\pi_{c}\}_{c=1}^{k},t_{max})$
+\end_inset
+
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{algorithm}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+To-do list ( 40% )
+\end_layout
+
+\begin_layout Enumerate
+
+\strikeout on
+Comprendre l'équivalence graphes / k-moyennes (rapport).
+
+\strikeout default
+ (100%)
+\end_layout
+
+\begin_layout Enumerate
+Rédaction de la première partie (rapport).
+ (66%)
+\end_layout
+
+\begin_layout Enumerate
+Lire / 
+\begin_inset Quotes eld
+\end_inset
+
+dérouler
+\begin_inset Quotes erd
+\end_inset
+
+ le code et isoler les appels metis.
+\end_layout
+
+\begin_layout Enumerate
+Prevoir un créneau pour ce voir.
+\end_layout
+
+\begin_layout Enumerate
+Ecrire l'algo 3 avec les fonctions de metis.
+\end_layout
+
+\begin_layout Enumerate
+
+\strikeout on
+Completer le rapport avec les nouvelles info de l'entretien.
+
+\strikeout default
+ (100%)
+\end_layout
+
+\begin_layout Enumerate
+Apprendre a ce servir de GIT.
+\end_layout
+
+\begin_layout Enumerate
+
+\strikeout on
+reprendre les algos en bon français.
+
+\strikeout default
+ (100%)
+\end_layout
+
+\begin_layout Enumerate
+Homogéinisé les notations dans les algos (prendre soit les notation de 
+\begin_inset Formula $1.1$
+\end_inset
+
+ soit celle de 
+\begin_inset Formula $1.2$
+\end_inset
+
+)
+\end_layout
+
+\end_body
+\end_document

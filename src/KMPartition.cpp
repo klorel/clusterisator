@@ -11,7 +11,7 @@ KMPartition::KMPartition(KMInstance const & input, size_t k) :
 		Partition(input.nbObs(), k), _input(input), _centers(k, input.nbAtt()) {
 	setWeights(_input.weights());
 	computeCenters();
-	_d.assign(nbObs(), Zero<Double>());
+	_d.assign(nbObs(), 0);
 }
 KMPartition::KMPartition(KMInstance const &input, Partition const &rhs) :
 		Partition(rhs), _input(input), _centers(rhs.maxNbLabels(),
@@ -34,7 +34,7 @@ void KMPartition::computeDistances() {
 		//		if (_positions[obs] != _distances.end())
 		//			_distances.erase(_positions[obs]);
 		if (sizeOfLabel(label(obs)) == 1)
-			_d[obs] = Zero<Double>();
+			_d[obs] = 0;
 		else
 			_d[obs] = getDistance(obs);
 		_cost += _d[obs] * obsWeight(obs);
@@ -76,6 +76,20 @@ bool KMPartition::shift(size_t obs, size_t to) {
 		return false;
 }
 
+void KMPartition::shiftForced(size_t obs, size_t to) {
+		size_t const from(label(obs));
+		// recomputing centers is needed
+		if (_centers.getN() != maxNbLabels()) {
+			computeCenters();
+		} else {
+			for (size_t d(0); d < _input.nbAtt(); ++d) {
+				_centers.plus(from, d, -_input.get(obs, d) * obsWeight(obs));
+				_centers.plus(to, d, _input.get(obs, d) * obsWeight(obs));
+			}
+		}
+		Partition::shift(obs, to);
+}
+
 Double KMPartition::getDelta(size_t i, size_t l, size_t j) const {
 	assert(label(i)==l);
 	if (l != j)
@@ -83,7 +97,7 @@ Double KMPartition::getDelta(size_t i, size_t l, size_t j) const {
 				* (getDistance(i, j) * getCoeff<true>(i, j)
 						- getDistance(i, l) * getCoeff<false>(i, l));
 	else
-		return Zero<Double>();
+		return 0;
 }
 Double KMPartition::getDelta(size_t i, size_t j) const {
 	size_t const l(label(i));

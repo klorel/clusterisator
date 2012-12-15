@@ -1,9 +1,9 @@
 /*
- * Input.cpp
- *
- *  Created on: 23 août 2012
- *      Author: manuel
- */
+* Input.cpp
+*
+*  Created on: 23 août 2012
+*      Author: manuel
+*/
 
 #include "src/KMInput.hpp"
 
@@ -28,24 +28,32 @@ size_t KMInput::ite() const {
 }
 
 KMInput::KMInput(KMInstance const & instance, size_t k) :
-		KMPartition(instance, k), _timer(), _ite(0), _modifiedLabels(
-				maxNbLabels()), _modifiedObs(nbObs()) {
-	_moves.reserve(nbObs());
-	_buffer.reset(nbObs());
+	KMPartition(instance, k), _timer(), _ite(0), _modifiedLabels(
+	maxNbLabels()), _modifiedObs(nbObs()) {
+		_moves.reserve(nbObs());
+		_buffer.reset(nbObs());
 }
 
 KMInput::KMInput(KMInstance const & instance, Partition const & p) :
-		KMPartition(instance, p), _timer(), _ite(0), _modifiedLabels(
-				maxNbLabels()), _modifiedObs(nbObs()) {
-	_moves.reserve(nbObs());
-	_buffer.reset(nbObs());
+	KMPartition(instance, p), _timer(), _ite(0), _modifiedLabels(
+	maxNbLabels()), _modifiedObs(nbObs()) {
+		_moves.reserve(nbObs());
+		_buffer.reset(nbObs());
 }
 
 KMInput::~KMInput() {
 
 }
+void KMInput::shiftForced(size_t obs, size_t to) {
+	//	std::cout << "KMInput\n";
+	size_t const from(label(obs));
+	KMPartition::shiftForced(obs, to);
+	_modifiedLabels.insert(from);
+	_modifiedLabels.insert(to);
+	_modifiedObs.insert(obs);
+}
 bool KMInput::shift(size_t obs, size_t to) {
-//	std::cout << "KMInput\n";
+	//	std::cout << "KMInput\n";
 	size_t const from(label(obs));
 	if (KMPartition::shift(obs, to)) {
 		_modifiedLabels.insert(from);
@@ -78,7 +86,7 @@ bool KMInput::applyMoves() {
 }
 std::pair<size_t, Double> KMInput::getBest(size_t i) const {
 	size_t const l(label(i));
-	std::pair<size_t, Double> min(l, Zero<Double>());
+	std::pair<size_t, Double> min(l, 0);
 
 	if (sizeOfLabel(l) != 1) {
 		Double const cst(-getDistance(i) * getCoeff<false>(i, l));
@@ -99,14 +107,14 @@ std::pair<size_t, Double> KMInput::getBest(size_t i) const {
 std::pair<size_t, Double> KMInput::getClosest(size_t i) const {
 	size_t const l(label(i));
 	std::pair<size_t, Double> min(l, d(i));
-//	for (size_t k(0); k < getK(); ++k) {
-//		if (k != l) {
-//			std::pair<size_t, Double> const d(k, getDistance(i, k));
-//			if (d.second < min.second) {
-//				min = d;
-//			}
-//		}
-//	}
+	//	for (size_t k(0); k < getK(); ++k) {
+	//		if (k != l) {
+	//			std::pair<size_t, Double> const d(k, getDistance(i, k));
+	//			if (d.second < min.second) {
+	//				min = d;
+	//			}
+	//		}
+	//	}
 
 	if (_modifiedLabels.contains(l)) {
 		for (size_t k(0); k < getK(); ++k) {

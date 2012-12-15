@@ -10,7 +10,7 @@
 Double KMAlgo::ComputeMssc(IPartition const & x, KMInstance const & instance) {
 	RectMatrix centers(x.maxNbLabels(), instance.nbAtt());
 	centers.assign(0);
-	DoubleVector weights(x.maxNbLabels(), Zero<Double>());
+	DoubleVector weights(x.maxNbLabels(), 0);
 	for (auto const & l : x.usedLabels()) {
 		for (auto const & i : x.observations(l)) {
 			weights[l] += instance.weight(i);
@@ -18,7 +18,7 @@ Double KMAlgo::ComputeMssc(IPartition const & x, KMInstance const & instance) {
 				centers.plus(l, d, instance.get(i, d) * instance.weight(i));
 		}
 	}
-	Double result(Zero<Double>());
+	Double result(0);
 	for (size_t i(0); i < instance.nbObs(); ++i) {
 		size_t const l(x.label(i));
 		for (size_t d(0); d < instance.nbAtt(); ++d)

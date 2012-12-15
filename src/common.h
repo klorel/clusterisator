@@ -45,22 +45,13 @@ IntVector Random(size_t n);
 
 size_t PopRandom(IntVector &, size_t & n);
 
-template<class T> constexpr T Zero() {
-	return static_cast<T>(0);
-}
-template<class T> constexpr T One() {
-	return static_cast<T>(1);
-}
-template<class T> constexpr T Infinity() {
-	return std::numeric_limits<T>::max();
-}
 
 template<class T> inline bool IsEqual(T const & t1, T const & t2) {
 	return std::abs(t1 - t2) <= 1e-6;
 }
 template<> inline bool IsEqual(Double const & t1, Double const & t2) {
 	Double const bigger(std::max(std::abs(t1), std::abs(t2)));
-	return std::abs(t1 - t2) / (bigger > One<Double>() ? bigger : One<Double>())
+	return std::abs(t1 - t2) / (bigger > 1 ? bigger : 1)
 			<= 1e-6;
 }
 

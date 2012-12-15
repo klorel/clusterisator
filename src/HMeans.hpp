@@ -37,7 +37,6 @@ public:
 
 			if (!stop && isTraceOn)
 				input.out("HMEANS");
-
 		} while (!stop);
 		return true;
 	}
@@ -74,7 +73,7 @@ template<bool isTraceOn> inline bool HMeans<isTraceOn>::Singleton(
 
 	while (!_Buffer.empty()) {
 		assert(!input.isUsed(_Buffer.back()));
-		assert(input.distances().begin()->first>Zero<Double>());
+		assert(input.distances().begin()->first>0);
 		input.shift(input.distances().begin()->second, _Buffer.back());
 		input.cost() -= input.distances().begin()->first;
 		assert(input.isUsed(_Buffer.back()));

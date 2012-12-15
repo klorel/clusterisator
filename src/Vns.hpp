@@ -20,7 +20,7 @@ public:
 	void restart();
 	void save();
 
-	template<template<bool T> class LocalSearchT, bool isTraceOn = false>
+	template<template<bool T> class LocalSearchT, bool isTraceOn >
 	void run(size_t maxIte, size_t magMax);
 
 	void out() const;

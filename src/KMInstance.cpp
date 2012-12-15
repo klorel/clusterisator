@@ -15,7 +15,7 @@ KMInstance::KMInstance(size_t nbObs, size_t nbAtt) {
 KMInstance::KMInstance(KMInstance const & instance,
 		Aggregations const & aggregations) {
 	allocate(aggregations.v.size(), instance.nbAtt());
-	std::fill_n(_weights.begin(), _weights.size(), Zero<Double>());
+	std::fill_n(_weights.begin(), _weights.size(), 0);
 
 	for (size_t i(0); i < aggregations.v.size(); ++i) {
 		for (auto const & j : aggregations.v[i])
@@ -43,8 +43,8 @@ KMInstance::KMInstance(KMInstance const & instance,
 
 void KMInstance::allocate(size_t nbObs, size_t nbAtt) {
 	_data = RectMatrix(nbObs, nbAtt);
-	_cst = Zero<Double>();
-	_weights.assign(nbObs, One<Double>());
+	_cst = 0;
+	_weights.assign(nbObs, 1);
 	_must = KMConstraints(nbObs);
 	_cannot = KMConstraints(nbObs);
 }
@@ -134,7 +134,7 @@ bool KMInstance::feasible(IPartition const & p) const {
 void KMInstance::cpp(std::ostream & stream) const {
 	std::string s;
 
-	stream << "_weights.assign(" << nbObs() << ",One<Double>());\n";
+	stream << "_weights.assign(" << nbObs() << ",1);\n";
 	stream << "_must = KMConstraints( ";
 	stream << nbObs() << " , ";
 	stream << " {";
@@ -149,7 +149,7 @@ void KMInstance::cpp(std::ostream & stream) const {
 		stream << p.first << " , " << p.second << " , ";
 	}
 	stream << " } );\n";
-	stream << "_cst = Zero<Double>();\n";
+	stream << "_cst = 0;\n";
 	stream << "_data  = RectMatrix(";
 	stream << nbObs() << " , " << 13 << " , { ";
 	std::copy(_data.matrix().begin(), _data.matrix().end(),

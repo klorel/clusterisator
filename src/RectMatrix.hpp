@@ -15,14 +15,14 @@
  */
 class RectMatrix {
 public:
-	RectMatrix(size_t n = 0, size_t m = 0, Double v = Zero<Double>());
+	RectMatrix(size_t n = 0, size_t m = 0, Double v = 0);
 	RectMatrix(size_t n, size_t, DoubleVector const&);
 	virtual ~RectMatrix();
 
   /**
 	 * Reset the dimension and the content of the matrix. Set every coefficient to the same value
 	 */
-	void allocate(size_t n, size_t m, Double v = Zero<Double>());
+	void allocate(size_t n, size_t m, Double v = 0);
 
 	Double get(size_t i, size_t j) const;
 	Double & get(size_t i, size_t j);

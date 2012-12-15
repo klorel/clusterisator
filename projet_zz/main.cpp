@@ -36,6 +36,7 @@ void usage() {
 }
 
 int main(int argc, char ** argv) {
+	Number::SetSeed(1);
 	if (argc < 3) {
 		usage();
 	} else {
@@ -46,8 +47,7 @@ int main(int argc, char ** argv) {
 			RegisteredInstance instance(id);
 			instance.out();
 			MultiLevelAlgo algo(instance, k);
-			algo.launch(1);
-
+			algo.launch(50);
 		}
 	}
 	return 0;

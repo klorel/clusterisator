@@ -25,7 +25,8 @@ public:
 	void headers();
 	size_t & ite();
 	size_t ite() const;
-
+	
+	void shiftForced(size_t obs, size_t to);
 	bool shift(size_t obs, size_t to);
 	bool shift(Move const &);
 

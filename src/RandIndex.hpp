@@ -32,13 +32,13 @@ inline RandIndex::~RandIndex() {
 inline Double RandIndex::compute(IPartition const & real,
 		IPartition const & candidate) {
 	// true positive : same real - same proposed
-	Double TP(Zero<Double>());
+	Double TP(0);
 	// true negative : different real - different proposed
-	Double TN(Zero<Double>());
+	Double TN(0);
 	// false positive : same real - different proposed
-	Double FP(Zero<Double>());
+	Double FP(0);
 	// false negative : different real - same proposed
-	Double FN(Zero<Double>());
+	Double FN(0);
 	for (size_t i(0); i < real.nbObs(); ++i) {
 		for (size_t j(i + 1); j < real.nbObs(); ++j) {
 			if (real.label(i) == real.label(j)) {

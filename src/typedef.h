@@ -9,6 +9,7 @@
 #define TYPEDEF_H_
 
 #include <algorithm>
+#include <functional>
 #include <numeric>
 #include <cmath>
 #include <ctime>

@@ -12,12 +12,7 @@ public:
 private:
 	static size_t _SEED;
 
-#if __LP64__
-	static std::mt19937_64 _Generator;
-#else
-	static std::mt19937 generator;
-#endif
-
+	static std::default_random_engine _Generator;
 //	std::default_random_engine generator;
 	static std::uniform_int_distribution<size_t> _Distribution;
 };
@@ -29,10 +24,5 @@ inline long int Number::Generator() {
 	return _Distribution(_Generator);
 }
 
-inline void Number::SetSeed(size_t seed) {
-	_SEED = seed;
-	_Generator.seed(seed);
-//	srand48(_SEED);
-}
 
 #endif /* NUMBER_H */

@@ -41,7 +41,7 @@ int main(int argc, char ** argv) {
 
 		size_t const i(atoi(argv[1]));
 		size_t const k(atoi(argv[2]));
-		size_t const seed(argc > 3 ? atoi(argv[3]) : 0);
+		size_t const seed(argc > 3 ? atoi(argv[3]) : 1);
 		Number::SetSeed(seed);
 		if (i < AvailableInstances::SIZE) {
 			AvailableInstances id(static_cast<AvailableInstances>(i));

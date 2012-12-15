@@ -27,7 +27,8 @@ public:
 	RectMatrix const & centers() const;
 	KMInstance const & instance() const;
 	Double cst() const;
-
+	
+	void shiftForced(size_t obs, size_t to);
 	bool shift(size_t obs, size_t to);
 	bool shift(Move const &);
 
@@ -88,7 +89,7 @@ inline Double KMPartition::getDistance(size_t i) const {
 inline Double KMPartition::getDistance(size_t i, size_t k) const {
 	Double result(0);
 	for (size_t d(0); d < _input.nbAtt(); ++d) {
-		if (labelWeight(k) == Zero<Double>())
+		if (labelWeight(k) == 0)
 			result += std::pow(_input.get(i, d), 2);
 		else
 			result += std::pow(
