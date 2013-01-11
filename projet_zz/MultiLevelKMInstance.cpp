@@ -33,14 +33,35 @@ void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregati
 // nbNodes : le nombre de noeuds minimal dans le graph de plus bas niveau
 // critère défini pour ajouter les noeuds : voisin le plus proche
 void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
-	// écrire l'algorithme d'aggrégation
-	for(size_t p(0); p<nbNodes; ++p){
+
+	KMPartition partition(_instance, _instance.nbObs());
+	// on crée les singletons
+	for(size_t i(0); i<_instance.nbObs(); i)
+		partition.shift(i,i);
+
+	while(partition.nbLabels() > nbNodes ){
+		IndexedList used(partition.usedLabels());
+		// définit un nouveau niveau
 		_multiLevelConstraints.push_back(new KMConstraints(_input.nbObs()));
-		size_t const step(20);
-		for(size_t q(1);q<step; ++q){ 
-			_multiLevelConstraints.back()->newCtr(step*p, step*p+q);
-		}
-	}
+
+		while(!used.empty()){
+			size_t const m = used.pop_random();
+			if( !used.empty()){
+				// calculer la distance de ce centre avec les autres
+				std::multimap<Double, size_t> neighbor;
+				for(auto const & c : partition.usedLabels()){
+					if ( m != c)
+						neighbor.insert( std::make_pair(partition.getDistanceCenter(m,c) , c));
+				}
+				size_t const c(neighbor.begin()->second);
+				_multiLevelConstraints.back()->newCtr(*partition.observations(m).begin(),*partition.observations(c).begin());
+				partition.fusion(m,c);				
+				// si plusieurs plusieurs plus pret : tirer au hazard (aprés)
+				used.erase(c);
+			}
+		};
+		// ajouter les contraintes associée à ce niveau
+	};
 }
 //
 void MultiLevelAlgo::refine() {

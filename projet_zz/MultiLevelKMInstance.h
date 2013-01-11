@@ -13,7 +13,7 @@
 #include "../src/KMInput.hpp"
 
 class MultiLevelAlgo {
-
+public:
 public:
 	MultiLevelAlgo(KMInstance const &, size_t k);
 	virtual ~MultiLevelAlgo();
@@ -25,8 +25,8 @@ public:
 	//
 	void launch(size_t nbNodes);
 	void refine();
-	//
-	Double getDistance(size_t i, size_t j) const;
+	
+	//Double getDistance(SuperNoeud const & i, SuperNoeud const & j) const;
 public:
 	// l'instance de départ
 	KMInstance _instance;
