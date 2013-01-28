@@ -47,7 +47,7 @@ int main(int argc, char ** argv) {
 			RegisteredInstance instance(id);
 			instance.out();
 			MultiLevelAlgo algo(instance, k);
-			algo.launch(5);
+			algo.launch(1000);
 		}
 	}
 	return 0;

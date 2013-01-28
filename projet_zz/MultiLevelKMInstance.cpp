@@ -89,7 +89,7 @@ void MultiLevelAlgo::refine() {
 			}
 		}
 		// on lance l'algo
-		HMeans<false>()(input);
+		HMeans<true>()(input);
 		std::cout << std::setw(10)<<_multiLevelConstraints.size() - level;
 		std::cout << std::setw(10)<<input.ite();
 		std::cout << std::setw(10)<<timer.elapsed();
