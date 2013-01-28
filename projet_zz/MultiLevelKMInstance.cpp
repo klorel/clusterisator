@@ -36,7 +36,7 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 
 	KMPartition partition(_instance, _instance.nbObs());
 	// on crée les singletons
-	for(size_t i(0); i<_instance.nbObs(); i)
+	for(size_t i(0); i<_instance.nbObs(); ++i)
 		partition.shift(i,i);
 
 	while(partition.nbLabels() > nbNodes ){
