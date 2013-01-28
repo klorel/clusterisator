@@ -37,6 +37,8 @@ public:
 
 	Double getDistance(size_t i, size_t k) const;
 	Double getDistance(size_t i) const;
+	// calcul de la distance entre deux centres
+	Double getDistanceCenter(size_t i, size_t k) const;
 	KMPartition & operator=(KMPartition const &);
 	KMConstraints const & mustLinks() const;
 	KMConstraints const & cannotLinks() const;
@@ -85,6 +87,17 @@ inline size_t KMPartition::getK() const {
 
 inline Double KMPartition::getDistance(size_t i) const {
 	return getDistance(i, label(i));
+}
+
+inline Double KMPartition::getDistanceCenter(size_t i, size_t j) const{
+	assert( labelWeight(i) > 0);
+	assert( labelWeight(j) > 0);
+
+	Double result(0);
+	for (size_t d(0); i!=j && d < _input.nbAtt(); ++d){
+		result += std::pow(_centers.get(i, d) / labelWeight(i)-_centers.get(j, d) / labelWeight(j), 2);
+	}
+	return result;
 }
 inline Double KMPartition::getDistance(size_t i, size_t k) const {
 	Double result(0);

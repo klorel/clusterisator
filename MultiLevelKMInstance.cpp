@@ -1,7 +1,7 @@
 /*
 * MultiLevelKMInstance.cpp
 *
-*  Created on: 15 déc. 2012
+*  Created on: 15 dÃ©c. 2012
 *      Author: manuel
 */
 
@@ -10,14 +10,14 @@
 #include "../src/KMAlgo.hpp"
 #include "../src/Timer.hpp"
 MultiLevelAlgo::MultiLevelAlgo(KMInstance const & instance, size_t k) :
-	_instance(instance), _input(_instance, k) {
+  _instance(instance), _input(_instance, k) {
 }
 MultiLevelAlgo::~MultiLevelAlgo() {
 	for (auto & ptr : _multiLevelConstraints)
 		delete ptr;
 }
 void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregations & aggregations) {
-	// on enlève toutes les contraintes
+	// on enlÃ¨ve toutes les contraintes
 	_instance.mustLinks().clear();
 	_instance.cannotLinks().clear();
 	for (size_t i(0); i < level; ++i) {
@@ -27,21 +27,21 @@ void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregati
 	}
 	// construit les infos de correspondances entre les instances
 	_instance.buildMustLink(aggregations);
-	// construit l'instance aggrégée
+	// construit l'instance aggrÃ©gÃ©e
 	instance = KMInstance(_instance, aggregations);
 }
 // nbNodes : le nombre de noeuds minimal dans le graph de plus bas niveau
-// critère défini pour ajouter les noeuds : voisin le plus proche
+// critÃ¨re dÃ©fini pour ajouter les noeuds : voisin le plus proche
 void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 
 	KMPartition partition(_instance, _instance.nbObs());
-	// on crée les singletons
-	for(size_t i(0); i<_instance.nbObs(); i)
+	// on crÃ©e les singletons
+	for(size_t i(0); i<_instance.nbObs(); i++)
 		partition.shift(i,i);
 
 	while(partition.nbLabels() > nbNodes ){
 		IndexedList used(partition.usedLabels());
-		// définit un nouveau niveau
+		// dÃ©finit un nouveau niveau
 		_multiLevelConstraints.push_back(new KMConstraints(_input.nbObs()));
 
 		while(!used.empty()){
@@ -56,28 +56,28 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 				size_t const c(neighbor.begin()->second);
 				_multiLevelConstraints.back()->newCtr(*partition.observations(m).begin(),*partition.observations(c).begin());
 				partition.fusion(m,c);				
-				// si plusieurs plusieurs plus pret : tirer au hazard (aprés)
+				// si plusieurs plusieurs plus pret : tirer au hazard (aprÃ©s)
 				used.erase(c);
 			}
 		};
-		// ajouter les contraintes associée à ce niveau
+		// ajouter les contraintes associÃ©e Ã  ce niveau
 	};
 }
 //
 void MultiLevelAlgo::refine() {
-	// lancer le KMEANS sur chaque niveau en partant du plus élevé (celui qui contient le moins de noeuds)
-	// à chaque fois on initialise avec le niveau précédent (sauf le premier!)
-	// Pour le premier faire un appel à random(0);
+	// lancer le KMEANS sur chaque niveau en partant du plus Ã©levÃ© (celui qui contient le moins de noeuds)
+	// Ã  chaque fois on initialise avec le niveau prÃ©cÃ©dent (sauf le premier!)
+	// Pour le premier faire un appel Ã  random(0);
 	KMInstance instance;
 	Aggregations aggregations;	
 	Timer timer;
 	// pour chaque level
 	for (size_t level(0); level <= _multiLevelConstraints.size(); ++level) {
-		// ! on parcours à l'envers
+		// ! on parcours Ã  l'envers
 		buildInstance(_multiLevelConstraints.size() - level, instance,aggregations);
 		KMInput input(instance, _input.maxNbLabels());
 		// initialiser cette input avec la solkution courante
-		// attention il faut utiliser aggregation pour faire les neodus agrégés et la solution courante
+		// attention il faut utiliser aggregation pour faire les neodus agrÃ©gÃ©s et la solution courante
 		if(level==0){
 			input.random(0);
 			for (size_t i(0); i < _input.nbObs(); ++i) {

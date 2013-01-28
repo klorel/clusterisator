@@ -43,6 +43,13 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 		IndexedList used(partition.usedLabels());
 		// définit un nouveau niveau
 		_multiLevelConstraints.push_back(new KMConstraints(_input.nbObs()));
+<<<<<<< HEAD
+		size_t const step(10);
+		for(size_t q(1);q<step; ++q){ 
+			_multiLevelConstraints.back()->newCtr(step*p, step*p+q);
+		}
+	}
+=======
 
 		while(!used.empty()){
 			size_t const m = used.pop_random();
@@ -62,6 +69,7 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 		};
 		// ajouter les contraintes associée à ce niveau
 	};
+>>>>>>> 7d3b1f782e16f3eb6528661b07e5b6f0dc323357
 }
 //
 void MultiLevelAlgo::refine() {
@@ -89,7 +97,7 @@ void MultiLevelAlgo::refine() {
 			}
 		}
 		// on lance l'algo
-		HMeans<false>()(input);
+		HMeans<true>()(input);
 		std::cout << std::setw(10)<<_multiLevelConstraints.size() - level;
 		std::cout << std::setw(10)<<input.ite();
 		std::cout << std::setw(10)<<timer.elapsed();
