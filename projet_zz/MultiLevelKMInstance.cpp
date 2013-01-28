@@ -36,7 +36,7 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 	// écrire l'algorithme d'aggrégation
 	for(size_t p(0); p<nbNodes; ++p){
 		_multiLevelConstraints.push_back(new KMConstraints(_input.nbObs()));
-		size_t const step(20);
+		size_t const step(10);
 		for(size_t q(1);q<step; ++q){ 
 			_multiLevelConstraints.back()->newCtr(step*p, step*p+q);
 		}
@@ -68,7 +68,7 @@ void MultiLevelAlgo::refine() {
 			}
 		}
 		// on lance l'algo
-		HMeans<false>()(input);
+		HMeans<true>()(input);
 		std::cout << std::setw(10)<<_multiLevelConstraints.size() - level;
 		std::cout << std::setw(10)<<input.ite();
 		std::cout << std::setw(10)<<timer.elapsed();
