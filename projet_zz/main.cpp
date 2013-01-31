@@ -43,11 +43,31 @@ int main(int argc, char ** argv) {
 		size_t const i(atoi(argv[1]));
 		size_t const k(atoi(argv[2]));
 		if (i < AvailableInstances::SIZE) {
+			// écrire dans un fichier les résultats : moyenné sur tous les problèmes
+			// vérifier la cohérence on ne peut détériorer la solution de départ
+			// KMEANS : KMEANS classique
+			// on souhaite se comparer au KMEANS normal 
+			// - % temps total dans le KMEANS (sans construction des instances intermédiaires)
+			// - % nombre d'itération en plus KMEANS
+			// - % temps moyen des itérations
+			// - l'écart par rapport au KMEANS normal
+
 			AvailableInstances id(static_cast<AvailableInstances>(i));
 			RegisteredInstance instance(id);
 			instance.out();
 			MultiLevelAlgo algo(instance, k);
-			algo.launch(20*k);
+			
+			algo.buildMultiLevelData(0,0);
+			Partition start(instance.nbObs(), k);
+			// génération du point de départ
+			algo.getStartPoint(start);
+			// ----
+			size_t level(0);
+			algo.setStep(1);
+			while(true){
+				algo.setStartLevel(level);
+				algo.launch(20*k);
+			}
 		}
 	}
 	system("pause");

@@ -30,8 +30,9 @@ void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregati
 	// construit l'instance aggrégée
 	instance = KMInstance(_instance, aggregations);
 }
-// nbNodes : le nombre de noeuds minimal dans le graph de plus bas niveau
-// critère défini pour ajouter les noeuds : voisin le plus proche
+// @brief construit une suite de problèmes agrégés en agrégeant nbNodesMax noeuds par niveau et en produisant des graphes avec au plus nbNodes noeuds
+// @param nbNodes    : limite pour le graph le plus agrégé 
+// @param nbNodesMax : limite max de noeuds agrégé par étape
 void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 
 	KMPartition partition(_instance, _instance.nbObs());
@@ -64,6 +65,9 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 	};
 }
 //
+// _step: 
+// _startLevel : niveau de départ pour le raffinement
+// _startPoint : (attention doit être compatible avec le niveau de plus agrégé)
 void MultiLevelAlgo::refine() {
 	// lancer le KMEANS sur chaque niveau en partant du plus élevé (celui qui contient le moins de noeuds)
 	// à chaque fois on initialise avec le niveau précédent (sauf le premier!)
@@ -95,6 +99,7 @@ void MultiLevelAlgo::refine() {
 		std::cout << std::setw(10)<<timer.elapsed();
 		std::cout << std::setw(20)<<input.cost();
 		std::cout << std::endl;
+		
 		// suavegarde de la solution
 		input.computeCenters();
 		for (size_t i(0); i < _input.nbObs(); ++i) {
@@ -105,9 +110,27 @@ void MultiLevelAlgo::refine() {
 		}
 	}
 }
+// @brief lance l'algorithme multi-niveau à partir d'une suite d'agrégation, d'une partition de départ et d'un niveau de départ et avec un pas donné
+// _step: 
+// _startLevel : niveau de départ pour le raffinement
+// _startPoint : (attention doit être compatible avec le niveau de plus agrégé)
 void MultiLevelAlgo::launch(size_t nbNodes) {
-	buildMultiLevelData(nbNodes);
-
+	// initialisation au point de départ
+	for (size_t i(0); i < _input.nbObs(); ++i) {
+		_input.shiftForced(i, _startPoint.label(i));
+	}		
+	// lancement du run 
 	refine();
 
+}
+
+void MultiLevelAlgo::getStartPoint( Partition & point){
+	KMInstance instance;
+	Aggregations aggregations;	
+	buildInstance(_multiLevelConstraints.size(), instance,aggregations);
+	KMInput input(instance, _input.maxNbLabels());
+	input.random(0);	
+	for (size_t i(0); i < _input.nbObs(); ++i) {
+		point.shift(i, input.label(aggregations.newIds[i]));
+	}	
 }
