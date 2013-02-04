@@ -1,7 +1,7 @@
 /*
  * main.cpp
  *
- *  Created on: 15 déc. 2012
+ *  Created on: 15 dÃ©c. 2012
  *      Author: manuel
  */
 
@@ -18,6 +18,19 @@
 
 #include "projet_zz/MultiLevelKMInstance.h"
 #include <random>
+
+
+#ifdef _WIN64
+	#define CMD_SUPP 0
+#elif _WIN32
+	#define CMD_SUPP 0
+#elif __APPLE__
+	#define CMD_SUPP  1
+#elif __linux
+	#define CMD_SUPP  1
+#endif
+
+
 
 void usage() {
 	std::cout << "Available instances : \n";
@@ -43,30 +56,54 @@ int main(int argc, char ** argv) {
 		size_t const i(atoi(argv[1]));
 		size_t const k(atoi(argv[2]));
 		if (i < AvailableInstances::SIZE) {
-			// écrire dans un fichier les résultats : moyenné sur tous les problèmes
-			// vérifier la cohérence on ne peut détériorer la solution de départ
+			// Ã©crire dans un fichier les rÃ©sultats : moyennÃ© sur tous les problÃ¨mes
+			// vÃ©rifier la cohÃ©rence on ne peut dÃ©tÃ©riorer la solution de dÃ©part
 			// KMEANS : KMEANS classique
 			// on souhaite se comparer au KMEANS normal 
-			// - % temps total dans le KMEANS (sans construction des instances intermédiaires)
-			// - % nombre d'itération en plus KMEANS
-			// - % temps moyen des itérations
-			// - l'écart par rapport au KMEANS normal
+			// - % temps total dans le KMEANS (sans construction des instances intermÃ©diaires)
+			// - % nombre d'itÃ©ration en plus KMEANS
+			// - % temps moyen des itÃ©rations
+			// - l'Ã©cart par rapport au KMEANS normal
 
 			AvailableInstances id(static_cast<AvailableInstances>(i));
 			RegisteredInstance instance(id);
 			instance.out();
-			MultiLevelAlgo algo(instance, k);
 			
-			algo.buildMultiLevelData(0,0);
+			
+			MultiLevelAlgo algo(instance, k);
+
+
+			algo.buildMultiLevelData(20*k,20);
 			Partition start(instance.nbObs(), k);
-			// génération du point de départ
+			// gÃ©nÃ©ration du point de dÃ©part
 			algo.getStartPoint(start);
-			// ----
-			size_t level(0);
+			algo.setStartPoint(start);
+			// ----s
+			size_t level=0;
 			algo.setStep(1);
-			while(true){
+			bool fini = false;
+			int nbfichier=1;
+
+			if (CMD_SUPP == 0)
+				system("rmdir /S /Q Run");
+			else
+				system("rm -r Run");
+			system(" mkdir Run");
+			while(!fini){
+
+
+
+				
+				
+				algo.setfic("./Run/run"+ std::to_string(nbfichier)+".txt");
+
+				algo.initfichier();
 				algo.setStartLevel(level);
-				algo.launch(20*k);
+				algo.launch();
+				if (level ==5)
+					fini=true;
+				level = 5;
+				nbfichier++;
 			}
 		}
 	}
