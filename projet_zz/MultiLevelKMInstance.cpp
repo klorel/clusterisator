@@ -1,7 +1,7 @@
 /*
 * MultiLevelKMInstance.cpp
 *
-*  Created on: 15 déc. 2012
+*  Created on: 15 dÃ©c. 2012
 *      Author: manuel
 */
 
@@ -9,15 +9,21 @@
 #include "../src/HMeans.hpp"
 #include "../src/KMAlgo.hpp"
 #include "../src/Timer.hpp"
-MultiLevelAlgo::MultiLevelAlgo(KMInstance const & instance, size_t k) :
-	_instance(instance), _input(_instance, k) {
-}
+#include <iostream>
+#include <fstream>
+
+
+MultiLevelAlgo::MultiLevelAlgo(KMInstance const & instance, size_t k,Partition startPoint) :
+	_instance(instance), _input(_instance, k),_startPoint(startPoint) {}
+
+
+
 MultiLevelAlgo::~MultiLevelAlgo() {
 	for (auto & ptr : _multiLevelConstraints)
 		delete ptr;
 }
 void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregations & aggregations) {
-	// on enlève toutes les contraintes
+	// on enlÃ¨ve toutes les contraintes
 	_instance.mustLinks().clear();
 	_instance.cannotLinks().clear();
 	for (size_t i(0); i < level; ++i) {
@@ -27,25 +33,30 @@ void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregati
 	}
 	// construit les infos de correspondances entre les instances
 	_instance.buildMustLink(aggregations);
-	// construit l'instance aggrégée
+	// construit l'instance aggrÃ©gÃ©e
 	instance = KMInstance(_instance, aggregations);
 }
-// @brief construit une suite de problèmes agrégés en agrégeant nbNodesMax noeuds par niveau et en produisant des graphes avec au plus nbNodes noeuds
-// @param nbNodes    : limite pour le graph le plus agrégé 
-// @param nbNodesMax : limite max de noeuds agrégé par étape
-void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
+
+
+// @brief construit une suite de problÃ¨mes agrÃ©gÃ©s en agrÃ©geant nbNodesMax noeuds par niveau et en produisant des graphes avec au plus nbNodes noeuds
+// @param nbNodes    : limite pour le graph le plus agrÃ©gÃ© 
+// @param nbNodesMax : limite max de noeuds agrÃ©gÃ© par Ã©tape
+void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes,size_t nbNodesMax) {
 
 	KMPartition partition(_instance, _instance.nbObs());
-	// on crée les singletons
+	// on crÃ©e les singletons
 	for(size_t i(0); i<_instance.nbObs(); ++i)
 		partition.shift(i,i);
 
 	while(partition.nbLabels() > nbNodes ){
 		IndexedList used(partition.usedLabels());
-		// définit un nouveau niveau
+		// dÃ©finit un nouveau niveau
 		_multiLevelConstraints.push_back(new KMConstraints(_input.nbObs()));
 
-		while(!used.empty()){
+		size_t compteur=0;
+
+
+		while(!used.empty() && compteur < nbNodesMax){
 			size_t const m = used.pop_random();
 			if( !used.empty()){
 				// calculer la distance de ce centre avec les autres
@@ -57,49 +68,51 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 				size_t const c(neighbor.begin()->second);
 				_multiLevelConstraints.back()->newCtr(*partition.observations(m).begin(),*partition.observations(c).begin());
 				partition.fusion(m,c);				
-				// si plusieurs plusieurs plus pret : tirer au hazard (aprés)
+				// si plusieurs plusieurs plus pret : tirer au hazard (aprÃ©s)
 				used.erase(c);
+				compteur++;
 			}
 		};
-		// ajouter les contraintes associée à ce niveau
+		// ajouter les contraintes associÃ©e Ã  ce niveau
 	};
 }
 //
 // _step: 
-// _startLevel : niveau de départ pour le raffinement
-// _startPoint : (attention doit être compatible avec le niveau de plus agrégé)
+// _startLevel : niveau de dÃ©part pour le raffinement
+// _startPoint : (attention doit Ãªtre compatible avec le niveau de plus agrÃ©gÃ©)
 void MultiLevelAlgo::refine() {
-	// lancer le KMEANS sur chaque niveau en partant du plus élevé (celui qui contient le moins de noeuds)
-	// à chaque fois on initialise avec le niveau précédent (sauf le premier!)
-	// Pour le premier faire un appel à random(0);
+	// lancer le KMEANS sur chaque niveau en partant du plus Ã©levÃ© (celui qui contient le moins de noeuds)
+	// Ã  chaque fois on initialise avec le niveau prÃ©cÃ©dent (sauf le premier!)
+	// Pour le premier faire un appel Ã  random(0);
 	KMInstance instance;
 	Aggregations aggregations;	
 	Timer timer;
 	// pour chaque level
-	for (size_t level(0); level <= _multiLevelConstraints.size(); ++level) {
-		// ! on parcours à l'envers
+	for (size_t level(_startLevel); level <= _multiLevelConstraints.size(); level+= _step) {
+		// ! on parcours Ã  l'envers
 		buildInstance(_multiLevelConstraints.size() - level, instance,aggregations);
 		KMInput input(instance, _input.maxNbLabels());
 		// initialiser cette input avec la solkution courante
-		// attention il faut utiliser aggregation pour faire les neodus agrégés et la solution courante
-		if(level==0){
-			input.random(0);
-			for (size_t i(0); i < _input.nbObs(); ++i) {
-				_input.shiftForced(i, input.label(aggregations.newIds[i]));
-			}			
-		}else{
+		// attention il faut utiliser aggregation pour faire les neodus agrÃ©gÃ©s et la solution courante
+		
+		if(level!=_startLevel){	
 			for (size_t i(0); i < _input.nbObs(); ++i) {
 				input.shiftForced(aggregations.newIds[i], _input.label(i));
 			}
 		}
-		// on lance l'algo
-		HMeans<true>()(input);
-		std::cout << std::setw(10)<<_multiLevelConstraints.size() - level;
-		std::cout << std::setw(10)<<input.ite();
-		std::cout << std::setw(10)<<timer.elapsed();
-		std::cout << std::setw(20)<<input.cost();
-		std::cout << std::endl;
 		
+		// on lance l'algo
+		 HMeans<true>()(input);
+
+
+		
+		writefichier("Niveau de rafinement : " + std::to_string(_multiLevelConstraints.size() - level));
+		writefichier("Nombre d'itÃ©ration par Ã©tape : " + std::to_string(input.ite()));
+		writefichier("Temps Ã©coulÃ© : " + std::to_string(timer.elapsed()));
+		writefichier("Valeur du coÃ»t : " + std::to_string(input.cost()));
+		writefichier("\n");
+
+
 		// suavegarde de la solution
 		input.computeCenters();
 		for (size_t i(0); i < _input.nbObs(); ++i) {
@@ -109,13 +122,32 @@ void MultiLevelAlgo::refine() {
 			input.shiftForced(aggregations.newIds[i], _input.label(i));
 		}
 	}
+	if(_startLevel>_multiLevelConstraints.size())
+	{
+		// on lance l'algo
+		 HMeans<true>()(_input);
+
+
+		
+		writefichier("Niveau de rafinement : " + std::to_string(0));
+		writefichier("Nombre d'itÃ©ration par Ã©tape : " + std::to_string(_input.ite()));
+		writefichier("Temps Ã©coulÃ© : " + std::to_string(timer.elapsed()));
+		writefichier("Valeur du coÃ»t : " + std::to_string(_input.cost()));
+		writefichier("\n");
+
+
+		// suavegarde de la solution
+		_input.computeCenters();
+	}
 }
-// @brief lance l'algorithme multi-niveau à partir d'une suite d'agrégation, d'une partition de départ et d'un niveau de départ et avec un pas donné
+// @brief lance l'algorithme multi-niveau Ã  partir d'une suite d'agrÃ©gation, d'une partition de dÃ©part et d'un niveau de dÃ©part et avec un pas donnÃ©
 // _step: 
-// _startLevel : niveau de départ pour le raffinement
-// _startPoint : (attention doit être compatible avec le niveau de plus agrégé)
-void MultiLevelAlgo::launch(size_t nbNodes) {
-	// initialisation au point de départ
+// _startLevel : niveau de dÃ©part pour le raffinement
+// _startPoint : (attention doit Ãªtre compatible avec le niveau de plus agrÃ©gÃ©)
+
+
+void MultiLevelAlgo::launch() {
+	// initialisation au point de dÃ©part
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		_input.shiftForced(i, _startPoint.label(i));
 	}		
@@ -124,7 +156,7 @@ void MultiLevelAlgo::launch(size_t nbNodes) {
 
 }
 
-void MultiLevelAlgo::getStartPoint( Partition & point){
+void MultiLevelAlgo::getStartPoint( Partition  & point){
 	KMInstance instance;
 	Aggregations aggregations;	
 	buildInstance(_multiLevelConstraints.size(), instance,aggregations);
@@ -133,4 +165,57 @@ void MultiLevelAlgo::getStartPoint( Partition & point){
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		point.shift(i, input.label(aggregations.newIds[i]));
 	}	
+}
+
+
+void MultiLevelAlgo::setStartLevel( size_t level){
+	_startLevel=level;
+}
+
+
+
+void MultiLevelAlgo::setStep(size_t step){
+	_step=step;
+}
+
+
+void MultiLevelAlgo::setStartPoint( Partition  & point){
+	_startPoint = point;
+}
+
+
+void MultiLevelAlgo::initfichier()
+{
+
+
+				// Creation du fichier ou Ã©crasement
+				
+					std::ofstream _fichier(_fic.c_str(), std::ios::out |std::ios::trunc);
+
+				 /* --- Cas d'erreur d'ouverture du fichier --- */
+				if ( !_fichier ){
+					  std::cerr << "Erreur de creation du fichier des rÃ©sultats" << std::endl;
+					  exit(1);
+				}
+
+
+
+}
+
+
+
+
+
+void MultiLevelAlgo::writefichier(std::string str)
+{
+	std::ofstream fichier(_fic.c_str(), std::ios::out |std::ios::app);
+	fichier << std::setw(10) << str << std::endl;
+	fichier.close();
+
+}
+
+void MultiLevelAlgo::setfic(std::string fic)
+{
+	_fic = fic;
+
 }
