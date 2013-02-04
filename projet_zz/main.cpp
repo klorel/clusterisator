@@ -19,19 +19,6 @@
 #include "projet_zz/MultiLevelKMInstance.h"
 #include <random>
 
-
-#ifdef _WIN64
-	#define CMD_SUPP 0
-#elif _WIN32
-	#define CMD_SUPP 0
-#elif __APPLE__
-	#define CMD_SUPP  1
-#elif __linux
-	#define CMD_SUPP  1
-#endif
-
-
-
 void usage() {
 	std::cout << "Available instances : \n";
 	for (size_t i(0); i < AvailableInstances::SIZE; ++i) {
@@ -56,55 +43,39 @@ int main(int argc, char ** argv) {
 		size_t const i(atoi(argv[1]));
 		size_t const k(atoi(argv[2]));
 		if (i < AvailableInstances::SIZE) {
-			// Ã©crire dans un fichier les rÃ©sultats : moyennÃ© sur tous les problÃ¨mes
-			// vÃ©rifier la cohÃ©rence on ne peut dÃ©tÃ©riorer la solution de dÃ©part
+			// Ecrire dans un fichier les resultats : moyenne sur tous les problemes
+			// verifier la coherence on ne peut deteriorer la solution de depart
 			// KMEANS : KMEANS classique
 			// on souhaite se comparer au KMEANS normal 
-			// - % temps total dans le KMEANS (sans construction des instances intermÃ©diaires)
-			// - % nombre d'itÃ©ration en plus KMEANS
-			// - % temps moyen des itÃ©rations
-			// - l'Ã©cart par rapport au KMEANS normal
+			// - % temps total dans le KMEANS (sans construction des instances intermediaires)
+			// - % nombre d'iteration en plus KMEANS
+			// - % temps moyen des iterations
+			// - l'ecart par rapport au KMEANS normal
 
 			AvailableInstances id(static_cast<AvailableInstances>(i));
 			RegisteredInstance instance(id);
-			instance.out();
-			
-			
+			instance.out();			
 			MultiLevelAlgo algo(instance, k);
-
-
-			algo.buildMultiLevelData(20*k,20);
+			algo.buildMultiLevelData(20*k,500);
 			Partition start(instance.nbObs(), k);
-			// gÃ©nÃ©ration du point de dÃ©part
+			// generation du point de depart
 			algo.getStartPoint(start);
-			algo.setStartPoint(start);
 			// ----s
-			size_t level=0;
+			size_t level(0);
 			algo.setStep(1);
-			bool fini = false;
+			bool done(false);
 			int nbfichier=1;
-
-			if (CMD_SUPP == 0)
-				system("rmdir /S /Q Run");
-			else
-				system("rm -r Run");
-			system(" mkdir Run");
-			while(!fini){
-
-
-
-				
-				
-				algo.setfic("./Run/run"+ std::to_string(nbfichier)+".txt");
-
-				algo.initfichier();
+			std::ofstream file("output.log");
+			algo.setOut(file);
+			while(!done){					
 				algo.setStartLevel(level);
 				algo.launch();
-				if (level ==5)
-					fini=true;
+				if (level == 5)
+					done=true;
 				level = 5;
 				nbfichier++;
 			}
+			file.close();
 		}
 	}
 	system("pause");

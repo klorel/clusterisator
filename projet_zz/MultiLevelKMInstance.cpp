@@ -14,7 +14,10 @@
 
 
 MultiLevelAlgo::MultiLevelAlgo(KMInstance const & instance, size_t k,Partition startPoint) :
-	_instance(instance), _input(_instance, k),_startPoint(startPoint) {}
+	_instance(instance), _input(_instance, k),_startPoint(startPoint) {
+		// par defaut sur la sortie standard.
+		setOut();
+}
 
 
 
@@ -49,13 +52,12 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes,size_t nbNodesMax) {
 		partition.shift(i,i);
 
 	while(partition.nbLabels() > nbNodes ){
+		std::cout << "partition.nbLabels() : "<<partition.nbLabels()<<std::endl;
 		IndexedList used(partition.usedLabels());
-		// dÃ©finit un nouveau niveau
+		// definit un nouveau niveau
 		_multiLevelConstraints.push_back(new KMConstraints(_input.nbObs()));
-
+		//
 		size_t compteur=0;
-
-
 		while(!used.empty() && compteur < nbNodesMax){
 			size_t const m = used.pop_random();
 			if( !used.empty()){
@@ -94,24 +96,21 @@ void MultiLevelAlgo::refine() {
 		KMInput input(instance, _input.maxNbLabels());
 		// initialiser cette input avec la solkution courante
 		// attention il faut utiliser aggregation pour faire les neodus agrÃ©gÃ©s et la solution courante
-		
+
 		if(level!=_startLevel){	
 			for (size_t i(0); i < _input.nbObs(); ++i) {
 				input.shiftForced(aggregations.newIds[i], _input.label(i));
 			}
 		}
-		
+
 		// on lance l'algo
-		 HMeans<true>()(input);
+		HMeans<true>()(input);
 
-
-		
-		writefichier("Niveau de rafinement : " + std::to_string(_multiLevelConstraints.size() - level));
-		writefichier("Nombre d'itÃ©ration par Ã©tape : " + std::to_string(input.ite()));
-		writefichier("Temps Ã©coulÃ© : " + std::to_string(timer.elapsed()));
-		writefichier("Valeur du coÃ»t : " + std::to_string(input.cost()));
-		writefichier("\n");
-
+		out()<<"Niveau de rafinement          : " <<_multiLevelConstraints.size() - level;
+		out()<<"Nombre d'itÃ©ration par etape : " <<input.ite();
+		out()<<"Temps ecoule                  : " <<timer.elapsed();
+		out()<<"Valeur du cout                : " <<input.cost();
+		out()<<std::endl;
 
 		// suavegarde de la solution
 		input.computeCenters();
@@ -125,17 +124,12 @@ void MultiLevelAlgo::refine() {
 	if(_startLevel>_multiLevelConstraints.size())
 	{
 		// on lance l'algo
-		 HMeans<true>()(_input);
-
-
-		
-		writefichier("Niveau de rafinement : " + std::to_string(0));
-		writefichier("Nombre d'itÃ©ration par Ã©tape : " + std::to_string(_input.ite()));
-		writefichier("Temps Ã©coulÃ© : " + std::to_string(timer.elapsed()));
-		writefichier("Valeur du coÃ»t : " + std::to_string(_input.cost()));
-		writefichier("\n");
-
-
+		HMeans<true>()(_input);
+		out()<<"Niveau de rafinement         : " <<0;
+		out()<<"Nombre d'iteration par etape : " <<_input.ite();
+		out()<<"Temps ecoule                 : " <<timer.elapsed();
+		out()<<"Valeur du cout               : " <<_input.cost();
+		out()<<std::endl;
 		// suavegarde de la solution
 		_input.computeCenters();
 	}
@@ -145,7 +139,9 @@ void MultiLevelAlgo::refine() {
 // _startLevel : niveau de dÃ©part pour le raffinement
 // _startPoint : (attention doit Ãªtre compatible avec le niveau de plus agrÃ©gÃ©)
 
-
+void MultiLevelAlgo::setOut(std::ostream & stream){
+	_out = &stream;
+}
 void MultiLevelAlgo::launch() {
 	// initialisation au point de dÃ©part
 	for (size_t i(0); i < _input.nbObs(); ++i) {
@@ -183,39 +179,6 @@ void MultiLevelAlgo::setStartPoint( Partition  & point){
 	_startPoint = point;
 }
 
-
-void MultiLevelAlgo::initfichier()
-{
-
-
-				// Creation du fichier ou Ã©crasement
-				
-					std::ofstream _fichier(_fic.c_str(), std::ios::out |std::ios::trunc);
-
-				 /* --- Cas d'erreur d'ouverture du fichier --- */
-				if ( !_fichier ){
-					  std::cerr << "Erreur de creation du fichier des rÃ©sultats" << std::endl;
-					  exit(1);
-				}
-
-
-
-}
-
-
-
-
-
-void MultiLevelAlgo::writefichier(std::string str)
-{
-	std::ofstream fichier(_fic.c_str(), std::ios::out |std::ios::app);
-	fichier << std::setw(10) << str << std::endl;
-	fichier.close();
-
-}
-
-void MultiLevelAlgo::setfic(std::string fic)
-{
-	_fic = fic;
-
+std::ostream & MultiLevelAlgo::out(){
+	return *_out;
 }

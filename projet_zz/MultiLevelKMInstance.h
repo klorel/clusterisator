@@ -35,25 +35,21 @@ public:
 	void setStep(size_t );
 
 	void setStartPoint( Partition  & );
-	
-	void initfichier( );
-	void writefichier(std::string );
-	void setfic(std::string);
-
+	void setOut(std::ostream & =std::cout);
 	//Double getDistance(SuperNoeud const & i, SuperNoeud const & j) const;
+
+	std::ostream & out();
 public:
 	// l'instance de dÃ©part
 	KMInstance _instance;
 	KMInput _input;
-	// les contraintes de chaque niveau : incrÃ©mentalement
+	// les contraintes de chaque niveau : incrementalement
 	std::vector<KMConstraints *> _multiLevelConstraints;
 
 	size_t _startLevel;
 	size_t _step;
 	Partition _startPoint;
-	std::string _fic;
-
-
+	std::ostream * _out;
 	Number _totalKMtimer;
 	size_t _totlKMite;
 
