@@ -1,7 +1,7 @@
 /*
  * MultiLevelKMInstance.h
  *
- *  Created on: 15 déc. 2012
+ *  Created on: 15 dÃ©c. 2012
  *      Author: manuel
  */
 
@@ -40,7 +40,7 @@ public:
 
 	std::ostream & out();
 public:
-	// l'instance de départ
+	// l'instance de dÃ©part
 	KMInstance _instance;
 	KMInput _input;
 	// les contraintes de chaque niveau : incrementalement

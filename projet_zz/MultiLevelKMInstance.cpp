@@ -1,7 +1,7 @@
 /*
 * MultiLevelKMInstance.cpp
 *
-*  Created on: 15 déc. 2012
+*  Created on: 15 dÃ©c. 2012
 *      Author: manuel
 */
 
@@ -26,7 +26,7 @@ MultiLevelAlgo::~MultiLevelAlgo() {
 		delete ptr;
 }
 void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregations & aggregations) {
-	// on enlève toutes les contraintes
+	// on enlÃ¨ve toutes les contraintes
 	_instance.mustLinks().clear();
 	_instance.cannotLinks().clear();
 	for (size_t i(0); i < level; ++i) {
@@ -36,18 +36,18 @@ void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregati
 	}
 	// construit les infos de correspondances entre les instances
 	_instance.buildMustLink(aggregations);
-	// construit l'instance aggrégée
+	// construit l'instance aggrÃ©gÃ©e
 	instance = KMInstance(_instance, aggregations);
 }
 
 
-// @brief construit une suite de problèmes agrégés en agrégeant nbNodesMax noeuds par niveau et en produisant des graphes avec au plus nbNodes noeuds
-// @param nbNodes    : limite pour le graph le plus agrégé 
-// @param nbNodesMax : limite max de noeuds agrégé par étape
+// @brief construit une suite de problÃ¨mes agrÃ©gÃ©s en agrÃ©geant nbNodesMax noeuds par niveau et en produisant des graphes avec au plus nbNodes noeuds
+// @param nbNodes    : limite pour le graph le plus agrÃ©gÃ© 
+// @param nbNodesMax : limite max de noeuds agrÃ©gÃ© par Ã©tape
 void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes,size_t nbNodesMax) {
 
 	KMPartition partition(_instance, _instance.nbObs());
-	// on crée les singletons
+	// on crÃ©e les singletons
 	for(size_t i(0); i<_instance.nbObs(); ++i)
 		partition.shift(i,i);
 
@@ -70,7 +70,7 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes,size_t nbNodesMax) {
 				size_t const c(neighbor.begin()->second);
 				_multiLevelConstraints.back()->newCtr(*partition.observations(m).begin(),*partition.observations(c).begin());
 				partition.fusion(m,c);				
-				// si plusieurs plusieurs plus pret : tirer au hazard (aprés)
+				// si plusieurs plusieurs plus pret : tirer au hazard (aprÃ©s)
 				used.erase(c);
 				compteur++;
 			}
@@ -80,10 +80,10 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes,size_t nbNodesMax) {
 }
 //
 // _step: 
-// _startLevel : niveau de départ pour le raffinement
-// _startPoint : (attention doit être compatible avec le niveau de plus agrégé)
+// _startLevel : niveau de dÃ©part pour le raffinement
+// _startPoint : (attention doit Ãªtre compatible avec le niveau de plus agrÃ©gÃ©)
 void MultiLevelAlgo::refine() {
-	// lancer le KMEANS sur chaque niveau en partant du plus élevé (celui qui contient le moins de noeuds)
+	// lancer le KMEANS sur chaque niveau en partant du plus Ã©levÃ© (celui qui contient le moins de noeuds)
 	// �  chaque fois on initialise avec le niveau précédent (sauf le premier!)
 	// Pour le premier faire un appel �  random(0);
 	KMInstance instance;
@@ -96,7 +96,7 @@ void MultiLevelAlgo::refine() {
 		buildInstance(_multiLevelConstraints.size() - level, instance,aggregations);
 		KMInput input(instance, _input.maxNbLabels());
 		// initialiser cette input avec la solkution courante
-		// attention il faut utiliser aggregation pour faire les neodus agrégés et la solution courante
+		// attention il faut utiliser aggregation pour faire les neodus agrÃ©gÃ©s et la solution courante
 
 		if(level!=_startLevel){	
 			for (size_t i(0); i < _input.nbObs(); ++i) {
@@ -141,14 +141,14 @@ void MultiLevelAlgo::refine() {
 }
 // @brief lance l'algorithme multi-niveau �  partir d'une suite d'agrégation, d'une partition de départ et d'un niveau de départ et avec un pas donné
 // _step: 
-// _startLevel : niveau de départ pour le raffinement
-// _startPoint : (attention doit être compatible avec le niveau de plus agrégé)
+// _startLevel : niveau de dÃ©part pour le raffinement
+// _startPoint : (attention doit Ãªtre compatible avec le niveau de plus agrÃ©gÃ©)
 
 void MultiLevelAlgo::setOut(std::ostream & stream){
 	_out = &stream;
 }
 void MultiLevelAlgo::launch() {
-	// initialisation au point de départ
+	// initialisation au point de dÃ©part
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		_input.shiftForced(i, _startPoint.label(i));
 	}		
