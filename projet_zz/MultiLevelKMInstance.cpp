@@ -9,9 +9,18 @@
 #include "../src/HMeans.hpp"
 #include "../src/KMAlgo.hpp"
 #include "../src/Timer.hpp"
-MultiLevelAlgo::MultiLevelAlgo(KMInstance const & instance, size_t k) :
-	_instance(instance), _input(_instance, k) {
+#include <iostream>
+#include <fstream>
+
+
+MultiLevelAlgo::MultiLevelAlgo(KMInstance const & instance, size_t k,Partition startPoint) :
+	_instance(instance), _input(_instance, k),_startPoint(startPoint) {
+		// par defaut sur la sortie standard.
+		setOut();
 }
+
+
+
 MultiLevelAlgo::~MultiLevelAlgo() {
 	for (auto & ptr : _multiLevelConstraints)
 		delete ptr;
@@ -30,10 +39,12 @@ void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregati
 	// construit l'instance aggrégée
 	instance = KMInstance(_instance, aggregations);
 }
+
+
 // @brief construit une suite de problèmes agrégés en agrégeant nbNodesMax noeuds par niveau et en produisant des graphes avec au plus nbNodes noeuds
 // @param nbNodes    : limite pour le graph le plus agrégé 
 // @param nbNodesMax : limite max de noeuds agrégé par étape
-void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
+void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes,size_t nbNodesMax) {
 
 	KMPartition partition(_instance, _instance.nbObs());
 	// on crée les singletons
@@ -41,11 +52,13 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 		partition.shift(i,i);
 
 	while(partition.nbLabels() > nbNodes ){
+		std::cout << "partition.nbLabels() : "<<partition.nbLabels()<<std::endl;
 		IndexedList used(partition.usedLabels());
-		// définit un nouveau niveau
+		// definit un nouveau niveau
 		_multiLevelConstraints.push_back(new KMConstraints(_input.nbObs()));
-
-		while(!used.empty()){
+		//
+		size_t compteur=0;
+		while(!used.empty() && compteur < nbNodesMax){
 			size_t const m = used.pop_random();
 			if( !used.empty()){
 				// calculer la distance de ce centre avec les autres
@@ -59,9 +72,10 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 				partition.fusion(m,c);				
 				// si plusieurs plusieurs plus pret : tirer au hazard (aprés)
 				used.erase(c);
+				compteur++;
 			}
 		};
-		// ajouter les contraintes associée à ce niveau
+		// ajouter les contraintes associée �  ce niveau
 	};
 }
 //
@@ -70,36 +84,35 @@ void MultiLevelAlgo::buildMultiLevelData(size_t nbNodes) {
 // _startPoint : (attention doit être compatible avec le niveau de plus agrégé)
 void MultiLevelAlgo::refine() {
 	// lancer le KMEANS sur chaque niveau en partant du plus élevé (celui qui contient le moins de noeuds)
-	// à chaque fois on initialise avec le niveau précédent (sauf le premier!)
-	// Pour le premier faire un appel à random(0);
+	// �  chaque fois on initialise avec le niveau précédent (sauf le premier!)
+	// Pour le premier faire un appel �  random(0);
 	KMInstance instance;
 	Aggregations aggregations;	
 	Timer timer;
 	// pour chaque level
-	for (size_t level(0); level <= _multiLevelConstraints.size(); ++level) {
-		// ! on parcours à l'envers
+	size_t level;
+	for ( level=_startLevel; level <= _multiLevelConstraints.size(); level+= _step) {
+		// ! on parcours �  l'envers
 		buildInstance(_multiLevelConstraints.size() - level, instance,aggregations);
 		KMInput input(instance, _input.maxNbLabels());
 		// initialiser cette input avec la solkution courante
 		// attention il faut utiliser aggregation pour faire les neodus agrégés et la solution courante
-		if(level==0){
-			input.random(0);
-			for (size_t i(0); i < _input.nbObs(); ++i) {
-				_input.shiftForced(i, input.label(aggregations.newIds[i]));
-			}			
-		}else{
+
+		if(level!=_startLevel){	
 			for (size_t i(0); i < _input.nbObs(); ++i) {
 				input.shiftForced(aggregations.newIds[i], _input.label(i));
 			}
 		}
+
 		// on lance l'algo
 		HMeans<true>()(input);
-		std::cout << std::setw(10)<<_multiLevelConstraints.size() - level;
-		std::cout << std::setw(10)<<input.ite();
-		std::cout << std::setw(10)<<timer.elapsed();
-		std::cout << std::setw(20)<<input.cost();
-		std::cout << std::endl;
-		
+
+		out()<<"Niveau de rafinement          : " <<_multiLevelConstraints.size() - level<<std::endl;
+		out()<<"Nombre d'itération par etape : " <<input.ite()<<std::endl;
+		out()<<"Temps ecoule                  : " <<timer.elapsed()<<std::endl;
+		out()<<"Valeur du cout                : " <<input.cost()<<std::endl;
+		out()<<std::endl;
+
 		// suavegarde de la solution
 		input.computeCenters();
 		for (size_t i(0); i < _input.nbObs(); ++i) {
@@ -109,12 +122,32 @@ void MultiLevelAlgo::refine() {
 			input.shiftForced(aggregations.newIds[i], _input.label(i));
 		}
 	}
+
+
+	// pb ici traitement du dernier niveau
+
+
+	/*if(level>_multiLevelConstraints.size())
+	{
+		// on lance l'algo
+		HMeans<true>()(_input);
+		out()<<"Niveau de rafinement         : " <<0<<std::endl;
+		out()<<"Nombre d'iteration par etape : " <<_input.ite()<<std::endl;
+		out()<<"Temps ecoule                 : " <<timer.elapsed()<<std::endl;
+		out()<<"Valeur du cout               : " <<_input.cost()<<std::endl;
+		out()<<std::endl;
+
+	}*/
 }
-// @brief lance l'algorithme multi-niveau à partir d'une suite d'agrégation, d'une partition de départ et d'un niveau de départ et avec un pas donné
+// @brief lance l'algorithme multi-niveau �  partir d'une suite d'agrégation, d'une partition de départ et d'un niveau de départ et avec un pas donné
 // _step: 
 // _startLevel : niveau de départ pour le raffinement
 // _startPoint : (attention doit être compatible avec le niveau de plus agrégé)
-void MultiLevelAlgo::launch(size_t nbNodes) {
+
+void MultiLevelAlgo::setOut(std::ostream & stream){
+	_out = &stream;
+}
+void MultiLevelAlgo::launch() {
 	// initialisation au point de départ
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		_input.shiftForced(i, _startPoint.label(i));
@@ -124,7 +157,7 @@ void MultiLevelAlgo::launch(size_t nbNodes) {
 
 }
 
-void MultiLevelAlgo::getStartPoint( Partition & point){
+void MultiLevelAlgo::getStartPoint( Partition  & point){
 	KMInstance instance;
 	Aggregations aggregations;	
 	buildInstance(_multiLevelConstraints.size(), instance,aggregations);
@@ -133,4 +166,24 @@ void MultiLevelAlgo::getStartPoint( Partition & point){
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		point.shift(i, input.label(aggregations.newIds[i]));
 	}	
+}
+
+
+void MultiLevelAlgo::setStartLevel( size_t level){
+	_startLevel=level;
+}
+
+
+
+void MultiLevelAlgo::setStep(size_t step){
+	_step=step;
+}
+
+
+void MultiLevelAlgo::setStartPoint( Partition  & point){
+	_startPoint = point;
+}
+
+std::ostream & MultiLevelAlgo::out(){
+	return *_out;
 }

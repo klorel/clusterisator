@@ -43,31 +43,71 @@ int main(int argc, char ** argv) {
 		size_t const i(atoi(argv[1]));
 		size_t const k(atoi(argv[2]));
 		if (i < AvailableInstances::SIZE) {
-			// écrire dans un fichier les résultats : moyenné sur tous les problèmes
-			// vérifier la cohérence on ne peut détériorer la solution de départ
+			// Ecrire dans un fichier les resultats : moyenne sur tous les problemes
+			// verifier la coherence on ne peut deteriorer la solution de depart
 			// KMEANS : KMEANS classique
 			// on souhaite se comparer au KMEANS normal 
-			// - % temps total dans le KMEANS (sans construction des instances intermédiaires)
-			// - % nombre d'itération en plus KMEANS
-			// - % temps moyen des itérations
-			// - l'écart par rapport au KMEANS normal
+			// - % temps total dans le KMEANS (sans construction des instances intermediaires)
+			// - % nombre d'iteration en plus KMEANS
+			// - % temps moyen des iterations
+			// - l'ecart par rapport au KMEANS normal
 
 			AvailableInstances id(static_cast<AvailableInstances>(i));
 			RegisteredInstance instance(id);
-			instance.out();
+			instance.out();			
 			MultiLevelAlgo algo(instance, k);
-			
-			algo.buildMultiLevelData(0,0);
+			algo.buildMultiLevelData(20*k,200);
 			Partition start(instance.nbObs(), k);
-			// génération du point de départ
+			// generation du point de depart
 			algo.getStartPoint(start);
-			// ----
-			size_t level(0);
-			algo.setStep(1);
-			while(true){
-				algo.setStartLevel(level);
-				algo.launch(20*k);
+            
+			// ----s
+			size_t level;
+			bool done(false);
+			int nbfichier=1;
+			std::ofstream file("output.log");
+			algo.setOut(file);
+
+			// pour nos tests on va créer une liste sur le premier niveau a traiter
+			// et une deuxieme pour les sauts.
+
+			std::vector<size_t> list_level;
+			std::vector<size_t> list_saut;
+
+
+			list_saut.push_back(1);
+			list_saut.push_back(2);
+			list_saut.push_back(4);
+			list_saut.push_back(8);
+			
+			while(!list_saut.empty()){
+				size_t saut=list_saut.back();
+				algo.out()<< "_________________________________________________________" << std::endl;
+				algo.setStep(saut);
+				list_saut.pop_back();
+				algo.out()<< "Pas de  : " << saut << std::endl;
+	
+
+				list_level.push_back(0);
+				list_level.push_back(2);
+				list_level.push_back(4);
+				list_level.push_back(8);
+				list_level.push_back(16);
+				while(!list_level.empty()){
+				
+					algo.out()<< "_________________________________________________________" << std::endl;
+					level=list_level.back();
+					list_level.pop_back();
+					algo.out()<< "level d'initialisation : " << level << std::endl;
+
+					algo.setStartPoint(start);
+					algo.setStartLevel(level);
+					algo.launch();
+					
+					
+				}
 			}
+			file.close();
 		}
 	}
 	system("pause");
