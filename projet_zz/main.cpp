@@ -56,60 +56,30 @@ int main(int argc, char ** argv) {
 			RegisteredInstance instance(id);
 			instance.out();			
 			MultiLevelAlgo algo(instance, k);
-			algo.buildMultiLevelData(20*k,200);
+			algo.buildMultiLevelData(20*k, std::ceil(instance.nbObs()/4.0));
 			Partition start(instance.nbObs(), k);
-			// generation du point de depart
+			 //generation du point de depart
 			algo.getStartPoint(start);
             
 			// ----s
-			size_t level;
 			bool done(false);
-			int nbfichier=1;
 			std::ofstream file("output.log");
 			algo.setOut(file);
-
-			// pour nos tests on va créer une liste sur le premier niveau a traiter
-			// et une deuxieme pour les sauts.
-
-			std::vector<size_t> list_level;
-			std::vector<size_t> list_saut;
-
-
-			list_saut.push_back(1);
-			list_saut.push_back(2);
-			list_saut.push_back(4);
-			list_saut.push_back(8);
-			
-			while(!list_saut.empty()){
-				size_t saut=list_saut.back();
+			//algo.out() << "
+			// pour nos tests on va créer une liste sur le premier niveau a traiter et une deuxieme pour les sauts.
+			// MR : commencer par faire sans saut .... !!!!
+			algo.setStep(1);
+			std::vector<MultiLevelAlgoStats> allStats(algo.nbLevels()+1);
+			for(size_t level(0); level<=algo.nbLevels(); ++level){
 				algo.out()<< "_________________________________________________________" << std::endl;
-				algo.setStep(saut);
-				list_saut.pop_back();
-				algo.out()<< "Pas de  : " << saut << std::endl;
-	
-
-				list_level.push_back(0);
-				list_level.push_back(2);
-				list_level.push_back(4);
-				list_level.push_back(8);
-				list_level.push_back(16);
-				while(!list_level.empty()){
-				
-					algo.out()<< "_________________________________________________________" << std::endl;
-					level=list_level.back();
-					list_level.pop_back();
-					algo.out()<< "level d'initialisation : " << level << std::endl;
-
-					algo.setStartPoint(start);
-					algo.setStartLevel(level);
-					algo.launch();
-					
-					
-				}
+				algo.setStartPoint(start);
+				algo.setStartLevel(level);
+				algo.launch();
+				allStats[level] = algo.stats();
 			}
 			file.close();
 		}
 	}
-	system("pause");
+	std::cin.get();
 	return 0; 
 }

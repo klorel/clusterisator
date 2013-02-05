@@ -12,6 +12,24 @@
 #include "../src/KMInstance.hpp"
 #include "../src/KMInput.hpp"
 
+
+class MultiLevelAlgoStat{
+public:
+	size_t _level;
+	size_t _ite;
+	double _time;
+	double _cost;
+	MultiLevelAlgoStat(){}
+	MultiLevelAlgoStat(size_t l, size_t i, double t, double c)
+		:_level(l)
+		,_ite(i)
+		,_time(t)
+		,_cost(c){
+	}
+
+};
+
+typedef std::map<size_t, MultiLevelAlgoStat>  MultiLevelAlgoStats;
 class MultiLevelAlgo {
 public:
 public:
@@ -23,11 +41,11 @@ public:
 	//
 	void launch();
 	void refine();
-
+	size_t nbLevels() const ;
 public:
 	// on agrège jusqu'�  ce que l'on ait nbNodes noeuds dans le problème équivalent
 	// nbNodesMax = 0 pas de limite
-	void buildMultiLevelData(size_t nbNodes, size_t nbNodesMax = 50);
+	void buildMultiLevelData(double nbNodes, double nbNodesMax = 50);
 
 	// initialisation
 	void setStartLevel( size_t );
@@ -37,7 +55,7 @@ public:
 	void setStartPoint( Partition  & );
 	void setOut(std::ostream & =std::cout);
 	//Double getDistance(SuperNoeud const & i, SuperNoeud const & j) const;
-
+	MultiLevelAlgoStats const & stats()const;
 	std::ostream & out();
 public:
 	// l'instance de dÃ©part
@@ -52,6 +70,7 @@ public:
 	std::ostream * _out;
 	Number _totalKMtimer;
 	size_t _totlKMite;
+	MultiLevelAlgoStats _stats;
 
 };
 
