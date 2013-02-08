@@ -1,7 +1,7 @@
 /*
  * main.cpp
  *
- *  Created on: 15 déc. 2012
+ *  Created on: 15 dÃ©c. 2012
  *      Author: manuel
  */
 
@@ -63,23 +63,51 @@ int main(int argc, char ** argv) {
             
 			// ----s
 			bool done(false);
-			std::ofstream file("output.log");
+			std::ofstream file("output.csv");
 			algo.setOut(file);
 			//algo.out() << "
-			// pour nos tests on va créer une liste sur le premier niveau a traiter et une deuxieme pour les sauts.
+			// pour nos tests on va crÃ©er une liste sur le premier niveau a traiter et une deuxieme pour les sauts.
 			// MR : commencer par faire sans saut .... !!!!
 			algo.setStep(1);
 			std::vector<MultiLevelAlgoStats> allStats(algo.nbLevels()+1);
 			for(size_t level(0); level<=algo.nbLevels(); ++level){
-				algo.out()<< "_________________________________________________________" << std::endl;
 				algo.setStartPoint(start);
 				algo.setStartLevel(level);
 				algo.launch();
 				allStats[level] = algo.stats();
 			}
+			/*
+			std::vector<double> sumsIte(algo.nbLevels()+1);
+			std::vector<double> sumsTime(algo.nbLevels()+1);
+			std::vector<double> sumsCost(algo.nbLevels()+1);
+			//*/
+			for (size_t level(0); level<=algo.nbLevels(); ++level)
+			{
+				double sumIte = 0.0 , sumTime = 0.0 , sumCost = 0.0 ;
+				size_t cpt = 0 ;
+				for (auto & stat : allStats[level]) {
+					sumIte += (double) stat.second._ite ;
+					sumTime += stat.second._time ;
+					sumCost += stat.second._cost ;
+					cpt++ ;
+				}
+				/*			
+				sumsIte[level] = sumIte / ((double) cpt) ;
+				sumsTime[level] = sumTime / ((double) cpt) ;
+				sumsCost[level] = sumCost / ((double) cpt) ;
+				//*/
+				algo.out() << "_________________________________________________________" << std::endl ;
+				algo.out() << "Niveau de départ : " << level << std::endl ;
+				algo.out() << "Nombre moyen d'itérations :" << sumIte / ((double) cpt)  << std::endl ;
+				algo.out() << "Temps moyen des k-moyennes :" << sumTime / ((double) cpt)  << std::endl ;
+				algo.out() << "Temps total des k-moyennes :" << sumTime  << std::endl ;
+				algo.out() << "Coût moyen :" << sumCost / ((double) cpt)  << std::endl ;
+				algo.out() << "Coût final :" << allStats[level][(--(allStats[level].end()))->first]._cost  << std::endl ;
+				algo.out() << "_________________________________________________________" << std::endl ;
+			}
 			file.close();
 		}
 	}
-	std::cin.get();
+	
 	return 0; 
 }
