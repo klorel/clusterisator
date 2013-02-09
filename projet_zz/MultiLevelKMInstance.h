@@ -1,7 +1,7 @@
 /*
  * MultiLevelKMInstance.h
  *
- *  Created on: 15 dÃ©c. 2012
+ *  Created on: 15 dÃƒÂ©c. 2012
  *      Author: manuel
  */
 
@@ -43,7 +43,7 @@ public:
 	void refine();
 	size_t nbLevels() const ;
 public:
-	// on agrège jusqu'�  ce que l'on ait nbNodes noeuds dans le problème équivalent
+	// on agrÃ¨ge jusqu'Ã  ce que l'on ait nbNodes noeuds dans le problÃ¨me Ã©quivalent
 	// nbNodesMax = 0 pas de limite
 	void buildMultiLevelData(double nbNodes, double nbNodesMax = 50);
 
@@ -58,7 +58,7 @@ public:
 	MultiLevelAlgoStats const & stats()const;
 	std::ostream & out();
 public:
-	// l'instance de dÃ©part
+	// l'instance de dÃƒÂ©part
 	KMInstance _instance;
 	KMInput _input;
 	// les contraintes de chaque niveau : incrementalement
