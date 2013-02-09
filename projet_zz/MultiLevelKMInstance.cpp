@@ -1,7 +1,7 @@
 /*
 * MultiLevelKMInstance.cpp
 *
-*  Created on: 15 dÃ©c. 2012
+*  Created on: 15 dÃƒÂ©c. 2012
 *      Author: manuel
 */
 
@@ -26,7 +26,7 @@ MultiLevelAlgo::~MultiLevelAlgo() {
 		delete ptr;
 }
 void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregations & aggregations) {
-	// on enlÃ¨ve toutes les contraintes
+	// on enlÃƒÂ¨ve toutes les contraintes
 	_instance.mustLinks().clear();
 	_instance.cannotLinks().clear();
 	for (size_t i(0); i < level; ++i) {
@@ -36,18 +36,18 @@ void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregati
 	}
 	// construit les infos de correspondances entre les instances
 	_instance.buildMustLink(aggregations);
-	// construit l'instance aggrÃ©gÃ©e
+	// construit l'instance aggrÃƒÂ©gÃƒÂ©e
 	instance = KMInstance(_instance, aggregations);
 }
 
 
-// @brief construit une suite de problÃ¨mes agrÃ©gÃ©s en agrÃ©geant nbNodesMax noeuds par niveau et en produisant des graphes avec au plus nbNodes noeuds
-// @param nbNodes    : limite pour le graph le plus agrÃ©gÃ© 
-// @param nbNodesMax : limite max de noeuds agrÃ©gÃ© par Ã©tape
+// @brief construit une suite de problÃƒÂ¨mes agrÃƒÂ©gÃƒÂ©s en agrÃƒÂ©geant nbNodesMax noeuds par niveau et en produisant des graphes avec au plus nbNodes noeuds
+// @param nbNodes    : limite pour le graph le plus agrÃƒÂ©gÃƒÂ© 
+// @param nbNodesMax : limite max de noeuds agrÃƒÂ©gÃƒÂ© par ÃƒÂ©tape
 void MultiLevelAlgo::buildMultiLevelData(double nbNodes,double nbNodesMax) {
 
 	KMPartition partition(_instance, _instance.nbObs());
-	// on crÃ©e les singletons
+	// on crÃƒÂ©e les singletons
 	for(size_t i(0); i<_instance.nbObs(); ++i)
 		partition.shift(i,i);
 
@@ -70,12 +70,12 @@ void MultiLevelAlgo::buildMultiLevelData(double nbNodes,double nbNodesMax) {
 				size_t const c(neighbor.begin()->second);
 				_multiLevelConstraints.back()->newCtr(*partition.observations(m).begin(),*partition.observations(c).begin());
 				partition.fusion(m,c);				
-				// si plusieurs plusieurs plus pret : tirer au hazard (aprÃ©s)
+				// si plusieurs plusieurs plus pret : tirer au hazard (aprÃƒÂ©s)
 				used.erase(c);
 				compteur++;
 			}
 		};
-		// ajouter les contraintes associée �  ce niveau
+		// ajouter les contraintes associÃ©e Ã  ce niveau
 	};
 	std::cout << "nbNodes     "<<nbNodes <<std::endl;
 	std::cout << "nbNodesMax  "<<nbNodesMax <<std::endl;
@@ -83,23 +83,23 @@ void MultiLevelAlgo::buildMultiLevelData(double nbNodes,double nbNodesMax) {
 }
 //
 // _step: 
-// _startLevel : niveau de dÃ©part pour le raffinement
-// _startPoint : (attention doit Ãªtre compatible avec le niveau de plus agrÃ©gÃ©)
+// _startLevel : niveau de dÃƒÂ©part pour le raffinement
+// _startPoint : (attention doit ÃƒÂªtre compatible avec le niveau de plus agrÃƒÂ©gÃƒÂ©)
 void MultiLevelAlgo::refine() {
-	// lancer le KMEANS sur chaque niveau en partant du plus Ã©levÃ© (celui qui contient le moins de noeuds)
-	// �  chaque fois on initialise avec le niveau précédent (sauf le premier!)
-	// Pour le premier faire un appel �  random(0);
+	// lancer le KMEANS sur chaque niveau en partant du plus ÃƒÂ©levÃƒÂ© (celui qui contient le moins de noeuds)
+	// Ã  chaque fois on initialise avec le niveau prÃ©cÃ©dent (sauf le premier!)
+	// Pour le premier faire un appel Ã  random(0);
 	KMInstance instance;
 	Aggregations aggregations;	
 	Timer timer;
 	// pour chaque level
 	for ( size_t level(_startLevel); level <= _multiLevelConstraints.size(); level+= _step) {
-		// ! on parcours �  l'envers
+		// ! on parcours Ã  l'envers
 		buildInstance(_multiLevelConstraints.size() - level, instance,aggregations);
 		timer.restart();
 		KMInput input(instance, _input.maxNbLabels());
 		// initialiser cette input avec la solkution courante
-		// attention il faut utiliser aggregation pour faire les neodus agrÃ©gÃ©s et la solution courante
+		// attention il faut utiliser aggregation pour faire les neodus agrÃƒÂ©gÃƒÂ©s et la solution courante
 
 		for (size_t i(0); i < _input.nbObs(); ++i) {
 			input.shiftForced(aggregations.newIds[i], _input.label(i));
@@ -115,7 +115,7 @@ void MultiLevelAlgo::refine() {
 		for (size_t i(0); i < _input.nbObs(); ++i) {
 			_input.shiftForced(i, input.label(aggregations.newIds[i]));
 		}
-		// attention � la fin car on souhaite compter le temps des deux boucles au dessus
+		// attention à la fin car on souhaite compter le temps des deux boucles au dessus
 		_stats[ level] = MultiLevelAlgoStat( level, input.ite(), timer.elapsed(), input.cost());
 	}
 
@@ -135,10 +135,10 @@ void MultiLevelAlgo::refine() {
 
 	}*/
 }
-// @brief lance l'algorithme multi-niveau �  partir d'une suite d'agrégation, d'une partition de départ et d'un niveau de départ et avec un pas donné
+// @brief lance l'algorithme multi-niveau Ã  partir d'une suite d'agrÃ©gation, d'une partition de dÃ©part et d'un niveau de dÃ©part et avec un pas donnÃ©
 // _step: 
-// _startLevel : niveau de dÃ©part pour le raffinement
-// _startPoint : (attention doit Ãªtre compatible avec le niveau de plus agrÃ©gÃ©)
+// _startLevel : niveau de dÃƒÂ©part pour le raffinement
+// _startPoint : (attention doit ÃƒÂªtre compatible avec le niveau de plus agrÃƒÂ©gÃƒÂ©)
 
 void MultiLevelAlgo::setOut(std::ostream & stream){
 	_out = &stream;
@@ -147,7 +147,7 @@ void MultiLevelAlgo::launch() {
 	_stats.clear();
 	std::cout << "Step  : "<<_step		<< std::endl;
 	std::cout << "Level : "<<_startLevel<< std::endl;
-	// initialisation au point de dÃ©part
+	// initialisation au point de dÃƒÂ©part
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		_input.shiftForced(i, _startPoint.label(i));
 	}		
@@ -191,3 +191,4 @@ std::ostream & MultiLevelAlgo::out(){
 MultiLevelAlgoStats const & MultiLevelAlgo::stats()const{
 	return _stats;
 }
+
