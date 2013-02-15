@@ -166,7 +166,8 @@ void MultiLevelAlgo::getStartPoint( Partition  & point){
 	input.random(0);	
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		point.shift(i, input.label(aggregations.newIds[i]));
-	}	
+	}
+	std::cout << "Starting point value : "<<input.computeCost() << std::endl;
 }
 
 
