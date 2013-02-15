@@ -47,11 +47,11 @@ int main(int argc, char ** argv) {
 	Number::SetSeed(1);
 	//liste des instances a tester
 	std::list<size_t> list_instance;
-	list_instance.push_back(0);
+	//list_instance.push_back(0);
 	//list_instance.push_back(1);
 	//list_instance.push_back(4);
 	//list_instance.push_back(7);
-	//list_instance.push_back(8);
+	list_instance.push_back(8);
 	//list_instance.push_back(9);
 	//list_instance.push_back(12);
 	//list_instance.push_back(15);
@@ -82,6 +82,8 @@ int main(int argc, char ** argv) {
 		// on va tester notre algo pour un nombre de classe compris [2 , 15% Nbpoint] en incrementant de 1
 		size_t const kmax( (size_t)std::ceil(instance.nbObs()*0.15) );
 		size_t const amax( (size_t)std::ceil(instance.nbObs()*0.05) );
+		std::cout << "amax = "<<amax<<std::endl;
+
 		// mais on arrete si notre algo n'est plus en multi-level.
 		for(size_t k(3); k<kmax; ++k)
 		{
@@ -96,19 +98,18 @@ int main(int argc, char ** argv) {
 			algo.setStep(1);	
 			std::map<size_t, MultiLevelAlgoStats> allStats;
 
-			for(size_t level(0); level<=algo.nbLevels(); ++level){
-				if(level>0)
-					level=algo.nbLevels();
+			for(size_t level(0); level<=algo.nbLevels(); ++level)
+			{				
 				algo.setStartPoint(start);
 				algo.setStartLevel(level);
 				algo.launch();
 				allStats[level] = algo.stats();
 			}
 			
-			std::vector<double> sumsIte(algo.nbLevels()+1);
-			std::vector<size_t> nbIte(algo.nbLevels()+1);
-			std::vector<double> score(algo.nbLevels()+1);
-			std::vector<double> sumsTime(algo.nbLevels()+1);
+			std::map<size_t,double> sumsIte;
+			std::map<size_t,size_t> nbIte;
+			std::map<size_t,double> score;
+			std::map<size_t,double> sumsTime;
 
 			for( auto const & stat : allStats)
 			{
@@ -133,14 +134,14 @@ int main(int argc, char ** argv) {
 				WriteCsv(file, instance.nbObs());
 				WriteCsv(file, k);
 				WriteCsv(file, amax);
-				WriteCsv(file, algo.nbLevels()+1);
-				WriteCsv(file, sumsIte [algo.nbLevels()] );
-				WriteCsv(file, score[algo.nbLevels()], 15);
-				WriteCsv(file, sumsTime[algo.nbLevels()], 6);
+				WriteCsv(file, algo.nbLevels());
+				WriteCsv(file, sumsIte	[0] );
+				WriteCsv(file, score	[0], 15);
+				WriteCsv(file, sumsTime	[0], 6);
 				WriteCsv(file, level);
-				WriteCsv(file, sumsIte [level] );
-				WriteCsv(file, score[level], 15);
-				WriteCsv(file, sumsTime[level], 6);
+				WriteCsv(file, sumsIte	[level] );
+				WriteCsv(file, score	[level], 15);
+				WriteCsv(file, sumsTime	[level], 6);
 				file << std::endl;
 			}
 			break;

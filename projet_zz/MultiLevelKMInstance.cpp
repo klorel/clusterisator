@@ -13,10 +13,11 @@
 #include <fstream>
 
 
-MultiLevelAlgo::MultiLevelAlgo(KMInstance const & instance, size_t k,Partition startPoint) :
-	_instance(instance), _input(_instance, k),_startPoint(startPoint) {
+MultiLevelAlgo::MultiLevelAlgo(KMInstance const & instance, size_t k) :
+	_instance(instance), _input(_instance, k),_startPoint(_instance.nbObs(), k) {
 		// par defaut sur la sortie standard.
 		setOut();
+		_step =1;
 }
 
 
@@ -26,7 +27,6 @@ MultiLevelAlgo::~MultiLevelAlgo() {
 		delete ptr;
 }
 void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregations & aggregations) {
-	// on enlÃƒÂ¨ve toutes les contraintes
 	_instance.mustLinks().clear();
 	_instance.cannotLinks().clear();
 	for (size_t i(0); i < level; ++i) {
@@ -34,9 +34,7 @@ void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregati
 			_instance.addMustLink(ctr.first, ctr.second);
 		}
 	}
-	// construit les infos de correspondances entre les instances
 	_instance.buildMustLink(aggregations);
-	// construit l'instance aggrÃƒÂ©gÃƒÂ©e
 	instance = KMInstance(_instance, aggregations);
 }
 
@@ -45,7 +43,7 @@ void MultiLevelAlgo::buildInstance(size_t level, KMInstance & instance,Aggregati
 // @param nbNodes    : limite pour le graph le plus agrÃƒÂ©gÃƒÂ© 
 // @param nbNodesMax : limite max de noeuds agrÃƒÂ©gÃƒÂ© par ÃƒÂ©tape
 void MultiLevelAlgo::buildMultiLevelData(double nbNodes,double nbNodesMax) {
-
+	#if 1
 	KMPartition partition(_instance, _instance.nbObs());
 	// on crÃƒÂ©e les singletons
 	for(size_t i(0); i<_instance.nbObs(); ++i)
@@ -57,8 +55,8 @@ void MultiLevelAlgo::buildMultiLevelData(double nbNodes,double nbNodesMax) {
 		// definit un nouveau niveau
 		_multiLevelConstraints.push_back(new KMConstraints(_input.nbObs()));
 		//
-		size_t compteur=0;
-		while(!used.empty() && compteur < nbNodesMax){
+		size_t compteur(0);
+		while(!used.empty() && compteur < nbNodesMax && partition.nbLabels() > nbNodes ){
 			size_t const m = used.pop_random();
 			if( !used.empty()){
 				// calculer la distance de ce centre avec les autres
@@ -77,9 +75,14 @@ void MultiLevelAlgo::buildMultiLevelData(double nbNodes,double nbNodesMax) {
 		};
 		// ajouter les contraintes associÃ©e Ã  ce niveau
 	};
-	std::cout << "nbNodes     "<<nbNodes <<std::endl;
+	std::cout << "nbNodes     "<<partition.nbLabels() <<std::endl;
 	std::cout << "nbNodesMax  "<<nbNodesMax <<std::endl;
 	std::cout << "Built       "<<nbLevels() << " aggregation levels"<<std::endl;
+	#else
+		_multiLevelConstraints.push_back(new KMConstraints(_input.nbObs()));
+		_multiLevelConstraints.back()->newCtr(0,2);
+		_multiLevelConstraints.back()->newCtr(1,2);
+	#endif
 }
 //
 // _step: 
@@ -92,30 +95,52 @@ void MultiLevelAlgo::refine() {
 	KMInstance instance;
 	Aggregations aggregations;	
 	Timer timer;
+	//std::cout << "_input value : "<<_input.computeCost() << std::endl;
 	// pour chaque level
-	for ( size_t level(_startLevel); level <= _multiLevelConstraints.size(); level+= _step) {
+	for ( int level(_startLevel); level >= 0; level-= _step) {
+	//for ( size_t level(_startLevel); level <= _multiLevelConstraints.size(); level+= _step) {
 		// ! on parcours Ã  l'envers
-		buildInstance(_multiLevelConstraints.size() - level, instance,aggregations);
+		buildInstance( level, instance,aggregations);
+		//for (size_t i(0); i < aggregations.v.size(); ++i) {		
+		//	assert(!aggregations.v[i].empty());
+		//	size_t const l(_input.label(*aggregations.v[i].begin()));
+		//	
+		//	for(auto const & j : aggregations.v[i]){
+		//		assert(aggregations.newIds[j] == i);
+		//		assert( _input.label(j) == l);
+		//	}
+		//}
 		timer.restart();
 		KMInput input(instance, _input.maxNbLabels());
-		// initialiser cette input avec la solkution courante
-		// attention il faut utiliser aggregation pour faire les neodus agrÃƒÂ©gÃƒÂ©s et la solution courante
-
-		for (size_t i(0); i < _input.nbObs(); ++i) {
-			input.shiftForced(aggregations.newIds[i], _input.label(i));
-		}
-
-
+		//std::cout << input.centers() << std::endl;
+		//input.computeCenters();
+		//for (size_t i(0); i < _input.nbObs(); ++i) {
+		// il faut une solution faisable 
+		for (size_t i(0); i < aggregations.v.size(); ++i) {			
+			input.shiftForced(i, _input.label(*aggregations.v[i].begin() ));			
+		}		
+		//std::cout << input.centers() << std::endl;
+		//input.computeCenters();
+		//std::cout << input.centers() << std::endl;
+		//std::cout << " input value : "<< input.computeCost() << std::endl;
 		// on lance l'algo
-		HMeans<true>()(input);
-		// on stocke les stats
-		
-		// suavegarde de la solution
-		input.computeCenters();
-		for (size_t i(0); i < _input.nbObs(); ++i) {
-			_input.shiftForced(i, input.label(aggregations.newIds[i]));
+		HMeans<false>()(input);
+		// sauvegarde de la solution
+		//for (size_t i(0); i < _input.nbObs(); ++i) {
+		//	_input.shiftForced(i, input.label(aggregations.newIds[i]));
+		//}
+		for (size_t i(0); i < aggregations.v.size(); ++i) {
+			for(auto const & j : aggregations.v[i])
+				_input.shiftForced(j, input.label(i) );			
 		}
-		// attention à la fin car on souhaite compter le temps des deux boucles au dessus
+		//for(auto const & i : aggregations.v){
+		//	assert(!i.empty());
+		//	size_t const l(_input.label(*i.begin()));
+		//	for(auto const & j : i)
+		//		assert( _input.label(j) == l);
+		//}
+		//std::cout << "_input value : "<<_input.computeCost() << std::endl;
+		// on stocke les stats
 		_stats[ level] = MultiLevelAlgoStat( level, input.ite(), timer.elapsed(), input.cost());
 	}
 
@@ -125,13 +150,13 @@ void MultiLevelAlgo::refine() {
 
 	/*if(level>_multiLevelConstraints.size())
 	{
-		// on lance l'algo
-		HMeans<true>()(_input);
-		out()<<"Niveau de rafinement         : " <<0<<std::endl;
-		out()<<"Nombre d'iteration par etape : " <<_input.ite()<<std::endl;
-		out()<<"Temps ecoule                 : " <<timer.elapsed()<<std::endl;
-		out()<<"Valeur du cout               : " <<_input.cost()<<std::endl;
-		out()<<std::endl;
+	// on lance l'algo
+	HMeans<true>()(_input);
+	out()<<"Niveau de rafinement         : " <<0<<std::endl;
+	out()<<"Nombre d'iteration par etape : " <<_input.ite()<<std::endl;
+	out()<<"Temps ecoule                 : " <<timer.elapsed()<<std::endl;
+	out()<<"Valeur du cout               : " <<_input.cost()<<std::endl;
+	out()<<std::endl;
 
 	}*/
 }
@@ -147,10 +172,34 @@ void MultiLevelAlgo::launch() {
 	_stats.clear();
 	std::cout << "Step  : "<<_step		<< std::endl;
 	std::cout << "Level : "<<_startLevel<< std::endl;
-	// initialisation au point de dÃƒÂ©part
+	// initialisation au point de depart
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		_input.shiftForced(i, _startPoint.label(i));
+		//file << i << " - "<< _startPoint.label(i)<<std::endl;
 	}		
+	//KMInstance instance;
+	//Aggregations aggregations;	
+	//for ( int level(0); level <= nbLevels(); level+= _step) {
+	//	std::cout << "checking " << level << std::endl;
+	//	buildInstance(level, instance,aggregations);
+	//	KMInput input(instance, _input.maxNbLabels());
+	//	std::cout << input.centers() << std::endl;
+	//	std::ofstream file(std::to_string(level).c_str());
+	//	for(auto const & i : aggregations.v){
+	//		if(i.size()>1)
+	//		DisplayContainer(file , i);
+	//	}
+	//	file.close();
+	//	for(auto const & i : aggregations.v){
+	//		assert(!i.empty());
+	//		size_t const l(_input.label(*i.begin()));
+	//		DisplayContainer(std::cout , i);
+	//		for(auto const & j : i)
+	//			assert( _input.label(j) == l);
+	//	}
+	//}
+	std::cout << "Starting point value : "<<_input.computeCost() << std::endl;
+
 	// lancement du run 
 	refine();
 
@@ -161,13 +210,29 @@ size_t MultiLevelAlgo::nbLevels()const{
 void MultiLevelAlgo::getStartPoint( Partition  & point){
 	KMInstance instance;
 	Aggregations aggregations;	
-	buildInstance(_multiLevelConstraints.size(), instance,aggregations);
+	buildInstance(nbLevels(), instance,aggregations);
 	KMInput input(instance, _input.maxNbLabels());
 	input.random(0);	
+	std::cout << "Starting point value : "<<input.computeCost() << std::endl;
 	for (size_t i(0); i < _input.nbObs(); ++i) {
 		point.shift(i, input.label(aggregations.newIds[i]));
 	}
-	std::cout << "Starting point value : "<<input.computeCost() << std::endl;
+	//KMInput input2(_instance, _input.maxNbLabels());
+	//// initialiser cette input avec la solkution courante
+	//// attention il faut utiliser aggregation pour faire les neodus agrÃƒÂ©gÃƒÂ©s et la solution courante
+	//for (size_t i(0); i < _input.nbObs(); ++i) {
+	//	input2.shiftForced(i, point.label(i));
+	//}
+	//std::cout << "Starting point value : "<<input2.computeCost() << std::endl;
+	//for ( int level(nbLevels()); level >= 0; level-= _step) {
+	//	buildInstance(level, instance,aggregations);
+	//	for(auto const & i : aggregations.v){
+	//		assert(!i.empty());
+	//		size_t const l(_input.label(*i.begin()));
+	//		for(auto const & j : i)
+	//			assert( _input.label(j) == l);
+	//	}
+	//}
 }
 
 
@@ -183,7 +248,7 @@ void MultiLevelAlgo::setStep(size_t step){
 
 
 void MultiLevelAlgo::setStartPoint( Partition  & point){
-	_startPoint = point;
+	_startPoint = point;	
 }
 
 std::ostream & MultiLevelAlgo::out(){

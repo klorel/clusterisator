@@ -33,7 +33,7 @@ typedef std::map<size_t, MultiLevelAlgoStat>  MultiLevelAlgoStats;
 class MultiLevelAlgo {
 public:
 public:
-	MultiLevelAlgo(KMInstance const &, size_t k,Partition _startPoint=0);
+	MultiLevelAlgo(KMInstance const &, size_t k);
 	virtual ~MultiLevelAlgo();
 public:
 	// pour lancer les kmmeans
@@ -64,8 +64,8 @@ public:
 	// les contraintes de chaque niveau : incrementalement
 	std::vector<KMConstraints *> _multiLevelConstraints;
 
-	size_t _startLevel;
-	size_t _step;
+	int _startLevel;
+	int _step;
 	Partition _startPoint;
 	std::ostream * _out;
 	Number _totalKMtimer;
