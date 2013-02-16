@@ -19,7 +19,7 @@ KMInstance::KMInstance(KMInstance const & instance,
 
 	size_t n(0);
 	for (size_t i(0); i < aggregations.v.size(); ++i) {
-		if(!aggregations.v[i].empty()){
+		if (!aggregations.v[i].empty()) {
 			for (auto const & j : aggregations.v[i])
 				for (size_t d(0); d < nbAtt(); ++d)
 					_data.plus(n, d, instance.get(j, d));
@@ -86,39 +86,39 @@ void KMInstance::readConstraints(std::string const & fileName) {
 }
 
 void KMInstance::buildMustLink(Aggregations & result) const {
-	result.v.clear();	
+	result.v.clear();
 	size_t n(0);
 	std::vector<IntSet> temp(nbObs());
 	// au départ on a des singletons
-	for(size_t i(0); i<nbObs(); ++i){
+	for (size_t i(0); i < nbObs(); ++i) {
 		temp[i].insert(i);
 	}
 	result.newIds.assign(nbObs(), -1);
 	// on fusionne les 
-	for(auto const & p : _must){
+	for (auto const & p : _must) {
 		size_t const i(p.first);
 		size_t const j(p.second);
-		for(auto & si : temp[i]){
-			for(auto & sj : temp[j]){
-				temp[si].insert(temp[sj].begin(),temp[sj].end());
-				temp[sj].insert(temp[si].begin(),temp[si].end());
+		for (auto & si : temp[i]) {
+			for (auto & sj : temp[j]) {
+				temp[si].insert(temp[sj].begin(), temp[sj].end());
+				temp[sj].insert(temp[si].begin(), temp[si].end());
 			}
 		}
 	}
 	std::set<IntSet> trimmer;
-	for(auto & it : temp)
-		if(!trimmer.insert(it).second)
+	for (auto & it : temp)
+		if (!trimmer.insert(it).second)
 			it.clear();
 	result.v.reserve(nbObs());
-	for(size_t i(0); i<nbObs(); ++i){
-		if(!(temp[i].empty())){
-			for(auto const & j :temp[i])
-				result.newIds[j]=n;
-			result.v.push_back( temp[i] );
+	for (size_t i(0); i < nbObs(); ++i) {
+		if (!(temp[i].empty())) {
+			for (auto const & j : temp[i])
+				result.newIds[j] = n;
+			result.v.push_back(temp[i]);
 			++n;
 		}
 	}
-	OUT<< "found "<<n<<" aggregated point\n";
+//	OUT<< "found "<<n<<" aggregated point\n";
 	//for (auto const & id : result.newIds) {
 	//	assert(id < n);
 	//}

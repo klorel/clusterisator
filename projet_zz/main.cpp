@@ -1,9 +1,9 @@
 /*
-* main.cpp
-*
-*  Created on: 15 déc. 2012
-*      Author: manuel
-*/
+ * main.cpp
+ *
+ *  Created on: 15 déc. 2012
+ *      Author: manuel
+ */
 
 #include "src/common.h"
 #include "src/Partition.hpp"
@@ -36,18 +36,18 @@ void usage() {
 	std::cout << "The program launch the multi level algorithm\n";
 
 }
-template<class T> void WriteCsv(std::ostream & stream, T const & t){
+template<class T> void WriteCsv(std::ostream & stream, T const & t) {
 	stream << t << ";";
 }
-template<class T> void WriteCsv(std::ostream & stream, T const & t, size_t n){
-	stream << std::setprecision(n) <<t << ";";
+template<class T> void WriteCsv(std::ostream & stream, T const & t, size_t n) {
+	stream << std::setprecision(n) << t << ";";
 }
 
 int main(int argc, char ** argv) {
 	Number::SetSeed(1);
 	//liste des instances a tester
 	std::list<size_t> list_instance;
-	//list_instance.push_back(0);
+	//	list_instance.push_back(0);
 	//list_instance.push_back(1);
 	//list_instance.push_back(4);
 	//list_instance.push_back(7);
@@ -63,9 +63,9 @@ int main(int argc, char ** argv) {
 	//list_instance.push_back(29);
 
 	// préparation de l'output qu iszera effacer à chaque run !!
-	
+
 	std::ofstream file("output.csv");
-	
+
 	file << "id;nom;n;k;amax;nbLevel; ";
 	file << "ite0;score0;CPU0; ";
 	file << "start;";
@@ -74,55 +74,49 @@ int main(int argc, char ** argv) {
 	file << std::endl;
 	// ce programme lance les tests sur toutes les instances.
 	std::ofstream debug("debug.log");
-	
-	for(auto const & i : list_instance) {
+	for (auto const & i : list_instance) {
 		AvailableInstances id(static_cast<AvailableInstances>(i));
 		RegisteredInstance instance(id);
 		instance.out();
 		// on va tester notre algo pour un nombre de classe compris [2 , 15% Nbpoint] en incrementant de 1
-		size_t const kmax( (size_t)std::ceil(instance.nbObs()*0.15) );
-		size_t const amax( (size_t)std::ceil(instance.nbObs()*0.05) );
-		std::cout << "amax = "<<amax<<std::endl;
-
+		size_t const kmax((size_t) std::ceil(instance.nbObs() * 0.15));
+		size_t const amax((size_t) std::ceil(instance.nbObs() * 0.10));
+		std::cout << "amax = " << amax << std::endl;
 		// mais on arrete si notre algo n'est plus en multi-level.
-		for(size_t k(3); k<kmax; ++k)
-		{
+		for (size_t k(10); k < kmax; ++k) {
 			MultiLevelAlgo algo(instance, k);
 			algo.setOut(debug);
 			// on agrege 20k des noeuds par palier de 5% des noeuds totaux 
-			algo.buildMultiLevelData(20*k, amax);
+			algo.buildMultiLevelData(20 * k, amax);
 			Partition start(instance.nbObs(), k);
 			//generation du point de depart
 			algo.getStartPoint(start);
 			// pour le moment on garde un pas constant de 1
-			algo.setStep(1);	
+			algo.setStep(1);
 			std::map<size_t, MultiLevelAlgoStats> allStats;
 
-			for(size_t level(0); level<=algo.nbLevels(); ++level)
-			{				
+			for (size_t level(0); level <= algo.nbLevels(); ++level) {
 				algo.setStartPoint(start);
 				algo.setStartLevel(level);
 				algo.launch();
 				allStats[level] = algo.stats();
 			}
-			
-			std::map<size_t,double> sumsIte;
-			std::map<size_t,size_t> nbIte;
-			std::map<size_t,double> score;
-			std::map<size_t,double> sumsTime;
 
-			for( auto const & stat : allStats)
-			{
+			std::map<size_t, double> sumsIte;
+			std::map<size_t, size_t> nbIte;
+			std::map<size_t, double> score;
+			std::map<size_t, double> sumsTime;
+
+			for (auto const & stat : allStats) {
 				size_t const level(stat.first);
-				nbIte[level]=allStats[level].size();
-				score[level]=allStats[level].rbegin()->second._cost;
+				nbIte[level] = allStats[level].size();
+				score[level] = allStats[level].rbegin()->second._cost;
 				for (auto & stat : allStats[level]) {
-					sumsIte	[level]  += stat.second._ite ;
-					sumsTime[level] += stat.second._time ;
-				}							
+					sumsIte[level] += stat.second._ite;
+					sumsTime[level] += stat.second._time;
+				}
 			}
-			for( auto const & stat : allStats)
-			{
+			for (auto const & stat : allStats) {
 				size_t const level(stat.first);
 				//double RapCost	( (scoreTot[level]-sumsCost[algo.nbLevels()])/sumsCost[algo.nbLevels()]);
 				//double RapIte	( (sumsIteTot[level]-sumsIteTot[algo.nbLevels()])/sumsIteTot[algo.nbLevels()]);
@@ -135,13 +129,13 @@ int main(int argc, char ** argv) {
 				WriteCsv(file, k);
 				WriteCsv(file, amax);
 				WriteCsv(file, algo.nbLevels());
-				WriteCsv(file, sumsIte	[0] );
-				WriteCsv(file, score	[0], 15);
-				WriteCsv(file, sumsTime	[0], 6);
+				WriteCsv(file, sumsIte[0]);
+				WriteCsv(file, score[0], 15);
+				WriteCsv(file, sumsTime[0], 6);
 				WriteCsv(file, level);
-				WriteCsv(file, sumsIte	[level] );
-				WriteCsv(file, score	[level], 15);
-				WriteCsv(file, sumsTime	[level], 6);
+				WriteCsv(file, sumsIte[level]);
+				WriteCsv(file, score[level], 15);
+				WriteCsv(file, sumsTime[level], 6);
 				file << std::endl;
 			}
 			break;
@@ -149,6 +143,7 @@ int main(int argc, char ** argv) {
 	}
 	file.close();
 	debug.close();
-	system("pause");
-	return 0; 
+	//	std::cout << "Press ENTER to continue...";
+	//	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+	return 0;
 }
