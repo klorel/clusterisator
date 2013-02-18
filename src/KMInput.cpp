@@ -47,10 +47,12 @@ KMInput::~KMInput() {
 void KMInput::shiftForced(size_t obs, size_t to) {
 	//	std::cout << "KMInput\n";
 	size_t const from(label(obs));
-	KMPartition::shiftForced(obs, to);
-	_modifiedLabels.insert(from);
-	_modifiedLabels.insert(to);
-	_modifiedObs.insert(obs);
+	if(from != to ){
+		KMPartition::shiftForced(obs, to);
+		_modifiedLabels.insert(from);
+		_modifiedLabels.insert(to);
+		_modifiedObs.insert(obs);
+	}
 }
 bool KMInput::shift(size_t obs, size_t to) {
 	//	std::cout << "KMInput\n";

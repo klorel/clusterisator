@@ -70,13 +70,11 @@ inline KMConstraints::~KMConstraints() {
 }
 
 inline void KMConstraints::newCtr(size_t i, size_t j) {
-  assert(i < _byObs.size() && j < _byObs.size());
-
-	if (i != j) {
-		_all.insert(std::make_pair(std::min(i, j), std::max(i, j)));
-		_byObs[i].insert(j);
-		_byObs[j].insert(i);
-	}
+	assert(i < _byObs.size() && j < _byObs.size());
+	assert(i != j);
+	_all.insert(std::make_pair(std::min(i, j), std::max(i, j)));
+	_byObs[i].insert(j);
+	_byObs[j].insert(i);
 }
 
 inline IntSet const & KMConstraints::get(size_t obs) const {
@@ -99,5 +97,6 @@ inline KMConstraints::const_iterator KMConstraints::end() const {
 	return _all.end();
 
 }
+
 
 #endif /* KMCONSTRAINTS_HPP_ */
