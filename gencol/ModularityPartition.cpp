@@ -1,4 +1,4 @@
-#include "gencol/ModularityPartition.hpp"
+#include "ModularityPartition.hpp"
 
 
 ModularityPartition::ModularityPartition(Graph const & input, size_t k) :

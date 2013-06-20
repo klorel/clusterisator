@@ -8,7 +8,7 @@
 #ifndef KMCONSTRAINTS_HPP_
 #define KMCONSTRAINTS_HPP_
 
-#include "src/common.h"
+#include "common.h"
 
 /**
  * Represents pairs of observations of a graph.

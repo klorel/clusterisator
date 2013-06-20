@@ -5,22 +5,22 @@
  *      Author: manuel
  */
 
-#include "src/common.h"
-#include "src/Partition.hpp"
+#include "common.h"
+#include "Partition.hpp"
 
-#include "src/KMAlgo.hpp"
-#include "src/KMInstance.hpp"
-#include "src/KMConstraints.hpp"
-#include "src/KMPartition.hpp"
+#include "KMAlgo.hpp"
+#include "KMInstance.hpp"
+#include "KMConstraints.hpp"
+#include "KMPartition.hpp"
 
-#include "src/Number.hpp"
-#include "src/RegisteredInstance.hpp"
+#include "Number.hpp"
+#include "RegisteredKMInstance.hpp"
 
 void usage() {
 	std::cout << "Available instances : \n";
 	for (size_t i(0); i < AvailableInstances::SIZE; ++i) {
 		AvailableInstances id(static_cast<AvailableInstances>(i));
-		RegisteredInstance instance(id);
+		RegisteredKMInstance instance(id);
 		std::cout << std::setw(3) << i;
 		std::cout << " : ";
 		std::cout << std::setw(30) << std::left << instance.name << std::right;
@@ -43,7 +43,7 @@ int main(int argc, char ** argv) {
 		size_t const k(atoi(argv[2]));
 		if (i < AvailableInstances::SIZE) {
 			AvailableInstances id(static_cast<AvailableInstances>(i));
-			RegisteredInstance instance(id);
+			RegisteredKMInstance instance(id);
 			instance.out();
 			Aggregations aggregations;
 			instance.buildMustLink(aggregations);

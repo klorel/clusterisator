@@ -8,8 +8,8 @@
 #ifndef VNS_HPP_
 #define VNS_HPP_
 
-#include "src/common.h"
-#include "src/KMAlgo.hpp"
+#include "common.h"
+#include "KMAlgo.hpp"
 
 class Vns {
 public:

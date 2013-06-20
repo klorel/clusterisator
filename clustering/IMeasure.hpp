@@ -8,7 +8,7 @@
 #ifndef IMEASURE_HPP_
 #define IMEASURE_HPP_
 
-#include "src/common.h"
+#include "common.h"
 
 class IPartition;
 

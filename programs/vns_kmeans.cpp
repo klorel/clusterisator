@@ -5,19 +5,19 @@
  *      Author: manuel
  */
 
-#include "src/common.h"
-#include "src/Partition.hpp"
+#include "common.h"
+#include "Partition.hpp"
 
-#include "src/KMAlgo.hpp"
-#include "src/KMInstance.hpp"
-#include "src/KMConstraints.hpp"
-#include "src/KMPartition.hpp"
+#include "KMAlgo.hpp"
+#include "KMInstance.hpp"
+#include "KMConstraints.hpp"
+#include "KMPartition.hpp"
 
-#include "src/Number.hpp"
-#include "src/RegisteredInstance.hpp"
-#include "src/RandIndex.hpp"
+#include "Number.hpp"
+#include "RegisteredKMInstance.hpp"
+#include "RandIndex.hpp"
 
-#include "src/Vns.hpp"
+#include "Vns.hpp"
 
 struct DoubleComparator {
 	bool operator()(Double a, Double b) const {
@@ -40,7 +40,7 @@ class Launcher: public ILauncher {
 public:
 	void run(AvailableInstances id, size_t k) {
 
-		RegisteredInstance instance(id);
+		RegisteredKMInstance instance(id);
 		instance.out();
 
 		Aggregations aggregations;
@@ -65,7 +65,7 @@ void usage() {
 	std::cout << "Available instances : \n";
 	for (size_t i(0); i < AvailableInstances::SIZE; ++i) {
 		AvailableInstances id(static_cast<AvailableInstances>(i));
-		RegisteredInstance instance(id);
+		RegisteredKMInstance instance(id);
 		std::cout << std::setw(3) << i;
 		std::cout << " : ";
 		std::cout << std::setw(30) << std::left << instance.name << std::right;

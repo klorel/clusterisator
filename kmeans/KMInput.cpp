@@ -5,7 +5,7 @@
 *      Author: manuel
 */
 
-#include "src/KMInput.hpp"
+#include "KMInput.hpp"
 
 void KMInput::out(std::string const & name) const {
 	OUT<< std::setw(10) << name;

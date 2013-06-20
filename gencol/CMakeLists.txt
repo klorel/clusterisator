@@ -1,4 +1,7 @@
 
+
+INCLUDE_DIRECTORIES( . ../clustering )
+
 FILE(  GLOB  gencol_files   ./*.cpp ./*.hpp ./*.hxx )
 
 

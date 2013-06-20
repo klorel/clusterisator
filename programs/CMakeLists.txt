@@ -1,4 +1,7 @@
 
+INCLUDE_DIRECTORIES( . ../clustering ../kmeans)
+
+
 FILE(  GLOB  main_files   ./*.cpp )
 
 SET( prog_names )
@@ -8,6 +11,6 @@ FOREACH( main ${main_files} )
 
 	MESSAGE( "prog found : ${prog}" ) 
 	ADD_EXECUTABLE( ${prog}  ${prog}.cpp )
-	TARGET_LINK_LIBRARIES(${prog}  clustering )
+	TARGET_LINK_LIBRARIES(${prog}  clustering kmeans)
 	
 ENDFOREACH( main )

@@ -8,7 +8,7 @@
 #ifndef SYMMATRIX_HPP_
 #define SYMMATRIX_HPP_
 
-#include "src/common.h"
+#include "common.h"
 #include <algorithm>
 #include <vector>
 

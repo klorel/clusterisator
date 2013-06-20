@@ -13,7 +13,7 @@
  * It represents a dynamic partition of the observations
  */
 
-#include "src/IndexedList.hpp"
+#include "IndexedList.hpp"
 
 class IPartition {
 public:

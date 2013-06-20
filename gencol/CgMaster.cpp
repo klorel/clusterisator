@@ -1,2 +1,2 @@
-#include "../gencol/CgMaster.hpp"
+#include "CgMaster.hpp"
 

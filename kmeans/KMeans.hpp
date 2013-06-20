@@ -8,7 +8,7 @@
 #ifndef KMEANS_HPP_
 #define KMEANS_HPP_
 
-#include "src/KMInput.hpp"
+#include "KMInput.hpp"
 
 template<bool isTraceOn>
 class KMeans {

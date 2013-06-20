@@ -1,9 +1,9 @@
 #ifndef REGISTERED_MODULARITY_INSTANCE_HPP_
 #define REGISTERED_MODULARITY_INSTANCE_HPP_
 
-#include "src/KMInstance.hpp"
-#include "src/common.h"
-#include "gencol/Graph.hpp"
+
+#include "common.h"
+#include "Graph.hpp"
 
 enum AvailableModularityInstances {
 #define REGISTER_INSTANCE(x) x,

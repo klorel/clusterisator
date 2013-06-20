@@ -8,8 +8,8 @@
 #ifndef HMEANS_HPP_
 #define HMEANS_HPP_
 
-#include "src/common.h"
-#include "src/KMInput.hpp"
+#include "common.h"
+#include "KMInput.hpp"
 
 template<bool isTraceOn>
 class HMeans {

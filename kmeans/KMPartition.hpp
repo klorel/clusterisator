@@ -8,10 +8,10 @@
 #ifndef KMPARTITION_HPP_
 #define KMPARTITION_HPP_
 
-#include "src/common.h"
-#include "src/Timer.hpp"
-#include "src/Partition.hpp"
-#include "src/KMInstance.hpp"
+#include "common.h"
+#include "Timer.hpp"
+#include "Partition.hpp"
+#include "KMInstance.hpp"
 
 class KMPartition;
 

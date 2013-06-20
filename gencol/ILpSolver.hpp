@@ -1,7 +1,7 @@
 #ifndef I_LP_SOLVER_HPP
 #define I_LP_SOLVER_HPP
 
-#include "src/common.h"
+#include "common.h"
 
 class ILpSolver{
 public:

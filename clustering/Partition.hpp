@@ -8,8 +8,8 @@
 #ifndef PARTITION_HPP_
 #define PARTITION_HPP_
 
-#include "src/common.h"
-#include "src/IPartition.hpp"
+#include "common.h"
+#include "IPartition.hpp"
 
 class Partition;
 

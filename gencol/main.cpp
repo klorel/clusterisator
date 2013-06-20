@@ -5,21 +5,13 @@
 *      Author: manuel
 */
 
-#include "src/common.h"
-#include "src/Partition.hpp"
-
-#include "src/KMAlgo.hpp"
-#include "src/KMInstance.hpp"
-#include "src/KMConstraints.hpp"
-#include "src/KMPartition.hpp"
-
-#include "src/Number.hpp"
-#include "src/RegisteredInstance.hpp"
-
+#include "common.h"
+#include "Partition.hpp"
+#include "Number.hpp"
 #include <random>
 #include <iostream>
 #include <fstream>
-#include "../gencol/RegisteredModularityInstance.hpp"
+#include "RegisteredModularityInstance.hpp"
 
 
 int main(int argc, char** argv){

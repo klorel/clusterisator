@@ -8,10 +8,10 @@
 #ifndef KMEANSALGO_HPP_
 #define KMEANSALGO_HPP_
 
-#include "src/common.h"
-#include "src/KMInput.hpp"
-#include "src/KMeans.hpp"
-#include "src/HMeans.hpp"
+#include "common.h"
+#include "KMInput.hpp"
+#include "KMeans.hpp"
+#include "HMeans.hpp"
 
 class KMAlgo {
 public:

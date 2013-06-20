@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-#include "src/Timer.hpp"
+#include "Timer.hpp"
 
 void Graph::read(const std::string & fileName, std::ostream & out) {
 	std::string line;

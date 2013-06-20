@@ -5,8 +5,8 @@
  *      Author: manuel
  */
 
-#include "src/KMInstance.hpp"
-#include "src/IPartition.hpp"
+#include "KMInstance.hpp"
+#include "IPartition.hpp"
 
 KMInstance::KMInstance(size_t nbObs, size_t nbAtt) {
 	allocate(nbObs, nbAtt);

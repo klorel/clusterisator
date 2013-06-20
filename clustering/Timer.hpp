@@ -8,7 +8,7 @@
 #ifndef TIMER_HPP_
 #define TIMER_HPP_
 
-#include "src/common.h"
+#include "common.h"
 
 #include <chrono>
 typedef std::chrono::time_point<std::chrono::system_clock> TimePoint;

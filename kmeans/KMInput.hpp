@@ -8,12 +8,12 @@
 #ifndef INPUT_HPP_
 #define INPUT_HPP_
 
-#include "src/common.h"
+#include "common.h"
 
-#include "src/KMPartition.hpp"
-#include "src/RectMatrix.hpp"
-#include "src/Partition.hpp"
-#include "src/Timer.hpp"
+#include "KMPartition.hpp"
+#include "RectMatrix.hpp"
+#include "Partition.hpp"
+#include "Timer.hpp"
 
 class KMInput: public KMPartition {
 public:

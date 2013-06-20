@@ -1,7 +1,7 @@
 #ifndef CG_MASTER_HPP
 #define CG_MASTER_HPP
 
-#include "src/common.h"
+#include "common.h"
 
 class CgMaster;
 

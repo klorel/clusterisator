@@ -1,9 +1,9 @@
 #ifndef MODULARITY_PARTITION_HPP
 #define MODULARITY_PARTITION_HPP
 
-#include "src/common.h"
-#include "src/Partition.hpp"
-#include "gencol/Graph.hpp"
+#include "common.h"
+#include "Partition.hpp"
+#include "Graph.hpp"
 
 class ModularityPartition : Partition {
 	ModularityPartition(Graph const &, size_t k = 1);

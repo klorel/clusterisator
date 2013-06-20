@@ -1,7 +1,7 @@
 #ifndef NUMBER_H
 #define NUMBER_H
 
-#include "src/common.h"
+#include "common.h"
 #include <random>
 
 class Number {

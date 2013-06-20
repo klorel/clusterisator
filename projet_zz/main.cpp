@@ -22,14 +22,14 @@
 #include <fstream>
 
 
-double CalculSeuil(double ,RegisteredInstance );
+double CalculSeuil(double ,RegisteredK:Instance );
 
 
 void usage() {
 	std::cout << "Available instances : \n";
 	for (size_t i(0); i < AvailableInstances::SIZE; ++i) {
 		AvailableInstances id(static_cast<AvailableInstances>(i));
-		RegisteredInstance instance(id);
+		RegisteredK:Instance instance(id);
 		std::cout << std::setw(3) << i;
 		std::cout << " : ";
 		std::cout << std::setw(30) << std::left << instance.name << std::right;
@@ -75,7 +75,7 @@ int main(int argc, char ** argv) {
 	size_t const kmax ( 10);
 
 	for (auto const & id : list_instance) {
-		RegisteredInstance instance(id);
+		RegisteredK:Instance instance(id);
 		instance.out();
 		// mais on arrete si notre algo n'est plus en multi-level.
 		size_t seed(1);

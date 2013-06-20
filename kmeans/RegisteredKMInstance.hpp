@@ -1,18 +1,18 @@
 #ifndef REGISTERED_INSTANCE_HPP_
 #define REGISTERED_INSTANCE_HPP_
 
-#include "src/KMInstance.hpp"
+#include "KMInstance.hpp"
 #include "common.h"
-#include "src/Partition.hpp"
+#include "Partition.hpp"
 
 enum AvailableInstances {
 #define REGISTER_INSTANCE(x,y) x,
-#include "RegisteredInstance.hxx"
+#include "RegisteredKMInstance.hxx"
 #undef REGISTER_INSTANCE
 	SIZE
 };
 
-class RegisteredInstance: public KMInstance {
+class RegisteredKMInstance: public KMInstance {
 public:
 	void real(Partition &) const;
 	Partition real() const;
@@ -25,8 +25,8 @@ private:
 	std::string dataName;
 	std::string ctrsName;
 public:
-	RegisteredInstance(AvailableInstances id);
-	virtual ~RegisteredInstance() {
+	RegisteredKMInstance(AvailableInstances id);
+	virtual ~RegisteredKMInstance() {
 	}
 
 };
@@ -36,7 +36,7 @@ public:
 };
 
 std::string const Info::InstancesPath = "../instances/";
-void RegisteredInstance::out() const {
+void RegisteredKMInstance::out() const {
 	OUT<<"Instance name is "<<name<<"\n";
 	OUT<<"Data were read from "<<Info::InstancesPath + dataName + ".dat"<<"\n";
 	if (ctrsName.empty())
@@ -44,26 +44,26 @@ void RegisteredInstance::out() const {
 	else
 	OUT<<"Constraints were read from "<<Info::InstancesPath + ctrsName + ".ctrs"<<"\n";
 }
-inline RegisteredInstance::RegisteredInstance(AvailableInstances id) {
+inline RegisteredKMInstance::RegisteredKMInstance(AvailableInstances id) {
 	setNames(id);
 	readData(Info::InstancesPath + dataName + ".dat");
 	if (!ctrsName.empty()) {
 		readConstraints(Info::InstancesPath + ctrsName + ".ctrs");
 	}
 }
-inline void RegisteredInstance::real(Partition & result) const {
+inline void RegisteredKMInstance::real(Partition & result) const {
 	(Info::InstancesPath + dataName + ".real") >> result;
 }
-inline Partition RegisteredInstance::real() const {
+inline Partition RegisteredKMInstance::real() const {
 	Partition result(nbObs());
 	real(result);
 	return result;
 }
 
-inline void RegisteredInstance::setNames(AvailableInstances id) {
+inline void RegisteredKMInstance::setNames(AvailableInstances id) {
 	switch (id) {
 #define REGISTER_INSTANCE(x,y) case x:dataName =#y;ctrsName = #x;break;
-#include "RegisteredInstance.hxx"
+#include "RegisteredKMInstance.hxx"
 #undef REGISTER_INSTANCE
 	default:
 		std::cout << id << std::endl;

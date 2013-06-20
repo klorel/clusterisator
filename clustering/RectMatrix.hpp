@@ -8,7 +8,7 @@
 #ifndef RECTMATRIX_HPP_
 #define RECTMATRIX_HPP_
 
-#include "src/common.h"
+#include "common.h"
 
 /**
  * Represent a rectangular matrix of Double
