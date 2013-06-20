@@ -1,22 +1,13 @@
 #ifndef CG_MASTER_HPP
 #define CG_MASTER_HPP
-
-#include "common.h"
+#include "gencol.h"
+#include "Column.hpp"
 
 class CgMaster;
-
 class CgInstance;
 class Predicate;
-typedef std::set<size_t> Column;
-typedef std::vector<Column*> Columns;
-typedef std::set<Column,Predicate > ColumnTrimmer;
 
-class Predicate{
-public:
-	bool operator()(Column const * const p, Column const * const q)const{
-		return (*p)<(*q);
-	}
-};
+
 
 class CgMaster{
 public:

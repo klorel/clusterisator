@@ -2,7 +2,7 @@
 
 INCLUDE_DIRECTORIES( . ../clustering )
 
-FILE(  GLOB  gencol_files   ./*.cpp ./*.hpp ./*.hxx )
+FILE(  GLOB  gencol_files   ./*.cpp ./*.h ./*.hpp ./*.hxx )
 
 
 ADD_EXECUTABLE( gencol  ${gencol_files} )

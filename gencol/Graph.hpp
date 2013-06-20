@@ -1,7 +1,7 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
-#include "common.h"
+#include "gencol.h"
 
 class Graph;
 std::ostream & operator<<(std::ostream &out, Graph const&);

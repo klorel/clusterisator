@@ -64,4 +64,6 @@ template<> inline bool IsEqual<DoubleVector>(DoubleVector const & t1,
 }
 
 void operator>>(std::istream &, IntVector &);
+
+
 #endif /* COMMON_H_ */

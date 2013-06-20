@@ -1,8 +1,7 @@
 #ifndef REGISTERED_MODULARITY_INSTANCE_HPP_
 #define REGISTERED_MODULARITY_INSTANCE_HPP_
 
-
-#include "common.h"
+#include "gencol.h"
 #include "Graph.hpp"
 
 enum AvailableModularityInstances {

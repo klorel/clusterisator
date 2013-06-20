@@ -1,7 +1,6 @@
 #ifndef MODULARITY_PARTITION_HPP
 #define MODULARITY_PARTITION_HPP
-
-#include "common.h"
+#include "gencol.h"
 #include "Partition.hpp"
 #include "Graph.hpp"
 
