@@ -1,8 +1,10 @@
 
 FILE(
-GLOB_RECURSE 
-clustering_files 
-../src/*.cpp
+	GLOB_RECURSE 
+	clustering_files 
+	../src/*.cpp
+	../src/*.hpp
+	../src/*.h
 )
 
 

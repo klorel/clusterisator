@@ -41,6 +41,12 @@ KMInstance::KMInstance(KMInstance const & instance,
 	}
 }
 
+Double KMInstance::distance(size_t i, size_t j)const{
+	Double result( 0 );
+	for (size_t d(0); d < nbAtt(); ++d)
+		result+=std::pow(get(i, d) - get(j, d), 2);
+	return std::sqrt(result);
+}
 void KMInstance::allocate(size_t nbObs, size_t nbAtt) {
 	_data = RectMatrix(nbObs, nbAtt);
 	_cst = 0;
@@ -81,33 +87,84 @@ void KMInstance::readConstraints(std::string const & fileName) {
 	}
 }
 
+
 void KMInstance::buildMustLink(Aggregations & result) const {
-	std::list<IntSet> aggregations;
-	std::vector<std::list<IntSet>::iterator> temp(nbObs(), aggregations.end());
+	typedef std::map<std::pair<size_t,size_t>, size_t > Toto;
+	Toto toto;
 	size_t n(0);
 	result.newIds.assign(nbObs(), -1);
-
-	for (size_t i(0); i < nbObs(); ++i) {
-		auto it(temp[i]);
-		if (it == aggregations.end()) {
-			aggregations.push_front(IntSet());
-			temp[i] = aggregations.begin();
-			temp[i]->insert(i);
-			result.newIds[i] = n;
-			++n;
+	for (auto const & ij : _must.all()) {
+		Toto::iterator it(toto.end());
+		for(auto const & j : _must.get(ij.first)){
+			std::pair<size_t,size_t> const p(std::min(j, ij.first), std::max(j, ij.first));
+			Toto::iterator jt(toto.find(p));
+			if(jt != toto.end()){
+				it = jt;
+				break;
+			}
 		}
-		for (auto const & j : _must.get(i)) {
-			temp[j] = temp[i];
-			result.newIds[j] = result.newIds[i];
-			temp[j]->insert(j);
+		for(auto const & j : _must.get(ij.second)){
+			std::pair<size_t,size_t> const p(std::min(j, ij.second), std::max(j, ij.second));
+			Toto::iterator jt(toto.find(p));
+			if(jt != toto.end()){				
+				if(it != toto.end()&&it->second!=jt->second){					
+					std::map<size_t,size_t> sort;
+					// fusion
+					sort[it->second] = 0;
+					sort[jt->second] = 0;
+					size_t p(0);
+					for(auto & t : toto){
+						std::map<size_t,size_t>::const_iterator found(sort.find(t.second));
+						if(found == sort.end()){
+							++p;
+							found = sort.insert( std::make_pair(t.second, p)).first;
+						}
+						t.second = found->second;
+					}
+					assert(n==p+2);
+					n = p+1;
+				}else{
+					it = jt;
+					break;
+				}
+			}
+		}
+
+		if(it == toto.end()){
+			it = toto.insert(std::make_pair(ij, n)).first;
+			++n;
+		}else{
+			toto[ij] = it->second;
+		}
+	}
+	OUT<< "found "<<n<<" aggregated point\n";
+	result.v.reserve(nbObs());
+	result.v.assign(n, IntSet());
+	for(auto const & ij : toto){
+		result.newIds[ij.first.first]=ij.second;
+		result.newIds[ij.first.second]=ij.second;
+		result.v[ij.second].insert(ij.first.first);
+		result.v[ij.second].insert(ij.first.second);
+	}
+	
+	
+	for(size_t i(0); i<nbObs(); ++i){
+		if(result.newIds[i]> nbObs()){
+			result.newIds[i]=n;
+			result.v.push_back(IntSet());
+			result.v[n].insert(i);
+			++n;
 		}
 	}
 
-	OUT<< "found "<<n<<" aggregated point\n";
-	result.v.assign(n, IntSet());
-	std::copy(aggregations.rbegin(), aggregations.rend(), result.v.begin());
 	for (auto const & id : result.newIds) {
 		assert(id < n);
+	}
+	for(auto const & i : result.v){
+		assert(!i.empty());
+		size_t const l(result.newIds[*i.begin()]);
+		for(auto const & j : i)
+			assert( result.newIds[j] == l);
 	}
 }
 

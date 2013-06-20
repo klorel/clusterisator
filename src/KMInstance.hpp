@@ -74,6 +74,7 @@ public:
 
 	void cpp(std::ostream &) const;
 
+	Double distance(size_t, size_t )const;
 private:
   /**
    * Reset the instance

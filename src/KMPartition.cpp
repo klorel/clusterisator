@@ -5,7 +5,7 @@
  *      Author: manuel
  */
 
-#include "KMPartition.hpp"
+#include "src/KMPartition.hpp"
 
 KMPartition::KMPartition(KMInstance const & input, size_t k) :
 		Partition(input.nbObs(), k), _input(input), _centers(k, input.nbAtt()) {

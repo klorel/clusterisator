@@ -1,0 +1,2 @@
+#include "../gencol/CgMaster.hpp"
+

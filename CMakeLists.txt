@@ -1,9 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(clusterisator)
 
-OPTION( WITH_TESTS "Build tests"          OFF)
-OPTION( WITH_PROF  "Build with profiling" OFF)
-OPTION( WITH_DEBUG "Build in debug mode"  OFF)
+OPTION( WITH_TESTS "Build tests" OFF)
+OPTION( WITH_PROF "Build with profiling" OFF)
+OPTION( WITH_DEBUG "Build in debug mode" OFF)
 
 
 INCLUDE_DIRECTORIES( . )
@@ -43,8 +43,9 @@ ENDIF( WITH_PROF )
 
 
 ADD_SUBDIRECTORY(clustering)
-ADD_SUBDIRECTORY(programs)
+# ADD_SUBDIRECTORY(programs)
 # ADD_SUBDIRECTORY(projet_zz)
+ADD_SUBDIRECTORY(gencol)
 
 IF( WITH_TESTS )
     ENABLE_TESTING()

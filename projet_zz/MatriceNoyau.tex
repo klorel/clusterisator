@@ -1,0 +1,86 @@
+\documentclass[12pt]{article}
+\usepackage{graphicx}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[applemac]{inputenc}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tocloft}
+\usepackage{wrapfig}
+\usepackage{textcomp}
+\usepackage{tikz}
+\usepackage{caption}
+\numberwithin{equation}{section}
+
+
+\begin{document}
+
+Soient $(V_1,...V_n) \in \mathbb R^q$ $n$ observations.
+On note $K$ la matrice des produits scalaires entre ces observation, soit $K_{ij} = (V_i,V_j)$.
+
+Notant $A$ la matrice dont les colonnes sont les vecteurs $V_i$, $1\leq i\leq n$,
+soit $A = (V_1, ... V_n)$, on peut alors écrire :
+
+\begin{center}
+
+$A^TA = \left(  
+\begin{matrix} 
+      V_1^T \\
+      . \\
+      . \\
+      . \\
+      V_n^T           
+   \end{matrix}
+ \right)
+ (V_1,...,V_n)
+ =    \left(\begin{matrix} 
+       (V_1,V_1) & ... & (V_1,V_n) \\
+       . &  & . \\
+       . &  & . \\
+       . &  & . \\
+       (V_n,V_1) & ... & (V_n,V_n)
+    \end{matrix}
+    \right)
+    = K$
+    
+\end{center}
+
+À partir de là, notons $\lambda$ une valeur propre de $K$ et $X$ un vecteur propre associé.
+On a donc : 
+
+\begin{center}
+
+$KX = \lambda X$
+\\[0.3em]
+$X^TKX = \lambda X^TX$
+\\[0.3em]
+$X^TA^TAX = \lambda||X||^2$
+\\[0.3em]
+$(AX)^TAX = \lambda||X||^2$
+\\[0.3em]
+$||AX||^2 = \lambda||X||^2$
+
+\end{center}
+
+D'où l'on déduit : $\lambda \in \mathbb R^+$.
+\\[2.5em]
+De plus, si la matrice $K$ n'est pas inversible,
+alors $ \exists a = (a_1,...a_k)$ tel que 
+\begin{center}
+$\forall j \displaystyle{\sum_{1\leq i\leq k}{a_iV_i\cdot V_j}} = 0$
+\end{center}
+Notant $w = \sum_{1\leq i\leq k}{a_iV_i}$, on trouve que $w$ est orthogonal à tous les $V_i$, donc à lui-même.
+
+Donc $w$ est nul.
+
+Donc les $V_i$ sont linéairement dépendants.
+\\[1em]
+Réciproquement, si les $V_i$ sont linéairement dépendants, alors $K$ est clairement non-inversible.
+\\[1em]
+Donc $K$ est inversible si et seulement si les $V_i$ sont linéairement indépendants.
+\\[2.5em]
+Donc $K$ est strictement définie positive si et seulement si les $V_i$ sont linéairement indépendants.
+Autrement, elle est seulement semi-définie positive.
+
+\end{document}

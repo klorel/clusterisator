@@ -43,8 +43,6 @@ void RegisteredInstance::out() const {
 	OUT<<"No constraints were read\n";
 	else
 	OUT<<"Constraints were read from "<<Info::InstancesPath + ctrsName + ".ctrs"<<"\n";
-	OUT<<"Number of observations : "<<nbObs() << std::endl;
-	OUT<<"Number of attributes   : "<<nbAtt() << std::endl;
 }
 inline RegisteredInstance::RegisteredInstance(AvailableInstances id) {
 	setNames(id);

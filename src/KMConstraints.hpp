@@ -48,7 +48,7 @@ public:
 	size_t size() const;
 	const_iterator begin() const;
 	const_iterator end() const;
-
+	Constraints const & all()const;
 private:
   /**
    * List of every pairs
@@ -60,7 +60,9 @@ private:
    */
 	std::vector<IntSet> _byObs;
 };
-
+inline KMConstraints::Constraints const & KMConstraints::all()const{
+	return _all;
+}
 inline KMConstraints::KMConstraints(size_t nbObs) :
 		_all(), _byObs(nbObs) {
 
