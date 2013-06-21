@@ -22,7 +22,9 @@ param inv_m := 1.0/m;
 
 param w{(i,j) in V1 } := (a[i,j]-kR[i]*kB[j]*inv_m)*inv_m;
 
-data divorces2.dat;
+# data divorces2.dat;
+data social_work.dat;
+# data women.dat;
 
 
 
@@ -65,8 +67,11 @@ param violated_cuts2;
 param violated_cuts3;
 param violated_cuts4;
 
-for{ ite in 1..10}{
-	solve;
+
+
+repeat 
+{
+	solve modularity;
 	let violated_cuts1 := card({ (iR,iB,jR,jB) in V2 : +x[iR,iB]+x[iR,jB]+x[jR,iB]-x[jR,jB]>2});
 	let violated_cuts2 := card({ (iR,iB,jR,jB) in V2 : +x[iR,iB]+x[iR,jB]-x[jR,iB]+x[jR,jB]>2});
 	let violated_cuts3 := card({ (iR,iB,jR,jB) in V2 : +x[iR,iB]-x[iR,jB]+x[jR,iB]+x[jR,jB]>2});
@@ -82,6 +87,34 @@ for{ ite in 1..10}{
 		let{ (iR,iB,jR,jB) in V2} activate3[iR,iB,jR,jB] := if(+x[iR,iB]-x[iR,jB]+x[jR,iB]+x[jR,jB]>2) then 1 else activate3[iR,iB,jR,jB] ;
 	else
 		let{ (iR,iB,jR,jB) in V2} activate4[iR,iB,jR,jB] := if(-x[iR,iB]+x[iR,jB]+x[jR,iB]+x[jR,jB]>2) then 1 else activate4[iR,iB,jR,jB] ;
-};
+}until violated_cuts1+violated_cuts2+violated_cuts3+violated_cuts4 == 0;
+
+display modularity;
+
+set Z := 1..nR cross 1..nB cross 1..nR+nB;
+# computing the number of community
+var y{1..nR+nB, 1..nR+nB} binary;
+# w[i,j,c] = y[i,c] y[j,c]
+var z{Z} binary;
+fix x;
+# display x;
 
 
+minimize obj:1;
+
+subject to ctr{(i,j) in V1 }: sum{c in 1..nR+nB }z[i,j,c] = x[i,j];
+subject to  ll{(i,j,c) in Z }: z[i,j,c]  >= 0;
+subject to  uu{(i,j,c) in Z }: z[i,j,c] -y[i,c]-y[nR+j,c] >= -1;
+subject to  lu{(i,j,c) in Z }: y[i,c]   -z[i,j,c]  >= 0;
+subject to  ul{(i,j,c) in Z }: y[nR+j,c]-z[i,j,c]  >= 0;
+
+solve obj;
+
+# display{(n,c) in 1..nR+nB cross 1..nR+nB : y[n,c]==1} y[n,c];
+# display obj;
+
+param verif;
+let verif := sum{ c in 1..nR+nB }( sum{(i,j) in E} ( z[i,j,c]*inv_m) - sum{(i,j) in V1} (kR[i]*kB[j]*z[i,j,c]*inv_m*inv_m) );
+
+display verif;
+display modularity;
