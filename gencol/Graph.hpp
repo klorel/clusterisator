@@ -30,8 +30,9 @@ public:
 	void desallocate();
 	void readRotta(std::string const &);
 	void finalize();
-
+	
 	void read(std::string const &, std::ostream & = std::cout);
+	
 
 	double const & degree(size_t const &) const;
 	double const & degree() const;

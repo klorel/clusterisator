@@ -69,6 +69,7 @@ void Graph::read(const std::string & fileName, std::ostream & out) {
 	}
 
 }
+
 void Graph::fill(TempGraph const & rhs) {
 	allocate(rhs.size());
 	for (size_t i(0); i < rhs.size(); ++i) {

@@ -1,0 +1,87 @@
+
+reset;
+
+param nR integer > 0;
+param nB integer > 0;
+
+
+set V1 := {(i,j) in  1..nR cross 1..nB };
+
+set V2 := V1 cross V1;
+set V3 := {(i,j,k) in  V1 cross 1..nB };
+
+set E within {(i,j) in V1 };
+
+param a{(i,j) in V1} :=  if ((i,j) in E ) then 1.0 else 0.0;
+
+param kR{ i in 1..nR } := card({(i,j) in E});
+param kB{ j in 1..nB } := card({(i,j) in E});
+
+param m := 1.0*card(E);
+param inv_m := 1.0/m;
+
+param w{(i,j) in V1 } := (a[i,j]-kR[i]*kB[j]*inv_m)*inv_m;
+
+data divorces2.dat;
+
+
+
+# display E;
+# display k;
+display E;
+# display w;
+# display V2;
+# display V3;
+
+var x{V1} binary;
+
+param activate1{ (iR,iB,jR,jB) in V2} default 0;
+param activate2{ (iR,iB,jR,jB) in V2} default 0;
+param activate3{ (iR,iB,jR,jB) in V2} default 0;
+param activate4{ (iR,iB,jR,jB) in V2} default 0;
+
+maximize modularity: sum{(i,j) in V1} w[i,j]*x[i,j];
+
+subject to ctr1 { (iR,iB,jR,jB) in V2} : activate1[iR,iB,jR,jB]*(+x[iR,iB]+x[iR,jB]+x[jR,iB]-x[jR,jB])<=2;
+subject to ctr2 { (iR,iB,jR,jB) in V2} : activate2[iR,iB,jR,jB]*(+x[iR,iB]+x[iR,jB]-x[jR,iB]+x[jR,jB])<=2;
+subject to ctr3 { (iR,iB,jR,jB) in V2} : activate3[iR,iB,jR,jB]*(+x[iR,iB]-x[iR,jB]+x[jR,iB]+x[jR,jB])<=2;
+subject to ctr4 { (iR,iB,jR,jB) in V2} : activate4[iR,iB,jR,jB]*(-x[iR,iB]+x[iR,jB]+x[jR,iB]+x[jR,jB])<=2;
+
+# subject to ctr2 { (i,j,k,l) in V2} : +x[i,j]-x[k,j]-x[i,k]<=1;
+# subject to ctr3 { (i,j,k,l) in V2} : -x[i,j]+x[k,j]-x[i,k]<=1;
+
+# subject to ctr4 { (i,j,k) in V3} : +x[i,j]+x[j,k]-x[i,k]<=1;
+# subject to ctr5 { (i,j,k) in V3} : +x[i,j]-x[j,k]-x[i,k]<=1;
+# subject to ctr6 { (i,j,k) in V3} : -x[i,j]+x[j,k]-x[i,k]<=1;
+# subject to ctr2 { (r,s,t) in V3} : +x[r,s]-x[s,t]+x[r,t]<=1;
+# subject to ctr3 { (r,s,t) in V3} : -x[r,s]+x[s,t]+x[r,t]<=1;
+
+option solver xpress;
+option xpress_options "outlev=1";
+
+param go_on;
+param violated_cuts1;
+param violated_cuts2;
+param violated_cuts3;
+param violated_cuts4;
+
+for{ ite in 1..10}{
+	solve;
+	let violated_cuts1 := card({ (iR,iB,jR,jB) in V2 : +x[iR,iB]+x[iR,jB]+x[jR,iB]-x[jR,jB]>2});
+	let violated_cuts2 := card({ (iR,iB,jR,jB) in V2 : +x[iR,iB]+x[iR,jB]-x[jR,iB]+x[jR,jB]>2});
+	let violated_cuts3 := card({ (iR,iB,jR,jB) in V2 : +x[iR,iB]-x[iR,jB]+x[jR,iB]+x[jR,jB]>2});
+	let violated_cuts4 := card({ (iR,iB,jR,jB) in V2 : -x[iR,iB]+x[iR,jB]+x[jR,iB]+x[jR,jB]>2});
+	
+	display violated_cuts1, violated_cuts2, violated_cuts3, violated_cuts4;
+	
+	if(violated_cuts1>0) then 
+		let{ (iR,iB,jR,jB) in V2} activate1[iR,iB,jR,jB] := if(+x[iR,iB]+x[iR,jB]+x[jR,iB]-x[jR,jB]>2) then 1 else activate1[iR,iB,jR,jB] ;
+	else if(violated_cuts2>0) then 
+		let{ (iR,iB,jR,jB) in V2} activate2[iR,iB,jR,jB] := if(+x[iR,iB]+x[iR,jB]-x[jR,iB]+x[jR,jB]>2) then 1 else activate2[iR,iB,jR,jB] ;
+	else if(violated_cuts3>0) then 
+		let{ (iR,iB,jR,jB) in V2} activate3[iR,iB,jR,jB] := if(+x[iR,iB]-x[iR,jB]+x[jR,iB]+x[jR,jB]>2) then 1 else activate3[iR,iB,jR,jB] ;
+	else
+		let{ (iR,iB,jR,jB) in V2} activate4[iR,iB,jR,jB] := if(-x[iR,iB]+x[iR,jB]+x[jR,iB]+x[jR,jB]>2) then 1 else activate4[iR,iB,jR,jB] ;
+};
+
+
