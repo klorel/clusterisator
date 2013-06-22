@@ -1,39 +1,9 @@
 
 reset;
-
-param nR integer > 0;
-param nB integer > 0;
-
-
-set V1 := {(i,j) in  1..nR cross 1..nB };
-
-set V2 := V1 cross V1;
-set V3 := {(i,j,k) in  V1 cross 1..nB };
-
-set E within {(i,j) in V1 };
-
-param a{(i,j) in V1} :=  if ((i,j) in E ) then 1.0 else 0.0;
-
-param kR{ i in 1..nR } := card({(i,j) in E});
-param kB{ j in 1..nB } := card({(i,j) in E});
-
-param m := 1.0*card(E);
-param inv_m := 1.0/m;
-
-param w{(i,j) in V1 } := (a[i,j]-kR[i]*kB[j]*inv_m)*inv_m;
-
+model modularity.mod;
 # data divorces2.dat;
-data social_work.dat;
-# data women.dat;
-
-
-
-# display E;
-# display k;
-display E;
-# display w;
-# display V2;
-# display V3;
+# data social_work.dat;
+data women.dat;
 
 var x{V1} binary;
 
@@ -49,19 +19,9 @@ subject to ctr2 { (iR,iB,jR,jB) in V2} : activate2[iR,iB,jR,jB]*(+x[iR,iB]+x[iR,
 subject to ctr3 { (iR,iB,jR,jB) in V2} : activate3[iR,iB,jR,jB]*(+x[iR,iB]-x[iR,jB]+x[jR,iB]+x[jR,jB])<=2;
 subject to ctr4 { (iR,iB,jR,jB) in V2} : activate4[iR,iB,jR,jB]*(-x[iR,iB]+x[iR,jB]+x[jR,iB]+x[jR,jB])<=2;
 
-# subject to ctr2 { (i,j,k,l) in V2} : +x[i,j]-x[k,j]-x[i,k]<=1;
-# subject to ctr3 { (i,j,k,l) in V2} : -x[i,j]+x[k,j]-x[i,k]<=1;
-
-# subject to ctr4 { (i,j,k) in V3} : +x[i,j]+x[j,k]-x[i,k]<=1;
-# subject to ctr5 { (i,j,k) in V3} : +x[i,j]-x[j,k]-x[i,k]<=1;
-# subject to ctr6 { (i,j,k) in V3} : -x[i,j]+x[j,k]-x[i,k]<=1;
-# subject to ctr2 { (r,s,t) in V3} : +x[r,s]-x[s,t]+x[r,t]<=1;
-# subject to ctr3 { (r,s,t) in V3} : -x[r,s]+x[s,t]+x[r,t]<=1;
-
 option solver xpress;
 option xpress_options "outlev=1";
 
-param go_on;
 param violated_cuts1;
 param violated_cuts2;
 param violated_cuts3;
@@ -118,3 +78,9 @@ let verif := sum{ c in 1..nR+nB }( sum{(i,j) in E} ( z[i,j,c]*inv_m) - sum{(i,j)
 
 display verif;
 display modularity;
+
+# display sum{ c in 1..nR+nB }sum{(i,j) in V1} y[i,c]*w[i,j]*y[nR+j,c];
+
+# var yy{i in 1..nR+nB, c in 1..nR+nB} = 2*y[i,c]-1;
+
+# display 0.25*sum{ c in 1..nR+nB }sum{(i,j) in V1} yy[i,c]*w[i,j]*yy[nR+j,c];
