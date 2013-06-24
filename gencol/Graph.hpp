@@ -7,6 +7,8 @@ class Graph;
 std::ostream & operator<<(std::ostream &out, Graph const&);
 class Graph {
 public:
+	class Edge;
+public:
 	typedef std::pair<size_t, double> Element;
 	typedef std::vector<Element> Row;
 	typedef std::vector<Row*> Container;
@@ -14,8 +16,7 @@ public:
 	typedef Container::const_iterator const_iterator;
 	typedef std::map<size_t, double> TempRow;
 	typedef std::vector<TempRow> TempGraph;
-	typedef std::pair<size_t, size_t> Edge;
-	typedef std::set<Edge> Edges;
+	typedef std::list<Edge> Edges;
 public:
 
 	Graph(size_t const & = 0);
@@ -30,9 +31,9 @@ public:
 	void desallocate();
 	void readRotta(std::string const &);
 	void finalize();
-	
+
 	void read(std::string const &, std::ostream & = std::cout);
-	
+
 
 	double const & degree(size_t const &) const;
 	double const & degree() const;
@@ -43,13 +44,13 @@ public:
 
 	void clear();
 	void writeCplusplus(std::string const &) const;
-	
+
 	Row & operator()(size_t const &);
 	Row const & operator()(size_t const &)const;
-	
+
 	Edges const & edges()const;
 
-private:
+protected:
 	Container _rows;
 	DoubleVector _degrees;
 	double _degree;
@@ -99,5 +100,14 @@ inline size_t Graph::nbNodes() const {
 inline void Graph::clear() {
 	_rows.clear();
 }
+
+class Graph::Edge
+{
+public:
+	size_t _i;
+	size_t _j;
+	Double _v;
+	Edge(size_t i, size_t j, Double v):_i(i),_j(j),_v(v){}
+};
 
 #endif /* GRAPH_HPP */

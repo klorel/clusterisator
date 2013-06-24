@@ -4,7 +4,7 @@
 #include "Partition.hpp"
 #include "Graph.hpp"
 
-class ModularityPartition : Partition {
+class ModularityPartition : public Partition {
 	ModularityPartition(Graph const &, size_t k = 1);
 	ModularityPartition(Graph const &, Partition const &);
 	virtual ~ModularityPartition();

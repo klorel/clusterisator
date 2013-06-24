@@ -18,4 +18,4 @@ param kB{ j in 1..nB } := card({(i,j) in E});
 param m := 1.0*card(E);
 param inv_m := 1.0/m;
 
-param w{(i,j) in V1 } := (a[i,j]-kR[i]*kB[j]*inv_m)*inv_m;
+param w{(i,j) in V1  } := (a[i,j]-kR[i]*kB[j]*inv_m)*inv_m;

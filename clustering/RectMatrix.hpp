@@ -133,7 +133,7 @@ inline void operator<<( RectMatrix  &matrix, std::istream & stream){
 			buffer >> matrix.get(i,j);
 		}
 	}
-	std::cout << matrix<<std::endl;
+	//std::cout << matrix<<std::endl;
 }
 inline bool RectMatrix::operator!=(RectMatrix const & rhs) const {
 	return !((*this) == rhs);

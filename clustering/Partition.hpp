@@ -63,7 +63,7 @@ public:
 
 	size_t label(size_t n) const;
 	size_t & label(size_t n);
-
+	IntVector const & labels()const;
 	Partition & operator=(Partition const & rhs);
 	void random();
 	void random(size_t k);
@@ -138,6 +138,9 @@ inline size_t Partition::label(size_t n) const {
 }
 inline size_t & Partition::label(size_t n) {
 	return _labels[n];
+}
+inline IntVector const & Partition::labels()const{
+	return _labels;
 }
 
 inline Double Partition::obsWeight(size_t i) const {

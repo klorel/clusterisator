@@ -145,7 +145,7 @@ void Graph::desallocate() {
 }
 
 void Graph::finalize() {
-	_degrees.resize(nbNodes());
+	_degrees.assign(nbNodes(),0);
 	_degree = 0;
 	_edges.clear();
 	for (size_t p = 0; p < nbNodes(); ++p) {
@@ -155,7 +155,7 @@ void Graph::finalize() {
 			if (r.first == p)
 				_degrees[p] += r.second;
 			if(p<r.first)
-				_edges.insert(std::make_pair(p,r.first));
+				_edges.push_back(Edge(p,r.first, r.second));
 		}
 		_degree += _degrees[p];
 	}
