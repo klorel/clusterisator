@@ -42,3 +42,7 @@ size_t PopRandom(IntVector & v, size_t & n) {
 	return v.back();
 }
 
+size_t RandomElement(IntVector const & v) {
+	return v[Number::Generator() % v.size()];
+}
+

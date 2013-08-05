@@ -5,9 +5,13 @@
 
 class Graph;
 std::ostream & operator<<(std::ostream &out, Graph const&);
+
+class Edge;
+typedef std::list<Edge> Edges;
+
 class Graph {
 public:
-	class Edge;
+	
 public:
 	typedef std::pair<size_t, double> Element;
 	typedef std::vector<Element> Row;
@@ -16,7 +20,6 @@ public:
 	typedef Container::const_iterator const_iterator;
 	typedef std::map<size_t, double> TempRow;
 	typedef std::vector<TempRow> TempGraph;
-	typedef std::list<Edge> Edges;
 public:
 
 	Graph(size_t const & = 0);
@@ -101,7 +104,7 @@ inline void Graph::clear() {
 	_rows.clear();
 }
 
-class Graph::Edge
+class Edge
 {
 public:
 	size_t _i;

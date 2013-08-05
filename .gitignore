@@ -23,3 +23,5 @@ build*
 .settings*
 #vim temporary files
 .*.sw*
+*/.metadata/*
+*.txt

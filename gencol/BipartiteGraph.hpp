@@ -8,10 +8,9 @@
 
 class BipartiteGraph;
 std::ostream & operator<<(std::ostream &out, BipartiteGraph const&);
-class BipartiteGraph : public Graph {
+class BipartiteGraph {
 public:
 	// data R B
-	RectMatrix _a;
 	BipartiteGraph();
 	BipartiteGraph(std::string const &, std::ostream & = std::cout);
 
@@ -20,12 +19,23 @@ public:
 	virtual ~BipartiteGraph();
 
 	void exportAmpl(std::string const &)const;
-
+	size_t nV()const;
 	size_t nR()const;
 	size_t nB()const;
+	Edges const & edges()const;
+
+	Double w(size_t r, size_t b)const;
+	Double kR(size_t )const;
+	Double kB(size_t )const;
+public:
+	Double _m;
+	Double _inv_m;
 
 	DoubleVector _kB;
 	DoubleVector _kR;
+	
+	Edges _edges;
+	RectMatrix _a;
 };
 
 

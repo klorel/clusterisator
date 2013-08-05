@@ -43,27 +43,52 @@ size_t BipartiteGraph::nR()const{
 size_t BipartiteGraph::nB()const{
 	return _a.getM();
 }
+size_t BipartiteGraph::nV()const{
+	return nR()+nB();
+}
+
+Double BipartiteGraph::kR(size_t r)const{
+	return _kR[r];
+}
+Double BipartiteGraph::kB(size_t b)const{
+	return _kB[b];
+}
+
 void BipartiteGraph::build(){
-	allocate(_a.getN()+_a.getM());
+	//allocate(_a.getN()+_a.getM());
 	_kR.assign(nR(), 0);
 	_kB.assign(nB(), 0);
-	Double  m(0);
-	for(size_t i(0); i<nR(); ++i){
-		for(size_t j(0); j<nB(); ++j){
-			Double const v(_a.get(i,j));
-			m+=v;
-			_kR[i]+=v;
-			_kB[j]+=v;
-		}
-	}
-	for(size_t i(0); i<nR(); ++i){
-		for(size_t j(0); j<nB(); ++j){			
-			Double const v((_a.get(i,j)-_kR[i]*_kB[j]/m)/m);
-			if(std::abs(v)>1e-10){
-				operator()(i).push_back(std::make_pair(nR()+j, v));
-				operator()(nR()+j).push_back(std::make_pair(i, v));
+	//Double  m(0);
+	_m = ( std::accumulate(_a.begin(), _a.end(), 0.0) );
+	for(size_t r(0); r<nR(); ++r){
+		for(size_t b(0); b<nB(); ++b){
+			Double const v(_a.get(r,b));
+			if(v != 0){
+				//std::cout << std::setw(6)<<r+1;
+				//std::cout << std::setw(6)<<b+1;
+				//std::cout << std::endl;
+				_kR[r]+=v;
+				_kB[b]+=v;
+				_edges.push_back(Edge(r,b, v));
 			}
+
 		}
 	}
-	finalize();
+	//for(size_t i(0); i<nR(); ++i){
+	//	for(size_t j(0); j<nB(); ++j){			
+	//		Double const v((_a.get(i,j)-_kR[i]*_kB[j]/m)/m);
+	//		if(std::abs(v)>1e-10){
+	//			operator()(i).push_back(std::make_pair(nR()+j, v));
+	//			operator()(nR()+j).push_back(std::make_pair(i, v));
+	//		}
+	//	}
+	//}
+	//finalize();
+	_inv_m = 1.0/_m;
+}
+Edges const & BipartiteGraph::edges()const{
+	return _edges;
+}
+Double BipartiteGraph::w(size_t r, size_t b)const{
+	return (_a.get(r,b)-_kR[r]*_kB[b]/_m)/_m;
 }

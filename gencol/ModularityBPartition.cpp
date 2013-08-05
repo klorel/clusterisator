@@ -2,7 +2,7 @@
 
 
 ModularityBPartition::ModularityBPartition(BipartiteGraph const & input, size_t k) :
-	Partition(input.nbNodes(), k), _input(input){
+	Partition(input.nV(), k), _input(input){
 }
 ModularityBPartition::ModularityBPartition(BipartiteGraph const &input, Partition const &rhs) :
 	Partition(rhs), _input(input) {

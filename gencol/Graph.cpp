@@ -223,6 +223,6 @@ void Graph::readRotta(std::string const & fileName) {
 	}
 
 	
-	Graph::Edges const & Graph::edges()const{
+	Edges const & Graph::edges()const{
 		return _edges;
 	}

@@ -1,18 +1,25 @@
 #ifndef COLUMN_HPP
 #define COLUMN_HPP
-#include "gencol.h"
 
-class Column : public  std::set<size_t> {
+#include "gencol.h"
+#include "BipartiteGraph.hpp"
+
+class Column : public  std::pair<std::set<size_t>, std::set<size_t> > {
 public:
 	Double &  cost();
 	Double const &  cost()const ;
 	Double &  reducedCost();
 	Double const &  reducedCost()const ;
 
+	void computeCost();
+	Column(BipartiteGraph const & );
+	~Column();
+	void addElement(size_t );
+	size_t size()const;
 private:
-	double _cost;
-	double _reducedCost;
-	Graph const & _input;
+	Double _cost;
+	Double _reducedCost;
+	BipartiteGraph const & _input;
 };
 
 
@@ -24,3 +31,4 @@ public:
 };
 
 #endif 
+

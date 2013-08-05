@@ -48,6 +48,9 @@ public:
 
 	void read(std::string const &);
 	void read(size_t i, std::string const &);
+
+	DoubleVector::const_iterator begin()const;
+	DoubleVector::const_iterator end()const;
 private:
 	size_t key(size_t i, size_t j) const;
 	size_t _n;
@@ -161,4 +164,12 @@ inline void RectMatrix::read(std::string const & values) {
 inline DoubleVector const &RectMatrix::matrix() const {
 	return _matrix;
 }
+
+inline DoubleVector::const_iterator RectMatrix::begin()const{
+	return _matrix.begin();
+}
+inline DoubleVector::const_iterator RectMatrix::end()const{
+	return _matrix.end();
+}
+
 #endif /* RECTMATRIX_HPP_ */
