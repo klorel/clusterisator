@@ -15,6 +15,7 @@ public:
 public:
 	void freeLp();
 	void initOracle();
+	void initOracle2();
 	void writeOracle(std::string const & fileName = "oracle.lp" )const;
 
 

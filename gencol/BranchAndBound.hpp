@@ -6,7 +6,7 @@
 #include "LpMaster.hpp"
 #include "VnsGenerator.hpp"
 #include "MipGenerator.hpp"
-
+class Node;
 class BranchAndBound{
 public:
 	BranchAndBound(BipartiteGraph const &);
@@ -14,8 +14,9 @@ public:
 public:
 	BipartiteGraph const & _input;
 
-	void columnGeneration();
-
+	void columnGeneration(Node *);
+	void branch(Node *, size_t , size_t );
+	void run();
 private:
 	
 	Double _rd;
@@ -23,6 +24,9 @@ private:
 	LpMaster _master;
 	VnsGenerator _vnsGenerator;
 	MipGenerator _mipGenerator;
+
+	Node * _root;
+	std::multimap<Double, Node * > _nodesByUpperBounds;
 
 };
 

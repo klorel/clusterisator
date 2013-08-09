@@ -1,8 +1,8 @@
 #include "Column.hpp"
 
 
-void Column::computeCost(){
-	_cost = 0;
+Double Column::computeCost()const{
+	Double result(0);
 	for(auto const & r : first){
 		for(auto const & b : second){
 			//std::cout << std::setw(6)<<r;
@@ -11,9 +11,25 @@ void Column::computeCost(){
 			//std::cout << std::setw(6)<<_input.kB(b);
 			//std::cout << std::setw(25)<< _input.w(r,b);
 			//std::cout << std::endl;
-			_cost += _input.w(r,b);
+			result += _input.w(r,b);
 		}
 	}
+	return result;
+}
+Double Column::computeReducedCost(DoubleVector const & dual)const{
+	Double result(0);
+	for(auto const & r : first){
+		for(auto const & b : second){
+			result += _input.w(r,b);
+		}
+	}
+	for(auto const & r : first){
+		result += dual[r];
+	}
+	for(auto const & b : second){
+		result += dual[_input.nR()+b];
+	}
+	return result;
 }
 Column::Column(BipartiteGraph const & input):_input(input){
 }
@@ -42,4 +58,19 @@ void Column::addElement(size_t i){
 		second.insert(i-_input.nR()-1);
 	else
 		first.insert(i-1);
+}
+
+size_t & Column::id()const{
+	return _id;
+}
+
+void Column::check(DoubleVector const & dual) const {
+	assert(std::fabs(computeReducedCost(dual)-_reducedCost)<1e-10);
+	assert(std::fabs(computeCost()-_cost)<1e-10);
+}
+
+void Column::print(std::ostream & stream)const{
+	std::copy(first.begin(), first.end(), std::ostream_iterator<size_t>(stream << "R : ", " "));
+	std::copy(second.begin(), second.end(), std::ostream_iterator<size_t>(stream << "\nB : ", " "));
+	stream << std::endl;
 }

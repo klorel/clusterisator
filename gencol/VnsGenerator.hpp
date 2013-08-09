@@ -5,7 +5,7 @@
 #include "BipartiteGraph.hpp"
 #include "Column.hpp"
 #include "IndexedList.hpp"
-
+class Node;
 class VnsGeneratorSolution{
 public:
 	VnsGeneratorSolution(BipartiteGraph const &, DoubleVector const & dual);
@@ -14,7 +14,14 @@ public:
 public:
 	void swap(size_t id);
 	Double delta(size_t id);
+	Double computeCost()const;
+	Double computeReducedCost()const;
 	void build(Column &);
+	size_t violation(Node const &)const;
+	void check()const;
+public:
+	static bool IsBetter(VnsGeneratorSolution const & p, VnsGeneratorSolution const & q);
+	static bool IsBetter(VnsGeneratorSolution const & p, VnsGeneratorSolution const & q, Node const & node);
 private:
 	BipartiteGraph const & _input;
 	DoubleVector const & _dual;
@@ -39,6 +46,7 @@ public:
 	bool localSearch(VnsGeneratorSolution &);
 	bool run();
 	std::set<Column > const & columns()const;
+	void sortedColumns(std::multimap<Double, Column const *, std::greater<Double>> &)const;
 private:
 
 	BipartiteGraph const & _input;

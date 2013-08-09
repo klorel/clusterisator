@@ -9,7 +9,23 @@ BipartiteGraph::BipartiteGraph(std::string const & fileName, std::ostream & stre
 
 void BipartiteGraph::read(std::string const & fileName, std::ostream & stream){
 	std::ifstream file(fileName.c_str());
-	_a << file;
+	//_a << file;
+	std::string line;
+	std::getline(file, line);
+	size_t r;
+	size_t b;
+	{
+		std::stringstream buffer(line);
+		buffer >> r;
+		buffer >> b;
+	}
+	_a.allocate(r,b);
+	while(std::getline(file, line))	{
+		std::stringstream buffer(line);
+		buffer >> r;
+		buffer >> b;
+		_a.get(r-1,b-1) = 1;
+	}
 	file.close();
 	build();
 }
@@ -91,4 +107,17 @@ Edges const & BipartiteGraph::edges()const{
 }
 Double BipartiteGraph::w(size_t r, size_t b)const{
 	return (_a.get(r,b)-_kR[r]*_kB[b]/_m)/_m;
+}
+
+Double BipartiteGraph::m()const{
+	return _m;
+}
+Double BipartiteGraph::inv_m()const{
+	return _inv_m;
+}
+Double BipartiteGraph::sum_kR()const{
+	return std::accumulate(_kR.begin(), _kR.end(), 0);
+}
+Double BipartiteGraph::sum_kB()const{
+	return std::accumulate(_kB.begin(), _kB.end(), 0);
 }

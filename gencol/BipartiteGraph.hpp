@@ -27,6 +27,11 @@ public:
 	Double w(size_t r, size_t b)const;
 	Double kR(size_t )const;
 	Double kB(size_t )const;
+	
+	Double m()const;
+	Double inv_m()const;
+	Double sum_kR()const;
+	Double sum_kB()const;
 public:
 	Double _m;
 	Double _inv_m;
