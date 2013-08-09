@@ -5,10 +5,10 @@
 #include "Column.hpp"
 #include "BipartiteGraph.hpp"
 class Node;
-typedef struct cpxlp*  CPXLPptr;
+typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 
-class LpMaster{
+class LpMaster {
 public:
 	LpMaster(BipartiteGraph const &);
 	~LpMaster();
@@ -16,39 +16,38 @@ public:
 	BipartiteGraph const & _input;
 	void freeLp();
 	void initLp();
-	void write(std::string const & fileName = "master.lp" )const;
+	void write(std::string const & fileName = "master.lp") const;
 
 	void add(Column const & column);
 	void readColumns(std::string const & fileName);
-	
 
 	void getSolution();
-	bool getSolution(FractionnarySolution & );
+	bool getSolution(FractionnarySolution &);
 
 	void solveMaster();
-	void writeColumns(std::string const & = "columns.txt")const;
-	Double obj()const;
-	DoubleVector const & primal()const;
-	DoubleVector const & dual()const;
-	std::set<Column > const & columns()const;	
-	
-	void columnsCost(DoubleVector &);
+	void writeColumns(std::string const & = "columns.txt") const;
+	Double obj() const;
+	std::vector<double> const & primal() const;
+	std::vector<double> const & dual() const;
+	std::set<Column> const & columns() const;
+
+	void columnsCost(std::vector<double> &);
 	void applyBranchingRule(Node const &);
-	void applyBranchingRule(Node const &, DoubleVector &);
+	void applyBranchingRule(Node const &, std::vector<double> &);
 	void branchingWeights(FractionnarySolution const &, BranchingWeights &);
 private:
 	CPXENVptr _env;
 	CPXLPptr _lp;
 
-	std::set<Column > _columns;
+	std::set<Column> _columns;
 	std::vector<double> _dual;
 	std::vector<double> _primal;
 	std::vector<int> _index;
 
 	Double _obj;
-	
-	std::vector< std::vector<std::list<Column const *> > > _rAndbInColumn;
-	std::vector< std::vector<std::list<Column const *> > > _rOrbInColumn;
+
+	std::vector<std::vector<std::list<Column const *> > > _rAndbInColumn;
+	std::vector<std::vector<std::list<Column const *> > > _rOrbInColumn;
 
 };
 

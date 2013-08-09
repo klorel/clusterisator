@@ -28,11 +28,12 @@
 #undef NDEBUG
 #include <cassert>
 
-#if __LP64__
-typedef long double Double;
-#else
+//#if __LP64__
+//typedef long double Double;
+//#else
+//typedef double Double;
+//#endif
 typedef double Double;
-#endif
 
 typedef std::pair<size_t, size_t> Position;
 typedef std::vector<bool> BoolVector;

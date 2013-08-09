@@ -10,7 +10,8 @@
 #include "BranchAndBound.hpp"
 
 
-std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
+//std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
+std::string  RegisteredModularityBInstance::InstancesPath = "/home/manuel/workspace-cpp/clusterisator/bipartite_instances/";
 
 
 

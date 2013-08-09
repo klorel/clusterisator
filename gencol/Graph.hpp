@@ -11,14 +11,14 @@ typedef std::list<Edge> Edges;
 
 class Graph {
 public:
-	
+
 public:
-	typedef std::pair<size_t, double> Element;
+	typedef std::pair<size_t, Double> Element;
 	typedef std::vector<Element> Row;
 	typedef std::vector<Row*> Container;
 	typedef Container::iterator iterator;
 	typedef Container::const_iterator const_iterator;
-	typedef std::map<size_t, double> TempRow;
+	typedef std::map<size_t, Double> TempRow;
 	typedef std::vector<TempRow> TempGraph;
 public:
 
@@ -37,10 +37,9 @@ public:
 
 	void read(std::string const &, std::ostream & = std::cout);
 
-
-	double const & degree(size_t const &) const;
-	double const & degree() const;
-	double const & squareDegree() const;
+	Double const & degree(size_t const &) const;
+	Double const & degree() const;
+	Double const & squareDegree() const;
 	size_t & nbEdge(void);
 	size_t const & nbEdge(void) const;
 	size_t nbNodes() const;
@@ -49,15 +48,15 @@ public:
 	void writeCplusplus(std::string const &) const;
 
 	Row & operator()(size_t const &);
-	Row const & operator()(size_t const &)const;
+	Row const & operator()(size_t const &) const;
 
-	Edges const & edges()const;
+	Edges const & edges() const;
 
 protected:
 	Container _rows;
 	DoubleVector _degrees;
-	double _degree;
-	double _squareDegree;
+	Double _degree;
+	Double _squareDegree;
 	size_t _nbEdge;
 
 	Edges _edges;
@@ -68,7 +67,7 @@ inline std::ostream & operator<<(std::ostream &out, Graph const&g) {
 	out << "nbObs:\t" << g.nbNodes() << std::endl;
 	for (size_t id(0); id < g.nbNodes(); ++id) {
 		out << std::setw(4) << id << " | ";
-		for (auto const  & r : g(id) ) {
+		for (auto const & r : g(id)) {
 			out << r.first << " , " << r.second << " ; ";
 		}
 		out << std::endl;
@@ -76,15 +75,15 @@ inline std::ostream & operator<<(std::ostream &out, Graph const&g) {
 	return out;
 }
 
-inline double const & Graph::degree(size_t const&nodeId) const {
+inline Double const & Graph::degree(size_t const&nodeId) const {
 	return _degrees[nodeId];
 }
 
-inline double const & Graph::degree() const {
+inline Double const & Graph::degree() const {
 	return _degree;
 }
 
-inline double const & Graph::squareDegree() const {
+inline Double const & Graph::squareDegree() const {
 	return _squareDegree;
 }
 
@@ -104,13 +103,14 @@ inline void Graph::clear() {
 	_rows.clear();
 }
 
-class Edge
-{
+class Edge {
 public:
 	size_t _i;
 	size_t _j;
 	Double _v;
-	Edge(size_t i, size_t j, Double v):_i(i),_j(j),_v(v){}
+	Edge(size_t i, size_t j, Double v) :
+			_i(i), _j(j), _v(v) {
+	}
 };
 
 #endif /* GRAPH_HPP */
