@@ -32,13 +32,13 @@ public:
 	bool shift(size_t observation, size_t to);
 	size_t fusion(size_t const & label1, size_t const & label2);
 
-  /**
-   * Reinitialize the partition with the new given number of observations and
-   * the new number of maximum labels
-   *
-   * The weights are reinitialized to 1.0 too, and every observation is put in
-   * the label 0
-   */
+	/**
+	 * Reinitialize the partition with the new given number of observations and
+	 * the new number of maximum labels
+	 *
+	 * The weights are reinitialized to 1.0 too, and every observation is put in
+	 * the label 0
+	 */
 	void oneLabel(size_t nbObs, size_t nbMaxLabel);
 
 	size_t nbObs() const;
@@ -63,7 +63,7 @@ public:
 
 	size_t label(size_t n) const;
 	size_t & label(size_t n);
-	IntVector const & labels()const;
+	IntVector const & labels() const;
 	Partition & operator=(Partition const & rhs);
 	void random();
 	void random(size_t k);
@@ -139,7 +139,7 @@ inline size_t Partition::label(size_t n) const {
 inline size_t & Partition::label(size_t n) {
 	return _labels[n];
 }
-inline IntVector const & Partition::labels()const{
+inline IntVector const & Partition::labels() const {
 	return _labels;
 }
 

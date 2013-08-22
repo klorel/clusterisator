@@ -4,21 +4,30 @@
 #include "gencol.h"
 #include "Column.hpp"
 #include "BipartiteGraph.hpp"
+#include "Decision.hpp"
+#include "ModularityBPartition.hpp"
 class Node;
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 
 class LpMaster {
 public:
-	LpMaster(BipartiteGraph const &);
+	LpMaster(BipartiteGraph const &, DecisionList const & decisions);
+	LpMaster(BipartiteGraph const *, DecisionList const * decisions);
 	~LpMaster();
 public:
-	BipartiteGraph const & _input;
 	void freeLp();
 	void initLp();
-	void write(std::string const & fileName = "master.lp") const;
 
 	void add(Column const & column);
+
+	void add(ModularityBPartition const & column);
+	void add(ModularityBPartition const * column);
+	void addSingleton();
+	void addEdge();
+
+	void write(std::string const & fileName = "master.lp") const;
+
 	void readColumns(std::string const & fileName);
 
 	void getSolution();
@@ -32,10 +41,15 @@ public:
 	std::set<Column> const & columns() const;
 
 	void columnsCost(std::vector<double> &);
-	void applyBranchingRule(Node const &);
-	void applyBranchingRule(Node const &, std::vector<double> &);
+	void applyBranchingRule();
+	void applyBranchingRule(std::vector<double> &);
 	void branchingWeights(FractionnarySolution const &, BranchingWeights &);
+
+	void build();
+
+	void checkCost(DecisionList const &) const;
 private:
+	BipartiteGraph const * _input;
 	CPXENVptr _env;
 	CPXLPptr _lp;
 
@@ -45,9 +59,9 @@ private:
 	std::vector<int> _index;
 
 	Double _obj;
-
-	std::vector<std::vector<std::list<Column const *> > > _rAndbInColumn;
-	std::vector<std::vector<std::list<Column const *> > > _rOrbInColumn;
+	DecisionList const * _decisions;
+//	std::vector<std::vector<std::list<Column const *> > > _rAndbInColumn;
+//	std::vector<std::vector<std::list<Column const *> > > _rOrbInColumn;
 
 };
 

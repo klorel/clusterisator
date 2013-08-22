@@ -46,14 +46,12 @@ IntVector Random(size_t n);
 
 size_t PopRandom(IntVector &, size_t & n);
 
-
 template<class T> inline bool IsEqual(T const & t1, T const & t2) {
 	return std::abs(t1 - t2) <= 1e-6;
 }
 template<> inline bool IsEqual(Double const & t1, Double const & t2) {
 	Double const bigger(std::max(std::abs(t1), std::abs(t2)));
-	return std::abs(t1 - t2) / (bigger > 1 ? bigger : 1)
-			<= 1e-6;
+	return std::abs(t1 - t2) / (bigger > 1 ? bigger : 1) <= 1e-6;
 }
 
 template<> inline bool IsEqual<DoubleVector>(DoubleVector const & t1,
@@ -66,52 +64,58 @@ template<> inline bool IsEqual<DoubleVector>(DoubleVector const & t1,
 
 void operator>>(std::istream &, IntVector &);
 
-
 template<class T1> std::string GetStr(T1 const & t1) {
-	std::stringstream buffer;
-	buffer << t1;
-	return buffer.str();
+	std::stringstream stream;
+	stream << t1;
+	std::string result(stream.str());
+	return result;
 }
 
 template<class T1, class T2> std::string GetStr(T1 const & t1, T2 const & t2) {
-	std::stringstream buffer;
-	buffer << t1 << t2;
-	return buffer.str();
+	std::stringstream stream;
+	stream << t1 << t2;
+	std::string result(stream.str());
+	return result;
 }
 
 template<class T1, class T2, class T3> std::string GetStr(T1 const & t1,
 		T2 const & t2, T3 const & t3) {
-	std::stringstream buffer;
-	buffer << t1 << t2 << t3;
-	return buffer.str();
+	std::stringstream stream;
+	stream << t1 << t2 << t3;
+	std::string result(stream.str());
+	return result;
 }
 
 template<class T1, class T2, class T3, class T4> std::string GetStr(
 		T1 const & t1, T2 const & t2, T3 const & t3, T4 const & t4) {
-	std::stringstream buffer;
-	buffer << t1 << t2 << t3 << t4;
-	return buffer.str();
+	std::stringstream stream;
+	stream << t1 << t2 << t3 << t4;
+	std::string result(stream.str());
+	return result;
 }
 template<class T1, class T2, class T3, class T4, class T5>
 inline std::string GetStr(T1 const &t1, T2 const & t2, T3 const & t3,
 		T4 const & t4, T5 const & t5) {
 	std::stringstream stream;
 	stream << t1 << t2 << t3 << t4 << t5;
-	return stream.str();
+	std::string result(stream.str());
+	return result;
 }
 template<class T1, class T2, class T3, class T4, class T5, class T6>
 inline std::string GetStr(T1 const &t1, T2 const & t2, T3 const & t3,
 		T4 const & t4, T5 const & t5, T6 const & t6) {
 	std::stringstream stream;
 	stream << t1 << t2 << t3 << t4 << t5 << t6;
-	return stream.str();
+	std::string result(stream.str());
+	return result;
 }
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7>
 inline std::string GetStr(T1 const & t1, T2 const & t2, T3 const & t3,
 		T4 const & t4, T5 const & t5, T6 const & t6, T7 const & t7) {
 	std::stringstream stream;
 	stream << t1 << t2 << t3 << t4 << t5 << t6 << t7;
-	return stream.str();
+	std::string result(stream.str());
+	return result;
 }
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7,
 		class T8>
@@ -120,7 +124,8 @@ inline std::string GetStr(T1 const & t1, T2 const & t2, T3 const & t3,
 		T8 const & t8) {
 	std::stringstream stream;
 	stream << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8;
-	return stream.str();
+	std::string result(stream.str());
+	return result;
 }
 template<class T1, class T2, class T3, class T4, class T5, class T6, class T7,
 		class T8, class T9>
@@ -129,8 +134,10 @@ inline std::string GetStr(T1 const & t1, T2 const & t2, T3 const & t3,
 		T8 const & t8, T9 const & t9) {
 	std::stringstream stream;
 	stream << t1 << t2 << t3 << t4 << t5 << t6 << t7 << t8 << t9;
-	return stream.str();
+	std::string result(stream.str());
+	return result;
 }
 
+#define MY_PRINT(x) std::cout << #x << " = "<<x<<std::endl
 
 #endif /* COMMON_H_ */

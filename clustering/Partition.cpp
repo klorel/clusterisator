@@ -66,7 +66,7 @@ void Partition::oneLabel(size_t nbObs, size_t nbMaxLabels) {
 	_usedLabels.reset(nbMaxLabels);
 	_unUsedLabels.reset(nbMaxLabels);
 	_labelWeights.assign(nbMaxLabels, 0);
-	_labelWeights[0] = nbObs;
+	_labelWeights[0] = (Double) nbObs;
 
 	_nodePosition.assign(nbObs, _labelLists[0].end());
 	_nodeWeights.assign(nbObs, 1);
@@ -86,11 +86,12 @@ void Partition::oneLabel(size_t nbObs, size_t nbMaxLabels) {
 }
 
 void Partition::setLabels(IntVector const & labels) {
-	assert( labels.size() == nbObs());
+	assert(labels.size() == nbObs());
 
 	for (size_t i(0); i < labels.size(); ++i) {
 		assert(
-				labels[i]<maxNbLabels() && "you must provide labels l : 0<=l<maxNbLabels()");
+				labels[i] < maxNbLabels()
+						&& "you must provide labels l : 0<=l<maxNbLabels()");
 		shift(i, labels[i]);
 	}
 
@@ -158,10 +159,10 @@ void Partition::random() {
 		shift(n, Number::Generator() % maxNbLabels());
 }
 void Partition::random(size_t k) {
-	assert(k<maxNbLabels());
-	assert(nbObs()>0);
+	assert(k < maxNbLabels());
+	assert(nbObs() > 0);
 	IndexedList nodes(nbObs(), true);
-	for (size_t i(0); i < (k == 0 ? maxNbLabels() : k) ; ++i) {
+	for (size_t i(0); i < (k == 0 ? maxNbLabels() : k); ++i) {
 		size_t const n(nodes.pop_random());
 //		OUT<< n << " "<<i<<"\n";
 		shift(n, i);

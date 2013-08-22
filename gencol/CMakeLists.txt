@@ -13,6 +13,6 @@ INCLUDE_DIRECTORIES( . ../clustering ${CPLEX_INC})
 FILE(  GLOB  gencol_files   ./*.cpp ./*.h ./*.hpp ./*.hxx )
 
 
-ADD_EXECUTABLE( gencol  ${gencol_files} )
+ADD_EXECUTABLE( bipartite  ${gencol_files} )
 #TARGET_LINK_LIBRARIES(gencol  clustering ${CPLEX_LIB}/ilocplex.lib ${CPLEX_LIB}/cplex124.lib ) 
-TARGET_LINK_LIBRARIES(gencol  clustering ${CPLEX_LIB}/libilocplex.a ${CPLEX_LIB}/libcplex.a pthread ) 
+TARGET_LINK_LIBRARIES(bipartite  clustering ${CPLEX_LIB}/libilocplex.a ${CPLEX_LIB}/libcplex.a pthread ) 

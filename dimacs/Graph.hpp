@@ -6,8 +6,6 @@
 class Graph;
 std::ostream & operator<<(std::ostream &out, Graph const&);
 
-class Edge;
-typedef std::list<Edge> Edges;
 
 class Graph {
 public:
@@ -103,14 +101,5 @@ inline void Graph::clear() {
 	_rows.clear();
 }
 
-class Edge {
-public:
-	size_t _i;
-	size_t _j;
-	Double _v;
-	Edge(size_t i, size_t j, Double v) :
-			_i(i), _j(j), _v(v) {
-	}
-};
 
 #endif /* GRAPH_HPP */
