@@ -12,9 +12,9 @@
 #include "LabelPropagation.hpp"
 #include "Timer.hpp"
 #include "Divisor.hpp"
-//std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
-std::string RegisteredModularityBInstance::InstancesPath =
-		"../bipartite_instances/";
+std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
+//std::string RegisteredModularityBInstance::InstancesPath =
+//		"../bipartite_instances/";
 
 int usage() {
 	std::cout << "Available instances : \n";
@@ -73,36 +73,40 @@ int main(int argc, char** argv) {
 	instance.out();
 	IndexedList allNodes(instance.nV(), true);
 	ModularityBPartition p(instance, instance.nV());
-
+	
 	p.score() = p.computeScore();
 
-	Divisor divisor(instance);
-	divisor.run(p, 0);
-	divisor.run(p, 30);
-	divisor.run(p, 0);
-	divisor.run(p, 28);
-	divisor.run(p, 29);
-	divisor.run(p, 0);
-
-//	IndexedList usedLabels;
-//	bool stop(false);
-//	while (!stop) {
-//		std::cout << "NEW LOOP" << std::endl;
-//		stop = true;
-//		usedLabels = p.usedLabels();
-//		for (auto const & label : usedLabels) {
-//			Divisor divisor(instance);
-//			if (divisor.run(p, label)) {
-//				stop = false;
-//			}
-//			std::cout << std::setw(4) << label;
-//			std::cout << std::setw(10) << p.score();
-//			std::cout << std::endl;
-//		}
-//	}
-
-//	for (size_t i(0); i < p.nbObs(); ++i) {
-//		p.shift(i, i);
+	//Divisor divisor(instance);	
+	//IndexedList usedLabels;
+	//IndexedList skipedLabels( p.usedLabels());
+	//skipedLabels.clear();
+	//bool stop(false);
+	//while (!stop) {
+	//	std::cout << "NEW LOOP" << std::endl;
+	//	stop = true;
+	//	usedLabels = p.usedLabels();		
+	//	for (auto const & label : usedLabels) {
+	//		if (!skipedLabels.contains(label)){
+	//			if(divisor.run(p, label)) 
+	//				stop = false;
+	//			else{
+	//				skipedLabels.insert(label);
+	//			}
+	//		std::cout << std::setw(4) << label;
+	//		std::cout << std::setw(20) <<std::setprecision(10)<< p.score();
+	//		std::cout << std::endl;
+	//		}
+	//	}
+	//}
+	//std::ofstream file("divisor.sol");
+	//for (size_t i(0); i < p.nbObs(); ++i)
+	//	file << p.label(i) << std::endl;
+	//file.close();
+	//exit(0);
+	"divisor.sol" >> p;
+	p.score() = p.computeScore();
+	//	for (size_t i(0); i < p.nbObs(); ++i) {
+	//		p.shift(i, i);
 //	}
 //	p.score() = p.computeScore();
 //	std::cout << p.score() << std::endl;
@@ -111,8 +115,8 @@ int main(int argc, char** argv) {
 //	/*
 //	 * VNS
 //	 */
-//	BranchAndBound branchAndBound(instance);
-//	branchAndBound.init();
+	BranchAndBound branchAndBound(instance);
+	branchAndBound.init();
 //	Double const kMax((int) instance.nV() * 1.0);
 //	size_t const iteMax(5);
 //	IntVector best(p.labels());
@@ -156,11 +160,11 @@ int main(int argc, char** argv) {
 //	} while (ite <= iteMax);
 //	std::cout << "VNS ENDED" << std::endl;
 //	set(best, p);
-//	branchAndBound.master().add(p);
-//	branchAndBound.run();
-//	branchAndBound.writeSolution();
-//	std::cout << "program run in " << std::setprecision(10) << total.elapsed()
-//			<< std::endl;
+	branchAndBound.master().add(p);
+	branchAndBound.run();
+	branchAndBound.writeSolution();
+	std::cout << "program run in " << std::setprecision(10) << total.elapsed()
+			<< std::endl;
 	return 0;
 }
 

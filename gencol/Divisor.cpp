@@ -112,7 +112,7 @@ Double Divisor::buildLp(ModularityBPartition const & partition, size_t label) {
 //				GetStr("a_", h)
 				"toto");
 	}
-	IntVector b(tR + 1);
+	IntVector b(tB + 1);
 	for (size_t l(0); l < tB + 1; ++l) {
 		// bl binary
 		b[l] = columns.size();
@@ -211,10 +211,10 @@ void Divisor::write(std::string const & fileName) const {
 	CPXwriteprob(_env, _lp, fileName.c_str(), "LP");
 }
 bool Divisor::run(ModularityBPartition & p, size_t label) {
-	MY_PRINT(label);
-	MY_PRINT(p.observations(label).size());
+	//MY_PRINT(label);
+	//MY_PRINT(p.observations(label).size());
 	Double const old_obj(p.score(label));
-	MY_PRINT(old_obj);
+	//MY_PRINT(old_obj);
 	bool success(false);
 	Double const cst_obj(buildLp(p, label));
 	//	write();
@@ -222,7 +222,7 @@ bool Divisor::run(ModularityBPartition & p, size_t label) {
 	Double new_obj;
 	CPXgetobjval(_env, _lp, &new_obj);
 	new_obj += cst_obj;
-	MY_PRINT(new_obj);
+	//MY_PRINT(new_obj);
 	success = (new_obj > 1e-6 + old_obj);
 //	success = true;
 	if (success) {
@@ -241,7 +241,7 @@ bool Divisor::run(ModularityBPartition & p, size_t label) {
 			}
 		}
 		p.score() = p.computeScore();
-		MY_PRINT(new_label);
+		//MY_PRINT(new_label);
 	}
 
 //	MY_PRINT(old_obj);

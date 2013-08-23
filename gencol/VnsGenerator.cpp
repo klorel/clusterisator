@@ -146,7 +146,7 @@ bool VnsGenerator::run() {
 //	} while (k < kMax && _columns.empty());
 
 	} while (ite < iteMax && _columns.empty());
-//	} while (ite < iteMax && (_columns.empty() || ite >= 0));
+	//} while (ite < iteMax && (_columns.empty() || ite >= 0));
 //	if (ite > 100)
 //		std::cout << "ite " << ite << std::endl;
 	//if(ite==iteMax)

@@ -72,7 +72,7 @@ void BranchAndBound::columnGeneration() {
 				_rd = std::max(_rd, column.first);
 				++p;
 				++nb;
-				if (p >= 10)
+				if (p >= 1000)
 					break;
 			}
 
