@@ -73,7 +73,7 @@ void ModularityBPartition::init() {
 Double ModularityBPartition::score(size_t k) const {
 	Double result(0);
 	for (Edge const & edge : _input->edges()) {
-		if (label(_input->nR() + edge._j) == k && label(edge._i) == k)
+		if (label(edge._i) == k && label(_input->nR() + edge._j) == k)
 			++result;
 	}
 	result *= _input->inv_m();
@@ -84,6 +84,34 @@ Double ModularityBPartition::score(size_t k) const {
 	Double Bc(0);
 	for (size_t b(0); b < _input->nB(); ++b)
 		if (label(_input->nR() + b) == k)
+			Bc += _input->kB(b);
+	return result - Rc * Bc * _input->inv_m() * _input->inv_m();
+}
+Double ModularityBPartition::scoreIfSwap(size_t k, size_t node) const {
+	Double result(0);
+	for (Edge const & edge : _input->edges()) {
+		if (edge._i == node && label(_input->nR() + edge._j) == k
+				&& label(edge._i) != k) {
+			++result;
+		} else if (_input->nR() + edge._j == node && label(edge._i) == k
+				&& label(_input->nR() + edge._j) != k) {
+			++result;
+		} else if (label(edge._i) == k && label(_input->nR() + edge._j) == k)
+			++result;
+	}
+	result *= _input->inv_m();
+	Double Rc(0);
+	for (size_t r(0); r < _input->nR(); ++r) {
+		if (r == node && label(r) != k)
+			Rc += _input->kR(r);
+		else if (label(r) == k)
+			Rc += _input->kR(r);
+	}
+	Double Bc(0);
+	for (size_t b(0); b < _input->nB(); ++b)
+		if (label(_input->nR() + b) == k && label(_input->nR() + b) != k)
+			Bc += _input->kB(b);
+		else if (label(_input->nR() + b) == k)
 			Bc += _input->kB(b);
 	return result - Rc * Bc * _input->inv_m() * _input->inv_m();
 }

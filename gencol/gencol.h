@@ -5,6 +5,7 @@
 
 class Column;
 
+typedef std::multimap<Double, Column const *, std::greater<Double> > ReducedCostSorter;
 typedef std::map<Column const *, Double> FractionnarySolution;
 
 typedef std::multimap<Double, std::pair<size_t, size_t>, std::greater<Double> > BranchingWeights;

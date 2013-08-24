@@ -17,6 +17,7 @@ public:
 	Double &score();
 	Double score() const;
 	Double score(size_t label) const;
+	Double scoreIfSwap(size_t label, size_t node) const;
 
 	void checkScore() const;
 

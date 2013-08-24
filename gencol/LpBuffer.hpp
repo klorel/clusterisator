@@ -17,8 +17,8 @@ public:
 public:
 	int size() const;
 	int nz() const;
-	void add(Double rhsObj, char type, std::string const & name);
-	void add(size_t, Double);
+	virtual void add(Double rhsObj, char type, std::string const & name);
+	virtual void add(size_t, Double);
 	virtual void add(CPXENVptr, CPXLPptr);
 	virtual void reserve(size_t, size_t, size_t);
 
@@ -27,6 +27,7 @@ public:
 	double const * value() const;
 
 	Double & rhsObj(size_t);
+	virtual void clear();
 protected:
 	std::vector<int> _index;
 	std::vector<int> _begin;
@@ -46,19 +47,22 @@ class ColumnBuffer: public RowBuffer {
 public:
 	ColumnBuffer() :
 			RowBuffer() {
-
+		_only_continous = true;
 	}
 	virtual ~ColumnBuffer() {
 	}
 public:
+	virtual void clear();
 	virtual void reserve(size_t, size_t, size_t);
 //	virtual void print(std::ostream &) const;
 	virtual void add(CPXENVptr, CPXLPptr);
-	void add(Double rhsObj, char type, Double lower, Double upper,
+	virtual void add(Double rhsObj, char type, Double lower, Double upper,
 			std::string const & name);
+	using RowBuffer::add;
 private:
 	std::vector<double> _lower;
 	std::vector<double> _upper;
+	bool _only_continous;
 
 };
 

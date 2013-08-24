@@ -30,6 +30,7 @@ public:
 
 	bool operator<(Decision const &) const;
 	void print(std::ostream & = std::cout) const;
+	std::string name() const;
 
 	static void Print(DecisionList const &, std::ostream & = std::cout);
 	static void Print(DecisionSet const &, std::ostream & = std::cout);
@@ -101,6 +102,11 @@ inline void Decision::print(std::ostream & stream) const {
 		stream << "_R" << r();
 		stream << "_B" << b();
 	}
+}
+inline std::string Decision::name() const {
+	std::stringstream buffer;
+	print(buffer);
+	return buffer.str();
 }
 inline void Decision::Print(DecisionList const & list, std::ostream & stream) {
 	for (auto const & d : list) {

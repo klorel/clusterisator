@@ -13,7 +13,7 @@ int RowBuffer::size() const {
 	return (int) _type.size();
 }
 void RowBuffer::add(Double rhsObj, char type, std::string const & name) {
-//	MY_PRINT(name);
+	//	MY_PRINT(name);
 	_objRhs.push_back(rhsObj);
 	_begin.push_back(nz());
 	_type.push_back(type);
@@ -37,25 +37,36 @@ void RowBuffer::reserve(size_t row, size_t col, size_t nz) {
 	_name.reserve(row);
 }
 
+void RowBuffer::clear() {
+	_begin.clear();
+	_index.clear();
+	_value.clear();
+
+	_type.clear();
+	_objRhs.clear();
+
+	_name.clear();
+}
+
 void RowBuffer::add(CPXENVptr env, CPXLPptr lp) {
 	_begin.push_back(nz());
-//	if (_name.empty()) {
-	CPXaddrows(env, lp, 0, size(), nz(), _objRhs.data(), _type.data(),
-			_begin.data(), index(), value(), NULL, NULL);
-//	} else {
-////		MY_PRINT(_name.size());
-////		MY_PRINT(size());
-//		assert(
-//				(int )_name.size() == size()
-//						&& "you should provide a name for each element");
-//
-//		std::vector<char*> cpxName(_name.size());
-//		for (size_t i(0); i < _name.size(); ++i) {
-//			cpxName[i] = const_cast<char*>(_name[i].c_str());
-//		}
-//		CPXaddrows(env, lp, 0, size(), nz(), _objRhs.data(), _type.data(),
-//				_begin.data(), index(), value(), NULL, cpxName.data());
-//	}
+	if (_name.empty()) {
+		CPXaddrows(env, lp, 0, size(), nz(), _objRhs.data(), _type.data(),
+				_begin.data(), index(), value(), NULL, NULL);
+	} else {
+		//		MY_PRINT(_name.size());
+		//		MY_PRINT(size());
+		assert(
+				(int )_name.size() == size()
+						&& "you should provide a name for each element");
+
+		std::vector<char*> cpxName(_name.size());
+		for (size_t i(0); i < _name.size(); ++i) {
+			cpxName[i] = const_cast<char*>(_name[i].c_str());
+		}
+		CPXaddrows(env, lp, 0, size(), nz(), _objRhs.data(), _type.data(),
+				_begin.data(), index(), value(), NULL, cpxName.data());
+	}
 	_begin.pop_back();
 }
 int const * RowBuffer::index() const {
@@ -75,29 +86,43 @@ void ColumnBuffer::reserve(size_t row, size_t col, size_t nz) {
 	_name.reserve(col);
 }
 
+void ColumnBuffer::clear() {
+	_begin.clear();
+	_index.clear();
+	_value.clear();
+
+	_type.clear();
+	_objRhs.clear();
+
+	_name.clear();
+}
+
 void ColumnBuffer::add(CPXENVptr env, CPXLPptr lp) {
 	_begin.push_back(nz());
 
-//	if (_name.empty()) {
+	if (_name.empty()) {
 		CPXaddcols(env, lp, size(), nz(), _objRhs.data(), _begin.data(),
 				index(), value(), _lower.data(), _upper.data(), NULL);
-//	} else {
-//		assert(
-//				(int )_name.size() == size()
-//						&& "you should provide a name for each element");
-//
-//		std::vector<char*> cpxName(_name.size());
-//		for (size_t i(0); i < _name.size(); ++i) {
-//			cpxName[i] = const_cast<char*>(_name[i].c_str());
-//		}
-//		CPXaddcols(env, lp, size(), nz(), _objRhs.data(), _begin.data(),
-//				index(), value(), _lower.data(), _upper.data(), cpxName.data());
-//	}
+	} else {
+		assert(
+				(int )_name.size() == size()
+						&& "you should provide a name for each element");
+
+		std::vector<char*> cpxName(_name.size());
+		for (size_t i(0); i < _name.size(); ++i) {
+			cpxName[i] = const_cast<char*>(_name[i].c_str());
+		}
+		CPXaddcols(env, lp, size(), nz(), _objRhs.data(), _begin.data(),
+				index(), value(), _lower.data(), _upper.data(), cpxName.data());
+	}
 	_begin.pop_back();
-	std::vector<int> sequence(size());
-	for (int i(0); i < size(); ++i)
-		sequence[i] = i;
-	CPXchgctype(env, lp, size(), sequence.data(), _type.data());
+	if (!_only_continous) {
+		std::vector<int> sequence(size());
+		for (int i(0); i < size(); ++i) {
+			sequence[i] = CPXgetnumcols(env, lp) - size() + i;
+		}
+		CPXchgctype(env, lp, size(), sequence.data(), _type.data());
+	}
 
 }
 void ColumnBuffer::add(Double rhsObj, char type, Double lower, Double upper,
@@ -105,7 +130,8 @@ void ColumnBuffer::add(Double rhsObj, char type, Double lower, Double upper,
 	_objRhs.push_back(rhsObj);
 	_begin.push_back(nz());
 	_type.push_back(type);
-
+	if (type != CPX_CONTINUOUS)
+		_only_continous = false;
 	_lower.push_back(lower);
 	_upper.push_back(upper);
 	if (!name.empty())

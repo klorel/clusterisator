@@ -113,7 +113,7 @@ bool VnsGenerator::localSearch() {
 bool VnsGenerator::run() {
 	_columns.clear();
 	size_t ite(0);
-	size_t iteMax(500);
+	size_t iteMax(100);
 //	Double kMax((Double) std::max(_input->nR(), _input->nB()));
 //	Double kMax((Double) std::min(_input->nR(), _input->nB()));
 	Double kMax((Double) _input->nV());

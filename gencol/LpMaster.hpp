@@ -21,6 +21,10 @@ public:
 
 	void add(Column const & column);
 
+	void add(std::set<Column> const & column, size_t & nb, Double&rd);
+
+	void add(ReducedCostSorter const & column, size_t, size_t & nb, Double&rd);
+
 	void add(ModularityBPartition const & column);
 	void add(ModularityBPartition const * column);
 	void addSingleton();
@@ -48,6 +52,13 @@ public:
 	void build();
 
 	void checkCost(DecisionList const &) const;
+
+	void buildDualBounds(ModularityBPartition const &);
+
+	void buildStabilization(ModularityBPartition const &);
+	bool stabilized() const;
+
+	bool updateStabilization();
 private:
 	BipartiteGraph const * _input;
 	CPXENVptr _env;
@@ -60,6 +71,18 @@ private:
 
 	Double _obj;
 	DecisionList const * _decisions;
+	/*
+	 * stabilization
+	 */
+	std::vector<double> _dualLower;
+	std::vector<double> _dualUpper;
+
+	bool _stabilized;
+	std::vector<int> _yIndex;
+	std::vector<int> _epsIndex;
+	std::vector<double> _yCost;
+	Double _stabilizationCost;
+
 //	std::vector<std::vector<std::list<Column const *> > > _rAndbInColumn;
 //	std::vector<std::vector<std::list<Column const *> > > _rOrbInColumn;
 

@@ -44,7 +44,7 @@ void BranchAndBound::columnGeneration() {
 	Double h(0);
 	Double e(0);
 	Timer total;
-	std::multimap<Double, Column const *, std::greater<Double> > sorter;
+	ReducedCostSorter sorter;
 	std::string step;
 	size_t nb(0);
 	size_t ite(0);
@@ -54,6 +54,7 @@ void BranchAndBound::columnGeneration() {
 		//write();
 		timer.restart();
 		_master.solveMaster();
+//		_master.write();
 		m += timer.elapsed();
 		timer.restart();
 //		bool heuristicSucceeded(false);
@@ -62,41 +63,32 @@ void BranchAndBound::columnGeneration() {
 
 		if (heuristicSucceeded) {
 			step = "HEURISTIC";
-			_rd = -1;
-			size_t p(0);
 			_vnsGenerator.sortedColumns(sorter);
-			nb = 0;
-			for (auto const & column : sorter) {
-//				std::cout << "\t"<<column
-				_master.add(*column.second);
-				_rd = std::max(_rd, column.first);
-				++p;
-				++nb;
-				if (p >= 1000)
-					break;
-			}
+			_master.add(sorter, 0, nb, _rd);
+		} else if (_master.stabilized()) {
+			bool launch_exact(_master.updateStabilization());
+			if (launch_exact) {
+				step = "EXACT";
+				timer.restart();
+				//stop = !generate();
+				stop = !_mipGenerator.generate();
+				e += timer.elapsed();
+				if (!stop) {
+					_master.add(_mipGenerator.columns(), nb, _rd);
+				} else
+					_rd = _mipGenerator.bestReducedCost();
+			} else {
+				step = "STABUPDATED";
 
-			//for(auto const & column : _vnsGenerator.columns()){
-			//	_master.add(column);
-			//	_rd = std::max(_rd, column.reducedCost() );
-			//	++p;
-			//	if(p>100)
-			//		break;
-			//}
+			}
 		} else {
 			step = "EXACT";
-			nb = 0;
 			timer.restart();
 			//stop = !generate();
 			stop = !_mipGenerator.generate();
 			e += timer.elapsed();
 			if (!stop) {
-				_rd = -1;
-				for (auto const & column : _mipGenerator.columns()) {
-					++nb;
-					_master.add(column);
-					_rd = std::max(_rd, column.reducedCost());
-				}
+				_master.add(_mipGenerator.columns(), nb, _rd);
 			} else
 				_rd = _mipGenerator.bestReducedCost();
 		}
@@ -110,6 +102,8 @@ void BranchAndBound::columnGeneration() {
 			output() << std::setw(20) << total.elapsed();
 			output() << std::endl;
 		}
+
+//		exit(0);
 	} while (!stop);
 
 //	_master.writeColumns("restart.txt");
@@ -173,7 +167,8 @@ void BranchAndBound::treat(Node * node) {
 	_current->id() = _nodesByUpperBounds.size();
 	std::ofstream file(
 			GetStr("node/", _input->name(), "_node_", _current->id()).c_str());
-	_output = &file;
+//	_output = &file;
+	_output = &std::cout;
 	_decision.clear();
 	_current->decisions(_decision);
 	_master.applyBranchingRule();
