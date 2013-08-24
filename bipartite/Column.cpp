@@ -55,6 +55,13 @@ Double & Column::reducedCost() {
 Double const & Column::reducedCost() const {
 	return _reducedCost;
 }
+void Column::delElement(size_t i) {
+	if (i > _input->nR())
+		_b.erase(i - _input->nR() - 1);
+	else
+		_r.erase(i - 1);
+
+}
 void Column::addElement(size_t i) {
 	if (i > _input->nR())
 		_b.insert(i - _input->nR() - 1);

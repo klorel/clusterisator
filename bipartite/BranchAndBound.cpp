@@ -60,11 +60,15 @@ void BranchAndBound::columnGeneration() {
 //		bool heuristicSucceeded(false);
 		bool heuristicSucceeded(_vnsGenerator.run());
 		h += timer.elapsed();
-
+		nb = 0;
+		_rd = -1;
 		if (heuristicSucceeded) {
 			step = "HEURISTIC";
 			_vnsGenerator.sortedColumns(sorter);
-			_master.add(sorter, 0, nb, _rd);
+			if(_master.stabilized())
+				_master.add(sorter, 0, nb, _rd);
+			else
+				_master.add(sorter, 0, nb, _rd);
 		} else if (_master.stabilized()) {
 			bool launch_exact(_master.updateStabilization());
 			if (launch_exact) {
@@ -102,10 +106,10 @@ void BranchAndBound::columnGeneration() {
 			output() << std::setw(20) << total.elapsed();
 			output() << std::endl;
 		}
-
+		//_master.centerStabilization();
 //		exit(0);
 	} while (!stop);
-
+	//exit(0);
 //	_master.writeColumns("restart.txt");
 }
 
@@ -123,8 +127,8 @@ void BranchAndBound::init() {
 //	_master.readColumns("restart.txt");
 //	_master.solveMaster();
 //	_master.write("restart.lp");
-	_master.addSingleton();
-	_master.addEdge();
+	//_master.addSingleton();
+	//_master.addEdge();	
 }
 void BranchAndBound::run() {
 	BranchingWeights weights;
@@ -171,6 +175,7 @@ void BranchAndBound::treat(Node * node) {
 	_output = &std::cout;
 	_decision.clear();
 	_current->decisions(_decision);
+	_master.resetStabilization();
 	_master.applyBranchingRule();
 //	_master.write();
 	_mipGenerator.applyBranchingRule();

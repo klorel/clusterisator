@@ -18,6 +18,7 @@ public:
 	Column(BipartiteGraph const *);
 	~Column();
 	void addElement(size_t);
+	void delElement(size_t);
 	size_t size() const;
 	size_t & id() const;
 	void check(DoubleVector const &) const;

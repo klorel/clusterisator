@@ -12,9 +12,11 @@
 #include "LabelPropagation.hpp"
 #include "Timer.hpp"
 #include "Divisor.hpp"
-//std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
-std::string RegisteredModularityBInstance::InstancesPath =
-		"../bipartite_instances/";
+
+std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
+
+//std::string RegisteredModularityBInstance::InstancesPath =
+//		"../bipartite_instances/";
 
 int usage() {
 	std::cout << "Available instances : \n";
@@ -60,6 +62,9 @@ int main(int argc, char** argv) {
 
 	AvailableModularityBInstances id(
 			static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
+	bool doStabilization(false);
+	if(argc>2)
+		doStabilization = atoi(argv[2])!= 0;
 	//return vns(argc, argv);
 	//RegisteredModularityBInstance instance(south);
 	//RegisteredModularityBInstance instance(SupremeCourtyes);
@@ -127,7 +132,8 @@ int main(int argc, char** argv) {
 //	branchAndBound.master().write("without.lp");
 
 //	Double const kMax((int) instance.nV() * 1.0);
-	Double const kMax((int) (instance.nV() < 100) ? instance.nV() : 100);
+	//Double const kMax((int) (instance.nV() < 100) ? instance.nV() : 100);
+	Double const kMax(2);
 	MY_PRINT(kMax);
 	MY_PRINT(instance.nV());
 	size_t const iteMax(5);
@@ -145,14 +151,14 @@ int main(int argc, char** argv) {
 		do {
 			++k;
 			singletize(k, allNodes, p);
-			branchAndBound.master().add(p);
+			//branchAndBound.master().add(p);
 			lpa();
 			//			std::cout << std::setw(4) << ite;
 			//			std::cout << std::setw(4) << k;
 			//			std::cout << std::setw(4) << p.nbLabels();
 			//			std::cout << std::setw(15) << p.score();
 			//			std::cout << std::endl;
-			branchAndBound.master().add(p);
+			//branchAndBound.master().add(p);
 			if (bestScore + 1e-10 < p.score()) {
 				bestScore = p.score();
 				best = p.labels();
@@ -176,10 +182,12 @@ int main(int argc, char** argv) {
 	std::cout << "VNS ENDED" << std::endl;
 	set(best, p);
 	branchAndBound.master().add(p);
-	branchAndBound.master().buildStabilization(p);
-//	branchAndBound.master().write();
+	//branchAndBound.master().write();
+	if(doStabilization)
+		branchAndBound.master().buildStabilization(p);
+	//branchAndBound.master().write();
 //	exit(0);
-	branchAndBound.run();
+ 	branchAndBound.run();
 	branchAndBound.writeSolution();
 	std::cout << "program run in " << std::setprecision(10) << total.elapsed()
 			<< std::endl;

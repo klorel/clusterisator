@@ -20,10 +20,11 @@ public:
 	void initLp();
 
 	void add(Column const & column);
+	
+	void add(std::set<Column> const & columns);
+	void add(std::set<Column> const & columns, size_t & nb, Double&rd);
 
-	void add(std::set<Column> const & column, size_t & nb, Double&rd);
-
-	void add(ReducedCostSorter const & column, size_t, size_t & nb, Double&rd);
+	void add(ReducedCostSorter const & columns, size_t, size_t & nb, Double&rd);
 
 	void add(ModularityBPartition const & column);
 	void add(ModularityBPartition const * column);
@@ -40,18 +41,15 @@ public:
 	void solveMaster();
 	void writeColumns(std::string const & = "columns.txt") const;
 	Double obj() const;
+
 	std::vector<double> const & primal() const;
 	std::vector<double> const & dual() const;
 	std::set<Column> const & columns() const;
 
-	void columnsCost(std::vector<double> &);
 	void applyBranchingRule();
-	void applyBranchingRule(std::vector<double> &);
 	void branchingWeights(FractionnarySolution const &, BranchingWeights &);
 
 	void build();
-
-	void checkCost(DecisionList const &) const;
 
 	void buildDualBounds(ModularityBPartition const &);
 
@@ -59,6 +57,9 @@ public:
 	bool stabilized() const;
 
 	bool updateStabilization();
+	bool centerStabilization();
+
+	void resetStabilization();
 private:
 	BipartiteGraph const * _input;
 	CPXENVptr _env;
@@ -67,8 +68,7 @@ private:
 	std::set<Column> _columns;
 	std::vector<double> _dual;
 	std::vector<double> _primal;
-	std::vector<int> _index;
-
+	
 	Double _obj;
 	DecisionList const * _decisions;
 	/*

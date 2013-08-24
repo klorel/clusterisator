@@ -117,10 +117,11 @@ bool VnsGenerator::run() {
 //	Double kMax((Double) std::max(_input->nR(), _input->nB()));
 //	Double kMax((Double) std::min(_input->nR(), _input->nB()));
 	Double kMax((Double) _input->nV());
+	//Double kMax((Double) _input->nV()*0.3);
 //	_current.clear();
 //	compute();
 	_current.clear();
-//	initialize(current);
+	initialize();
 	_best = _current;
 	Column column(_input);
 	do {
@@ -142,7 +143,8 @@ bool VnsGenerator::run() {
 			} else {
 				_current = _best;
 			}
-		} while (k < kMax);
+		//} while (k < kMax);
+		} while (k < kMax && _columns.empty());
 //	} while (k < kMax && _columns.empty());
 
 	} while (ite < iteMax && _columns.empty());
@@ -150,6 +152,8 @@ bool VnsGenerator::run() {
 //	if (ite > 100)
 //		std::cout << "ite " << ite << std::endl;
 	//if(ite==iteMax)
+	//MY_PRINT(ite);
+	//MY_PRINT(iteMax);
 
 	return !_columns.empty();
 }
