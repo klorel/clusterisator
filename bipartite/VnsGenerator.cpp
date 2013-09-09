@@ -110,14 +110,13 @@ bool VnsGenerator::localSearch() {
 	return success;
 }
 
-bool VnsGenerator::run() {
+bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 	_columns.clear();
 	size_t ite(0);
-	size_t iteMax(100);
 //	Double kMax((Double) std::max(_input->nR(), _input->nB()));
 //	Double kMax((Double) std::min(_input->nR(), _input->nB()));
 	Double kMax((Double) _input->nV());
-	//Double kMax((Double) _input->nV()*0.3);
+//	Double kMax((Double) _input->nV() * 0.5 + 1);
 //	_current.clear();
 //	compute();
 	_current.clear();
@@ -127,12 +126,11 @@ bool VnsGenerator::run() {
 	do {
 		++ite;
 		size_t k(0);
-//		initialize(current);
 		do {
 			++k;
 			shake(k);
 			localSearch();
-			if (_current.violation(*_decisions) == 0
+			if (!stopAtFirst && _current.violation(*_decisions) == 0
 					&& _current._reducedCost > ZERO_REDUCED_COST) {
 				_current.build(column);
 				_columns.insert(column);
@@ -140,11 +138,19 @@ bool VnsGenerator::run() {
 			if (VnsGeneratorSolution::IsBetter(_current, _best, *_decisions)) {
 				_best = _current;
 				k = 0;
+				if (stopAtFirst && _current.violation(*_decisions) == 0
+						&& _current._reducedCost > ZERO_REDUCED_COST) {
+					_current.build(column);
+					_columns.insert(column);
+				}
 			} else {
 				_current = _best;
 			}
-		//} while (k < kMax);
-		} while (k < kMax && _columns.empty());
+			if (!_columns.empty() && stopAtFirst)
+				k = kMax;
+		} while (k < kMax);
+//		} while (k < kMax && (_columns.empty() || k<10));
+//		} while (k < kMax && _columns.empty());
 //	} while (k < kMax && _columns.empty());
 
 	} while (ite < iteMax && _columns.empty());
@@ -152,7 +158,7 @@ bool VnsGenerator::run() {
 //	if (ite > 100)
 //		std::cout << "ite " << ite << std::endl;
 	//if(ite==iteMax)
-	//MY_PRINT(ite);
+//	MY_PRINT(ite);
 	//MY_PRINT(iteMax);
 
 	return !_columns.empty();
@@ -171,9 +177,17 @@ void VnsGenerator::sortedColumns(
 }
 void VnsGenerator::initialize() {
 	_current.clear();
-	for (size_t i(0); i < _input->nV(); ++i) {
-		if (dual(i) > 0)
-			_current.swap(i);
+//	for (size_t i(0); i < _input->nV(); ++i) {
+//		if (dual(i) > 0)
+//			_current.swap(i);
+//	}
+	for (Edge const & edge : _input->edges()) {
+		if (dualR(edge._i) + dualB(edge._i) > 1e-6) {
+			if (!_current._r.contains(edge._i))
+				_current.swap(edge._i);
+			if (!_current._b.contains(edge._j))
+				_current.swap(_input->nR() + edge._j);
+		}
 	}
 	compute();
 }

@@ -20,7 +20,7 @@ public:
 	void shake(size_t k);
 	void compute();
 	bool localSearch();
-	bool run();
+	bool run(size_t iteMax, bool stopAtFirst);
 	std::set<Column> const & columns() const;
 	void sortedColumns(
 			std::multimap<Double, Column const *, std::greater<Double>> &) const;

@@ -7,20 +7,25 @@
 #include "LpBuffer.hpp"
 #include <cplex.h>
 
-Double const StabilizationBaseCost = 1e2;
+Double const StabilizationBaseCost = 1;
+Double const StabilizationWidth = 1e-4;
 
 LpMaster::LpMaster(BipartiteGraph const &input, DecisionList const & decisions) :
-	_input(&input), _env(NULL), _lp(NULL), _decisions(&decisions) {
-		build();
+		_input(&input), _env(NULL), _lp(NULL), _decisions(&decisions) {
+	build();
+	_stabilizationCost = StabilizationBaseCost;
 }
 LpMaster::LpMaster(BipartiteGraph const *input, DecisionList const * decisions) :
-	_input(input), _env(NULL), _lp(NULL), _decisions(decisions) {
-		build();
+		_input(input), _env(NULL), _lp(NULL), _decisions(decisions) {
+	build();
+	_stabilizationCost = StabilizationBaseCost;
 }
 
-void LpMaster::resetStabilization(){
-	if(_stabilized){
-		_stabilizationCost = StabilizationBaseCost;
+void LpMaster::resetStabilization() {
+	if (_stabilized) {
+//		_stabilizationCost = StabilizationBaseCost;
+//		_stabilizationUpdates = 0;
+
 	}
 }
 bool LpMaster::stabilized() const {
@@ -32,8 +37,10 @@ void LpMaster::build() {
 	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_OFF);
 	CPXsetintparam(_env, CPX_PARAM_THREADS, 1);
 	//CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_BARRIER);
-	CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_BAROPT);
-	//CPXsetintparam(_env, CPX_PARAM_PREIND, CPX_OFF);
+//	CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_DUAL);
+	CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_PRIMAL);
+//	CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_BAROPT);
+//	CPXsetintparam(_env, CPX_PARAM_PREIND, CPX_OFF);
 	initLp();
 	//	_rAndbInColumn.resize(_input->nR(),
 	//			std::vector<std::list<Column const *> >(_input->nB()));
@@ -68,7 +75,7 @@ void LpMaster::initLp() {
 		rowBuffer.add(1, 'E', GetStr("ROW_Y", v));
 	_dual.resize(rowBuffer.size());
 	rowBuffer.add(_env, _lp);
-	assert(CPXgetnumrows(_env, _lp)==rowBuffer.size());
+	assert(CPXgetnumrows(_env, _lp) == rowBuffer.size());
 	CPXchgobjsen(_env, _lp, -1);
 	//	size_t i(0);
 	//	for (auto const & column : _columns) {
@@ -91,44 +98,44 @@ void LpMaster::write(std::string const & fileName) const {
 }
 
 void LpMaster::add(ReducedCostSorter const & columns, size_t nmax, size_t & nb,
-				   Double&rd) {
-					   ColumnBuffer columnBuffer;
-					   rd = -1;
-					   nb = 0;
-					   size_t const current_n(CPXgetnumcols(_env, _lp));
-					   for (auto const & kvp : columns) {
-						   if (nmax > 0 && nb >= nmax)
-							   break;
-						   Column const & column(*kvp.second);
-						   auto result(_columns.insert(column));
-						   if (!result.second) {
-							   //		std::cout << "column already here : " << result.first->id()
-							   //				<< std::endl;
-							   //		result.first->print();
-							   //		double obj;
-							   //		CPXgetobj(_env, _lp, &obj, (int) result.first->id(),
-							   //				(int) result.first->id());
-							   //		std::cout << "column cost is " << obj << std::endl;
-							   //		std::cout << "column violation is "
-							   //				<< result.first->violation(*_decisions) << std::endl;
-							   //		exit(0);
-						   } else {
-							   rd = std::max(rd, column.reducedCost());
-							   result.first->id() = current_n+nb;
-							   columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
-								   GetStr("COLUMN_", result.first->id()));
-							   for (auto const & r : column.r()) {
-								   columnBuffer.add(r, 1);
-							   }
-							   for (auto const & b : column.b()) {
-								   columnBuffer.add(_input->nR() + b, 1);
-							   }
-							   ++nb;
-						   }
-					   }
-					   if (columnBuffer.size() > 0)
-						   columnBuffer.add(_env, _lp);
-					   _primal.resize(CPXgetnumcols(_env, _lp));
+		Double&rd) {
+	ColumnBuffer columnBuffer;
+	rd = -1;
+	nb = 0;
+	size_t const current_n(CPXgetnumcols(_env, _lp));
+	for (auto const & kvp : columns) {
+		if (nmax > 0 && nb >= nmax)
+			break;
+		Column const & column(*kvp.second);
+		auto result(_columns.insert(column));
+		if (!result.second) {
+			//		std::cout << "column already here : " << result.first->id()
+			//				<< std::endl;
+			//		result.first->print();
+			//		double obj;
+			//		CPXgetobj(_env, _lp, &obj, (int) result.first->id(),
+			//				(int) result.first->id());
+			//		std::cout << "column cost is " << obj << std::endl;
+			//		std::cout << "column violation is "
+			//				<< result.first->violation(*_decisions) << std::endl;
+			//		exit(0);
+		} else {
+			rd = std::max(rd, column.reducedCost());
+			result.first->id() = current_n + nb;
+			columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
+					GetStr("COLUMN_", result.first->id()));
+			for (auto const & r : column.r()) {
+				columnBuffer.add(r, 1);
+			}
+			for (auto const & b : column.b()) {
+				columnBuffer.add(_input->nR() + b, 1);
+			}
+			++nb;
+		}
+	}
+	if (columnBuffer.size() > 0)
+		columnBuffer.add(_env, _lp);
+	_primal.resize(CPXgetnumcols(_env, _lp));
 }
 void LpMaster::add(std::set<Column> const & columns, size_t & nb, Double&rd) {
 	ColumnBuffer columnBuffer;
@@ -150,9 +157,9 @@ void LpMaster::add(std::set<Column> const & columns, size_t & nb, Double&rd) {
 			//		exit(0);
 		} else {
 			rd = std::max(rd, column.reducedCost());
-			result.first->id() = current_n+nb;
+			result.first->id() = current_n + nb;
 			columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
-				GetStr("COLUMN_", result.first->id()));
+					GetStr("COLUMN_", result.first->id()));
 			for (auto const & r : column.r()) {
 				columnBuffer.add(r, 1);
 			}
@@ -168,7 +175,7 @@ void LpMaster::add(std::set<Column> const & columns, size_t & nb, Double&rd) {
 	assert(nb == columnBuffer.size());
 }
 
-void LpMaster::add(std::set<Column> const & columns){
+void LpMaster::add(std::set<Column> const & columns) {
 	size_t nb;
 	Double rd;
 	add(columns, nb, rd);
@@ -192,7 +199,7 @@ void LpMaster::add(Column const & column) {
 		result.first->id() = CPXgetnumcols(_env, _lp);
 		ColumnBuffer columnBuffer;
 		columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
-			GetStr("COLUMN_", result.first->id()));
+				GetStr("COLUMN_", result.first->id()));
 		for (auto const & r : column.r()) {
 			columnBuffer.add(r, 1);
 		}
@@ -273,18 +280,18 @@ void LpMaster::readColumns(std::string const & fileName) {
 	}
 	file.close();
 	std::cout << "Read " << _columns.size() - old << " columns from file "
-		<< fileName << std::endl;
+			<< fileName << std::endl;
 }
 
 void LpMaster::getSolution() {
-	assert( CPXgetnumrows(_env, _lp) == _dual.size() );
+	assert(CPXgetnumrows(_env, _lp) == _dual.size());
 	CPXgetpi(_env, _lp, _dual.data(), 0, (int) (_dual.size() - 1));
 	for (size_t i(0); i < _dual.size(); ++i) {
 		_dual[i] *= -1;
 		//if(std::fabs(_dual[i])<1e-10)
 		//	_dual[i] = 0;
 	}
-	assert( CPXgetnumcols(_env, _lp) == _primal.size() );
+	assert(CPXgetnumcols(_env, _lp) == _primal.size());
 	CPXgetx(_env, _lp, _primal.data(), 0, (int) (_primal.size() - 1));
 	CPXgetobjval(_env, _lp, &_obj);
 }
@@ -340,23 +347,23 @@ Double LpMaster::obj() const {
 	return _obj;
 }
 
-
 void LpMaster::applyBranchingRule() {
 	std::vector<double> obj;
-	std::vector<int> index; 
+	std::vector<int> index;
 	index.reserve(_columns.size());
 	obj.reserve(index.size());
 	for (auto const & column : _columns) {
-		index.push_back( column.id());
-		if (column.violation(*_decisions) > 0) 
-			obj.push_back( -1e6);
+		index.push_back(column.id());
+		if (column.violation(*_decisions) > 0)
+			obj.push_back(-1e6);
 		else
-			obj.push_back( column.cost());
+			obj.push_back(column.cost());
 		//		assert(std::fabs(column.cost() - column.computeCost()) < 1e-6);
 	}
 	CPXchgobj(_env, _lp, (int) index.size(), index.data(), obj.data());
 }
-void LpMaster::branchingWeights(FractionnarySolution const & solution,BranchingWeights & weights) {
+void LpMaster::branchingWeights(FractionnarySolution const & solution,
+		BranchingWeights & weights) {
 	// on cherche des arrêtes présentes et semi-présentes dans deux colonnes
 	BranchingWeights2 temp;
 	std::map<Edge, std::pair<IntSet, IntSet> > toto;
@@ -386,11 +393,11 @@ void LpMaster::branchingWeights(FractionnarySolution const & solution,BranchingW
 			//			std::cout << std::setw(6) << t.first._j;
 			//			std::cout << std::endl;
 			weights.insert(
-				std::make_pair(
-				0.5
-				* ((int) ((t.second.first.size()
-				+ t.second.second.size()))),
-				std::make_pair(t.first._i, t.first._j)));
+					std::make_pair(
+							0.5
+									* ((int) ((t.second.first.size()
+											+ t.second.second.size()))),
+							std::make_pair(t.first._i, t.first._j)));
 		}
 	}
 	if (weights.empty()) {
@@ -419,11 +426,11 @@ void LpMaster::branchingWeights(FractionnarySolution const & solution,BranchingW
 				//			std::cout << std::setw(6) << t.first._j;
 				//			std::cout << std::endl;
 				weights.insert(
-					std::make_pair(
-					0.5
-					* ((int) ((t.second.first.size()
-					+ t.second.second.size()))),
-					std::make_pair(t.first._i, t.first._j)));
+						std::make_pair(
+								0.5
+										* ((int) ((t.second.first.size()
+												+ t.second.second.size()))),
+								std::make_pair(t.first._i, t.first._j)));
 			}
 		}
 	}
@@ -444,7 +451,7 @@ void LpMaster::add(ModularityBPartition const & solution) {
 			clone.delElement(n);
 			clone.cost() = clone.computeCost();
 			columns.insert(clone);
-		}	
+		}
 		//for (size_t const & n1 : solution.observations(label)) {
 		//	for (size_t const & n2 : solution.observations(label)) {
 		//		if(n1<n2){
@@ -471,12 +478,12 @@ void LpMaster::buildDualBounds(ModularityBPartition const & partition) {
 	_dualUpper.assign(_input->nV(), -1e20);
 	for (size_t v(0); v < _input->nV(); ++v) {
 		_dualLower[v] = partition.score(partition.label(v))
-			- partition.scoreIfSwap(partition.label(v), v);
+				- partition.scoreIfSwap(partition.label(v), v);
 		for (size_t const & otherLabel : partition.usedLabels()) {
 			if (otherLabel != partition.label(v)) {
 				Double const candidate(
-					partition.scoreIfSwap(otherLabel, v)
-					- partition.score(otherLabel));
+						partition.scoreIfSwap(otherLabel, v)
+								- partition.score(otherLabel));
 				if (_dualUpper[v] < candidate) {
 					_dualUpper[v] = candidate;
 				}
@@ -484,13 +491,19 @@ void LpMaster::buildDualBounds(ModularityBPartition const & partition) {
 		}
 		if (_dualLower[v] > _dualUpper[v])
 			std::swap(_dualLower[v], _dualUpper[v]);
-		Double midle(0.5*(_dualLower[v]+ _dualUpper[v]));
-		Double half_range(0.5*std::abs(_dualLower[v]- _dualUpper[v]));
-		Double const coeff(0.0005);
-		_dualLower[v] = midle - half_range;
-		_dualUpper[v] = midle + half_range;
-		//_dualLower[v] = midle - coeff;
-		//_dualUpper[v] = midle + coeff;
+//		MY_PRINT(std::fabs(_dualLower[v] - _dualUpper[v]));
+		if (std::fabs(_dualLower[v] - _dualUpper[v]) < StabilizationWidth) {
+			_dualLower[v] -= StabilizationWidth / 2;
+			_dualUpper[v] += StabilizationWidth / 2;
+		}
+
+//		Double midle(0.5 * (_dualLower[v] + _dualUpper[v]));
+//		Double half_range(0.5 * std::abs(_dualLower[v] - _dualUpper[v]));
+//		Double const coeff(0.005);
+//		_dualLower[v] = midle - half_range;
+//		_dualUpper[v] = midle + half_range;
+//		_dualLower[v] = midle - coeff;
+//		_dualUpper[v] = midle + coeff;
 		//		_dualLower[v] -= 0.0001;
 		//		_dualUpper[v] += 0.0001;
 	}
@@ -521,25 +534,24 @@ void LpMaster::buildStabilization(ModularityBPartition const &partition) {
 		rows.add(_stabilizationCost, 'L', GetStr("EPS_Y_PLUS_", v));
 	}
 
-
 	for (size_t v(0); v < _input->nV(); ++v) {
-		_yIndex.push_back((int) (current_ncols+ columns.size()));
+		_yIndex.push_back((int) (current_ncols + columns.size()));
 		_yCost.push_back(_dualLower[v]);
 		columns.add(_dualLower[v], CPX_CONTINUOUS, 0, CPX_INFBOUND,
-			GetStr("STAB_Y_MOINS_", v));
+				GetStr("STAB_Y_MOINS_", v));
 		// ax - y- 
 		columns.add(v, -1);
 		// y- <= stab_cost
-		columns.add(current_nrows+columns.size()-1, +1);
+		columns.add(current_nrows + columns.size() - 1, +1);
 
-		_yIndex.push_back((int) (current_ncols + columns.size())); 
+		_yIndex.push_back((int) (current_ncols + columns.size()));
 		_yCost.push_back(_dualUpper[v]);
 		columns.add(-_dualUpper[v], CPX_CONTINUOUS, 0, CPX_INFBOUND,
-			GetStr("STAB_Y_PLUS_", v));
+				GetStr("STAB_Y_PLUS_", v));
 		// ax + y+
 		columns.add(v, +1);
 		// y+ <= stab_cost
-		columns.add(current_nrows+columns.size()-1, +1);
+		columns.add(current_nrows + columns.size() - 1, +1);
 
 		//		std::cout << std::setw(20) << _dualLower[v];
 		//		std::cout << std::setw(20) << _dualUpper[v];
@@ -556,18 +568,21 @@ void LpMaster::buildStabilization(ModularityBPartition const &partition) {
 }
 bool LpMaster::centerStabilization() {
 	bool point_moved(false);
-	if(_stabilized){
+	if (_stabilized) {
 		for (size_t v(0); v < _input->nV(); ++v) {
 			//_dual
 			Double const dual(_dual[v]);
 			if (dual < _dualLower[v] - 1e-6 || dual > _dualUpper[v] + 1e-6) {
-				Double const width((_dualUpper[v] - _dualLower[v]) / 2);
+//				if (dual < _dualLower[v] + 1e-6 || dual > _dualUpper[v] - 1e-6) {
+				Double width((_dualUpper[v] - _dualLower[v]) / 2);
+				width = std::max(width, 1e-4);
 				_dualLower[v] = dual - width;
-				_yCost[2*v] = _dualLower[v];
+				_yCost[2 * v] = _dualLower[v];
 				_dualUpper[v] = dual + width;
-				_yCost[2*v + 1] = _dualUpper[v];
+				_yCost[2 * v + 1] = _dualUpper[v];
 				point_moved = true;
 				resetStabilization();
+//				MY_PRINT(width);
 			}
 		}
 	}
@@ -576,40 +591,74 @@ bool LpMaster::centerStabilization() {
 
 bool LpMaster::updateStabilization() {
 	bool launch_exact(false);
-	if(_stabilized){
+	if (_stabilized) {
 		// on ajuste les bornes si on est dehors
 		bool adjust_penalty(!centerStabilization());
 		// on diminue la pénalité
 		if (adjust_penalty) {
-			if(_stabilizationCost > 2)
-				_stabilizationCost  /= std::sqrt(_stabilizationCost);
-			else{
-				if(_stabilizationCost > 1)
-					_stabilizationCost = 0.5;
-				else
-					_stabilizationCost *=_stabilizationCost;
-			}
-			if (_stabilizationCost < 1e-10)
+			++_stabilizationUpdates;
+			_stabilizationCost = StabilizationBaseCost
+					/ std::pow(2, 2 * _stabilizationUpdates);
+//			_stabilizationCost *= _stabilizationCost;
+
+			if (_stabilizationCost < 1e-6)
 				_stabilizationCost = 0;
 			std::vector<double> temp(_epsIndex.size(), _stabilizationCost);
 			CPXchgrhs(_env, _lp, (int) _epsIndex.size(), _epsIndex.data(),
-				temp.data());
+					temp.data());
 			if (_stabilizationCost > 1e-10) {
 				std::cout << "STABILISATION adjust penalty "
-					<< std::setprecision(15) << _stabilizationCost << std::endl;
+						<< std::setprecision(15) << _stabilizationCost
+						<< std::endl;
 			} else {
-				std::cout << "STABILISATION launch exact" << std::setprecision(15)<<std::endl;
+				std::cout << "STABILISATION launch exact"
+						<< std::setprecision(15) << std::endl;
 				launch_exact = true;
 			}
 		} else {
-			_stabilizationCost  =StabilizationBaseCost;
+			resetStabilization();
 			std::vector<double> temp(_epsIndex.size(), _stabilizationCost);
 			CPXchgrhs(_env, _lp, (int) _epsIndex.size(), _epsIndex.data(),
-				temp.data());
+					temp.data());
 			std::cout << "STABILISATION shift point" << std::endl;
 			CPXchgobj(_env, _lp, (int) _yIndex.size(), _yIndex.data(),
-				_yCost.data());
+					_yCost.data());
 		}
 	}
 	return launch_exact;
+}
+
+void LpMaster::stabilizationStat(std::ostream & stream) const {
+	if (stabilized()) {
+		size_t outOfBound(0);
+		size_t inBound(0);
+
+		for (size_t v(0); v < _input->nV(); ++v) {
+			Double const dual(_dual[v]);
+			if (dual < _dualLower[v] - 1e-6 || dual > _dualUpper[v] + 1e-6) {
+				++outOfBound;
+			} else if (std::fabs(dual - _dualLower[v]) <= 1e-6
+					|| std::fabs(dual - _dualUpper[v]) <= 1e-6) {
+				++inBound;
+			}
+		}
+		stream << std::setw(4) << outOfBound;
+		stream << std::setw(4) << inBound;
+		stream << std::setw(4) << _input->nV() - inBound - outOfBound;
+		stream << std::setw(20) << _stabilizationCost;
+		stream << std::endl;
+
+//		stream << "outOfBound            : " << outOfBound << std::endl;
+//		stream << "inBound               : " << inBound << std::endl;
+//		stream << "other                 : "
+//				<< _input->nV() - inBound - outOfBound << std::endl;
+//		stream << "_stabilizationCost    : " << _stabilizationCost << std::endl;
+//		stream << "StabilizationBaseCost : " << StabilizationBaseCost
+//				<< std::endl;
+
+	}
+}
+
+size_t LpMaster::stabilizationUpdates() const {
+	return _stabilizationUpdates;
 }

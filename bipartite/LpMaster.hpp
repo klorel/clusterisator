@@ -20,7 +20,7 @@ public:
 	void initLp();
 
 	void add(Column const & column);
-	
+
 	void add(std::set<Column> const & columns);
 	void add(std::set<Column> const & columns, size_t & nb, Double&rd);
 
@@ -60,6 +60,10 @@ public:
 	bool centerStabilization();
 
 	void resetStabilization();
+
+	void stabilizationStat(std::ostream & = std::cout) const;
+
+	size_t stabilizationUpdates() const;
 private:
 	BipartiteGraph const * _input;
 	CPXENVptr _env;
@@ -68,7 +72,7 @@ private:
 	std::set<Column> _columns;
 	std::vector<double> _dual;
 	std::vector<double> _primal;
-	
+
 	Double _obj;
 	DecisionList const * _decisions;
 	/*
@@ -82,6 +86,7 @@ private:
 	std::vector<int> _epsIndex;
 	std::vector<double> _yCost;
 	Double _stabilizationCost;
+	size_t _stabilizationUpdates;
 
 //	std::vector<std::vector<std::list<Column const *> > > _rAndbInColumn;
 //	std::vector<std::vector<std::list<Column const *> > > _rOrbInColumn;

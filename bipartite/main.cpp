@@ -13,10 +13,10 @@
 #include "Timer.hpp"
 #include "Divisor.hpp"
 
-std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
+//std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
 
-//std::string RegisteredModularityBInstance::InstancesPath =
-//		"../bipartite_instances/";
+std::string RegisteredModularityBInstance::InstancesPath =
+		"../bipartite_instances/";
 
 int usage() {
 	std::cout << "Available instances : \n";
