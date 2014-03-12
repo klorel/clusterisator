@@ -1,7 +1,7 @@
 #ifndef MODULARITY_B_PARTITION_HPP
 #define MODULARITY_B_PARTITION_HPP
 
-#include "gencol.h"
+#include "common.h"
 #include "Partition.hpp"
 #include "BipartiteGraph.hpp"
 

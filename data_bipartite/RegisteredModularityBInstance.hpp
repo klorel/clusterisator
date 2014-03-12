@@ -33,12 +33,13 @@ public:
 };
 inline void RegisteredModularityBInstance::out() const {
 	OUT<<"Instance name is "<<_name<<"\n";
-	OUT<<"Data were read from "<<InstancesPath + _dataName + ".data"<<"\n";
+	OUT<<"Data were read from "<<InstancesPath + _dataName + ".txt"<<"\n";
 }
 inline RegisteredModularityBInstance::RegisteredModularityBInstance(
 		AvailableModularityBInstances id) {
 	setName(id);
-	read(InstancesPath + _dataName + ".data");
+	edges().read(InstancesPath + _dataName + ".txt");
+	build();
 }
 
 inline void RegisteredModularityBInstance::setName(

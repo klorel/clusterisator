@@ -55,7 +55,8 @@ void BranchAndBound::columnGeneration() {
 		//write();
 		timer.restart();
 		_master.solveMaster();
-		_master.stabilizationStat();
+		if (_output != NULL)
+			_master.stabilizationStat(output());
 //		_master.write();
 		m += timer.elapsed();
 		timer.restart();
@@ -198,8 +199,8 @@ void BranchAndBound::treat(Node * node) {
 	std::ofstream file(
 			GetStr("node/", _input->name(), "_node_", _current->id()).c_str());
 
-//	_output = &file;
-	_output = &std::cout;
+	_output = &file;
+//	_output = &std::cout;
 	_decision.clear();
 	_current->decisions(_decision);
 	_master.resetStabilization();

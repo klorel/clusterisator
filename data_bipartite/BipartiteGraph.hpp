@@ -1,9 +1,9 @@
 #ifndef BIPARTITE_GRAPH_HPP
 #define BIPARTITE_GRAPH_HPP
 
-#include "gencol.h"
+#include "common.h"
 #include "RectMatrix.hpp"
-#include "Edge.hpp"
+#include "Edge.h"
 
 class BipartiteGraph;
 std::ostream & operator<<(std::ostream &out, BipartiteGraph const&);
@@ -11,18 +11,17 @@ class BipartiteGraph {
 public:
 	// data R B
 	BipartiteGraph();
-	BipartiteGraph(std::string const &, std::ostream & = std::cout);
-
-	void read(std::string const &, std::ostream & = std::cout);
+	BipartiteGraph(Edges const & edges);
 	void build();
 	virtual ~BipartiteGraph();
 
-	void exportAmpl(std::string const &) const;
 	size_t nV() const;
 	size_t nR() const;
 	size_t nB() const;
-	Edges const & edges() const;
 
+	Edges & edges();
+	Edges const & edges() const;
+	RectMatrix const & a() const;
 	Double w(size_t r, size_t b) const;
 	Double a(size_t r, size_t b) const;
 	Double kR(size_t) const;
@@ -62,8 +61,14 @@ inline Double BipartiteGraph::kR(size_t r) const {
 inline Double BipartiteGraph::kB(size_t b) const {
 	return _kB[b];
 }
+inline RectMatrix const & BipartiteGraph::a() const {
+	return _a;
+}
 
 inline Edges const & BipartiteGraph::edges() const {
+	return _edges;
+}
+inline Edges & BipartiteGraph::edges() {
 	return _edges;
 }
 inline Double BipartiteGraph::w(size_t r, size_t b) const {

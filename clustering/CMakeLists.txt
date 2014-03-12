@@ -1,4 +1,4 @@
-INCLUDE_DIRECTORIES( . )
+INCLUDE_DIRECTORIES( . ../data_bipartite ../data_unipartite)
 
 FILE(
 	GLOB_RECURSE 
@@ -9,4 +9,4 @@ FILE(
 )
 
 
-ADD_LIBRARY(clustering STATIC ${clustering_files} )
+ADD_LIBRARY(clustering STATIC ${clustering_files} ) 

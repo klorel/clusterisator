@@ -415,7 +415,6 @@ void LpMaster::branchingWeights(FractionnarySolution const & solution,
 				}
 			}
 		}
-		std::cout << "weights.empty()" << std::endl;
 
 		for (auto const & t : toto) {
 			//		std::cout << std::setw(6) << t.second.first.size();
@@ -433,6 +432,8 @@ void LpMaster::branchingWeights(FractionnarySolution const & solution,
 								std::make_pair(t.first._i, t.first._j)));
 			}
 		}
+		if (weights.empty())
+			std::cout << "weights.empty()" << std::endl;
 	}
 }
 
