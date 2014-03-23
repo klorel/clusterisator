@@ -8,37 +8,32 @@
 #include "Node.hpp"
 
 BranchAndBound::BranchAndBound(BipartiteGraph const &input) :
-		_input(&input), _decision(), _master(&input, &_decision), _vnsGenerator(
-				&input, &_master.dual(), &_decision), _mipGenerator(&input,
-				&_master.dual(), &_decision) {
+		_input(&input), _master(NULL), _vnsGenerator(NULL), _mipGenerator(NULL), _decision() {
 	_root = NULL;
-	_rd = 0;
-	_bestFeasible = -1e50;
-	_bestPossible = +1e50;
+	_bestFeasible = std::numeric_limits<double>::min();
+	_bestPossible = std::numeric_limits<double>::max();
 	_current = NULL;
 	_output = NULL;
-}
-BranchAndBound::BranchAndBound(BipartiteGraph const *input) :
-		_input(input), _decision(), _master(input, &_decision), _vnsGenerator(
-				input, &_master.dual(), &_decision), _mipGenerator(input,
-				&_master.dual(), &_decision) {
-	_root = NULL;
-	_rd = 0;
-	_bestFeasible = -1e50;
-	_bestPossible = +1e50;
-	_current = NULL;
-	_output = NULL;
+	_master = new LpMaster(&input, &_decision);
+	_mipGenerator = new MipGenerator(&input, &_master->dual(), &_decision);
+	_vnsGenerator = new VnsGenerator(&input, &_master->dual(), &_decision);
 }
 
 BranchAndBound::~BranchAndBound() {
 	if (_root != NULL)
 		delete _root;
+	if (_master != NULL)
+		delete _master;
+	if (_mipGenerator != NULL)
+		delete _mipGenerator;
+	if (_vnsGenerator != NULL)
+		delete _vnsGenerator;
 }
 
 void BranchAndBound::columnGeneration() {
 	bool stop(false);
 
-	//_master.readColumns("bug.txt");
+	//_master->readColumns("bug.txt");
 	Timer timer;
 	Double m(0);
 	Double h(0);
@@ -49,113 +44,75 @@ void BranchAndBound::columnGeneration() {
 	std::string step;
 	size_t nb(0);
 	size_t ite(0);
+	Double rd(0);
 
+	output() << std::setw(6) << "ite";
+	output() << std::setw(10) << "nb col";
+	output() << std::setw(20) << "step";
+	output() << std::setw(8) << "added";
+	output() << std::setw(20) << "lb master";
+	output() << std::setw(20) << "rd";
+	output() << std::setw(10) << "time";
+	output() << std::endl;
 	do {
 		++ite;
 		//write();
 		timer.restart();
-		_master.solveMaster();
-		if (_output != NULL)
-			_master.stabilizationStat(output());
-//		_master.write();
+		_master->solveMaster();
+//		_master->write();
 		m += timer.elapsed();
 		timer.restart();
 //		bool heuristicSucceeded(false);
 		bool heuristicSucceeded(false);
-		if (_master.stabilized()) {
-			if (_master.stabilizationUpdates() == 0)
-				heuristicSucceeded = _vnsGenerator.run(1, true);
-			else
-				heuristicSucceeded = _vnsGenerator.run(
-						_master.stabilizationUpdates()
-								* _master.stabilizationUpdates(), true);
-		} else
-			heuristicSucceeded = _vnsGenerator.run(100, false);
+		heuristicSucceeded = _vnsGenerator->run(100, false);
 		h += timer.elapsed();
 		nb = 0;
-		_rd = -1;
+		rd = -1;
 		if (heuristicSucceeded) {
 			step = "HEURISTIC";
 			timer.restart();
-			_vnsGenerator.sortedColumns(sorter);
-			if (_master.stabilized())
-				_master.add(sorter, 0, nb, _rd);
-			else
-				_master.add(sorter, 0, nb, _rd);
+			_vnsGenerator->sortedColumns(sorter);
+			_master->add(sorter, 1, nb, rd);
 			a += timer.elapsed();
-		} else if (_master.stabilized()) {
-			bool launch_exact(_master.updateStabilization());
-			if (launch_exact) {
-				step = "EXACT";
-				timer.restart();
-				//stop = !generate();
-				stop = !_mipGenerator.generate();
-				e += timer.elapsed();
-				if (!stop) {
-					timer.restart();
-					_master.add(_mipGenerator.columns(), nb, _rd);
-					a += timer.elapsed();
-				} else
-					_rd = _mipGenerator.bestReducedCost();
-			} else {
-				step = "STABUPDATED";
-
-			}
 		} else {
 			step = "EXACT";
 			timer.restart();
 			//stop = !generate();
-			stop = !_mipGenerator.generate();
+			stop = !_mipGenerator->generate();
 			e += timer.elapsed();
 			if (!stop) {
 				timer.restart();
-				_master.add(_mipGenerator.columns(), nb, _rd);
+				_master->add(_mipGenerator->columns(), nb, rd);
 				a += timer.elapsed();
 			} else
-				_rd = _mipGenerator.bestReducedCost();
+				rd = _mipGenerator->bestReducedCost();
 		}
 		if (_output != NULL) {
-			//			output() << std::scientific << std::setprecision(4);
-			output() << std::setprecision(4);
 			output() << std::setw(6) << ite;
-			output() << std::setw(10) << _master.columns().size();
+			output() << std::setw(10) << _master->columns().size();
 			output() << std::setw(20) << step;
-			output() << std::setw(4) << nb;
-			output() << std::setw(10) << _master.obj();
-			output() << std::setw(10) << _rd;
-			output() << std::setw(10) << total.elapsed();
-			output() << std::setw(10) << m + h + e + a;
-			output() << std::setw(10) << m;
-			output() << std::setw(10) << h;
-			output() << std::setw(10) << e;
-			output() << std::setw(10) << a;
-
+			output() << std::setw(8) << nb;
+			output() << std::setw(20) << std::setprecision(10)
+					<< _master->obj();
+			output() << std::setw(20) << std::setprecision(10) << rd;
+			output() << std::setw(10) << std::setprecision(4)
+					<< total.elapsed();
 			output() << std::endl;
 		}
-		if (_rd < 1e-4)
-			_master.centerStabilization();
-//		exit(0);
 	} while (!stop);
-//	exit(0);
-//	_master.writeColumns("restart.txt");
-}
 
-void BranchAndBound::branch(Node * node, size_t r, size_t b) {
-	// on cr�e un nouveau nouveau noeud,
-	// on ajoute la contrainte
-	// on ajoute le noeud � la pile avec la ub � recalculer ?
 }
 
 void BranchAndBound::init() {
 	if (_root != NULL)
 		delete _root;
 	_root = new Node(*this);
-//	_master.readColumns("treat.txt");
-//	_master.readColumns("restart.txt");
-//	_master.solveMaster();
-//	_master.write("restart.lp");
-	//_master.addSingleton();
-	//_master.addEdge();
+//	_master->readColumns("treat.txt");
+//	_master->readColumns("restart.txt");
+//	_master->solveMaster();
+//	_master->write("restart.lp");
+	//_master->addSingleton();
+	//_master->addEdge();
 }
 void BranchAndBound::run() {
 	BranchingWeights weights;
@@ -172,7 +129,7 @@ void BranchAndBound::run() {
 		node->ub() = -1e50;
 		_nodesByUpperBounds.insert(std::make_pair(node->ub(), node));
 
-		_master.branchingWeights(node->lbSolution(), weights);
+		_master->branchingWeights(node->lbSolution(), weights);
 		BranchingWeights::const_iterator it(weights.begin());
 
 		decisions.clear();
@@ -196,27 +153,24 @@ void BranchAndBound::run() {
 void BranchAndBound::treat(Node * node) {
 	_current = node;
 	_current->id() = _nodesByUpperBounds.size();
-	std::ofstream file(
-			GetStr("node/", _input->name(), "_node_", _current->id()).c_str());
+//	std::ofstream file(
+//			GetStr("node/", _input->name(), "_node_", _current->id()).c_str());
 
-	_output = &file;
-//	_output = &std::cout;
 	_decision.clear();
 	_current->decisions(_decision);
-	_master.resetStabilization();
-	_master.applyBranchingRule();
-//	_master.write();
-	_mipGenerator.applyBranchingRule();
-//	_mipGenerator.write();
+	_master->applyBranchingRule();
+
+	_mipGenerator->applyBranchingRule();
+
 	columnGeneration();
-//	_master.writeColumns("treat.txt");
-	_current->ub() = _master.obj();
-	_current->isInteger() = _master.getSolution(_current->lbSolution());
+
+	_current->ub() = _master->obj();
+	_current->isInteger() = _master->getSolution(_current->lbSolution());
 	if (_current->isInteger()) {
-		_current->lb() = _master.obj();
+		_current->lb() = _master->obj();
 		if (_bestFeasible < _current->lb()) {
 			_bestFeasible = _current->lb();
-			_solution = _current->lbSolution();
+			_bestSolution = _current->lbSolution();
 			writeSolution();
 		}
 		std::cout << "integer solution found, obj is " << std::setprecision(10)
@@ -228,8 +182,7 @@ void BranchAndBound::treat(Node * node) {
 		}
 	}
 	_nodesByUpperBounds.insert(std::make_pair(_current->ub(), _current));
-	file.close();
-	_output = NULL;
+//	file.close();
 }
 std::ostream & BranchAndBound::output() {
 	return *_output;
@@ -255,16 +208,16 @@ void BranchAndBound::printTree(std::ostream &stream) const {
 	stream << "----------------------------" << std::endl;
 }
 
-LpMaster & BranchAndBound::master() {
-	return _master;
+IMaster & BranchAndBound::master() {
+	return *_master;
 }
-LpMaster const & BranchAndBound::master() const {
-	return _master;
+IMaster const & BranchAndBound::master() const {
+	return *_master;
 }
 void BranchAndBound::writeSolution() const {
 	std::ofstream file(
 			GetStr("optimal/", _input->name(), "_", _current->lb(), ".txt").c_str());
-	for (auto const & c : _solution) {
+	for (auto const & c : _bestSolution) {
 		for (auto const & r : c.first->r())
 			for (auto const & b : c.first->b()) {
 				file << std::setw(6) << 1 + r;
@@ -273,4 +226,8 @@ void BranchAndBound::writeSolution() const {
 			}
 	}
 	file.close();
+}
+void BranchAndBound::setOutput(std::ostream & stream) {
+	_output = &stream;
+
 }

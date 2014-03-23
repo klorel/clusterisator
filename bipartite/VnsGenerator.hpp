@@ -7,23 +7,20 @@
 #include "IndexedList.hpp"
 #include "VnsGeneratorSolution.hpp"
 #include "Decision.hpp"
+#include "IOracle.h"
 
 class Node;
-class VnsGenerator {
+class VnsGenerator: public IOracle {
 public:
-	VnsGenerator(BipartiteGraph const & input, DoubleVector const & dual,
-			DecisionList const &);
-	VnsGenerator(BipartiteGraph const * input, DoubleVector const * dual,
+	VnsGenerator(BipartiteGraph const *, DoubleVector const *,
 			DecisionList const *);
-	~VnsGenerator();
-
+	virtual ~VnsGenerator();
+public:
+	virtual bool run(size_t iteMax, bool stopAtFirst);
+public:
 	void shake(size_t k);
 	void compute();
 	bool localSearch();
-	bool run(size_t iteMax, bool stopAtFirst);
-	std::set<Column> const & columns() const;
-	void sortedColumns(
-			std::multimap<Double, Column const *, std::greater<Double>> &) const;
 
 	Double dual(size_t) const;
 	Double dualR(size_t) const;
@@ -36,18 +33,10 @@ public:
 	size_t violationIfR(size_t r) const;
 	size_t violationIfB(size_t b) const;
 private:
-
-	BipartiteGraph const * _input;
-	DoubleVector const * _dual;
-
 	IndexedList _allNodes;
-
-	std::set<Column> _columns;
 
 	VnsGeneratorSolution _current;
 	VnsGeneratorSolution _best;
-
-	DecisionList const * _decisions;
 };
 
 inline Double VnsGenerator::dual(size_t n) const {

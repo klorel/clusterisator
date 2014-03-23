@@ -3,14 +3,8 @@
 
 VnsGenerator::VnsGenerator(BipartiteGraph const * input,
 		DoubleVector const * dual, DecisionList const * decisions) :
-		_input(input), _dual(dual), _allNodes(input->nV(), true), _columns(), _current(
-				input, dual), _best(input, dual), _decisions(decisions) {
-
-}
-VnsGenerator::VnsGenerator(BipartiteGraph const & input,
-		DoubleVector const & dual, DecisionList const & decisions) :
-		_input(&input), _dual(&dual), _allNodes(input.nV(), true), _columns(), _current(
-				&input, &dual), _best(&input, &dual), _decisions(&decisions) {
+		IOracle(input, dual, decisions), _allNodes(input->nV(), true), _current(
+				input, dual), _best(input, dual) {
 
 }
 VnsGenerator::~VnsGenerator() {
@@ -164,17 +158,6 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 	return !_columns.empty();
 }
 
-std::set<Column> const & VnsGenerator::columns() const {
-	return _columns;
-}
-
-void VnsGenerator::sortedColumns(
-		std::multimap<Double, Column const *, std::greater<Double>> & result) const {
-	result.clear();
-	for (auto const & column : _columns) {
-		result.insert(std::make_pair(column.reducedCost(), &column));
-	}
-}
 void VnsGenerator::initialize() {
 	_current.clear();
 //	for (size_t i(0); i < _input->nV(); ++i) {

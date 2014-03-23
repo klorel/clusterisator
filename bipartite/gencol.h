@@ -4,6 +4,10 @@
 #include "common.h"
 
 class Column;
+class Decision;
+
+typedef std::list<Decision> DecisionList;
+typedef std::set<Decision> DecisionSet;
 
 typedef std::multimap<Double, Column const *, std::greater<Double> > ReducedCostSorter;
 typedef std::map<Column const *, Double> FractionnarySolution;

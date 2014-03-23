@@ -4,47 +4,47 @@
 #include "gencol.h"
 #include "BipartiteGraph.hpp"
 #include "LpMaster.hpp"
-#include "VnsGenerator.hpp"
-#include "MipGenerator.hpp"
+
+#include "IOracle.h"
 #include "ModularityBPartition.hpp"
 
 class Node;
 class BranchAndBound {
 public:
-	BranchAndBound(BipartiteGraph const *);
 	BranchAndBound(BipartiteGraph const &);
-	~BranchAndBound();
+	virtual ~BranchAndBound();
 public:
 	BipartiteGraph const * _input;
 
 	void columnGeneration();
-	void branch(Node *, size_t, size_t);
+
 	void init();
 	void run();
 	void treat(Node * node);
 	void printTree(std::ostream & = std::cout) const;
 	std::ostream & output();
-	LpMaster & master();
-	LpMaster const & master() const;
+	void setOutput(std::ostream & = std::cout);
+	IMaster & master();
+	IMaster const & master() const;
 
-	void writeSolution()const;
+	void writeSolution() const;
 private:
+	IMaster * _master;
 
-	Double _rd;
-	DecisionList _decision;
-
-	LpMaster _master;
-	VnsGenerator _vnsGenerator;
-	MipGenerator _mipGenerator;
+	IOracle * _vnsGenerator;
+	IOracle * _mipGenerator;
 
 	Node * _root;
 	Node * _current;
+
+	DecisionList _decision;
+
 	std::ostream * _output;
 	std::multimap<Double, Node *, std::greater<Double>> _nodesByUpperBounds;
 
 	Double _bestFeasible;
 	Double _bestPossible;
-	FractionnarySolution _solution;
+	FractionnarySolution _bestSolution;
 
 };
 

@@ -12,7 +12,7 @@ public:
 	Node(BranchAndBound &);
 	Node(BranchAndBound *);
 	Node(Node const * father, bool cannot, size_t r, size_t b);
-	~Node();
+	virtual ~Node();
 	Double lb() const;
 	Double ub() const;
 	Double &lb();

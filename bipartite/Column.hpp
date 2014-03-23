@@ -16,7 +16,7 @@ public:
 	Double computeReducedCost(DoubleVector const & dual) const;
 	Column(BipartiteGraph const &);
 	Column(BipartiteGraph const *);
-	~Column();
+	virtual ~Column();
 	void addElement(size_t);
 	void delElement(size_t);
 	size_t size() const;

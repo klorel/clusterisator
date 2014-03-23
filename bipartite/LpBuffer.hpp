@@ -9,11 +9,8 @@ typedef struct cpxenv* CPXENVptr;
 class RowBuffer {
 public:
 public:
-	RowBuffer() {
-
-	}
-	virtual ~RowBuffer() {
-	}
+	RowBuffer();
+	virtual ~RowBuffer();
 public:
 	int size() const;
 	int nz() const;
@@ -45,12 +42,8 @@ protected:
 
 class ColumnBuffer: public RowBuffer {
 public:
-	ColumnBuffer() :
-			RowBuffer() {
-		_only_continous = true;
-	}
-	virtual ~ColumnBuffer() {
-	}
+	ColumnBuffer();
+	virtual ~ColumnBuffer();
 public:
 	virtual void clear();
 	virtual void reserve(size_t, size_t, size_t);

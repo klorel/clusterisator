@@ -137,3 +137,16 @@ void ColumnBuffer::add(Double rhsObj, char type, Double lower, Double upper,
 	if (!name.empty())
 		_name.push_back(name);
 }
+
+RowBuffer::RowBuffer() {
+
+}
+RowBuffer::~RowBuffer() {
+}
+
+ColumnBuffer::ColumnBuffer() :
+		RowBuffer() {
+	_only_continous = true;
+}
+ColumnBuffer::~ColumnBuffer() {
+}

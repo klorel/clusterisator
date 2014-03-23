@@ -2,6 +2,7 @@
 #define LP_MASTER_HPP
 
 #include "gencol.h"
+#include "IMaster.h"
 #include "Column.hpp"
 #include "BipartiteGraph.hpp"
 #include "Decision.hpp"
@@ -10,9 +11,8 @@ class Node;
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 
-class LpMaster {
+class LpMaster: public IMaster {
 public:
-	LpMaster(BipartiteGraph const &, DecisionList const & decisions);
 	LpMaster(BipartiteGraph const *, DecisionList const * decisions);
 	~LpMaster();
 public:
@@ -20,10 +20,8 @@ public:
 	void initLp();
 
 	void add(Column const & column);
-
 	void add(std::set<Column> const & columns);
 	void add(std::set<Column> const & columns, size_t & nb, Double&rd);
-
 	void add(ReducedCostSorter const & columns, size_t, size_t & nb, Double&rd);
 
 	void add(ModularityBPartition const & column);
@@ -50,47 +48,11 @@ public:
 	void branchingWeights(FractionnarySolution const &, BranchingWeights &);
 
 	void build();
-
-	void buildDualBounds(ModularityBPartition const &);
-
-	void buildStabilization(ModularityBPartition const &);
-	bool stabilized() const;
-
-	bool updateStabilization();
-	bool centerStabilization();
-
-	void resetStabilization();
-
-	void stabilizationStat(std::ostream & = std::cout) const;
-
-	size_t stabilizationUpdates() const;
 private:
-	BipartiteGraph const * _input;
 	CPXENVptr _env;
 	CPXLPptr _lp;
 
-	std::set<Column> _columns;
-	std::vector<double> _dual;
-	std::vector<double> _primal;
-
 	Double _obj;
-	DecisionList const * _decisions;
-	/*
-	 * stabilization
-	 */
-	std::vector<double> _dualLower;
-	std::vector<double> _dualUpper;
-
-	bool _stabilized;
-	std::vector<int> _yIndex;
-	std::vector<int> _epsIndex;
-	std::vector<double> _yCost;
-	Double _stabilizationCost;
-	size_t _stabilizationUpdates;
-
-//	std::vector<std::vector<std::list<Column const *> > > _rAndbInColumn;
-//	std::vector<std::vector<std::list<Column const *> > > _rOrbInColumn;
-
 };
 
 #endif 

@@ -12,7 +12,7 @@ class VnsGeneratorSolution {
 public:
 	VnsGeneratorSolution(BipartiteGraph const &, DoubleVector const & dual);
 	VnsGeneratorSolution(BipartiteGraph const *, DoubleVector const * dual);
-	~VnsGeneratorSolution();
+	virtual ~VnsGeneratorSolution();
 	VnsGeneratorSolution & operator=(VnsGeneratorSolution const &);
 public:
 	void swap(size_t id);
@@ -47,7 +47,6 @@ public:
 	Double _cost;
 	Double _reducedCost;
 };
-
 
 inline Double VnsGeneratorSolution::dual(size_t n) const {
 	return (*_dual)[n];

@@ -15,7 +15,7 @@ BipartiteGraph::~BipartiteGraph() {
 void BipartiteGraph::build() {
 	size_t r(0);
 	size_t b(0);
-	std::cout << _edges << std::endl;
+//	std::cout << _edges << std::endl;
 	for (auto const & e : _edges) {
 		r = std::max(r, e._i);
 		b = std::max(b, e._j);

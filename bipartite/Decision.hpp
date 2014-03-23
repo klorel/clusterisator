@@ -9,10 +9,6 @@
 #define DECISION_HPP
 
 #include "gencol.h"
-class Decision;
-
-typedef std::list<Decision> DecisionList;
-typedef std::set<Decision> DecisionSet;
 class Decision {
 public:
 	Decision();

@@ -18,18 +18,18 @@ bool Edges::read(std::string const & fileName, std::ostream & stream) {
 		buffer >> i;
 		buffer >> j;
 		if (buffer >> v)
-			push_back(Edge(i-1, j-1, v));
+			push_back(Edge(i - 1, j - 1, v));
 		else
-			push_back(Edge(i-1, j-1));
+			push_back(Edge(i - 1, j - 1));
 	}
 	file.close();
 	return true;
 }
 void Edges::print(std::ostream & stream) const {
 	for (auto const & edge : *this) {
-		stream << std::setw(4) << edge._i;
-		stream << std::setw(4) << edge._j;
-		stream << std::setw(4) << edge._v;
+		stream << std::setw(6) << edge._i;
+		stream << std::setw(6) << edge._j;
+		stream << std::setw(6) << edge._v;
 		stream << std::endl;
 	}
 }

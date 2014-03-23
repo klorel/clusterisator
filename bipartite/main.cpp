@@ -31,8 +31,8 @@ int usage() {
 
 		std::cout << "\n";
 	}
-	std::cout << "<exe> <id of selected instance> <number of labels>\n";
-	std::cout << "The program launch the multi level algorithm\n";
+	std::cout << "<exe> <id of selected instance> <model>\n";
+	std::cout << "The program launch the column generation algorithm\n";
 	return 0;
 }
 
@@ -43,9 +43,6 @@ int main(int argc, char** argv) {
 
 	AvailableModularityBInstances id(
 			static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
-	bool doStabilization(false);
-	if (argc > 2)
-		doStabilization = atoi(argv[2]) != 0;
 	//return vns(argc, argv);
 	//RegisteredModularityBInstance instance(south);
 	//RegisteredModularityBInstance instance(SupremeCourtyes);
@@ -65,7 +62,7 @@ int main(int argc, char** argv) {
 	//RegisteredModularityBInstance instance(graphprod);
 	//RegisteredModularityBInstance instance(netscience);
 	instance.out();
-	std::cout << instance.a() << std::endl;
+//	std::cout << instance.a() << std::endl;
 
 	IndexedList allNodes(instance.nV(), true);
 	ModularityBPartition p(instance, instance.nV());
@@ -84,10 +81,9 @@ int main(int argc, char** argv) {
 
 	branchAndBound.master().add(p);
 	//branchAndBound.master().write();
-	if (doStabilization)
-		branchAndBound.master().buildStabilization(p);
 	//branchAndBound.master().write();
 //	exit(0);
+	branchAndBound.setOutput();
 	branchAndBound.run();
 //	branchAndBound.writeSolution();
 	std::cout << "program run in " << std::setprecision(10) << total.elapsed()

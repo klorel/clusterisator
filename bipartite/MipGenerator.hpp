@@ -5,17 +5,19 @@
 #include "Column.hpp"
 #include "BipartiteGraph.hpp"
 #include "LpBuffer.hpp"
+#include "IOracle.h"
 
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 class Node;
-class MipGenerator {
+class MipGenerator: public IOracle {
 public:
-	MipGenerator(BipartiteGraph const &, DoubleVector const & dual,
-			DecisionList const & decisions);
 	MipGenerator(BipartiteGraph const *, DoubleVector const * dual,
 			DecisionList const * decisions);
-	~MipGenerator();
+	virtual ~MipGenerator();
+public:
+	virtual void applyBranchingRule();
+	virtual bool generate();
 public:
 	void freeLp();
 	void initOracle();
@@ -23,30 +25,14 @@ public:
 
 	void setUpOracle();
 
-	bool generate();
-	std::set<Column> const & columns() const;
-	Double bestReducedCost() const;
 	void initCpx();
-	void applyBranchingRule();
 private:
 	CPXENVptr _env;
 	CPXLPptr _oracle;
 
-	BipartiteGraph const * _input;
-	DoubleVector const * _dual;
-
-	std::set<Column> _columns;
-
 	std::vector<int> _index;
-	std::vector<double> _cost;
 
-	Double _bestReducedCost;
-	RectMatrix _s;
 	std::vector<std::string> _cname;
-	std::map<std::pair<size_t, size_t>, size_t> _index2;
-	std::vector<int> _index3;
-	DecisionList const * _decisions;
-	ColumnBuffer _columnBuffer;
 	RowBuffer _rowBuffer;
 	RowBuffer _decisionBuffer;
 };

@@ -24,6 +24,9 @@
 #include <sstream>
 #include <vector>
 #include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <limits>
 
 #undef NDEBUG
 #include <cassert>
