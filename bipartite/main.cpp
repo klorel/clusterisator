@@ -31,7 +31,8 @@ int usage() {
 
 		std::cout << "\n";
 	}
-	std::cout << "<exe> <id of selected instance> <model>\n";
+	std::cout
+			<< "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP)2(bMILP default)>\n";
 	std::cout << "The program launch the column generation algorithm\n";
 	return 0;
 }
@@ -43,6 +44,11 @@ int main(int argc, char** argv) {
 
 	AvailableModularityBInstances id(
 			static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
+
+	AvailableOracle oracle(AvailableOracle::bMILP);
+	if (argc > 2) {
+		oracle = static_cast<AvailableOracle>(atoi(argv[2]));
+	}
 	//return vns(argc, argv);
 	//RegisteredModularityBInstance instance(south);
 	//RegisteredModularityBInstance instance(SupremeCourtyes);
@@ -64,9 +70,7 @@ int main(int argc, char** argv) {
 	instance.out();
 //	std::cout << instance.a() << std::endl;
 
-	IndexedList allNodes(instance.nV(), true);
 	ModularityBPartition p(instance, instance.nV());
-
 	p.score() = p.computeScore();
 	std::cout << "DIVISIVE STARTED" << std::endl;
 	Divisive divisive(instance, p);
@@ -76,13 +80,12 @@ int main(int argc, char** argv) {
 	vns.run();
 	std::cout << "B&B STARTED" << std::endl;
 
-	BranchAndBound branchAndBound(instance);
+	BranchAndBound branchAndBound(instance, oracle);
 	branchAndBound.init();
-
 	branchAndBound.master().add(p);
-	//branchAndBound.master().write();
-	//branchAndBound.master().write();
-//	exit(0);
+//	branchAndBound.master().addEdge();
+//	branchAndBound.master().addSingleton();
+//	branchAndBound.master().write();
 	branchAndBound.setOutput();
 	branchAndBound.run();
 //	branchAndBound.writeSolution();

@@ -5,8 +5,8 @@
  *      Author: manuel
  */
 
-#ifndef IMASTER_H_
-#define IMASTER_H_
+#ifndef I_MASTER_H_
+#define I_MASTER_H_
 
 #include "gencol.h"
 class BipartiteGraph;
@@ -29,6 +29,8 @@ public:
 	virtual void add(ModularityBPartition const * column) = 0;
 	virtual void addSingleton() = 0;
 	virtual void addEdge() = 0;
+
+	virtual void write(std::string const & = "master.lp") const = 0;
 public:
 	virtual void applyBranchingRule() = 0;
 	virtual void branchingWeights(FractionnarySolution const &,

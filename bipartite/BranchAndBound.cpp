@@ -1,13 +1,17 @@
 #include "BranchAndBound.hpp"
 #include "BipartiteGraph.hpp"
-#include "MipGenerator.hpp"
 #include "VnsGenerator.hpp"
 #include "Timer.hpp"
 #include <cplex.h>
 #include "LpMaster.hpp"
 #include "Node.hpp"
 
-BranchAndBound::BranchAndBound(BipartiteGraph const &input) :
+#include "BinaryDecompositionOracle.hpp"
+#include "MilpOracle.hpp"
+#include "QpOracle.hpp"
+
+BranchAndBound::BranchAndBound(BipartiteGraph const &input,
+		AvailableOracle orable) :
 		_input(&input), _master(NULL), _vnsGenerator(NULL), _mipGenerator(NULL), _decision() {
 	_root = NULL;
 	_bestFeasible = std::numeric_limits<double>::min();
@@ -15,7 +19,18 @@ BranchAndBound::BranchAndBound(BipartiteGraph const &input) :
 	_current = NULL;
 	_output = NULL;
 	_master = new LpMaster(&input, &_decision);
-	_mipGenerator = new MipGenerator(&input, &_master->dual(), &_decision);
+	switch (orable) {
+	case MILP:
+		_mipGenerator = new MilpOracle(&input, &_master->dual(), &_decision);
+		break;
+	case MIQP:
+		_mipGenerator = new QpOracle(&input, &_master->dual(), &_decision);
+		break;
+	default:
+		_mipGenerator = new BinaryDecompositionOracle(&input, &_master->dual(),
+				&_decision);
+		break;
+	}
 	_vnsGenerator = new VnsGenerator(&input, &_master->dual(), &_decision);
 }
 
@@ -50,7 +65,7 @@ void BranchAndBound::columnGeneration() {
 	output() << std::setw(10) << "nb col";
 	output() << std::setw(20) << "step";
 	output() << std::setw(8) << "added";
-	output() << std::setw(20) << "lb master";
+	output() << std::setw(20) << "bd master";
 	output() << std::setw(20) << "rd";
 	output() << std::setw(10) << "time";
 	output() << std::endl;
@@ -58,13 +73,15 @@ void BranchAndBound::columnGeneration() {
 		++ite;
 		//write();
 		timer.restart();
+		_master->write();
 		_master->solveMaster();
-//		_master->write();
+
 		m += timer.elapsed();
 		timer.restart();
-//		bool heuristicSucceeded(false);
+		//		bool heuristicSucceeded(false);
 		bool heuristicSucceeded(false);
-		heuristicSucceeded = _vnsGenerator->run(100, false);
+		//		heuristicSucceeded = _vnsGenerator->run(100, false);
+		heuristicSucceeded = false;
 		h += timer.elapsed();
 		nb = 0;
 		rd = -1;
@@ -100,17 +117,17 @@ void BranchAndBound::columnGeneration() {
 			output() << std::endl;
 		}
 	} while (!stop);
-
+	std::cout << std::resetiosflags(std::ios::showbase);
 }
 
 void BranchAndBound::init() {
 	if (_root != NULL)
 		delete _root;
 	_root = new Node(*this);
-//	_master->readColumns("treat.txt");
-//	_master->readColumns("restart.txt");
-//	_master->solveMaster();
-//	_master->write("restart.lp");
+	//	_master->readColumns("treat.txt");
+	//	_master->readColumns("restart.txt");
+	//	_master->solveMaster();
+	//	_master->write("restart.lp");
 	//_master->addSingleton();
 	//_master->addEdge();
 }
@@ -153,8 +170,8 @@ void BranchAndBound::run() {
 void BranchAndBound::treat(Node * node) {
 	_current = node;
 	_current->id() = _nodesByUpperBounds.size();
-//	std::ofstream file(
-//			GetStr("node/", _input->name(), "_node_", _current->id()).c_str());
+	//	std::ofstream file(
+	//			GetStr("node/", _input->name(), "_node_", _current->id()).c_str());
 
 	_decision.clear();
 	_current->decisions(_decision);
@@ -182,7 +199,7 @@ void BranchAndBound::treat(Node * node) {
 		}
 	}
 	_nodesByUpperBounds.insert(std::make_pair(_current->ub(), _current));
-//	file.close();
+	//	file.close();
 }
 std::ostream & BranchAndBound::output() {
 	return *_output;
@@ -195,13 +212,13 @@ void BranchAndBound::printTree(std::ostream &stream) const {
 	for (auto const & node : _nodesByUpperBounds) {
 		if (node.first != -1e50) {
 			stream << std::setw(10) << node.second->id();
-//		stream << std::setw(25) << node.first;
+			//		stream << std::setw(25) << node.first;
 			stream << std::setw(25) << node.second->ub();
 			stream << std::setw(25) << node.second->lb();
 			stream << std::setw(3) << node.second->isInteger();
-//			stream << std::setw(3) << node.second->decision().cannot();
-//			stream << std::setw(3) << node.second->decision().r();
-//			stream << std::setw(3) << node.second->decision().b();
+			//			stream << std::setw(3) << node.second->decision().cannot();
+			//			stream << std::setw(3) << node.second->decision().r();
+			//			stream << std::setw(3) << node.second->decision().b();
 			stream << std::endl;
 		}
 	}

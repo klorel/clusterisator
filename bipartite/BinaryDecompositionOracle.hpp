@@ -1,5 +1,5 @@
-#ifndef MIP_GENERATOR_HPP
-#define MIP_GENERATOR_HPP
+#ifndef BINARY_DECOMPOSITION_ORACLE_HPP
+#define BINARY_DECOMPOSITION_ORACLE_HPP
 
 #include "gencol.h"
 #include "Column.hpp"
@@ -10,11 +10,11 @@
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 class Node;
-class MipGenerator: public IOracle {
+class BinaryDecompositionOracle: public IOracle {
 public:
-	MipGenerator(BipartiteGraph const *, DoubleVector const * dual,
+	BinaryDecompositionOracle(BipartiteGraph const *, DoubleVector const * dual,
 			DecisionList const * decisions);
-	virtual ~MipGenerator();
+	virtual ~BinaryDecompositionOracle();
 public:
 	virtual void applyBranchingRule();
 	virtual bool generate();
@@ -33,6 +33,7 @@ private:
 	std::vector<int> _index;
 
 	std::vector<std::string> _cname;
+
 	RowBuffer _rowBuffer;
 	RowBuffer _decisionBuffer;
 };

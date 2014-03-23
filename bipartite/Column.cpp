@@ -84,6 +84,9 @@ void Column::check(DoubleVector const & dual) const {
 		std::cout << "wrong reduced cost " << std::endl;
 		std::cout << _reducedCost << std::endl;
 		std::cout << computeReducedCost(dual) << std::endl;
+//		for (auto const v : dual) {
+//			std::cout << v << std::endl;
+//		}
 		assert(false && "WRONG REDUCED COST");
 	}
 

@@ -5,8 +5,8 @@
  *      Author: manuel
  */
 
-#ifndef IGENERATOR_H_
-#define IGENERATOR_H_
+#ifndef I_ORACLE_H_
+#define I_ORACLE_H_
 
 #include "gencol.h"
 #include "Decision.hpp"

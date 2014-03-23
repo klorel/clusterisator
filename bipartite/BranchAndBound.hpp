@@ -8,10 +8,15 @@
 #include "IOracle.h"
 #include "ModularityBPartition.hpp"
 
+enum AvailableOracle{
+	MIQP,
+	MILP,
+	bMILP
+};
 class Node;
 class BranchAndBound {
 public:
-	BranchAndBound(BipartiteGraph const &);
+	BranchAndBound(BipartiteGraph const &, AvailableOracle oracle = bMILP);
 	virtual ~BranchAndBound();
 public:
 	BipartiteGraph const * _input;

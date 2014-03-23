@@ -1,6 +1,6 @@
 #include "LpMaster.hpp"
 #include "BipartiteGraph.hpp"
-#include "MipGenerator.hpp"
+#include "BinaryDecompositionOracle.hpp"
 #include "VnsGenerator.hpp"
 #include "Timer.hpp"
 #include "Node.hpp"
@@ -19,10 +19,11 @@ void LpMaster::build() {
 	int err;
 	_env = CPXopenCPLEX(&err);
 	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_OFF);
+//	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_ON);
 	CPXsetintparam(_env, CPX_PARAM_THREADS, 1);
 	//CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_BARRIER);
 //	CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_DUAL);
-	CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_PRIMAL);
+//	CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_PRIMAL);
 //	CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_BAROPT);
 //	CPXsetintparam(_env, CPX_PARAM_PREIND, CPX_OFF);
 	initLp();
@@ -57,7 +58,7 @@ void LpMaster::initLp() {
 	RowBuffer rowBuffer;
 	for (size_t v(0); v < _input->nV(); ++v)
 		rowBuffer.add(1, 'E', GetStr("ROW_Y", v));
-	_dual.resize(rowBuffer.size());
+	_dual.assign(rowBuffer.size(), 0);
 	rowBuffer.add(_env, _lp);
 	assert(CPXgetnumrows(_env, _lp) == rowBuffer.size());
 	CPXchgobjsen(_env, _lp, -1);
@@ -271,6 +272,7 @@ void LpMaster::getSolution() {
 	assert(CPXgetnumrows(_env, _lp) == _dual.size());
 	CPXgetpi(_env, _lp, _dual.data(), 0, (int) (_dual.size() - 1));
 	for (size_t i(0); i < _dual.size(); ++i) {
+//		std::cout << i << " : " << _dual[i] << std::endl;
 		_dual[i] *= -1;
 		//if(std::fabs(_dual[i])<1e-10)
 		//	_dual[i] = 0;
