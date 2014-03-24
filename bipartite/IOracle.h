@@ -29,6 +29,7 @@ public:
 	virtual void sortedColumns(
 			std::multimap<Double, Column const *, std::greater<Double>> &) const;
 	virtual bool run(size_t iteMax, bool stopAtFirst);
+	virtual void extractAndAddSolution(DoubleVector const & x, Double rd);
 protected:
 	BipartiteGraph const * _input;
 	DoubleVector const * _dual;

@@ -72,19 +72,19 @@ int main(int argc, char** argv) {
 
 	ModularityBPartition p(instance, instance.nV());
 	p.score() = p.computeScore();
-	std::cout << "DIVISIVE STARTED" << std::endl;
-	Divisive divisive(instance, p);
-	divisive.run();
-	std::cout << "VNS STARTED" << std::endl;
-	VnsLabelPropagation vns(instance, p, 2, 5);
-	vns.run();
+//	std::cout << "DIVISIVE STARTED" << std::endl;
+//	Divisive divisive(instance, p);
+//	divisive.run();
+//	std::cout << "VNS STARTED" << std::endl;
+//	VnsLabelPropagation vns(instance, p, 2, 5);
+//	vns.run();
 	std::cout << "B&B STARTED" << std::endl;
 
 	BranchAndBound branchAndBound(instance, oracle);
 	branchAndBound.init();
-	branchAndBound.master().add(p);
+//	branchAndBound.master().add(p);
 //	branchAndBound.master().addEdge();
-//	branchAndBound.master().addSingleton();
+	branchAndBound.master().addSingleton();
 //	branchAndBound.master().write();
 	branchAndBound.setOutput();
 	branchAndBound.run();

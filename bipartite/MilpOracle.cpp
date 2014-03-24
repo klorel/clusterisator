@@ -8,7 +8,7 @@
 
 MilpOracle::MilpOracle(BipartiteGraph const * input, DoubleVector const * dual,
 		DecisionList const * decisions) :
-		IOracle(input, dual, decisions), _env(NULL), _oracle(NULL), _index() {
+		CpxOracle(input, dual, decisions) {
 	initCpx();
 }
 void MilpOracle::initCpx() {
@@ -24,25 +24,14 @@ void MilpOracle::initCpx() {
 
 }
 MilpOracle::~MilpOracle() {
-	freeLp();
-}
-void MilpOracle::freeLp() {
-	if (_env != NULL) {
-		CPXcloseCPLEX(&_env);
-		_env = NULL;
-	}
-	if (_oracle != NULL) {
-		CPXfreeprob(_env, &_oracle);
-		_oracle = NULL;
-	}
 }
 void MilpOracle::initOracle() {
 	int err(0);
-	if (_oracle != NULL) {
-		CPXfreeprob(_env, &_oracle);
-		_oracle = NULL;
+	if (_prob != NULL) {
+		CPXfreeprob(_env, &_prob);
+		_prob = NULL;
 	}
-	_oracle = CPXcreateprob(_env, &err, "Oracle");
+	_prob = CPXcreateprob(_env, &err, "Oracle");
 	// 0..R-1 : Yr
 	// R..R+B-1 : Yb
 	ColumnBuffer columnBuffer;
@@ -66,7 +55,7 @@ void MilpOracle::initOracle() {
 			}
 		}
 	}
-	columnBuffer.add(_env, _oracle);
+	columnBuffer.add(_env, _prob);
 // binary declaration
 
 // constraints
@@ -98,8 +87,8 @@ void MilpOracle::initOracle() {
 			}
 		}
 	}
-	_rowBuffer.add(_env, _oracle);
-	CPXchgobjsen(_env, _oracle, -1);
+	_rowBuffer.add(_env, _prob);
+	CPXchgobjsen(_env, _prob, -1);
 //writeOracle();
 //CPXmipopt(_env, _oracle);
 //double toto;
@@ -107,14 +96,10 @@ void MilpOracle::initOracle() {
 //std::cout << "toto : "<<toto<<std::endl;
 }
 
-// on initialise avec les singletons
-void MilpOracle::write(std::string const & fileName) const {
-	CPXwriteprob(_env, _oracle, fileName.c_str(), "LP");
-}
 
 void MilpOracle::setUpOracle() {
 	_columns.clear();
-	CPXchgobj(_env, _oracle, (int) _index.size(), _index.data(), _dual->data());
+	CPXchgobj(_env, _prob, (int) _index.size(), _index.data(), _dual->data());
 
 //	for (auto const & i : _index) {
 //		std::cout << std::setw(6) << i;
@@ -122,101 +107,17 @@ void MilpOracle::setUpOracle() {
 //		std::cout << std::endl;
 //	}
 //	writeOracle();
-	if (CPXgetnummipstarts(_env, _oracle) > 1)
-		CPXdelmipstarts(_env, _oracle, 0,
-				CPXgetnummipstarts(_env, _oracle) - 1);
-}
-bool MilpOracle::generate() {
-	setUpOracle();
-	write();
-	CPXmipopt(_env, _oracle);
-//	checkMipSolution();
-//	CPXpopulate(_env, _oracle);
-	bool result(false);
-	_bestReducedCost = ZERO_REDUCED_COST;
-	if (CPXgetstat(_env, _oracle) == CPXMIP_OPTIMAL
-			|| CPXgetstat(_env, _oracle) == CPXMIP_OPTIMAL_TOL
-			|| CPXgetstat(_env, _oracle) == CPXMIP_POPULATESOL_LIM
-			|| CPXgetstat(_env, _oracle) == CPXMIP_OPTIMAL_POPULATED
-			|| CPXgetstat(_env, _oracle) == CPXMIP_OPTIMAL_POPULATED_TOL) {
-		CPXgetobjval(_env, _oracle, &_bestReducedCost);
-		//_rd-=_cstDual;
-//		std::cout << "_bestReducedCost : " << _bestReducedCost << std::endl;
-		result = (_bestReducedCost > ZERO_REDUCED_COST);
-		if (result) {
-			DoubleVector x(CPXgetnumcols(_env, _oracle));
-			size_t const n(CPXgetsolnpoolnumsolns(_env, _oracle));
-			//			std::cout << std::setw(4) << n << std::endl;
-			Double obj;
-			for (size_t i(0); i < n; ++i) {
-				CPXgetsolnpoolobjval(_env, _oracle, (int) i, &obj);
-				if (obj > ZERO_REDUCED_COST) {
-					CPXgetsolnpoolx(_env, _oracle, (int) i, x.data(), 0,
-							(int) (x.size() - 1));
-					Column column(_input);
-					for (size_t r(0); r < _input->nR(); ++r) {
-						if (x[r] > 0.5) {
-							column.r().insert(r);
-						}
-					}
-					for (size_t b(0); b < _input->nB(); ++b) {
-						if (x[_input->nR() + b] > 0.5) {
-							column.b().insert(b);
-						}
-					}
-					column.cost() = column.computeCost();
-					column.reducedCost() = obj;
-					column.check(*_dual);
-					for (Decision const & decision : *_decisions) {
-						if (column.violation(decision) > 0) {
-							decision.print(
-									std::cout
-											<< "violation in MipGenerator::generate() ");
-							std::cout << std::endl;
-							column.print();
-						}
-					}
-//					write();
-//					assert(column.violation(*_decisions) == 0);
-					_columns.insert(column);
-
-				}
-			}
-		}
-	} else
-		std::cout << "CPXgetstat : " << CPXgetstat(_env, _oracle) << std::endl;
-	return result;
-}
-
-void MilpOracle::applyBranchingRule() {
-	if (_rowBuffer.size() != CPXgetnumrows(_env, _oracle))
-		CPXdelrows(_env, _oracle, _rowBuffer.size(),
-				CPXgetnumrows(_env, _oracle) - 1);
-	_decisionBuffer.clear();
-	if (!_decisions->empty()) {
-		for (Decision const & decision : *_decisions) {
-			if (decision.cannot()) {
-				// r+b <= 1
-				_decisionBuffer.add(1, 'L', decision.name());
-				_decisionBuffer.add(decision.r(), 1);
-				_decisionBuffer.add(_input->nR() + decision.b(), +1);
-			} else {
-				// r = b
-				_decisionBuffer.add(0, 'E', decision.name());
-				_decisionBuffer.add(decision.r(), 1);
-				_decisionBuffer.add(_input->nR() + decision.b(), -1);
-			}
-		}
-		_decisionBuffer.add(_env, _oracle);
-	}
+	if (CPXgetnummipstarts(_env, _prob) > 1)
+		CPXdelmipstarts(_env, _prob, 0,
+				CPXgetnummipstarts(_env, _prob) - 1);
 }
 
 void MilpOracle::checkMipSolution() const {
 	Double obj;
-	DoubleVector x(CPXgetnumcols(_env, _oracle));
-	size_t const n(CPXgetsolnpoolnumsolns(_env, _oracle));
+	DoubleVector x(CPXgetnumcols(_env, _prob));
+	size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
 	for (size_t i(0); i < n; ++i) {
-		CPXgetsolnpoolobjval(_env, _oracle, (int) i, &obj);
+		CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);
 		std::cout << "SOLUTION" << std::setw(2) << i << std::setw(10) << obj
 				<< std::endl;
 		for (size_t r(0); r < _input->nR(); ++r) {

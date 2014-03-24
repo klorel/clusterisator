@@ -40,3 +40,31 @@ void IOracle::sortedColumns(
 bool IOracle::run(size_t iteMax, bool stopAtFirst) {
 	return false;
 }
+void IOracle::extractAndAddSolution(DoubleVector const & x, Double rd) {
+	Column column(_input);
+	for (size_t r(0); r < _input->nR(); ++r) {
+		if (x[r] > 0.5) {
+			column.r().insert(r);
+		}
+	}
+	for (size_t b(0); b < _input->nB(); ++b) {
+		if (x[_input->nR() + b] > 0.5) {
+			column.b().insert(b);
+		}
+	}
+	column.cost() = column.computeCost();
+	column.reducedCost() = rd;
+	column.check(*_dual);
+
+	for (Decision const & decision : *_decisions) {
+		if (column.violation(decision) > 0) {
+			decision.print(
+					std::cout << "violation in MipGenerator::generate() ");
+			std::cout << std::endl;
+			column.print();
+		}
+	}
+	assert(column.violation(*_decisions) == 0);
+	_columns.insert(column);
+
+}

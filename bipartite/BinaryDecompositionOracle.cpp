@@ -9,7 +9,7 @@
 BinaryDecompositionOracle::BinaryDecompositionOracle(
 		BipartiteGraph const * input, DoubleVector const * dual,
 		DecisionList const * decisions) :
-		IOracle(input, dual, decisions), _env(NULL), _oracle(NULL), _index() {
+		CpxOracle(input, dual, decisions) {
 	initCpx();
 }
 void BinaryDecompositionOracle::initCpx() {
@@ -26,25 +26,14 @@ void BinaryDecompositionOracle::initCpx() {
 
 }
 BinaryDecompositionOracle::~BinaryDecompositionOracle() {
-	freeLp();
-}
-void BinaryDecompositionOracle::freeLp() {
-	if (_env != NULL) {
-		CPXcloseCPLEX(&_env);
-		_env = NULL;
-	}
-	if (_oracle != NULL) {
-		CPXfreeprob(_env, &_oracle);
-		_oracle = NULL;
-	}
 }
 void BinaryDecompositionOracle::initOracle() {
 	int err(0);
-	if (_oracle != NULL) {
-		CPXfreeprob(_env, &_oracle);
-		_oracle = NULL;
+	if (_prob != NULL) {
+		CPXfreeprob(_env, &_prob);
+		_prob = NULL;
 	}
-	_oracle = CPXcreateprob(_env, &err, "Oracle");
+	_prob = CPXcreateprob(_env, &err, "Oracle");
 	// 0..R-1 : Yr
 	// R..R+B-1 : Yb
 	ColumnBuffer columnBuffer;
@@ -57,11 +46,14 @@ void BinaryDecompositionOracle::initOracle() {
 	}
 
 	// 
-	RectMatrix s = RectMatrix(_input->nR(), _input->nB());
+	_s = RectMatrix(_input->nR(), _input->nB());
 	for (size_t r(0); r < _input->nR(); ++r) {
 		for (size_t b(0); b < _input->nB(); ++b) {
 			if (_input->a(r, b) != 0) {
-				s.get(r, b) = columnBuffer.size();
+				_s.get(r, b) = columnBuffer.size();
+//				columnBuffer.add(_input->a(r, b) * _input->inv_m(),
+//						CPX_CONTINUOUS, 0, CPX_INFBOUND,
+//						GetStr("S_", r, "_", b));
 				columnBuffer.add(_input->a(r, b) * _input->inv_m(),
 						CPX_CONTINUOUS, -CPX_INFBOUND, CPX_INFBOUND,
 						GetStr("S_", r, "_", b));
@@ -84,11 +76,11 @@ void BinaryDecompositionOracle::initOracle() {
 		b[l] = columnBuffer.size();
 		columnBuffer.add(0, CPX_BINARY, 0, 1, GetStr("b_", l));
 	}
-	RectMatrix ab(tR + 1, tB + 1);
+	_ab = RectMatrix(tR + 1, tB + 1);
 	for (size_t h(0); h < tR + 1; ++h) {
 		for (size_t l(0); l < tB + 1; ++l) {
 			// ahl >= 0
-			ab.get(h, l) = columnBuffer.size();
+			_ab.get(h, l) = columnBuffer.size();
 			columnBuffer.add(
 					-std::pow(2, l + h) * _input->inv_m() * _input->inv_m(),
 					CPX_CONTINUOUS, 0, CPX_INFBOUND, GetStr("a_", h, "_", l));
@@ -100,8 +92,8 @@ void BinaryDecompositionOracle::initOracle() {
 
 	size_t const B1(columnBuffer.size());
 	columnBuffer.add(0, CPX_CONTINUOUS, -CPX_INFBOUND, +CPX_INFBOUND, "B1");
-
-	columnBuffer.add(_env, _oracle);
+	_cname.push_back("B1");
+	columnBuffer.add(_env, _prob);
 	// binary declaration
 
 	// constraints
@@ -140,51 +132,45 @@ void BinaryDecompositionOracle::initOracle() {
 		for (size_t b(0); b < _input->nB(); ++b) {
 			if (_input->a(r, b) != 0) {
 				// Srb <= Yr (r,b) in E
-				_rowBuffer.add(0, 'L', GetStr("SYR_", r));
+				_rowBuffer.add(0, 'L', GetStr("S_LEQ_R_R", r, "_B", b));
 				_rowBuffer.add(r, -1);
-				_rowBuffer.add((int) s.get(r, b), +1);
+				_rowBuffer.add((int) _s.get(r, b), +1);
 				// Srb <= Yb (r,b) in E
-				_rowBuffer.add(0, 'L', GetStr("SYB_", b));
+				_rowBuffer.add(0, 'L', GetStr("S_LEQ_B_R", r, "_B", b));
 				_rowBuffer.add(_input->nR() + b, -1);
-				_rowBuffer.add((int) s.get(r, b), +1);
-			}
-		}
-	}
-//	// Srb >= Yr+ Yb -1  (r,b) in E
-//	for (size_t r(0); r < _input->nR(); ++r) {
-//		for (size_t b(0); b < _input->nB(); ++b) {
-//			if (_input->a(r, b) != 0) {
+				_rowBuffer.add((int) _s.get(r, b), +1);
+//				// Srb >= Yr+ Yb -1  (r,b) in E
 //				_rowBuffer.add(-1, 'G', GetStr("SYRB_", r, "_", b));
 //				_rowBuffer.add(r, -1);
 //				_rowBuffer.add(_input->nR() + b, -1);
 //				_rowBuffer.add((int) _s.get(r, b), +1);
-//			}
-//		}
-//	}
+			}
+		}
+	}
 	// abhl >= ah+bl-1
 	for (size_t h(0); h < tR + 1; ++h) {
 		for (size_t l(0); l < tB + 1; ++l) {
 			_rowBuffer.add(-1, 'G', GetStr("FORTET_", h, "_", l));
-			_rowBuffer.add((int) ab.get(h, l), 1);
+			_rowBuffer.add((int) _ab.get(h, l), 1);
 			_rowBuffer.add(a[h], -1);
 			_rowBuffer.add(b[l], -1);
 		}
 	}
-	// abhl <= ah
-	for (size_t h(0); h < tR + 1; ++h) {
-		for (size_t l(0); l < tB + 1; ++l) {
-			// abhl <= ah
-			_rowBuffer.add(0, 'L', GetStr("abh_", h, "_", l));
-			_rowBuffer.add((int) ab.get(h, l), 1);
-			_rowBuffer.add(a[h], -1);
-			// abhl <= bl
-			_rowBuffer.add(0, 'L', GetStr("abl_", h, "_", l));
-			_rowBuffer.add((int) ab.get(h, l), 1);
-			_rowBuffer.add(b[l], -1);
-		}
-	}
-	_rowBuffer.add(_env, _oracle);
-	CPXchgobjsen(_env, _oracle, -1);
+//	// abhl <= ah
+//	for (size_t h(0); h < tR + 1; ++h) {
+//		for (size_t l(0); l < tB + 1; ++l) {
+//			// abhl <= ah
+//			_rowBuffer.add(0, 'L', GetStr("abh_", h, "_", l));
+//			_rowBuffer.add((int) _ab.get(h, l), 1);
+//			_rowBuffer.add(a[h], -1);
+//			// abhl <= bl
+//			_rowBuffer.add(0, 'L', GetStr("abl_", h, "_", l));
+//			_rowBuffer.add((int) _ab.get(h, l), 1);
+//			_rowBuffer.add(b[l], -1);
+//		}
+//	}
+	_rowBuffer.add(_env, _prob);
+	CPXchgobjsen(_env, _prob, -1);
 	//writeOracle();
 	//CPXmipopt(_env, _oracle);
 	//double toto;
@@ -192,105 +178,71 @@ void BinaryDecompositionOracle::initOracle() {
 	//std::cout << "toto : "<<toto<<std::endl;
 }
 
-// on initialise avec les singletons
-void BinaryDecompositionOracle::write(std::string const & fileName) const {
-	CPXwriteprob(_env, _oracle, fileName.c_str(), "LP");
-}
-
 void BinaryDecompositionOracle::setUpOracle() {
 	_columns.clear();
-	CPXchgobj(_env, _oracle, (int) _index.size(), _index.data(), _dual->data());
+	CPXchgobj(_env, _prob, (int) _index.size(), _index.data(), _dual->data());
 
-	//	for (auto const & i : _index) {
-	//		std::cout << std::setw(6) << i;
-	//		std::cout << std::setw(25) << _dual[i];
-	//		std::cout << std::endl;
-	//	}
-	//	writeOracle();
-	if (CPXgetnummipstarts(_env, _oracle) > 1)
-		CPXdelmipstarts(_env, _oracle, 0,
-				CPXgetnummipstarts(_env, _oracle) - 1);
+//	for (auto const & i : _index) {
+//		std::cout << std::setw(6) << i;
+//		std::cout << std::setw(25) << _dual->at(i);
+//		std::cout << std::endl;
+//	}
+	//	write();
+	if (CPXgetnummipstarts(_env, _prob) > 1)
+		CPXdelmipstarts(_env, _prob, 0, CPXgetnummipstarts(_env, _prob) - 1);
 }
-bool BinaryDecompositionOracle::generate() {
-	setUpOracle();
-	CPXmipopt(_env, _oracle);
-	//	CPXpopulate(_env, _oracle);
-	bool result(false);
-	_bestReducedCost = ZERO_REDUCED_COST;
-	if (CPXgetstat(_env, _oracle) == CPXMIP_OPTIMAL
-			|| CPXgetstat(_env, _oracle) == CPXMIP_OPTIMAL_TOL
-			|| CPXgetstat(_env, _oracle) == CPXMIP_POPULATESOL_LIM
-			|| CPXgetstat(_env, _oracle) == CPXMIP_OPTIMAL_POPULATED
-			|| CPXgetstat(_env, _oracle) == CPXMIP_OPTIMAL_POPULATED_TOL) {
-		CPXgetobjval(_env, _oracle, &_bestReducedCost);
-		//_rd-=_cstDual;
-//				std::cout << "_bestReducedCost : " << _bestReducedCost << std::endl;
-		result = (_bestReducedCost > ZERO_REDUCED_COST);
-		if (result) {
-			DoubleVector x(CPXgetnumcols(_env, _oracle));
-			size_t const n(CPXgetsolnpoolnumsolns(_env, _oracle));
-			//			std::cout << std::setw(4) << n << std::endl;
-			Double obj;
-			for (size_t i(0); i < n; ++i) {
-				CPXgetsolnpoolobjval(_env, _oracle, (int) i, &obj);
-				if (obj > ZERO_REDUCED_COST) {
-					CPXgetsolnpoolx(_env, _oracle, (int) i, x.data(), 0,
-							(int) (x.size() - 1));
-					Column column(_input);
-					for (size_t r(0); r < _input->nR(); ++r) {
-
-						if (x[r] > 0.5) {
-							column.r().insert(r);
-						}
-					}
-					for (size_t b(0); b < _input->nB(); ++b) {
-						if (x[_input->nR() + b] > 0.5) {
-							column.b().insert(b);
-						}
-					}
-					column.cost() = column.computeCost();
-					column.reducedCost() = obj;
-					column.check(*_dual);
-					for (Decision const & decision : *_decisions) {
-						if (column.violation(decision) > 0) {
-							decision.print(
-									std::cout
-											<< "violation in MipGenerator::generate() ");
+void BinaryDecompositionOracle::checkSolutions() {
+	DoubleVector x(CPXgetnumcols(_env, _prob));
+	size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
+	//			std::cout << std::setw(4) << n << std::endl;
+	Double obj;
+	for (size_t i(0); i < n; ++i) {
+		CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);
+		if (obj > ZERO_REDUCED_COST) {
+			CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,
+					(int) (x.size() - 1));
+			Column column(_input);
+			for (size_t r(0); r < _input->nR(); ++r) {
+				if (x[r] > 0.5) {
+					column.r().insert(r);
+				}
+			}
+			for (size_t b(0); b < _input->nB(); ++b) {
+				if (x[_input->nR() + b] > 0.5) {
+					column.b().insert(b);
+				}
+			}
+			for (size_t r(0); r < _input->nR(); ++r) {
+				for (size_t b(0); b < _input->nB(); ++b) {
+					if (_input->a(r, b) != 0) {
+						if (std::fabs(
+								x[r] * x[_input->nR() + b] - x[_s.get(r, b)])
+								> 0.5) {
+							std::cout << std::setw(8) << "ERROR S";
+							std::cout << std::setw(8) << _input->a(r, b);
+							std::cout << std::setw(4) << "Y_R" << r;
+							std::cout << std::setw(4) << x[r];
+							std::cout << std::setw(4) << "Y_B" << b;
+							std::cout << std::setw(4) << x[_input->nR() + b];
+							std::cout << std::setw(4) << x[_s.get(r, b)];
 							std::cout << std::endl;
-							column.print();
 						}
 					}
-//					write();
-//					assert(column.violation(*_decisions) == 0);
-					_columns.insert(column);
-
+				}
+			}
+			column.cost() = column.computeCost();
+			column.reducedCost() = obj;
+			column.check(*_dual);
+			for (Decision const & decision : *_decisions) {
+				if (column.violation(decision) > 0) {
+					decision.print(
+							std::cout
+									<< "violation in MipGenerator::generate() ");
+					std::cout << std::endl;
+					column.print();
 				}
 			}
 		}
-	} else
-		std::cout << "CPXgetstat : " << CPXgetstat(_env, _oracle) << std::endl;
-	return result;
-}
-
-void BinaryDecompositionOracle::applyBranchingRule() {
-	if (_rowBuffer.size() != CPXgetnumrows(_env, _oracle))
-		CPXdelrows(_env, _oracle, _rowBuffer.size(),
-				CPXgetnumrows(_env, _oracle) - 1);
-	_decisionBuffer.clear();
-	if (!_decisions->empty()) {
-		for (Decision const & decision : *_decisions) {
-			if (decision.cannot()) {
-				// r+b <= 1
-				_decisionBuffer.add(1, 'L', decision.name());
-				_decisionBuffer.add(decision.r(), 1);
-				_decisionBuffer.add(_input->nR() + decision.b(), +1);
-			} else {
-				// r = b
-				_decisionBuffer.add(0, 'E', decision.name());
-				_decisionBuffer.add(decision.r(), 1);
-				_decisionBuffer.add(_input->nR() + decision.b(), -1);
-			}
-		}
-		_decisionBuffer.add(_env, _oracle);
 	}
+
 }

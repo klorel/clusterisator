@@ -80,8 +80,8 @@ void BranchAndBound::columnGeneration() {
 		timer.restart();
 		//		bool heuristicSucceeded(false);
 		bool heuristicSucceeded(false);
-		//		heuristicSucceeded = _vnsGenerator->run(100, false);
-		heuristicSucceeded = false;
+		heuristicSucceeded = _vnsGenerator->run(50, false);
+//		heuristicSucceeded = false;
 		h += timer.elapsed();
 		nb = 0;
 		rd = -1;
@@ -89,7 +89,7 @@ void BranchAndBound::columnGeneration() {
 			step = "HEURISTIC";
 			timer.restart();
 			_vnsGenerator->sortedColumns(sorter);
-			_master->add(sorter, 1, nb, rd);
+			_master->add(sorter, 5, nb, rd);
 			a += timer.elapsed();
 		} else {
 			step = "EXACT";

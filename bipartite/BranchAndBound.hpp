@@ -8,10 +8,8 @@
 #include "IOracle.h"
 #include "ModularityBPartition.hpp"
 
-enum AvailableOracle{
-	MIQP,
-	MILP,
-	bMILP
+enum AvailableOracle {
+	MILP, MIQP, bMILP
 };
 class Node;
 class BranchAndBound {
