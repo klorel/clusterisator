@@ -17,10 +17,7 @@ public:
 	void initOracle();
 
 	virtual void setUpOracle();
-
-	void initCpx();
-
-	void checkSolutions();
+	virtual void checkSolutions();
 private:
 
 	RectMatrix _s;

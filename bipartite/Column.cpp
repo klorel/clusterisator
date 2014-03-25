@@ -123,14 +123,13 @@ size_t Column::violation(DecisionList const & decisions) const {
 	size_t result(0);
 	for (auto const & decision : decisions) {
 		result += violation(decision);
-
 	}
 	return result;
 
 }
 size_t Column::violation(Decision const & decision) const {
-	bool const isR(_r.find(decision.r()) != _r.end());
-	bool const isB(_b.find(decision.b()) != _b.end());
+	bool const isR(_r.find(decision.noeud1()) != _r.end());
+	bool const isB(_b.find(decision.noeud2() - _input->nR()) != _b.end());
 //	MY_PRINT(isR);
 //	MY_PRINT(isB);
 	return decision.violation(isR, isB);

@@ -23,7 +23,11 @@ public:
 	virtual void applyBranchingRule();
 	virtual bool generate();
 	virtual void setUpOracle()=0;
+	virtual void initOracle()=0;
+	virtual void checkSolutions() {
+	}
 public:
+	void initCpx();
 	void write(std::string const & fileName = "oracle.lp") const;
 	void freeLp();
 protected:

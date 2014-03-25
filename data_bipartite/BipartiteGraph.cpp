@@ -30,8 +30,41 @@ void BipartiteGraph::build() {
 	}
 	_m = (std::accumulate(_a.begin(), _a.end(), 0.0));
 	_inv_m = 1.0 / _m;
+	_allLinks.assign(nV(), std::map<size_t, double>());
+	_posLinks.assign(nV(), std::map<size_t, double>());
+	_negLinks.assign(nV(), std::map<size_t, double>());
+	for (size_t i(0); i < nR(); ++i) {
+		for (size_t j(0); j < nB(); ++j) {
+			double const value(w(i, j));
+			if (value != 0) {
+				_allLinks[i][nR() + j] = value;
+				_allLinks[nR() + j][i] = value;
+				if (w(i, j) > 0) {
+					_posLinks[i][nR() + j] = value;
+					_posLinks[nR() + j][i] = value;
+				} else {
+					_negLinks[i][nR() + j] = value;
+					_negLinks[nR() + j][i] = value;
+
+				}
+			}
+		}
+	}
 }
 
+std::map<size_t, double> const & BipartiteGraph::allLinks(size_t v) const {
+//	MY_PRINT(v);
+//	MY_PRINT(nV());
+	return _allLinks[v];
+}
+
+std::map<size_t, double> const & BipartiteGraph::posLinks(size_t v) const {
+	return _posLinks[v];
+}
+
+std::map<size_t, double> const & BipartiteGraph::negLinks(size_t v) const {
+	return _negLinks[v];
+}
 //void BipartiteGraph::read(std::string const & fileName, std::ostream & stream) {
 //	std::ifstream file(fileName.c_str());
 //	//_a << file;

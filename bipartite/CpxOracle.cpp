@@ -17,6 +17,18 @@ CpxOracle::~CpxOracle() {
 	freeLp();
 }
 
+void CpxOracle::initCpx() {
+	int err;
+	_env = CPXopenCPLEX(&err);
+	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_OFF);
+	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_ON);
+//	CPXsetintparam(_env, CPX_PARAM_THREADS, 1);
+	CPXsetintparam(_env, CPX_PARAM_CUTPASS, -1);
+//	CPXsetintparam(_env, CPX_PARAM_VARSEL, 4);
+	CPXsetintparam(_env, CPX_PARAM_MIPDISPLAY, 2);
+	initOracle();
+
+}
 void CpxOracle::applyBranchingRule() {
 	if (_rowBuffer.size() != CPXgetnumrows(_env, _prob))
 		CPXdelrows(_env, _prob, _rowBuffer.size(),
@@ -27,13 +39,13 @@ void CpxOracle::applyBranchingRule() {
 			if (decision.cannot()) {
 				// r+b <= 1
 				_decisionBuffer.add(1, 'L', decision.name());
-				_decisionBuffer.add(decision.r(), 1);
-				_decisionBuffer.add(_input->nR() + decision.b(), +1);
+				_decisionBuffer.add(decision.noeud1(), +1);
+				_decisionBuffer.add(decision.noeud2(), +1);
 			} else {
 				// r = b
 				_decisionBuffer.add(0, 'E', decision.name());
-				_decisionBuffer.add(decision.r(), 1);
-				_decisionBuffer.add(_input->nR() + decision.b(), -1);
+				_decisionBuffer.add(decision.noeud1(), +1);
+				_decisionBuffer.add(decision.noeud2(), -1);
 			}
 		}
 		_decisionBuffer.add(_env, _prob);
@@ -50,7 +62,7 @@ bool CpxOracle::generate() {
 	CPXsetintparam(_env, CPX_PARAM_SOLUTIONTARGET,
 			CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
 	CPXmipopt(_env, _prob);
-
+//	checkSolutions();
 //	checkSolution();
 	//	CPXpopulate(_env, _oracle);
 	bool result(false);
@@ -66,7 +78,7 @@ bool CpxOracle::generate() {
 		result = (_bestReducedCost > ZERO_REDUCED_COST);
 		if (result) {
 			DoubleVector x(CPXgetnumcols(_env, _prob));
-			size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
+			size_t const n(1 + 0 * CPXgetsolnpoolnumsolns(_env, _prob));
 			//			std::cout << std::setw(4) << n << std::endl;
 			Double obj;
 			for (size_t i(0); i < n; ++i) {
@@ -75,7 +87,6 @@ bool CpxOracle::generate() {
 					CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,
 							(int) (x.size() - 1));
 					extractAndAddSolution(x, obj);
-
 				}
 			}
 		}

@@ -14,15 +14,15 @@ public:
 	Decision();
 	Decision(Decision const &);
 	Decision(size_t, size_t, bool);
-	Decision(std::pair<size_t, size_t> rb, bool = false);
+	Decision(std::pair<size_t, size_t> noeud1noeud2, bool = false);
 	Decision & operator=(Decision const &);
 	virtual ~Decision();
 	bool cannot() const;
 	bool &cannot();
-	size_t r() const;
-	size_t &r();
-	size_t b() const;
-	size_t &b();
+	size_t noeud1() const;
+	size_t &noeud1();
+	size_t noeud2() const;
+	size_t &noeud2();
 
 	bool operator<(Decision const &) const;
 	void print(std::ostream & = std::cout) const;
@@ -33,98 +33,10 @@ public:
 
 	size_t violation(bool, bool) const;
 private:
-	size_t _r;
-	size_t _b;
+	size_t _noeud1;
+	size_t _noeud2;
 	bool _cannot;
 	bool _empty;
 };
 
-inline Decision::Decision() :
-		_r(0), _b(0), _cannot(0), _empty(true) {
-
-}
-inline Decision::Decision(size_t r, size_t b, bool cannot) :
-		_r(r), _b(b), _cannot(cannot), _empty(false) {
-
-}
-inline Decision::Decision(std::pair<size_t, size_t> rb, bool cannot) :
-		_r(rb.first), _b(rb.second), _cannot(cannot), _empty(false) {
-
-}
-inline Decision::~Decision() {
-
-}
-inline Decision::Decision(Decision const & rhs) :
-		_r(rhs._r), _b(rhs._b), _cannot(rhs._cannot), _empty(rhs._empty) {
-
-}
-inline Decision & Decision::operator=(Decision const & rhs) {
-	if (&rhs != this) {
-		_r = rhs._r;
-		_b = rhs._b;
-		_cannot = rhs._cannot;
-		_empty = rhs._empty;
-	}
-	return *this;
-
-}
-inline bool Decision::cannot() const {
-	return _cannot;
-}
-inline bool &Decision::cannot() {
-	return _cannot;
-}
-inline size_t Decision::r() const {
-	return _r;
-}
-inline size_t &Decision::r() {
-	return _r;
-}
-inline size_t Decision::b() const {
-	return _b;
-}
-inline size_t &Decision::b() {
-	return _b;
-}
-
-inline bool Decision::operator<(Decision const & rhs) const {
-	return std::less<std::pair<size_t, size_t>>()(std::make_pair(_r, _b),
-			std::make_pair(rhs.r(), rhs.b()));
-}
-
-inline void Decision::print(std::ostream & stream) const {
-	if (!_empty) {
-		stream << (cannot() ? "C" : "M");
-		stream << "_R" << r();
-		stream << "_B" << b();
-	}
-}
-inline std::string Decision::name() const {
-	std::stringstream buffer;
-	print(buffer);
-	return buffer.str();
-}
-inline void Decision::Print(DecisionList const & list, std::ostream & stream) {
-	for (auto const & d : list) {
-		d.print(stream);
-		stream << std::endl;
-	}
-}
-inline void Decision::Print(DecisionSet const &list, std::ostream & stream) {
-	for (auto const & d : list) {
-		d.print(stream);
-		stream << std::endl;
-	}
-}
-inline size_t Decision::violation(bool isR, bool isB) const {
-	size_t result(0);
-	if (cannot()) {
-		if (isR && isB)
-			++result;
-	} else {
-		if (isR == !isB)
-			++result;
-	}
-	return result;
-}
 #endif /* DECISION_H_ */

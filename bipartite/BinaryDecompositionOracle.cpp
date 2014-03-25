@@ -12,19 +12,6 @@ BinaryDecompositionOracle::BinaryDecompositionOracle(
 		CpxOracle(input, dual, decisions) {
 	initCpx();
 }
-void BinaryDecompositionOracle::initCpx() {
-	int err;
-	_env = CPXopenCPLEX(&err);
-	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_OFF);
-//	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_ON);
-	CPXsetintparam(_env, CPX_PARAM_THREADS, 1);
-//	CPXsetintparam(_env, CPX_PARAM_CUTPASS, -1);
-//	CPXsetintparam(_env, CPX_PARAM_VARSEL, 4);
-	CPXsetintparam(_env, CPX_PARAM_MIPDISPLAY, 2);
-
-	initOracle();
-
-}
 BinaryDecompositionOracle::~BinaryDecompositionOracle() {
 }
 void BinaryDecompositionOracle::initOracle() {
@@ -193,56 +180,51 @@ void BinaryDecompositionOracle::setUpOracle() {
 }
 void BinaryDecompositionOracle::checkSolutions() {
 	DoubleVector x(CPXgetnumcols(_env, _prob));
-	size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
+	size_t const n(1 + 0 * CPXgetsolnpoolnumsolns(_env, _prob));
 	//			std::cout << std::setw(4) << n << std::endl;
 	Double obj;
 	for (size_t i(0); i < n; ++i) {
 		CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);
-		if (obj > ZERO_REDUCED_COST) {
-			CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,
-					(int) (x.size() - 1));
-			Column column(_input);
-			for (size_t r(0); r < _input->nR(); ++r) {
-				if (x[r] > 0.5) {
-					column.r().insert(r);
-				}
+		CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,
+				(int) (x.size() - 1));
+		Column column(_input);
+		for (size_t r(0); r < _input->nR(); ++r) {
+			if (x[r] > 0.5) {
+				column.r().insert(r);
 			}
+		}
+		for (size_t b(0); b < _input->nB(); ++b) {
+			if (x[_input->nR() + b] > 0.5) {
+				column.b().insert(b);
+			}
+		}
+		for (size_t r(0); r < _input->nR(); ++r) {
 			for (size_t b(0); b < _input->nB(); ++b) {
-				if (x[_input->nR() + b] > 0.5) {
-					column.b().insert(b);
-				}
-			}
-			for (size_t r(0); r < _input->nR(); ++r) {
-				for (size_t b(0); b < _input->nB(); ++b) {
-					if (_input->a(r, b) != 0) {
-						if (std::fabs(
-								x[r] * x[_input->nR() + b] - x[_s.get(r, b)])
-								> 0.5) {
-							std::cout << std::setw(8) << "ERROR S";
-							std::cout << std::setw(8) << _input->a(r, b);
-							std::cout << std::setw(4) << "Y_R" << r;
-							std::cout << std::setw(4) << x[r];
-							std::cout << std::setw(4) << "Y_B" << b;
-							std::cout << std::setw(4) << x[_input->nR() + b];
-							std::cout << std::setw(4) << x[_s.get(r, b)];
-							std::cout << std::endl;
-						}
+				if (_input->a(r, b) != 0) {
+					if (std::fabs(x[r] * x[_input->nR() + b] - x[_s.get(r, b)])
+							> 0.5) {
+						std::cout << std::setw(8) << "ERROR S";
+						std::cout << std::setw(8) << _input->a(r, b);
+						std::cout << std::setw(4) << "Y_R" << r;
+						std::cout << std::setw(4) << x[r];
+						std::cout << std::setw(4) << "Y_B" << b;
+						std::cout << std::setw(4) << x[_input->nR() + b];
+						std::cout << std::setw(4) << x[_s.get(r, b)];
+						std::cout << std::endl;
 					}
 				}
 			}
-			column.cost() = column.computeCost();
-			column.reducedCost() = obj;
-			column.check(*_dual);
-			for (Decision const & decision : *_decisions) {
-				if (column.violation(decision) > 0) {
-					decision.print(
-							std::cout
-									<< "violation in MipGenerator::generate() ");
-					std::cout << std::endl;
-					column.print();
-				}
+		}
+		column.cost() = column.computeCost();
+		column.reducedCost() = obj;
+		column.check(*_dual);
+		for (Decision const & decision : *_decisions) {
+			if (column.violation(decision) > 0) {
+				decision.print(
+						std::cout << "violation in MipGenerator::generate() ");
+				std::cout << std::endl;
+				column.print();
 			}
 		}
 	}
-
 }

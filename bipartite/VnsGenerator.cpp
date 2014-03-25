@@ -38,70 +38,40 @@ void VnsGenerator::compute() {
 }
 
 bool VnsGenerator::localSearch() {
-	bool success(false);
 	bool stop(false);
 //	IntVector temp(_input->nV());
 	size_t violations(_current.violation(*_decisions));
+	assert(violations == _current.violation(*_decisions));
 	do {
-		bool rSucess(false);
-		// optimization of blue
-		for (size_t r(0); r < _input->nR(); ++r) {
-			size_t const newViolations(violationIfR(r));
+
+		stop = true;
+		for (size_t v(0); v < _input->nV(); ++v) {
+			size_t const newViolations(violationIf(v));
 			if (newViolations == 0 || newViolations < violations) {
-				Double deltaCost(0);
-				for (auto const & b : _current._b)
-					deltaCost += _input->w(r, b);
-				Double deltaDual(dualR(r));
+				Double deltaCost(_current.gradient(v));
+				Double deltaDual(dual(v));
 				Double delta(deltaDual + deltaCost);
-				if (delta > ZERO_REDUCED_COST && !_current._r.contains(r)) {
-					_current.swap(r);
+				if (delta > ZERO_REDUCED_COST && !_current._v.contains(v)) {
+					_current.swap(v);
 					_current._cost += deltaCost;
 					_current._reducedCost += delta;
-					rSucess = true;
+					stop = false;
 					violations = newViolations;
 				} else if (delta < -ZERO_REDUCED_COST
-						&& _current._r.contains(r)) {
-					_current.swap(r);
+						&& _current._v.contains(v)) {
+					_current.swap(v);
 					_current._cost -= deltaCost;
 					_current._reducedCost -= delta;
-					rSucess = true;
+					stop = false;
 					violations = newViolations;
 				}
 			}
 		}
-		bool bSucess(false);
-		for (size_t b(0); b < _input->nB(); ++b) {
-			size_t const newViolations(violationIfB(b));
-			if (newViolations == 0 || newViolations < violations) {
-				Double deltaCost(0);
-				for (auto const & r : _current._r)
-					deltaCost += _input->w(r, b);
-				Double deltaDual(dualB(b));
-				Double delta(deltaDual + deltaCost);
-				if (delta > ZERO_REDUCED_COST && !_current._b.contains(b)) {
-					_current.swap(_input->nR() + b);
-					_current._cost += deltaCost;
-					_current._reducedCost += delta;
-					bSucess = true;
-					violations = newViolations;
-				} else if (delta < -ZERO_REDUCED_COST
-						&& _current._b.contains(b)) {
-					_current.swap(_input->nR() + b);
-					_current._cost -= deltaCost;
-					_current._reducedCost -= delta;
-					bSucess = true;
-					violations = newViolations;
-				}
-			}
-		}
-		stop = !rSucess && !bSucess;
-//		_current.check();
-//		stop = true;
 	} while (!stop);
 	//
 	assert(violations == _current.violation(*_decisions));
 	//
-	return success;
+	return true;
 }
 
 bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
@@ -165,10 +135,10 @@ void VnsGenerator::initialize() {
 //			_current.swap(i);
 //	}
 	for (Edge const & edge : _input->edges()) {
-		if (dualR(edge._i) + dualB(edge._i) > 1e-6) {
-			if (!_current._r.contains(edge._i))
+		if (dual(edge._i) + dual(_input->nR() + edge._j) > 1e-6) {
+			if (!_current._v.contains(edge._i))
 				_current.swap(edge._i);
-			if (!_current._b.contains(edge._j))
+			if (!_current._v.contains(_input->nR() + edge._j))
 				_current.swap(_input->nR() + edge._j);
 		}
 	}

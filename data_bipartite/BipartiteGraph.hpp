@@ -32,6 +32,9 @@ public:
 	Double sum_kR() const;
 	Double sum_kB() const;
 
+	std::map<size_t, double> const & allLinks(size_t v)const;
+	std::map<size_t, double> const & posLinks(size_t v)const;
+	std::map<size_t, double> const & negLinks(size_t v)const;
 	virtual std::string name() const {
 		return "";
 	}
@@ -43,6 +46,9 @@ public:
 
 	Edges _edges;
 	RectMatrix _a;
+	std::vector<std::map<size_t, double> > _allLinks;
+	std::vector<std::map<size_t, double> > _posLinks;
+	std::vector<std::map<size_t, double> > _negLinks;
 };
 
 inline size_t BipartiteGraph::nR() const {

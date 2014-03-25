@@ -81,7 +81,6 @@ void BranchAndBound::columnGeneration() {
 		//		bool heuristicSucceeded(false);
 		bool heuristicSucceeded(false);
 		heuristicSucceeded = _vnsGenerator->run(50, false);
-//		heuristicSucceeded = false;
 		h += timer.elapsed();
 		nb = 0;
 		rd = -1;
@@ -151,14 +150,17 @@ void BranchAndBound::run() {
 
 		decisions.clear();
 		node->decisions(decisions);
-		while (decisions.find(Decision(it->second)) != decisions.end()
-				&& it != weights.end()) {
+		while (decisions.find(
+				Decision(
+						std::make_pair(it->second.first,
+								_input->nR() + it->second.second)))
+				!= decisions.end() && it != weights.end()) {
 			++it;
 		}
-		size_t const r(it->second.first);
-		size_t const b(it->second.second);
-		treat(new Node(node, true, r, b));
-		treat(new Node(node, false, r, b));
+		size_t const noeud1(it->second.first);
+		size_t const noeud2(_input->nR() + it->second.second);
+		treat(new Node(node, true, noeud1, noeud2));
+		treat(new Node(node, false, noeud1, noeud2));
 		assert(
 				_bestPossible
 						>= _nodesByUpperBounds.begin()->second->ub() - 1e-6);

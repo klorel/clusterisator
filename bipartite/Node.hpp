@@ -11,7 +11,7 @@ public:
 	bool isRoot() const;
 	Node(BranchAndBound &);
 	Node(BranchAndBound *);
-	Node(Node const * father, bool cannot, size_t r, size_t b);
+	Node(Node const * father, bool cannot, size_t noeud1, size_t noeud2);
 	virtual ~Node();
 	Double lb() const;
 	Double ub() const;

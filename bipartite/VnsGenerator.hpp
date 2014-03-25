@@ -32,6 +32,7 @@ public:
 
 	size_t violationIfR(size_t r) const;
 	size_t violationIfB(size_t b) const;
+	size_t violationIf(size_t id) const;
 private:
 	IndexedList _allNodes;
 
@@ -51,25 +52,16 @@ inline Double VnsGenerator::dualB(size_t b) const {
 
 }
 
-inline size_t VnsGenerator::violationIfR(size_t r) const {
+inline size_t VnsGenerator::violationIf(size_t id) const {
 	size_t result(0);
 	for (auto const & decision : *_decisions) {
 		result += decision.violation(
-				decision.r() == r ?
-						!_current._r.contains(decision.r()) :
-						_current._r.contains(decision.r()),
-				_current._b.contains(decision.b()));
-	}
-	return result;
-}
-
-inline size_t VnsGenerator::violationIfB(size_t b) const {
-	size_t result(0);
-	for (auto const & decision : *_decisions) {
-		result += decision.violation(_current._r.contains(decision.r()),
-				(decision.b() == b ?
-						!_current._b.contains(decision.b()) :
-						_current._b.contains(decision.b())));
+				decision.noeud1() == id ?
+						!_current._v.contains(decision.noeud1()) :
+						_current._v.contains(decision.noeud1()),
+				(decision.noeud2() == id ?
+						!_current._v.contains(decision.noeud2()) :
+						_current._v.contains(decision.noeud2())));
 	}
 	return result;
 }

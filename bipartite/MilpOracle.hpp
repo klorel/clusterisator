@@ -17,9 +17,7 @@ public:
 	void initOracle();
 
 	virtual void setUpOracle();
-
-	void initCpx();
-	void checkMipSolution()const;
+	void checkMipSolution() const;
 private:
 	RectMatrix _s;
 };

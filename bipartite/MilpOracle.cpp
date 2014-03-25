@@ -11,18 +11,6 @@ MilpOracle::MilpOracle(BipartiteGraph const * input, DoubleVector const * dual,
 		CpxOracle(input, dual, decisions) {
 	initCpx();
 }
-void MilpOracle::initCpx() {
-	int err;
-	_env = CPXopenCPLEX(&err);
-	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_OFF);
-//	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_ON);
-	CPXsetintparam(_env, CPX_PARAM_THREADS, 1);
-//	CPXsetintparam(_env, CPX_PARAM_CUTPASS, -1);
-//	CPXsetintparam(_env, CPX_PARAM_VARSEL, 4);
-	CPXsetintparam(_env, CPX_PARAM_MIPDISPLAY, 2);
-	initOracle();
-
-}
 MilpOracle::~MilpOracle() {
 }
 void MilpOracle::initOracle() {

@@ -3,30 +3,25 @@
 
 VnsGeneratorSolution::VnsGeneratorSolution(BipartiteGraph const * input,
 		DoubleVector const * dual) :
-		_input(input), _dual(dual), _v(_input->nV()), _r(_input->nR()), _b(
-				_input->nB()), _cost(0), _reducedCost(0) {
+		_input(input), _dual(dual), _v(_input->nV()), _cost(0), _reducedCost(0) {
 
 }
 VnsGeneratorSolution::VnsGeneratorSolution(BipartiteGraph const & input,
 		DoubleVector const & dual) :
-		_input(&input), _dual(&dual), _v(_input->nV()), _r(_input->nR()), _b(
-				_input->nB()), _cost(0), _reducedCost(0) {
+		_input(&input), _dual(&dual), _v(_input->nV()), _cost(0), _reducedCost(
+				0) {
 
 }
 void VnsGeneratorSolution::clear() {
 	_cost = 0;
 	_reducedCost = 0;
 	_v.clear();
-	_r.clear();
-	_b.clear();
 
 }
 VnsGeneratorSolution & VnsGeneratorSolution::operator=(
 		VnsGeneratorSolution const & rhs) {
 	if (&rhs != this) {
 		_v = rhs._v;
-		_r = rhs._r;
-		_b = rhs._b;
 		_cost = rhs._cost;
 		_reducedCost = rhs._reducedCost;
 	}
@@ -36,19 +31,10 @@ VnsGeneratorSolution::~VnsGeneratorSolution() {
 }
 
 void VnsGeneratorSolution::swap(size_t id) {
-	bool const isR(id < _input->nR());
 	if (_v.contains(id)) {
 		_v.erase(id);
-		if (isR)
-			_r.erase(id);
-		else
-			_b.erase(id - _input->nR());
 	} else {
 		_v.insert(id);
-		if (isR)
-			_r.insert(id);
-		else
-			_b.insert(id - _input->nR());
 	}
 }
 void VnsGeneratorSolution::swap(size_t id, Double deltaCost, Double deltaDual) {
@@ -58,20 +44,18 @@ void VnsGeneratorSolution::swap(size_t id, Double deltaCost, Double deltaDual) {
 }
 Double VnsGeneratorSolution::computeCost() const {
 	Double result(0);
-	for (auto const & r : _r) {
-		for (auto const & b : _b) {
-			result += _input->w(r, b);
+	for (auto const & r : _v) {
+		for (auto const & b : _v) {
+			if (r < b && r < _input->nR() && b >= _input->nB())
+				result += _input->w(r, b);
 		}
 	}
 	return result;
 }
 Double VnsGeneratorSolution::computeReducedCost() const {
 	Double result(computeCost());
-	for (auto const & r : _r) {
-		result += dualR(r);
-	}
-	for (auto const & b : _b) {
-		result += dualB(b);
+	for (auto const & v : _v) {
+		result += dual(v);
 	}
 	return result;
 }
@@ -80,12 +64,13 @@ void VnsGeneratorSolution::build(Column & column) {
 
 	column.r().clear();
 	column.b().clear();
-	for (auto const r : _r) {
-		column.r().insert(r);
+	for (auto const v : _v) {
+		if (v < _input->nR())
+			column.r().insert(v);
+		else
+			column.b().insert(v - _input->nR());
 	}
-	for (auto const b : _b) {
-		column.b().insert(b);
-	}
+
 	column.cost() = _cost;
 	column.reducedCost() = _reducedCost;
 //	column.print();
@@ -94,8 +79,8 @@ void VnsGeneratorSolution::build(Column & column) {
 size_t VnsGeneratorSolution::violation(DecisionList const & decisions) const {
 	size_t result(0);
 	for (auto const & decision : decisions) {
-		result += decision.violation(_r.contains(decision.r()),
-				_b.contains(decision.b()));
+		result += decision.violation(_v.contains(decision.noeud1()),
+				_v.contains(decision.noeud2()));
 	}
 	return result;
 }

@@ -17,11 +17,10 @@ public:
 public:
 	virtual bool generate();
 public:
-	void initOracle();
 
 	virtual void setUpOracle();
+	void initOracle();
 	void checkSolution() const;
-	void initCpx();
 private:
 	Double _diagRegularisation;
 };

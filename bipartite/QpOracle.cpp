@@ -10,18 +10,6 @@ QpOracle::QpOracle(BipartiteGraph const * input, DoubleVector const * dual,
 	_diagRegularisation = 1e2 * 0;
 	initCpx();
 }
-void QpOracle::initCpx() {
-	int err;
-	_env = CPXopenCPLEX(&err);
-	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_OFF);
-//	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_ON);
-	CPXsetintparam(_env, CPX_PARAM_THREADS, 1);
-	CPXsetintparam(_env, CPX_PARAM_CUTPASS, -1);
-//	CPXsetintparam(_env, CPX_PARAM_VARSEL, 4);
-	CPXsetintparam(_env, CPX_PARAM_MIPDISPLAY, 2);
-	initOracle();
-
-}
 QpOracle::~QpOracle() {
 }
 void QpOracle::initOracle() {
@@ -85,7 +73,6 @@ void QpOracle::initOracle() {
 	//std::cout << "toto : "<<toto<<std::endl;
 }
 
-
 void QpOracle::setUpOracle() {
 	_columns.clear();
 //	CPXchgobj(_env, _oracle, (int) _index.size(), _index.data(), _dual->data());
@@ -93,8 +80,7 @@ void QpOracle::setUpOracle() {
 
 	for (size_t v(0); v < _input->nV(); ++v)
 		copyDual[v] += _diagRegularisation;
-	CPXchgobj(_env, _prob, (int) _index.size(), _index.data(),
-			copyDual.data());
+	CPXchgobj(_env, _prob, (int) _index.size(), _index.data(), copyDual.data());
 	//	for (auto const & i : _index) {
 	//		std::cout << std::setw(6) << i;
 	//		std::cout << std::setw(25) << _dual[i];
@@ -102,8 +88,7 @@ void QpOracle::setUpOracle() {
 	//	}
 	//	writeOracle();
 	if (CPXgetnummipstarts(_env, _prob) > 1)
-		CPXdelmipstarts(_env, _prob, 0,
-				CPXgetnummipstarts(_env, _prob) - 1);
+		CPXdelmipstarts(_env, _prob, 0, CPXgetnummipstarts(_env, _prob) - 1);
 }
 bool QpOracle::generate() {
 	setUpOracle();

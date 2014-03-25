@@ -12,9 +12,9 @@ Node::Node(BranchAndBound * branchAndBound) :
 	_id = 0;
 }
 
-Node::Node(Node const * father, bool cannot, size_t r, size_t b) :
+Node::Node(Node const * father, bool cannot, size_t noeud1, size_t noeud2) :
 		_branchAndBound(father->_branchAndBound), _father(father), _ub(+1e50), _lb(
-				-1e50), _decision(r, b, cannot) {
+				-1e50), _decision(noeud1, noeud2, cannot) {
 	_isInteger = false;
 	_id = 0;
 }

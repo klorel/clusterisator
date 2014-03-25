@@ -138,7 +138,8 @@ void ColumnBuffer::add(Double rhsObj, char type, Double lower, Double upper,
 		_name.push_back(name);
 }
 
-RowBuffer::RowBuffer() {
+RowBuffer::RowBuffer() :
+		_index(), _begin(), _value(), _type(), _objRhs(), _name() {
 
 }
 RowBuffer::~RowBuffer() {
