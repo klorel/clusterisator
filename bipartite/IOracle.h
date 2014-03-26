@@ -19,7 +19,7 @@ public:
 			DecisionList const * decisions);
 	virtual ~IOracle();
 public:
-	std::set<Column> const & columns() const;
+	Columns const & columns() const;
 public:
 	virtual bool generate();
 	virtual Double bestReducedCost() const;
@@ -30,11 +30,14 @@ public:
 			std::multimap<Double, Column const *, std::greater<Double>> &) const;
 	virtual bool run(size_t iteMax, bool stopAtFirst);
 	virtual void extractAndAddSolution(DoubleVector const & x, Double rd);
+	virtual void extractAndAddSolution(DoubleVector const & x);
+
+	virtual void extract(DoubleVector const & x, Column & column);
 protected:
 	BipartiteGraph const * _input;
 	DoubleVector const * _dual;
 	DecisionList const * _decisions;
-	std::set<Column> _columns;
+	Columns _columns;
 	Double _bestReducedCost;
 };
 

@@ -18,6 +18,7 @@ public:
 public:
 	virtual bool run(size_t iteMax, bool stopAtFirst);
 public:
+	bool check(bool alsoDecision = false) const;
 	void shake(size_t k);
 	void compute();
 	bool localSearch();

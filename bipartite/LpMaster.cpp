@@ -92,35 +92,42 @@ void LpMaster::add(ReducedCostSorter const & columns, size_t nmax, size_t & nb,
 		if (nmax > 0 && nb >= nmax)
 			break;
 		Column const & column(*kvp.second);
-		auto result(_columns.insert(column));
-		if (!result.second) {
-			//		std::cout << "column already here : " << result.first->id()
-			//				<< std::endl;
-			//		result.first->print();
-			//		double obj;
-			//		CPXgetobj(_env, _lp, &obj, (int) result.first->id(),
-			//				(int) result.first->id());
-			//		std::cout << "column cost is " << obj << std::endl;
-			//		std::cout << "column violation is "
-			//				<< result.first->violation(*_decisions) << std::endl;
-			//		exit(0);
-		} else {
-			rd = std::max(rd, column.reducedCost());
-			result.first->id() = current_n + nb;
-			columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
-					GetStr("COLUMN_", result.first->id()));
-			for (auto const & r : column.r()) {
-				columnBuffer.add(r, 1);
-			}
-			for (auto const & b : column.b()) {
-				columnBuffer.add(_input->nR() + b, 1);
-			}
-			++nb;
-		}
+		add(column, columnBuffer, current_n, rd, nb);
 	}
 	if (columnBuffer.size() > 0)
 		columnBuffer.add(_env, _lp);
 	_primal.resize(CPXgetnumcols(_env, _lp));
+}
+
+void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer,
+		size_t current_n, Double & rd, size_t &nb) {
+
+	ASSERT_CHECK(column.check(_dual));
+	auto result(_columns.insert(column));
+	if (!result.second) {
+		std::cout << "column already here : " << result.first->id()
+				<< std::endl;
+		//		result.first->print();
+		MY_PRINT(result.first->reducedCost());
+		MY_PRINT(result.first->cost());
+		MY_PRINT(result.first->violation(*_decisions));
+		double obj;
+		CPXgetobj(_env, _lp, &obj, (int) result.first->id(),
+				(int) result.first->id());
+		MY_PRINT(obj);
+		//		exit(0);
+		ASSERT_CHECK(column.check(_dual));
+		ASSERT_CHECK(column.violation(*_decisions) == 0);
+	} else {
+		rd = std::max(rd, column.reducedCost());
+		result.first->id() = current_n + nb;
+		columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
+				GetStr("COLUMN_", result.first->id()));
+		for (auto const & v : column.v()) {
+			columnBuffer.add(v, 1);
+		}
+		++nb;
+	}
 }
 void LpMaster::add(std::set<Column> const & columns, size_t & nb, Double&rd) {
 	ColumnBuffer columnBuffer;
@@ -128,31 +135,7 @@ void LpMaster::add(std::set<Column> const & columns, size_t & nb, Double&rd) {
 	nb = 0;
 	rd = -1;
 	for (Column const & column : columns) {
-		auto result(_columns.insert(column));
-		if (!result.second) {
-			//		std::cout << "column already here : " << result.first->id()
-			//				<< std::endl;
-			//		result.first->print();
-			//		double obj;
-			//		CPXgetobj(_env, _lp, &obj, (int) result.first->id(),
-			//				(int) result.first->id());
-			//		std::cout << "column cost is " << obj << std::endl;
-			//		std::cout << "column violation is "
-			//				<< result.first->violation(*_decisions) << std::endl;
-			//		exit(0);
-		} else {
-			rd = std::max(rd, column.reducedCost());
-			result.first->id() = current_n + nb;
-			columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
-					GetStr("COLUMN_", result.first->id()));
-			for (auto const & r : column.r()) {
-				columnBuffer.add(r, 1);
-			}
-			for (auto const & b : column.b()) {
-				columnBuffer.add(_input->nR() + b, 1);
-			}
-			++nb;
-		}
+		add(column, columnBuffer, current_n, rd, nb);
 	}
 	if (columnBuffer.size() > 0)
 		columnBuffer.add(_env, _lp);
@@ -167,69 +150,52 @@ void LpMaster::add(std::set<Column> const & columns) {
 }
 
 void LpMaster::add(Column const & column) {
-	//writeColumns("bug.txt");
-	auto result(_columns.insert(column));
-	if (!result.second) {
-		//		std::cout << "column already here : " << result.first->id()
-		//				<< std::endl;
-		//		result.first->print();
-		//		double obj;
-		//		CPXgetobj(_env, _lp, &obj, (int) result.first->id(),
-		//				(int) result.first->id());
-		//		std::cout << "column cost is " << obj << std::endl;
-		//		std::cout << "column violation is "
-		//				<< result.first->violation(*_decisions) << std::endl;
-		//		exit(0);
-	} else {
-		result.first->id() = CPXgetnumcols(_env, _lp);
-		ColumnBuffer columnBuffer;
-		columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
-				GetStr("COLUMN_", result.first->id()));
-		for (auto const & r : column.r()) {
-			columnBuffer.add(r, 1);
-		}
-		for (auto const & b : column.b()) {
-			columnBuffer.add(_input->nR() + b, 1);
-		}
+	size_t const current_n(CPXgetnumcols(_env, _lp));
+	ColumnBuffer columnBuffer;
+	Double rd;
+	size_t nb(0);
+	add(column, columnBuffer, current_n, rd, nb);
+//	//writeColumns("bug.txt");
+//	auto result(_columns.insert(column));
+//	if (!result.second) {
+//		//		std::cout << "column already here : " << result.first->id()
+//		//				<< std::endl;
+//		//		result.first->print();
+//		//		double obj;
+//		//		CPXgetobj(_env, _lp, &obj, (int) result.first->id(),
+//		//				(int) result.first->id());
+//		//		std::cout << "column cost is " << obj << std::endl;
+//		//		std::cout << "column violation is "
+//		//				<< result.first->violation(*_decisions) << std::endl;
+//		//		exit(0);
+//	} else {
+//		result.first->id() = CPXgetnumcols(_env, _lp);
+//		ColumnBuffer columnBuffer;
+//		columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
+//				GetStr("COLUMN_", result.first->id()));
+//		for (auto const & r : column.r()) {
+//			columnBuffer.add(r, 1);
+//		}
+//		for (auto const & b : column.b()) {
+//			columnBuffer.add(_input->nR() + b, 1);
+//		}
+	if (columnBuffer.size() > 0)
 		columnBuffer.add(_env, _lp);
 
-		//		CPXaddcols(_env, _lp, (int) ccnt, (int) nzcnt, obj.data(),
-		//				cmatbeg.data(), rmatind.data(), rmatval.data(), lb.data(),
-		//				ub.data(), NULL);
-
-		_primal.resize(CPXgetnumcols(_env, _lp));
-		//		std::vector<bool> _rIn(_input->nR(), false);
-		//		for (auto const & r : result.first->r())
-		//			_rIn[r].flip();
-		//
-		//		std::vector<bool> _bIn(_input->nB(), false);
-		//		for (auto const & b : result.first->b())
-		//			_bIn[b].flip();
-
-		//	for (size_t r(0); r < _input->nR(); ++r) {
-		//		for (size_t b(0); b < _input->nB(); ++b) {
-		//			if (_rIn[r] && _bIn[b])
-		//				_rAndbInColumn[r][b].push_back(&*result.first);
-		//			else if (!_rIn[r] && _bIn[b])
-		//				_rOrbInColumn[r][b].push_back(&*result.first);
-		//			else if (_rIn[r] && !_bIn[b])
-		//				_rOrbInColumn[r][b].push_back(&*result.first);
-		//		}
-		//	}
-	}
+	_primal.resize(CPXgetnumcols(_env, _lp));
 }
 void LpMaster::addSingleton() {
 	DoubleVector emptyDual(_input->nV(), 0);
 	for (size_t r(0); r < _input->nR(); ++r) {
 		Column column(_input);
-		column.addElement(1 + r);
+		column.insert(r);
 		column.cost() = 0;
 		column.reducedCost() = column.cost();
 		add(column);
 	}
 	for (size_t b(0); b < _input->nB(); ++b) {
 		Column column(_input);
-		column.addElement(1 + _input->nR() + b);
+		column.insert(_input->nR() + b);
 		column.cost() = 0;
 		column.reducedCost() = column.cost();
 		add(column);
@@ -238,9 +204,9 @@ void LpMaster::addSingleton() {
 void LpMaster::addEdge() {
 	for (auto const & e : _input->edges()) {
 		Column column(_input);
-		column.addElement(1 + e._i);
-		column.addElement(1 + _input->nR() + e._j);
-		column.cost() = _input->w(e._i, e._j);
+		column.insert(e._i);
+		column.insert(_input->nR() + e._j);
+		column.cost() = column.computeCost();
 		column.reducedCost() = column.cost();
 		add(column);
 	}
@@ -256,7 +222,7 @@ void LpMaster::readColumns(std::string const & fileName) {
 			Column column(_input);
 			std::stringstream buffer(line);
 			while (buffer >> i) {
-				column.addElement(i);
+				column.insert(i - 1);
 			}
 			column.cost() = column.computeCost();
 			column.reducedCost() = column.cost();
@@ -295,12 +261,12 @@ bool LpMaster::getSolution(FractionnarySolution & solution) {
 			}
 		}
 	}
-	//	MY_PRINT(is_integer);
+//	MY_PRINT(is_integer);
 	return is_integer;
 }
 
 void LpMaster::solveMaster() {
-	//write();
+//write();
 	CPXlpopt(_env, _lp);
 	getSolution();
 }
@@ -308,10 +274,8 @@ void LpMaster::solveMaster() {
 void LpMaster::writeColumns(std::string const & fileName) const {
 	std::ofstream file(fileName.c_str());
 	for (auto const & column : _columns) {
-		for (auto const & r : column.r())
-			file << std::setw(6) << r + 1;
-		for (auto const & b : column.b())
-			file << std::setw(6) << _input->nR() + b + 1;
+		for (auto const & v : column.v())
+			file << std::setw(6) << v + 1;
 		file << std::endl;
 	}
 	file.close();
@@ -345,12 +309,13 @@ void LpMaster::applyBranchingRule() {
 		else
 			obj.push_back(column.cost());
 		//		assert(std::fabs(column.cost() - column.computeCost()) < 1e-6);
+		assert(column.check());
 	}
 	CPXchgobj(_env, _lp, (int) index.size(), index.data(), obj.data());
 }
 void LpMaster::branchingWeights(FractionnarySolution const & solution,
 		BranchingWeights & weights) {
-	// on cherche des arrêtes présentes et semi-présentes dans deux colonnes
+// on cherche des arrêtes présentes et semi-présentes dans deux colonnes
 	BranchingWeights2 temp;
 	std::map<Edge, std::pair<IntSet, IntSet> > toto;
 	for (auto const & kvp : solution) {
@@ -358,8 +323,8 @@ void LpMaster::branchingWeights(FractionnarySolution const & solution,
 		//		std::cout << std::setw(15) << kvp.second;
 		//		std::cout << std::endl;
 		for (Edge const & e : _input->edges()) {
-			bool const iR(kvp.first->constainsR(e._i));
-			bool const iB(kvp.first->constainsB(e._j));
+			bool const iR(kvp.first->contains(e._i));
+			bool const iB(kvp.first->contains(e._j + _input->nR()));
 			if (iR && iB) {
 				toto[e].first.insert(kvp.first->id());
 			} else if (iR + iB == 1) {
@@ -368,7 +333,7 @@ void LpMaster::branchingWeights(FractionnarySolution const & solution,
 		}
 
 	}
-	//	std::cout << "synthese" << std::endl;
+//	std::cout << "synthese" << std::endl;
 	weights.clear();
 	for (auto const & t : toto) {
 		//		std::cout << std::setw(6) << t.second.first.size();
@@ -391,8 +356,8 @@ void LpMaster::branchingWeights(FractionnarySolution const & solution,
 		for (auto const & kvp : solution) {
 			for (size_t r(0); r < _input->nR(); ++r) {
 				for (size_t b(0); b < _input->nB(); ++b) {
-					bool const iR(kvp.first->constainsR(r));
-					bool const iB(kvp.first->constainsB(b));
+					bool const iR(kvp.first->contains(r));
+					bool const iB(kvp.first->contains(b) + _input->nR());
 					if (iR && iB) {
 						toto[Edge(r, b, 1)].first.insert(kvp.first->id());
 					} else if (iR + iB == 1) {
@@ -428,15 +393,17 @@ void LpMaster::add(ModularityBPartition const & solution) {
 	for (size_t const & label : solution.usedLabels()) {
 		Column c(_input);
 		for (size_t const & n : solution.observations(label)) {
-			c.addElement(n + 1);
+			c.insert(n);
 		}
 		c.cost() = c.computeCost();
+		c.reducedCost() = c.computeReducedCost(_dual);
 		//add(c);
 		columns.insert(c);
 		for (size_t const & n : solution.observations(label)) {
 			Column clone(c);
-			clone.delElement(n);
+			clone.erase(n - 1);
 			clone.cost() = clone.computeCost();
+			clone.reducedCost() = clone.computeReducedCost(_dual);
 			columns.insert(clone);
 		}
 		//for (size_t const & n1 : solution.observations(label)) {
@@ -447,15 +414,11 @@ void LpMaster::add(ModularityBPartition const & solution) {
 		//			clone.delElement(n2);
 		//			clone.cost() = clone.computeCost();
 		//			columns.insert(clone);
-		//		}		
+		//		}
 		//	}
 		//}
 	}
 	add(columns);
-	//write();
+//write();
 }
-void LpMaster::add(ModularityBPartition const * solution) {
-	if (solution != NULL) {
-		add(*solution);
-	}
-}
+

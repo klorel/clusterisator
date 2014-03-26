@@ -52,7 +52,7 @@ Double ModularityBPartition::score() const {
 }
 
 void ModularityBPartition::checkScore() const {
-	if (std::fabs(_score - computeScore()) > 1e-10) {
+	if (std::fabs(_score - computeScore()) > 1e-6) {
 		std::cout << std::setw(20) << _score;
 		std::cout << std::setw(20) << computeScore();
 		std::cout << std::setw(20) << _score - computeScore();

@@ -22,7 +22,7 @@ public:
 	Double computeReducedCost() const;
 	void build(Column &);
 	size_t violation(DecisionList const &) const;
-	void check() const;
+	bool check() const;
 	void clear();
 	Double gradient(size_t) const;
 	Double deltaCost(size_t) const;

@@ -10,7 +10,7 @@
 
 #include "gencol.h"
 class BipartiteGraph;
-
+#include "Column.hpp"
 class ModularityBPartition;
 class IMaster {
 public:
@@ -20,13 +20,12 @@ public:
 	virtual bool getSolution(FractionnarySolution &) = 0;
 public:
 	virtual void add(Column const & column) = 0;
-	virtual void add(std::set<Column> const & columns) = 0;
+
 	virtual void add(std::set<Column> const & columns, size_t & nb,
 			Double&rd) = 0;
 	virtual void add(ReducedCostSorter const & columns, size_t, size_t & nb,
 			Double&rd) = 0;
 	virtual void add(ModularityBPartition const & column) = 0;
-	virtual void add(ModularityBPartition const * column) = 0;
 	virtual void addSingleton() = 0;
 	virtual void addEdge() = 0;
 

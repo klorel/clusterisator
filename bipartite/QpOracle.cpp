@@ -141,19 +141,14 @@ void QpOracle::checkSolution() const {
 		CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,
 				(int) (x.size() - 1));
 		Column column(_input);
-		for (size_t r(0); r < _input->nR(); ++r) {
-			if (x[r] > 0.5) {
-				column.r().insert(r);
-			}
-		}
-		for (size_t b(0); b < _input->nB(); ++b) {
-			if (x[_input->nR() + b] > 0.5) {
-				column.b().insert(b);
+		for (size_t v(0); v < _input->nV(); ++v) {
+			if (x[v] > 0.5) {
+				column.insert(v);
 			}
 		}
 		column.cost() = column.computeCost();
 		column.reducedCost() = obj;
-		column.check(*_dual);
+		ASSERT_CHECK(column.check(*_dual));
 		for (Decision const & decision : *_decisions) {
 			if (column.violation(decision) > 0) {
 				decision.print(

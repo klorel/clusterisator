@@ -21,8 +21,21 @@ void VnsGenerator::shake(size_t k) {
 	}
 //	compute();
 //	_current.check();
+	ASSERT_CHECK(check());
 }
-
+bool VnsGenerator::check(bool alsoDecision) const {
+	if (_current.violation(*_decisions) == 0) {
+		if (!_current.check()) {
+			std::cout << "_current.check() is false" << std::endl;
+			return false;
+		}
+	}
+	if (alsoDecision && _current.violation(*_decisions) != 0) {
+		std::cout << "_current.violation(*_decisions) != 0" << std::endl;
+		return false;;
+	}
+	return true;
+}
 void VnsGenerator::compute() {
 	_current._cost = _current.computeCost();
 	_current._reducedCost = _current.computeReducedCost();
@@ -43,7 +56,7 @@ bool VnsGenerator::localSearch() {
 	size_t violations(_current.violation(*_decisions));
 	assert(violations == _current.violation(*_decisions));
 	do {
-
+		ASSERT_CHECK(check());
 		stop = true;
 		for (size_t v(0); v < _input->nV(); ++v) {
 			size_t const newViolations(violationIf(v));
@@ -69,7 +82,8 @@ bool VnsGenerator::localSearch() {
 		}
 	} while (!stop);
 	//
-	assert(violations == _current.violation(*_decisions));
+	ASSERT_CHECK(violations == _current.violation(*_decisions));
+
 	//
 	return true;
 }
@@ -79,7 +93,7 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 	size_t ite(0);
 //	Double kMax((Double) std::max(_input->nR(), _input->nB()));
 //	Double kMax((Double) std::min(_input->nR(), _input->nB()));
-	Double kMax((Double) _input->nV());
+	Double kMax(_input->nV() > 50 ? 50 : (Double) _input->nV());
 //	Double kMax((Double) _input->nV() * 0.5 + 1);
 //	_current.clear();
 //	compute();
@@ -93,9 +107,11 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 		do {
 			++k;
 			shake(k);
+			ASSERT_CHECK(check());
 			localSearch();
 			if (!stopAtFirst && _current.violation(*_decisions) == 0
 					&& _current._reducedCost > ZERO_REDUCED_COST) {
+				ASSERT_CHECK(check(true));
 				_current.build(column);
 				_columns.insert(column);
 			}
@@ -104,6 +120,7 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 				k = 0;
 				if (stopAtFirst && _current.violation(*_decisions) == 0
 						&& _current._reducedCost > ZERO_REDUCED_COST) {
+					ASSERT_CHECK(check(true));
 					_current.build(column);
 					_columns.insert(column);
 				}
@@ -123,8 +140,10 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 //		std::cout << "ite " << ite << std::endl;
 	//if(ite==iteMax)
 //	MY_PRINT(ite);
-	//MY_PRINT(iteMax);
-
+//	MY_PRINT(iteMax);
+//	for (auto const & c : _columns)
+//		c.print();
+//	MY_PRINT("END");
 	return !_columns.empty();
 }
 

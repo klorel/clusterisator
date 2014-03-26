@@ -38,6 +38,7 @@ public:
 	virtual std::string name() const {
 		return "";
 	}
+	Double computeCost(std::set<size_t> const & )const;
 public:
 	Double _m;
 	Double _inv_m;

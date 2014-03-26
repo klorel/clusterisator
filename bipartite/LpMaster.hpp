@@ -10,7 +10,7 @@
 class Node;
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
-
+class ColumnBuffer;
 class LpMaster: public IMaster {
 public:
 	LpMaster(BipartiteGraph const *, DecisionList const * decisions);
@@ -19,13 +19,19 @@ public:
 	void freeLp();
 	void initLp();
 
-	void add(Column const & column);
+	virtual void add(Column const & column);
 	void add(std::set<Column> const & columns);
-	void add(std::set<Column> const & columns, size_t & nb, Double&rd);
-	void add(ReducedCostSorter const & columns, size_t, size_t & nb, Double&rd);
+	void add(Column const &, ColumnBuffer &) const;
+
+	virtual void add(std::set<Column> const & columns, size_t & nb, Double&rd);
+
+	void add(Column const & column, ColumnBuffer & columnBuffer,
+			size_t current_n, Double & rd, size_t &nb);
+
+	virtual void add(ReducedCostSorter const & columns, size_t, size_t & nb,
+			Double&rd);
 
 	void add(ModularityBPartition const & column);
-	void add(ModularityBPartition const * column);
 	void addSingleton();
 	void addEdge();
 

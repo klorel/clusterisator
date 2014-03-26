@@ -16,4 +16,8 @@ typedef std::multimap<Double, std::pair<size_t, size_t>, std::greater<Double> > 
 typedef std::map<std::pair<size_t, size_t>, Double> BranchingWeights2;
 
 Double const ZERO_REDUCED_COST = 1e-6;
+
+#define ASSERT_CHECK(x) assert(x)
+//#define ASSERT_CHECK(x)
+
 #endif /* CG_MASTER_HPP */

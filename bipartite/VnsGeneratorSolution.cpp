@@ -46,8 +46,8 @@ Double VnsGeneratorSolution::computeCost() const {
 	Double result(0);
 	for (auto const & r : _v) {
 		for (auto const & b : _v) {
-			if (r < b && r < _input->nR() && b >= _input->nB())
-				result += _input->w(r, b);
+			if (r < b && r < _input->nR() && b >= _input->nR())
+				result += _input->w(r, b - _input->nR());
 		}
 	}
 	return result;
@@ -61,18 +61,15 @@ Double VnsGeneratorSolution::computeReducedCost() const {
 }
 
 void VnsGeneratorSolution::build(Column & column) {
-
-	column.r().clear();
-	column.b().clear();
+	column.v().clear();
 	for (auto const v : _v) {
-		if (v < _input->nR())
-			column.r().insert(v);
-		else
-			column.b().insert(v - _input->nR());
+		column.insert(v);
 	}
 
 	column.cost() = _cost;
 	column.reducedCost() = _reducedCost;
+	ASSERT_CHECK(check());
+	ASSERT_CHECK(column.check(*_dual));
 //	column.print();
 }
 
@@ -99,18 +96,21 @@ bool VnsGeneratorSolution::IsBetter(VnsGeneratorSolution const & p,
 //	return p._reducedCost > q._reducedCost + ZERO_REDUCED_COST;
 //}
 
-void VnsGeneratorSolution::check() const {
-	if (std::fabs(computeCost() - _cost) > 1e-10) {
-		std::cout << "wrong cost " << std::endl;
-		std::cout << _cost << std::endl;
-		std::cout << computeCost() << std::endl;
-		assert(false && "WRONG COST");
+bool VnsGeneratorSolution::check() const {
+	if (std::fabs(computeCost() - _cost) > 1e-6) {
+		std::cout << "wrong cost ";
+		std::cout << std::setw(15) << std::setprecision(10) << _cost;
+		std::cout << std::setw(15) << std::setprecision(10) << computeCost();
+		std::cout << std::endl;
+		return false;
 	}
-	if (std::fabs(computeReducedCost() - _reducedCost) > 1e-10) {
-		std::cout << "wrong reduced cost " << std::endl;
-		std::cout << _reducedCost << std::endl;
-		std::cout << computeReducedCost() << std::endl;
-		assert(false && "WRONG REDUCED COST");
+	if (std::fabs(computeReducedCost() - _reducedCost) > 1e-6) {
+		std::cout << "wrong reduced cost ";
+		std::cout << std::setw(15) << std::setprecision(10) << _reducedCost;
+		std::cout << std::setw(15) << std::setprecision(10)
+				<< computeReducedCost();
+		std::cout << std::endl;
+		return false;
 	}
-
+	return true;
 }

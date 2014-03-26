@@ -20,7 +20,7 @@ IOracle::~IOracle() {
 bool IOracle::generate() {
 	return false;
 }
-std::set<Column> const & IOracle::columns() const {
+Columns const & IOracle::columns() const {
 	return _columns;
 }
 Double IOracle::bestReducedCost() const {
@@ -33,38 +33,43 @@ void IOracle::applyBranchingRule() {
 void IOracle::sortedColumns(
 		std::multimap<Double, Column const *, std::greater<Double>> & result) const {
 	result.clear();
+//	MY_PRINT(_columns.size());
 	for (auto const & column : _columns) {
+//		column.print();
+		ASSERT_CHECK(column.check(*_dual));
 		result.insert(std::make_pair(column.reducedCost(), &column));
 	}
 }
 bool IOracle::run(size_t iteMax, bool stopAtFirst) {
 	return false;
 }
-void IOracle::extractAndAddSolution(DoubleVector const & x, Double rd) {
-	Column column(_input);
-	for (size_t r(0); r < _input->nR(); ++r) {
-		if (x[r] > 0.5) {
-			column.r().insert(r);
-		}
-	}
-	for (size_t b(0); b < _input->nB(); ++b) {
-		if (x[_input->nR() + b] > 0.5) {
-			column.b().insert(b);
+
+void IOracle::extract(DoubleVector const & x, Column & column) {
+
+	for (size_t v(0); v < _input->nV(); ++v) {
+		if (x[v] > 0.5) {
+			column.insert(v);
 		}
 	}
 	column.cost() = column.computeCost();
+}
+void IOracle::extractAndAddSolution(DoubleVector const & x, Double rd) {
+	Column column(_input);
+	extract(x, column);
 	column.reducedCost() = rd;
-	column.check(*_dual);
-
-	for (Decision const & decision : *_decisions) {
-		if (column.violation(decision) > 0) {
-			decision.print(
-					std::cout << "violation in MipGenerator::generate() ");
-			std::cout << std::endl;
-			column.print();
-		}
-	}
-	assert(column.violation(*_decisions) == 0);
+	ASSERT_CHECK(column.check(*_dual));
+	ASSERT_CHECK(column.violation(*_decisions) == 0);
 	_columns.insert(column);
+
+}
+
+void IOracle::extractAndAddSolution(DoubleVector const & x) {
+	Column column(_input);
+	extract(x, column);
+	column.reducedCost() = column.computeReducedCost(*_dual);
+	assert(column.violation(*_decisions) == 0);
+	if (column.reducedCost() > ZERO_REDUCED_COST
+			&& column.violation(*_decisions) == 0)
+		_columns.insert(column);
 
 }

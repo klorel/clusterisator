@@ -87,3 +87,18 @@ std::map<size_t, double> const & BipartiteGraph::negLinks(size_t v) const {
 //	file.close();
 //	build();
 //}
+
+Double BipartiteGraph::computeCost(std::set<size_t> const & v) const {
+	Double result(0);
+	for (auto const & r : v) {
+		if (r < nR()) {
+			for (auto const & b : v) {
+				if (b >= nR()) {
+					result += w(r, b - nR());
+				}
+			}
+		}
+	}
+	return result;
+
+}

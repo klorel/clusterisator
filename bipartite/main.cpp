@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 //	Divisive divisive(instance, p);
 //	divisive.run();
 //	std::cout << "VNS STARTED" << std::endl;
-//	VnsLabelPropagation vns(instance, p, 2, 5);
+//	VnsLabelPropagation vns(instance, p, 20, 5);
 //	vns.run();
 	std::cout << "B&B STARTED" << std::endl;
 
