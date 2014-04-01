@@ -43,12 +43,12 @@ Double Divisor::buildLp(ModularityBPartition const & partition, size_t label) {
 	Double Rc(0);
 	for (size_t r(0); r < _input->nR(); ++r) {
 		if (partition.label(r) == label)
-			Rc += _input->kR(r);
+			Rc += _input->k(r);
 	}
 	Double Bc(0);
 	for (size_t b(0); b < _input->nB(); ++b) {
 		if (partition.label(_input->nR() + b) == label)
-			Bc += _input->kB(b);
+			Bc += _input->k(_input->nR() + b);
 	}
 	Double Ec(0);
 	for (Edge const & edge : _input->edges()) {
@@ -140,7 +140,7 @@ Double Divisor::buildLp(ModularityBPartition const & partition, size_t label) {
 	rows.add(0, 'E', "R1_k");
 	for (size_t r(0); r < _input->nR(); ++r) {
 		if (partition.label(r) == label) {
-			rows.add(_y[r], _input->kR(r));
+			rows.add(_y[r], _input->k(r));
 		}
 	}
 	rows.add(R1, -1);
@@ -154,7 +154,7 @@ Double Divisor::buildLp(ModularityBPartition const & partition, size_t label) {
 	rows.add(0, 'E', "B1_k");
 	for (size_t b(0); b < _input->nB(); ++b) {
 		if (partition.label(_input->nR() + b) == label) {
-			rows.add(_y[_input->nR() + b], _input->kB(b));
+			rows.add(_y[_input->nR() + b], _input->k(_input->nR() + b));
 		}
 	}
 	rows.add(B1, -1);

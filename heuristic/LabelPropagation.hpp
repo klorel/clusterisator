@@ -39,9 +39,6 @@ inline Double LabelPropagation::w(size_t id, size_t neighbor) const {
 	}
 }
 inline Double LabelPropagation::k(size_t id) const {
-	if (id < _input->nR())
-		return _input->kR(id);
-	else
-		return _input->kB(id - _input->nR());
+	return _input->k(id);
 }
 #endif /* LABELPROPAGATION_HPP_ */

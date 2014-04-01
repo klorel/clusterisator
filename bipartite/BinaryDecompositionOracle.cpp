@@ -94,7 +94,7 @@ void BinaryDecompositionOracle::initOracle() {
 	// R1 = sum kr Yr
 	_rowBuffer.add(0, 'E', "R1_k");
 	for (size_t r(0); r < _input->nR(); ++r) {
-		_rowBuffer.add(r, _input->kR(r));
+		_rowBuffer.add(r, _input->k(r));
 	}
 	_rowBuffer.add(R1, -1);
 	// R1 = sum 2^h ah
@@ -106,7 +106,7 @@ void BinaryDecompositionOracle::initOracle() {
 	// B1 = sum kb Yb
 	_rowBuffer.add(0, 'E', "B1_k");
 	for (size_t b(0); b < _input->nB(); ++b) {
-		_rowBuffer.add(_input->nR() + b, _input->kB(b));
+		_rowBuffer.add(_input->nR() + b, _input->k(_input->nR() + b));
 	}
 	_rowBuffer.add(B1, -1);
 	// B1 = sum 2^l al

@@ -66,9 +66,9 @@ void BranchAndBound::columnGeneration() {
 		output() << std::setw(10) << "nb col";
 		output() << std::setw(20) << "step";
 		output() << std::setw(8) << "added";
-		output() << std::setw(20) << "bd master";
-		output() << std::setw(20) << "rd";
-		output() << std::setw(10) << "time";
+		output() << std::setw(25) << "bd master";
+		output() << std::setw(25) << "rd";
+		output() << std::setw(15) << "time";
 		output() << std::endl;
 	}
 	do {
@@ -109,10 +109,10 @@ void BranchAndBound::columnGeneration() {
 			output() << std::setw(10) << _master->columns().size();
 			output() << std::setw(20) << step;
 			output() << std::setw(8) << nb;
-			output() << std::setw(20) << std::setprecision(10)
+			output() << std::setw(25) << std::setprecision(10)
 					<< _master->obj();
-			output() << std::setw(20) << std::setprecision(10) << rd;
-			output() << std::setw(10) << std::setprecision(4)
+			output() << std::setw(25) << std::setprecision(10) << rd;
+			output() << std::setw(15) << std::setprecision(8)
 					<< total.elapsed();
 			output() << std::endl;
 		}
