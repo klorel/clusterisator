@@ -9,10 +9,10 @@ class Node {
 public:
 public:
 	bool isRoot() const;
-	Node(BranchAndBound &);
-	Node(BranchAndBound *);
+	Node(BranchAndBound const&);
 	Node(Node const * father, bool cannot, size_t noeud1, size_t noeud2);
 	virtual ~Node();
+public:
 	Double lb() const;
 	Double ub() const;
 	Double &lb();
@@ -23,15 +23,11 @@ public:
 	bool &isInteger();
 	bool isInteger() const;
 	Node const * father() const;
-//	bool cannot() const;
-//	size_t r() const;
-//	size_t b() const;
-
 	void decisions(DecisionList&) const;
 	void decisions(DecisionSet&) const;
 	Decision const & decision() const;
 private:
-	BranchAndBound * _branchAndBound;
+	BranchAndBound const * _branchAndBound;
 	bool _isInteger;
 	FractionnarySolution _lbSolution;
 

@@ -31,12 +31,6 @@ public:
 	std::set<size_t> & v();
 	std::set<size_t> const & v() const;
 
-//	std::set<size_t> & r();
-//	std::set<size_t> const & r() const;
-//
-//	std::set<size_t> & b();
-//	std::set<size_t> const & b() const;
-
 	bool operator<(Column const &) const;
 
 	size_t violation(DecisionList const &) const;
@@ -46,8 +40,6 @@ private:
 	BipartiteGraph const * _input;
 	Double _cost;
 	Double _reducedCost;
-//	std::set<size_t> _r;
-//	std::set<size_t> _b;
 	std::set<size_t> _v;
 	mutable size_t _id;
 };

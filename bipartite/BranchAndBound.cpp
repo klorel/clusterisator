@@ -81,7 +81,7 @@ void BranchAndBound::columnGeneration() {
 		timer.restart();
 		//		bool heuristicSucceeded(false);
 		bool heuristicSucceeded(false);
-		heuristicSucceeded = _vnsGenerator->run(50, false);
+		heuristicSucceeded = _vnsGenerator->run(50, true);
 		h += timer.elapsed();
 		nb = 0;
 		rd = -1;

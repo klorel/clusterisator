@@ -32,13 +32,13 @@ public:
 	Double sum_kR() const;
 	Double sum_kB() const;
 
-	std::map<size_t, double> const & allLinks(size_t v)const;
-	std::map<size_t, double> const & posLinks(size_t v)const;
-	std::map<size_t, double> const & negLinks(size_t v)const;
-	virtual std::string name() const {
-		return "";
-	}
-	Double computeCost(std::set<size_t> const & )const;
+	std::map<size_t, double> const & allLinks(size_t v) const;
+	std::map<size_t, double> const & posLinks(size_t v) const;
+	std::map<size_t, double> const & negLinks(size_t v) const;
+
+	virtual std::string name() const;
+
+	Double computeCost(std::set<size_t> const &) const;
 public:
 	Double _m;
 	Double _inv_m;

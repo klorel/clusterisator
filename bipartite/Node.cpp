@@ -1,13 +1,7 @@
 #include "Node.hpp"
 
-Node::Node(BranchAndBound & branchAndBound) :
+Node::Node(BranchAndBound const& branchAndBound) :
 		_branchAndBound(&branchAndBound), _father(NULL), _ub(1e50), _lb(-1e50), _decision() {
-	_isInteger = false;
-	_id = 0;
-}
-
-Node::Node(BranchAndBound * branchAndBound) :
-		_branchAndBound(branchAndBound), _father(NULL), _ub(+1e50), _lb(-1e50), _decision() {
 	_isInteger = false;
 	_id = 0;
 }

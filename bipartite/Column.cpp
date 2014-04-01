@@ -45,16 +45,12 @@ bool Column::check(DoubleVector const & dual) const {
 		std::cout << "wrong cost " << std::endl;
 		std::cout << _cost << std::endl;
 		std::cout << computeCost() << std::endl;
-//		assert(false && "WRONG COST");
 		return false;
 	}
 	if (std::fabs(computeReducedCost(dual) - _reducedCost) > 1e-6) {
 		std::cout << "wrong reduced cost " << std::endl;
 		std::cout << _reducedCost << std::endl;
 		std::cout << computeReducedCost(dual) << std::endl;
-//		for (auto const v : dual) {
-//			std::cout << v << std::endl;
-//		}
 		return false;
 	}
 	return true;
@@ -84,19 +80,6 @@ std::set<size_t> & Column::v() {
 std::set<size_t> const & Column::v() const {
 	return _v;
 }
-//std::set<size_t> & Column::r() {
-//	return _r;
-//}
-//std::set<size_t> const & Column::r() const {
-//	return _r;
-//}
-//
-//std::set<size_t> & Column::b() {
-//	return _b;
-//}
-//std::set<size_t> const & Column::b() const {
-//	return _b;
-//}
 bool Column::operator<(Column const & rhs) const {
 	return _v < rhs._v;
 }
@@ -112,8 +95,6 @@ size_t Column::violation(DecisionList const & decisions) const {
 size_t Column::violation(Decision const & decision) const {
 	bool const isR(contains(decision.noeud1()));
 	bool const isB(contains(decision.noeud2()));
-//	MY_PRINT(isR);
-//	MY_PRINT(isB);
 	return decision.violation(isR, isB);
 }
 

@@ -39,7 +39,7 @@ void BipartiteGraph::build() {
 			if (value != 0) {
 				_allLinks[i][nR() + j] = value;
 				_allLinks[nR() + j][i] = value;
-				if (w(i, j) > 0) {
+				if (value > 0) {
 					_posLinks[i][nR() + j] = value;
 					_posLinks[nR() + j][i] = value;
 				} else {
@@ -101,4 +101,8 @@ Double BipartiteGraph::computeCost(std::set<size_t> const & v) const {
 	}
 	return result;
 
+}
+
+std::string BipartiteGraph::name() const {
+	return "";
 }
