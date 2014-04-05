@@ -38,10 +38,10 @@ bool VnsGenerator::check(bool alsoDecision) const {
 }
 void VnsGenerator::compute() {
 	_current._cost = _current.computeCost();
-	_current._reducedCost = _current.computeReducedCost();
-	//for(auto const & v : solution._v){
-	//	solution._reducedCost += _dual[v];
-	//}
+//	_current._reducedCost = _current.computeReducedCost();
+	for (auto const & v : _current._v) {
+		_current._reducedCost += dual(v);
+	}
 	//for(auto const & r : solution._r){
 	//	for(auto const & b : solution._b){
 	//		solution._cost+=_input->w(r, b);
@@ -61,20 +61,16 @@ bool VnsGenerator::localSearch() {
 		for (size_t v(0); v < _input->nV(); ++v) {
 			size_t const newViolations(violationIf(v));
 			if (newViolations == 0 || newViolations < violations) {
-				Double deltaCost(_current.gradient(v));
-				Double deltaDual(dual(v));
-				Double delta(deltaDual + deltaCost);
+				Double const deltaCost(_current.gradient(v));
+				Double const deltaDual(dual(v));
+				Double const delta(deltaDual + deltaCost);
 				if (delta > ZERO_REDUCED_COST && !_current._v.contains(v)) {
-					_current.swap(v);
-					_current._cost += deltaCost;
-					_current._reducedCost += delta;
+					_current.swap(v, deltaCost, deltaDual);
 					stop = false;
 					violations = newViolations;
 				} else if (delta < -ZERO_REDUCED_COST
 						&& _current._v.contains(v)) {
-					_current.swap(v);
-					_current._cost -= deltaCost;
-					_current._reducedCost -= delta;
+					_current.swap(v, -deltaCost, -deltaDual);
 					stop = false;
 					violations = newViolations;
 				}
@@ -95,12 +91,14 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 //	Double kMax((Double) std::min(_input->nR(), _input->nB()));
 	Double kMax(_input->nV() > 50 ? 50 : (Double) _input->nV());
 //	Double kMax((Double) _input->nV() * 0.5 + 1);
+//	Double kMax(3);
 //	_current.clear();
 //	compute();
 	_current.clear();
 	initialize();
 	_best = _current;
 	Column column(_input);
+	bool success(false);
 	do {
 		++ite;
 		size_t k(0);
@@ -109,41 +107,32 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 			shake(k);
 			ASSERT_CHECK(check());
 			localSearch();
+
 			if (!stopAtFirst && _current.violation(*_decisions) == 0
 					&& _current._reducedCost > ZERO_REDUCED_COST) {
 				ASSERT_CHECK(check(true));
 				_current.build(column);
 				_columns.insert(column);
+				success = true;
 			}
 			if (VnsGeneratorSolution::IsBetter(_current, _best, *_decisions)) {
 				_best = _current;
 				k = 0;
-				if (stopAtFirst && _current.violation(*_decisions) == 0
+				if (_current.violation(*_decisions) == 0
 						&& _current._reducedCost > ZERO_REDUCED_COST) {
 					ASSERT_CHECK(check(true));
 					_current.build(column);
 					_columns.insert(column);
+					success = true;
 				}
 			} else {
 				_current = _best;
 			}
-			if (!_columns.empty() && stopAtFirst)
-				k = kMax;
+			if (success && stopAtFirst)
+				k = std::ceil(kMax);
 		} while (k < kMax);
-//		} while (k < kMax && (_columns.empty() || k<10));
-//		} while (k < kMax && _columns.empty());
-//	} while (k < kMax && _columns.empty());
+	} while (ite < iteMax && !success);
 
-	} while (ite < iteMax && _columns.empty());
-	//} while (ite < iteMax && (_columns.empty() || ite >= 0));
-//	if (ite > 100)
-//		std::cout << "ite " << ite << std::endl;
-	//if(ite==iteMax)
-//	MY_PRINT(ite);
-//	MY_PRINT(iteMax);
-//	for (auto const & c : _columns)
-//		c.print();
-//	MY_PRINT("END");
 	return !_columns.empty();
 }
 
@@ -153,14 +142,14 @@ void VnsGenerator::initialize() {
 //		if (dual(i) > 0)
 //			_current.swap(i);
 //	}
-	for (Edge const & edge : _input->edges()) {
-		if (dual(edge._i) + dual(_input->nR() + edge._j) > 1e-6) {
-			if (!_current._v.contains(edge._i))
-				_current.swap(edge._i);
-			if (!_current._v.contains(_input->nR() + edge._j))
-				_current.swap(_input->nR() + edge._j);
-		}
-	}
+//	for (Edge const & edge : _input->edges()) {
+//		if (dual(edge._i) + dual(_input->nR() + edge._j) > 1e-6) {
+//			if (!_current._v.contains(edge._i))
+//				_current.swap(edge._i);
+//			if (!_current._v.contains(_input->nR() + edge._j))
+//				_current.swap(_input->nR() + edge._j);
+//		}
+//	}
 	compute();
 }
 

@@ -70,8 +70,8 @@ int main(int argc, char** argv) {
 	instance.out();
 //	std::cout << instance.a() << std::endl;
 
-	ModularityBPartition p(instance, instance.nV());
-	p.score() = p.computeScore();
+//	ModularityBPartition p(instance, instance.nV());
+//	p.score() = p.computeScore();
 //	std::cout << "DIVISIVE STARTED" << std::endl;
 //	Divisive divisive(instance, p);
 //	divisive.run();
@@ -88,6 +88,7 @@ int main(int argc, char** argv) {
 //	branchAndBound.master().write();
 	branchAndBound.setOutput();
 	branchAndBound.run();
+//	branchAndBound._vnsGenerator->run(5, false);
 //	branchAndBound.writeSolution();
 	std::cout << "program run in " << std::setprecision(10) << total.elapsed()
 			<< std::endl;

@@ -31,12 +31,12 @@ public:
 	IMaster const & master() const;
 
 	void writeSolution() const;
-private:
+
 	IMaster * _master;
 
 	IOracle * _vnsGenerator;
 	IOracle * _mipGenerator;
-
+private:
 	Node * _root;
 	Node * _current;
 

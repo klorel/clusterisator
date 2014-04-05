@@ -4,6 +4,7 @@
 #include "common.h"
 #include "RectMatrix.hpp"
 #include "Edge.h"
+#include "IndexedList.hpp"
 
 class BipartiteGraph;
 std::ostream & operator<<(std::ostream &out, BipartiteGraph const&);
@@ -13,6 +14,7 @@ public:
 	BipartiteGraph(Edges const & edges);
 	void build();
 	virtual ~BipartiteGraph();
+	Double gradient(size_t id, IndexedList const & v) const;
 public:
 	size_t nV() const;
 	size_t nR() const;
@@ -87,5 +89,27 @@ inline Double BipartiteGraph::sum_kR() const {
 }
 inline Double BipartiteGraph::sum_kB() const {
 	return std::accumulate(_k.begin() + nR(), _k.end(), 0);
+}
+inline std::map<size_t, double> const & BipartiteGraph::allLinks(
+		size_t v) const {
+//	MY_PRINT(v);
+//	MY_PRINT(nV());
+	return _allLinks[v];
+}
+
+inline Double BipartiteGraph::gradient(size_t id, IndexedList const & v) const {
+	Double result(0);
+	if (id < nR()) {
+		for (size_t b(0); b < nB(); ++b) {
+			if (v.contains(nR() + b))
+				result += w(id, b);
+		}
+	} else {
+		for (size_t r(0); r < nR(); ++r) {
+			if (v.contains(r))
+				result += w(r, id - nR());
+		}
+	}
+	return result;
 }
 #endif /* GRAPH_HPP */

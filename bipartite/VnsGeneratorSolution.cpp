@@ -6,12 +6,6 @@ VnsGeneratorSolution::VnsGeneratorSolution(BipartiteGraph const * input,
 		_input(input), _dual(dual), _v(_input->nV()), _cost(0), _reducedCost(0) {
 
 }
-VnsGeneratorSolution::VnsGeneratorSolution(BipartiteGraph const & input,
-		DoubleVector const & dual) :
-		_input(&input), _dual(&dual), _v(_input->nV()), _cost(0), _reducedCost(
-				0) {
-
-}
 void VnsGeneratorSolution::clear() {
 	_cost = 0;
 	_reducedCost = 0;
@@ -68,8 +62,7 @@ void VnsGeneratorSolution::build(Column & column) {
 
 	column.cost() = _cost;
 	column.reducedCost() = _reducedCost;
-	ASSERT_CHECK(check());
-	ASSERT_CHECK(column.check(*_dual));
+	ASSERT_CHECK(check());ASSERT_CHECK(column.check(*_dual));
 //	column.print();
 }
 

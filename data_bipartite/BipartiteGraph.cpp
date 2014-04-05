@@ -41,12 +41,6 @@ void BipartiteGraph::build() {
 	}
 }
 
-std::map<size_t, double> const & BipartiteGraph::allLinks(size_t v) const {
-//	MY_PRINT(v);
-//	MY_PRINT(nV());
-	return _allLinks[v];
-}
-
 //void BipartiteGraph::read(std::string const & fileName, std::ostream & stream) {
 //	std::ifstream file(fileName.c_str());
 //	//_a << file;

@@ -10,7 +10,6 @@
 class Node;
 class VnsGeneratorSolution {
 public:
-	VnsGeneratorSolution(BipartiteGraph const &, DoubleVector const & dual);
 	VnsGeneratorSolution(BipartiteGraph const *, DoubleVector const * dual);
 	virtual ~VnsGeneratorSolution();
 	VnsGeneratorSolution & operator=(VnsGeneratorSolution const &);
@@ -22,8 +21,8 @@ public:
 	Double computeReducedCost() const;
 	void build(Column &);
 	size_t violation(DecisionList const &) const;
-	bool check() const;
 	void clear();
+	bool check() const;
 	Double gradient(size_t) const;
 	Double deltaCost(size_t) const;
 	Double deltaDual(size_t) const;
@@ -45,17 +44,20 @@ inline Double VnsGeneratorSolution::dual(size_t n) const {
 	return (*_dual)[n];
 }
 inline Double VnsGeneratorSolution::gradient(size_t v) const {
-	Double result(0);
-	for (auto const & link : _input->allLinks(v))
-		if (_v.contains(link.first))
-			result += link.second;
-	return result;
+//	Double result(0);
+//	for (auto const & link : _input->allLinks(v))
+//		if (_v.contains(link.first))
+//			result += link.second;
+//	return result;
+
+	return _input->gradient(v, _v);
+
 }
 inline Double VnsGeneratorSolution::deltaCost(size_t id) const {
 	if (_v.contains(id))
 		return -gradient(id);
 	else
-		return gradient(id);
+		return +gradient(id);
 //	if (id < _input->nR())
 //		return deltaCostR(id);
 //	else

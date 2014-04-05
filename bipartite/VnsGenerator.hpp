@@ -24,33 +24,20 @@ public:
 	bool localSearch();
 
 	Double dual(size_t) const;
-	Double dualR(size_t) const;
-	Double dualB(size_t) const;
-	Double deltaR(size_t) const;
-	Double deltaB(size_t) const;
-
 	void initialize();
 
-	size_t violationIfR(size_t r) const;
-	size_t violationIfB(size_t b) const;
 	size_t violationIf(size_t id) const;
+	size_t swap(size_t id, VnsGeneratorSolution & point);
 private:
 	IndexedList _allNodes;
 
 	VnsGeneratorSolution _current;
 	VnsGeneratorSolution _best;
+	DoubleVector _delta;
 };
 
 inline Double VnsGenerator::dual(size_t n) const {
 	return (*_dual)[n];
-}
-inline Double VnsGenerator::dualR(size_t r) const {
-	return dual(r);
-
-}
-inline Double VnsGenerator::dualB(size_t b) const {
-	return dual(_input->nR() + b);
-
 }
 
 inline size_t VnsGenerator::violationIf(size_t id) const {
