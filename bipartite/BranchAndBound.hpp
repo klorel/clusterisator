@@ -6,11 +6,9 @@
 #include "LpMaster.hpp"
 
 #include "IOracle.h"
+#include "VnsGenerator.hpp"
 #include "ModularityBPartition.hpp"
 
-enum AvailableOracle {
-	MILP, MIQP, bMILP
-};
 class Node;
 class BranchAndBound {
 public:
@@ -34,7 +32,7 @@ public:
 
 	IMaster * _master;
 
-	IOracle * _vnsGenerator;
+	VnsGenerator * _vnsGenerator;
 	IOracle * _mipGenerator;
 private:
 	Node * _root;

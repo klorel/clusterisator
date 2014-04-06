@@ -77,12 +77,13 @@ bool CpxOracle::generate() {
 
 		result = (_bestReducedCost > ZERO_REDUCED_COST);
 
-		MY_PRINT(_bestReducedCost);
-		MY_PRINT(result);
+//		MY_PRINT(_bestReducedCost);
+//		MY_PRINT(result);
 		if (result) {
 			DoubleVector x(CPXgetnumcols(_env, _prob));
 			size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
-			MY_PRINT(n);
+//			size_t const n(1);
+//			MY_PRINT(n);
 			Double obj;
 			for (size_t i(0); i < n; ++i) {
 				CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);

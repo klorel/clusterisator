@@ -38,16 +38,9 @@ bool VnsGenerator::check(bool alsoDecision) const {
 }
 void VnsGenerator::compute() {
 	_current._cost = _current.computeCost();
-//	_current._reducedCost = _current.computeReducedCost();
 	for (auto const & v : _current._v) {
 		_current._reducedCost += dual(v);
 	}
-	//for(auto const & r : solution._r){
-	//	for(auto const & b : solution._b){
-	//		solution._cost+=_input->w(r, b);
-	//	}
-	//}
-	//solution._reducedCost += solution._cost;
 }
 
 bool VnsGenerator::localSearch() {
@@ -85,7 +78,7 @@ bool VnsGenerator::localSearch() {
 }
 
 bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
-	_columns.clear();
+//	_columns.clear();
 	size_t ite(0);
 //	Double kMax((Double) std::max(_input->nR(), _input->nB()));
 //	Double kMax((Double) std::min(_input->nR(), _input->nB()));
@@ -101,6 +94,8 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 	bool success(false);
 	do {
 		++ite;
+		initialize();
+		shake(_input->nV() * 0.3);
 		size_t k(0);
 		do {
 			++k;

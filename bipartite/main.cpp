@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
 //	std::cout << "VNS STARTED" << std::endl;
 //	VnsLabelPropagation vns(instance, p, 20, 5);
 //	vns.run();
-	std::cout << "B&B STARTED" << std::endl;
+//	std::cout << "B&B STARTED" << std::endl;
 
 	BranchAndBound branchAndBound(instance, oracle);
 	branchAndBound.init();

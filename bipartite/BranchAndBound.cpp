@@ -11,7 +11,7 @@
 #include "QpOracle.hpp"
 
 BranchAndBound::BranchAndBound(BipartiteGraph const &input,
-		AvailableOracle orable) :
+		AvailableOracle oracle) :
 		_input(&input), _master(NULL), _vnsGenerator(NULL), _mipGenerator(NULL), _decision() {
 	_root = NULL;
 	_bestFeasible = std::numeric_limits<double>::min();
@@ -19,18 +19,7 @@ BranchAndBound::BranchAndBound(BipartiteGraph const &input,
 	_current = NULL;
 	_output = NULL;
 	_master = new LpMaster(&input, &_decision);
-	switch (orable) {
-	case MILP:
-		_mipGenerator = new MilpOracle(&input, &_master->dual(), &_decision);
-		break;
-	case MIQP:
-		_mipGenerator = new QpOracle(&input, &_master->dual(), &_decision);
-		break;
-	default:
-		_mipGenerator = new BinaryDecompositionOracle(&input, &_master->dual(),
-				&_decision);
-		break;
-	}
+	_mipGenerator = _input->newOracle(oracle, _master->dual(), _decision);
 	_vnsGenerator = new VnsGenerator(&input, &_master->dual(), &_decision);
 }
 
@@ -75,13 +64,16 @@ void BranchAndBound::columnGeneration() {
 		++ite;
 		//write();
 		timer.restart();
-		_master->write();
+//		_master->write();
 		_master->solveMaster();
 		m += timer.elapsed();
 		timer.restart();
 		//		bool heuristicSucceeded(false);
+		_vnsGenerator->columns().clear();
 		bool heuristicSucceeded(false);
-		heuristicSucceeded = _vnsGenerator->run(5, true);
+		for (size_t i(0); i < 10 && !heuristicSucceeded; ++i)
+			if (_vnsGenerator->run(5, true))
+				heuristicSucceeded = true;
 		h += timer.elapsed();
 		nb = 0;
 		rd = -1;

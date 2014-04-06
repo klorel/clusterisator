@@ -5,10 +5,15 @@
 #include "RectMatrix.hpp"
 #include "Edge.h"
 #include "IndexedList.hpp"
+#include "gencol.h"
 
+class IOracle;
 class BipartiteGraph;
 std::ostream & operator<<(std::ostream &out, BipartiteGraph const&);
 class BipartiteGraph {
+public:
+	IOracle * newOracle(AvailableOracle oracle, DoubleVector const & dual, DecisionList const & decision)const;
+	IOracle * newOracle(AvailableOracle oracle, DoubleVector const * dual, DecisionList const * decision)const;
 public:
 	BipartiteGraph();
 	BipartiteGraph(Edges const & edges);

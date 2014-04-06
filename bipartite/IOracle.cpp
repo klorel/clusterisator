@@ -23,6 +23,9 @@ bool IOracle::generate() {
 Columns const & IOracle::columns() const {
 	return _columns;
 }
+Columns  & IOracle::columns()  {
+	return _columns;
+}
 Double IOracle::bestReducedCost() const {
 	return _bestReducedCost;
 }

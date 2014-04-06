@@ -1,5 +1,9 @@
 #include "BipartiteGraph.hpp"
 
+#include "BinaryDecompositionOracle.hpp"
+#include "MilpOracle.hpp"
+#include "QpOracle.hpp"
+
 BipartiteGraph::BipartiteGraph() :
 		_m(0), _inv_m(0), _edges(), _a() {
 
@@ -81,4 +85,26 @@ Double BipartiteGraph::computeCost(std::set<size_t> const & v) const {
 
 std::string BipartiteGraph::name() const {
 	return "";
+}
+
+IOracle * BipartiteGraph::newOracle(AvailableOracle oracle,
+		DoubleVector const * dual, DecisionList const * decision) const {
+	IOracle * result(NULL);
+	switch (oracle) {
+	case MILP:
+		result = new MilpOracle(this, dual, decision);
+		break;
+	case MIQP:
+		result = new QpOracle(this, dual, decision);
+		break;
+	default:
+		result = new BinaryDecompositionOracle(this, dual, decision);
+		break;
+	}
+	return result;
+}
+
+IOracle * BipartiteGraph::newOracle(AvailableOracle oracle,
+		DoubleVector const & dual, DecisionList const & decision) const {
+	return newOracle(oracle, &dual, &decision);
 }

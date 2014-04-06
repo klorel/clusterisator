@@ -19,6 +19,7 @@ public:
 			DecisionList const * decisions);
 	virtual ~IOracle();
 public:
+	Columns & columns();
 	Columns const & columns() const;
 public:
 	virtual bool generate();
