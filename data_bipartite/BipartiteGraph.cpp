@@ -201,3 +201,20 @@ void BipartiteGraph::branchingWeights(FractionnarySolution const & solution,
 			std::cout << "weights.empty()" << std::endl;
 	}
 }
+void BipartiteGraph::writeSolution(FractionnarySolution const& bestSolution,
+		double lb) const {
+	std::ofstream file(GetStr("optimal/", name(), "_", lb, ".txt").c_str());
+	for (auto const & c : bestSolution) {
+		for (size_t r(0); r < nR(); ++r) {
+			for (size_t b(0); b < nB(); ++b) {
+				if (c.first->contains(r) && c.first->contains(nR() + b)) {
+					file << std::setw(6) << 1 + r;
+					file << std::setw(6) << 1 + b + nR();
+					file << std::endl;
+				}
+
+			}
+		}
+	}
+	file.close();
+}

@@ -34,6 +34,7 @@ public:
 
 	virtual void branchingSelection(Node const & node, size_t &noeud1,
 			size_t &noeud2) const = 0;
+	virtual void writeSolution(FractionnarySolution const&, double) const = 0;
 };
 
 #endif /* ICLIQUEPARTITIONNINPROBLEM_H_ */

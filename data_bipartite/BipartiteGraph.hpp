@@ -18,9 +18,11 @@ public:
 	void branchingWeights(FractionnarySolution const &,
 			BranchingWeights & result) const;
 
-	void branchingSelection(Node const & node, size_t &noeud1, size_t &noeud2) const;
+	void branchingSelection(Node const & node, size_t &noeud1,
+			size_t &noeud2) const;
 	std::pair<size_t, size_t> branchingSelection(DecisionSet const & decisions,
 			BranchingWeights & weights) const;
+	void writeSolution(FractionnarySolution const&, double) const;
 public:
 	BipartiteGraph();
 	BipartiteGraph(Edges const & edges);
@@ -29,6 +31,7 @@ public:
 	Double gradient(size_t id, IndexedList const & v) const;
 	void update(size_t id, bool wasIn, DoubleVector &gradient) const;
 	void gradient(IndexedList const & v, DoubleVector &) const;
+
 public:
 	size_t nV() const;
 	size_t nR() const;

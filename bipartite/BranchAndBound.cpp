@@ -64,7 +64,7 @@ void BranchAndBound::columnGeneration() {
 		++ite;
 		//write();
 		timer.restart();
-//		_master->write();
+		//		_master->write();
 		_master->solveMaster();
 		m += timer.elapsed();
 		timer.restart();
@@ -74,8 +74,8 @@ void BranchAndBound::columnGeneration() {
 		for (size_t i(0); i < 5 && !heuristicSucceeded; ++i)
 			if (_vnsGenerator->run(1, true))
 				heuristicSucceeded = true;
-//		if(!heuristicSucceeded )
-//			heuristicSucceeded  = _vnsGenerator->run(2, true)
+		//		if(!heuristicSucceeded )
+		//			heuristicSucceeded  = _vnsGenerator->run(2, true)
 		h += timer.elapsed();
 		nb = 0;
 		rd = -1;
@@ -215,22 +215,23 @@ IMaster const & BranchAndBound::master() const {
 	return *_master;
 }
 void BranchAndBound::writeSolution() const {
-	std::ofstream file(
-			GetStr("optimal/", _input->name(), "_", _current->lb(), ".txt").c_str());
-	for (auto const & c : _bestSolution) {
-		for (size_t r(0); r < _input->nR(); ++r) {
-			for (size_t b(0); b < _input->nB(); ++b) {
-				if (c.first->contains(r)
-						&& c.first->contains(_input->nR() + b)) {
-					file << std::setw(6) << 1 + r;
-					file << std::setw(6) << 1 + b + _input->nR();
-					file << std::endl;
-				}
-
-			}
-		}
-	}
-	file.close();
+	_input->writeSolution(_bestSolution, _bestPossible);
+	//	std::ofstream file(
+	//			GetStr("optimal/", _input->name(), "_", _bestPossible, ".txt").c_str());
+	//	for (auto const & c : _bestSolution) {
+	//		for (size_t r(0); r < _input->nR(); ++r) {
+	//			for (size_t b(0); b < _input->nB(); ++b) {
+	//				if (c.first->contains(r)
+	//						&& c.first->contains(_input->nR() + b)) {
+	//					file << std::setw(6) << 1 + r;
+	//					file << std::setw(6) << 1 + b + _input->nR();
+	//					file << std::endl;
+	//				}
+	//
+	//			}
+	//		}
+	//	}
+	//	file.close();
 }
 void BranchAndBound::setOutput(std::ostream & stream) {
 	_output = &stream;
