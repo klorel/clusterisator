@@ -19,7 +19,7 @@ BranchAndBound::BranchAndBound(BipartiteGraph const &input,
 	_current = NULL;
 	_output = NULL;
 	_master = new LpMaster(&input, &_decision);
-	_mipGenerator = _input->newOracle(oracle, _master->dual(), _decision);
+	_mipGenerator = _input->newOracle(oracle, &_master->dual(), &_decision);
 	_vnsGenerator = new VnsGenerator(&input, &_master->dual(), &_decision);
 }
 
@@ -71,9 +71,11 @@ void BranchAndBound::columnGeneration() {
 		//		bool heuristicSucceeded(false);
 		_vnsGenerator->columns().clear();
 		bool heuristicSucceeded(false);
-		for (size_t i(0); i < 10 && !heuristicSucceeded; ++i)
-			if (_vnsGenerator->run(5, true))
+		for (size_t i(0); i < 5 && !heuristicSucceeded; ++i)
+			if (_vnsGenerator->run(1, true))
 				heuristicSucceeded = true;
+//		if(!heuristicSucceeded )
+//			heuristicSucceeded  = _vnsGenerator->run(2, true)
 		h += timer.elapsed();
 		nb = 0;
 		rd = -1;
@@ -81,7 +83,7 @@ void BranchAndBound::columnGeneration() {
 			step = "HEURISTIC";
 			timer.restart();
 			_vnsGenerator->sortedColumns(sorter);
-			_master->add(sorter, 5, nb, rd);
+			_master->add(sorter, 0, nb, rd);
 			a += timer.elapsed();
 		} else {
 			step = "EXACT";
@@ -124,11 +126,10 @@ void BranchAndBound::init() {
 	//_master->addEdge();
 }
 void BranchAndBound::run() {
-	BranchingWeights weights;
-	DecisionSet decisions;
-
 	treat(_root);
 	size_t ite(0);
+	size_t noeud1;
+	size_t noeud2;
 	while (_nodesByUpperBounds.begin()->first > _bestFeasible + 1e-6) {
 		_bestPossible = _nodesByUpperBounds.begin()->second->ub();
 		++ite;
@@ -138,20 +139,7 @@ void BranchAndBound::run() {
 		node->ub() = -1e50;
 		_nodesByUpperBounds.insert(std::make_pair(node->ub(), node));
 
-		_master->branchingWeights(node->lbSolution(), weights);
-		BranchingWeights::const_iterator it(weights.begin());
-
-		decisions.clear();
-		node->decisions(decisions);
-		while (decisions.find(
-				Decision(
-						std::make_pair(it->second.first,
-								_input->nR() + it->second.second)))
-				!= decisions.end() && it != weights.end()) {
-			++it;
-		}
-		size_t const noeud1(it->second.first);
-		size_t const noeud2(_input->nR() + it->second.second);
+		_input->branchingSelection(*node, noeud1, noeud2);
 		treat(new Node(node, true, noeud1, noeud2));
 		treat(new Node(node, false, noeud1, noeud2));
 		assert(

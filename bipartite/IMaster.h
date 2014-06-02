@@ -27,13 +27,12 @@ public:
 			Double&rd) = 0;
 	virtual void add(ModularityBPartition const & column) = 0;
 	virtual void addSingleton() = 0;
-	virtual void addEdge() = 0;
 
 	virtual void write(std::string const & = "master.lp") const = 0;
 public:
 	virtual void applyBranchingRule() = 0;
-	virtual void branchingWeights(FractionnarySolution const &,
-			BranchingWeights &) = 0;
+//	virtual void branchingWeights(FractionnarySolution const &,
+//			BranchingWeights &) = 0;
 public:
 //	virtual void buildDualBounds(ModularityBPartition const &) = 0;
 //	virtual void buildStabilization(ModularityBPartition const &) = 0;

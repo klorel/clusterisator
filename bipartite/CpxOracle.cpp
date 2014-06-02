@@ -81,8 +81,8 @@ bool CpxOracle::generate() {
 //		MY_PRINT(result);
 		if (result) {
 			DoubleVector x(CPXgetnumcols(_env, _prob));
-			size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
-//			size_t const n(1);
+//			size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
+			size_t const n(1);
 //			MY_PRINT(n);
 			Double obj;
 			for (size_t i(0); i < n; ++i) {

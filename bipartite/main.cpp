@@ -88,7 +88,8 @@ int main(int argc, char** argv) {
 //	branchAndBound.master().write();
 	branchAndBound.setOutput();
 	branchAndBound.run();
-//	branchAndBound._vnsGenerator->run(5, false);
+//	for (size_t i(0); i < 1; ++i)
+//		branchAndBound._vnsGenerator->run(1, false);
 //	branchAndBound.writeSolution();
 	std::cout << "program run in " << std::setprecision(10) << total.elapsed()
 			<< std::endl;

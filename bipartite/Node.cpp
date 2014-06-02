@@ -36,6 +36,9 @@ size_t & Node::id() {
 FractionnarySolution & Node::lbSolution() {
 	return _lbSolution;
 }
+FractionnarySolution const & Node::lbSolution() const {
+	return _lbSolution;
+}
 Node const * Node::father() const {
 	return _father;
 }

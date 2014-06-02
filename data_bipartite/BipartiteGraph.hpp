@@ -9,17 +9,26 @@
 
 class IOracle;
 class BipartiteGraph;
+class Node;
 std::ostream & operator<<(std::ostream &out, BipartiteGraph const&);
 class BipartiteGraph {
 public:
-	IOracle * newOracle(AvailableOracle oracle, DoubleVector const & dual, DecisionList const & decision)const;
-	IOracle * newOracle(AvailableOracle oracle, DoubleVector const * dual, DecisionList const * decision)const;
+	IOracle * newOracle(AvailableOracle oracle, DoubleVector const * dual,
+			DecisionList const * decision) const;
+	void branchingWeights(FractionnarySolution const &,
+			BranchingWeights & result) const;
+
+	void branchingSelection(Node const & node, size_t &noeud1, size_t &noeud2) const;
+	std::pair<size_t, size_t> branchingSelection(DecisionSet const & decisions,
+			BranchingWeights & weights) const;
 public:
 	BipartiteGraph();
 	BipartiteGraph(Edges const & edges);
 	void build();
 	virtual ~BipartiteGraph();
 	Double gradient(size_t id, IndexedList const & v) const;
+	void update(size_t id, bool wasIn, DoubleVector &gradient) const;
+	void gradient(IndexedList const & v, DoubleVector &) const;
 public:
 	size_t nV() const;
 	size_t nR() const;
@@ -43,6 +52,8 @@ public:
 	virtual std::string name() const;
 
 	Double computeCost(std::set<size_t> const &) const;
+	std::vector<Edge> const & costs() const;
+
 public:
 	Double _m;
 	Double _inv_m;
@@ -51,6 +62,7 @@ public:
 	Edges _edges;
 	RectMatrix _a;
 	std::vector<std::map<size_t, double> > _allLinks;
+	std::vector<Edge> _costs;
 };
 
 inline size_t BipartiteGraph::nR() const {
@@ -116,5 +128,30 @@ inline Double BipartiteGraph::gradient(size_t id, IndexedList const & v) const {
 		}
 	}
 	return result;
+}
+inline void BipartiteGraph::update(size_t id, bool wasIn,
+		DoubleVector & gradient) const {
+	for (auto const & link : _allLinks[id]) {
+		if (wasIn)
+			gradient[link.first] -= link.second;
+		else
+			gradient[link.first] += link.second;
+	}
+}
+
+inline std::vector<Edge> const & BipartiteGraph::costs() const {
+	return _costs;
+}
+inline void BipartiteGraph::gradient(IndexedList const & v,
+		DoubleVector & result) const {
+	result.assign(v.max_size(), 0);
+	for (auto const & e : _costs) {
+		if (v.contains(e._j)) {
+			result[e._i] += e._v;
+		}
+		if (v.contains(e._i)) {
+			result[e._j] += e._v;
+		}
+	}
 }
 #endif /* GRAPH_HPP */

@@ -25,15 +25,24 @@ public:
 
 	Double dual(size_t) const;
 	void initialize();
-
+	void backTrack();
 	size_t violationIf(size_t id) const;
 	size_t swap(size_t id, VnsGeneratorSolution & point);
+	void swap(size_t k, Double deltaCost, Double deltaDual);
+	void swap(size_t k, bool wasIn, Double deltaCost, Double deltaDual);
+	void swap(size_t k);
+	bool checkGradient() const;
+
+	bool tryMove(size_t id, Double delta, Double deltaDual);
 private:
 	IndexedList _allNodes;
 
 	VnsGeneratorSolution _current;
 	VnsGeneratorSolution _best;
 	DoubleVector _delta;
+
+	DoubleVector _gradient;
+	IndexedList _wasSwapped;
 };
 
 inline Double VnsGenerator::dual(size_t n) const {

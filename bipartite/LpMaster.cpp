@@ -116,8 +116,7 @@ void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer,
 				(int) result.first->id());
 		MY_PRINT(obj);
 		//		exit(0);
-		ASSERT_CHECK(column.check(_dual));
-		ASSERT_CHECK(column.violation(*_decisions) == 0);
+		ASSERT_CHECK(column.check(_dual)); ASSERT_CHECK(column.violation(*_decisions) == 0);
 	} else {
 		rd = std::max(rd, column.reducedCost());
 		result.first->id() = current_n + nb;
@@ -186,28 +185,11 @@ void LpMaster::add(Column const & column) {
 }
 void LpMaster::addSingleton() {
 	DoubleVector emptyDual(_input->nV(), 0);
-	for (size_t r(0); r < _input->nR(); ++r) {
+	for (size_t v(0); v < _input->nV(); ++v) {
 		Column column(_input);
-		column.insert(r);
+		column.insert(v);
 		column.cost() = 0;
-		column.reducedCost() = column.cost();
-		add(column);
-	}
-	for (size_t b(0); b < _input->nB(); ++b) {
-		Column column(_input);
-		column.insert(_input->nR() + b);
-		column.cost() = 0;
-		column.reducedCost() = column.cost();
-		add(column);
-	}
-}
-void LpMaster::addEdge() {
-	for (auto const & e : _input->edges()) {
-		Column column(_input);
-		column.insert(e._i);
-		column.insert(_input->nR() + e._j);
-		column.cost() = column.computeCost();
-		column.reducedCost() = column.cost();
+		column.reducedCost() = 0;
 		add(column);
 	}
 }
@@ -313,80 +295,79 @@ void LpMaster::applyBranchingRule() {
 	}
 	CPXchgobj(_env, _lp, (int) index.size(), index.data(), obj.data());
 }
-void LpMaster::branchingWeights(FractionnarySolution const & solution,
-		BranchingWeights & weights) {
-// on cherche des arrêtes présentes et semi-présentes dans deux colonnes
-	BranchingWeights2 temp;
-	std::map<Edge, std::pair<IntSet, IntSet> > toto;
-	for (auto const & kvp : solution) {
-		//		std::cout << std::setw(6) << kvp.first->id();
-		//		std::cout << std::setw(15) << kvp.second;
-		//		std::cout << std::endl;
-		for (Edge const & e : _input->edges()) {
-			bool const iR(kvp.first->contains(e._i));
-			bool const iB(kvp.first->contains(e._j + _input->nR()));
-			if (iR && iB) {
-				toto[e].first.insert(kvp.first->id());
-			} else if (iR + iB == 1) {
-				toto[e].second.insert(kvp.first->id());
-			}
-		}
-
-	}
-//	std::cout << "synthese" << std::endl;
-	weights.clear();
-	for (auto const & t : toto) {
-		//		std::cout << std::setw(6) << t.second.first.size();
-		//		std::cout << std::setw(6) << t.second.second.size();
-		//		std::cout << std::endl;
-		if (!t.second.first.empty() && !t.second.second.empty()) {
-			//			std::cout << std::setw(6) << t.first._i;
-			//			std::cout << std::setw(6) << t.first._j;
-			//			std::cout << std::endl;
-			weights.insert(
-					std::make_pair(
-							0.5
-									* ((int) ((t.second.first.size()
-											+ t.second.second.size()))),
-							std::make_pair(t.first._i, t.first._j)));
-		}
-	}
-	if (weights.empty()) {
-		std::cout << "weights.empty(), generating full weights" << std::endl;
-		for (auto const & kvp : solution) {
-			for (size_t r(0); r < _input->nR(); ++r) {
-				for (size_t b(0); b < _input->nB(); ++b) {
-					bool const iR(kvp.first->contains(r));
-					bool const iB(kvp.first->contains(b) + _input->nR());
-					if (iR && iB) {
-						toto[Edge(r, b, 1)].first.insert(kvp.first->id());
-					} else if (iR + iB == 1) {
-						toto[Edge(r, b, 1)].second.insert(kvp.first->id());
-					}
-				}
-			}
-		}
-
-		for (auto const & t : toto) {
-			//		std::cout << std::setw(6) << t.second.first.size();
-			//		std::cout << std::setw(6) << t.second.second.size();
-			//		std::cout << std::endl;
-			if (!t.second.first.empty() && !t.second.second.empty()) {
-				//			std::cout << std::setw(6) << t.first._i;
-				//			std::cout << std::setw(6) << t.first._j;
-				//			std::cout << std::endl;
-				weights.insert(
-						std::make_pair(
-								0.5
-										* ((int) ((t.second.first.size()
-												+ t.second.second.size()))),
-								std::make_pair(t.first._i, t.first._j)));
-			}
-		}
-		if (weights.empty())
-			std::cout << "weights.empty()" << std::endl;
-	}
-}
+//void LpMaster::branchingWeights(FractionnarySolution const & solution,
+//		BranchingWeights & weights) {
+//// on cherche des arrêtes présentes et semi-présentes dans deux colonnes
+//	BranchingWeights2 temp;
+//	std::map<Edge, std::pair<IntSet, IntSet> > toto;
+//	for (auto const & kvp : solution) {
+//		//		std::cout << std::setw(6) << kvp.first->id();
+//		//		std::cout << std::setw(15) << kvp.second;
+//		//		std::cout << std::endl;
+//		for (Edge const & e : _input->edges()) {
+//			bool const iFirst(kvp.first->contains(e._i));
+//			bool const iSecond(kvp.first->contains(e._j + _input->nR()));
+//			if (iFirst && iSecond) {
+//				toto[e].first.insert(kvp.first->id());
+//			} else if (iFirst + iSecond == 1) {
+//				toto[e].second.insert(kvp.first->id());
+//			}
+//		}
+//	}
+////	std::cout << "synthese" << std::endl;
+//	weights.clear();
+//	for (auto const & t : toto) {
+//		//		std::cout << std::setw(6) << t.second.first.size();
+//		//		std::cout << std::setw(6) << t.second.second.size();
+//		//		std::cout << std::endl;
+//		if (!t.second.first.empty() && !t.second.second.empty()) {
+//			//			std::cout << std::setw(6) << t.first._i;
+//			//			std::cout << std::setw(6) << t.first._j;
+//			//			std::cout << std::endl;
+//			weights.insert(
+//					std::make_pair(
+//							0.5
+//									* ((int) ((t.second.first.size()
+//											+ t.second.second.size()))),
+//							std::make_pair(t.first._i, t.first._j)));
+//		}
+//	}
+//	if (weights.empty()) {
+//		std::cout << "weights.empty(), generating full weights" << std::endl;
+//		for (auto const & kvp : solution) {
+//			for (size_t r(0); r < _input->nR(); ++r) {
+//				for (size_t b(0); b < _input->nB(); ++b) {
+//					bool const iR(kvp.first->contains(r));
+//					bool const iB(kvp.first->contains(b) + _input->nR());
+//					if (iR && iB) {
+//						toto[Edge(r, b, 1)].first.insert(kvp.first->id());
+//					} else if (iR + iB == 1) {
+//						toto[Edge(r, b, 1)].second.insert(kvp.first->id());
+//					}
+//				}
+//			}
+//		}
+//
+//		for (auto const & t : toto) {
+//			//		std::cout << std::setw(6) << t.second.first.size();
+//			//		std::cout << std::setw(6) << t.second.second.size();
+//			//		std::cout << std::endl;
+//			if (!t.second.first.empty() && !t.second.second.empty()) {
+//				//			std::cout << std::setw(6) << t.first._i;
+//				//			std::cout << std::setw(6) << t.first._j;
+//				//			std::cout << std::endl;
+//				weights.insert(
+//						std::make_pair(
+//								0.5
+//										* ((int) ((t.second.first.size()
+//												+ t.second.second.size()))),
+//								std::make_pair(t.first._i, t.first._j)));
+//			}
+//		}
+//		if (weights.empty())
+//			std::cout << "weights.empty()" << std::endl;
+//	}
+//}
 
 void LpMaster::add(ModularityBPartition const & solution) {
 	std::set<Column> columns;

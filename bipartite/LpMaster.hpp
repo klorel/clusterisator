@@ -33,7 +33,6 @@ public:
 
 	void add(ModularityBPartition const & column);
 	void addSingleton();
-	void addEdge();
 
 	void write(std::string const & fileName = "master.lp") const;
 
@@ -51,7 +50,7 @@ public:
 	std::set<Column> const & columns() const;
 
 	void applyBranchingRule();
-	void branchingWeights(FractionnarySolution const &, BranchingWeights &);
+//	void branchingWeights(FractionnarySolution const &, BranchingWeights &);
 
 	void build();
 private:
