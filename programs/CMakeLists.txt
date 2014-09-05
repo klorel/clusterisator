@@ -1,5 +1,5 @@
 
-INCLUDE_DIRECTORIES( . ../clustering ../kmeans)
+#INCLUDE_DIRECTORIES( . ../clustering ../kmeans)
 
 
 FILE(  GLOB  main_files   ./*.cpp )

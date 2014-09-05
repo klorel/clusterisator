@@ -23,13 +23,11 @@ public:
 
 	bool operator()(size_t);
 	bool operator()();
-	Double w(size_t id, size_t neighbor) const;
-	Double k(size_t id) const;
 private:
 	void buildGraph();
 private:
 	ICliquePartitionProblem const & _input;
 	ICliquePartition & _solution;
-	std::vector<IntSet> _graph;
+	AdjencyGraph _graph;
 };
 #endif /* LABELPROPAGATION_HPP_ */

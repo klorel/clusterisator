@@ -19,7 +19,7 @@ LabelPropagation2::~LabelPropagation2() {
 bool LabelPropagation2::operator()(size_t id) {
 	std::map<size_t, Double> links;
 	for (auto const & v : _graph[id]) {
-		links[_solution.label(v)] += _input.score(id, v);
+		links[_solution.label(v.first)] += v.second;
 	}
 	Double const loss(links[_solution.label(id)]);
 	std::multimap<Double, size_t, std::greater<Double>> delta;

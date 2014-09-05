@@ -9,11 +9,13 @@
 #define CPXORACLE_H_
 
 #include "IOracle.h"
-
 #include "LpBuffer.hpp"
+
 #include <cplex.h>
+
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
+
 class CpxOracle: public IOracle {
 public:
 	CpxOracle(BipartiteGraph const * input, DoubleVector const * dual,

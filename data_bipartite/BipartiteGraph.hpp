@@ -6,23 +6,30 @@
 #include "Edge.h"
 #include "IndexedList.hpp"
 #include "gencol.h"
+#include "ICliquePartitionProblem.h"
 
 class IOracle;
 class BipartiteGraph;
 class Node;
 std::ostream & operator<<(std::ostream &out, BipartiteGraph const&);
-class BipartiteGraph {
+class BipartiteGraph: public ICliquePartitionProblem {
 public:
-	IOracle * newOracle(AvailableOracle oracle, DoubleVector const * dual,
-			DecisionList const * decision) const;
+	virtual size_t nV() const;
+	virtual Edges const & edges() const;
+
+	virtual Double k(size_t) const;
+
+	virtual IOracle * newOracle(AvailableOracle oracle,
+			DoubleVector const * dual, DecisionList const * decision) const;
+	virtual void branchingSelection(Node const & node, size_t &noeud1,
+			size_t &noeud2) const;
+	virtual void writeSolution(FractionnarySolution const&, double) const;
+public:
 	void branchingWeights(FractionnarySolution const &,
 			BranchingWeights & result) const;
 
-	void branchingSelection(Node const & node, size_t &noeud1,
-			size_t &noeud2) const;
 	std::pair<size_t, size_t> branchingSelection(DecisionSet const & decisions,
 			BranchingWeights & weights) const;
-	void writeSolution(FractionnarySolution const&, double) const;
 public:
 	BipartiteGraph();
 	BipartiteGraph(Edges const & edges);
@@ -33,17 +40,13 @@ public:
 	void gradient(IndexedList const & v, DoubleVector &) const;
 
 public:
-	size_t nV() const;
 	size_t nR() const;
 	size_t nB() const;
 
 	Edges & edges();
-	Edges const & edges() const;
 	RectMatrix const & a() const;
 	Double w(size_t r, size_t b) const;
 	Double a(size_t r, size_t b) const;
-
-	Double k(size_t) const;
 
 	Double m() const;
 	Double inv_m() const;

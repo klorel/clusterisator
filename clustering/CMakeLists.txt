@@ -1,4 +1,4 @@
-INCLUDE_DIRECTORIES( . ../data_bipartite ../data_unipartite)
+#INCLUDE_DIRECTORIES( . ../data_bipartite ../data_unipartite)
 
 FILE(
 	GLOB_RECURSE 
