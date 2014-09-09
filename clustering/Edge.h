@@ -27,7 +27,7 @@ public:
 class Edges: public std::list<Edge> {
 public:
 	bool read(std::string const &, std::ostream & = std::cout);
-	void print(std::ostream &)const;
+	void print(std::ostream &) const;
 public:
 	Edges();
 	virtual ~Edges();

@@ -4,12 +4,13 @@
 #include "Timer.hpp"
 #include "Node.hpp"
 
+#include "BipartiteGraph.hpp"
 #include <cplex.h>
 
 BinaryDecompositionOracle::BinaryDecompositionOracle(
 		BipartiteGraph const * input, DoubleVector const * dual,
 		DecisionList const * decisions) :
-		CpxOracle(input, dual, decisions) {
+		CpxOracle(input, dual, decisions), _biPartiteGraph(input) {
 	initCpx();
 }
 BinaryDecompositionOracle::~BinaryDecompositionOracle() {
@@ -24,33 +25,37 @@ void BinaryDecompositionOracle::initOracle() {
 	// 0..R-1 : Yr
 	// R..R+B-1 : Yb
 	ColumnBuffer columnBuffer;
-	_index.resize(_input->nV());
-	for (size_t v(0); v < _input->nV(); ++v) {
+	_index.resize(_biPartiteGraph->nV());
+	for (size_t v(0); v < _biPartiteGraph->nV(); ++v) {
 		_index[v] = columnBuffer.size();
 		columnBuffer.add(0, CPX_BINARY, 0, 1,
-				v < _input->nR() ?
-						GetStr("YR_", v) : GetStr("YB_", v - _input->nR()));
+				v < _biPartiteGraph->nR() ?
+						GetStr("YR_", v) :
+						GetStr("YB_", v - _biPartiteGraph->nR()));
 	}
 
 	// 
-	_s = RectMatrix(_input->nR(), _input->nB());
-	for (size_t r(0); r < _input->nR(); ++r) {
-		for (size_t b(0); b < _input->nB(); ++b) {
-			if (_input->a(r, b) != 0) {
+	_s = RectMatrix(_biPartiteGraph->nR(), _biPartiteGraph->nB());
+	for (size_t r(0); r < _biPartiteGraph->nR(); ++r) {
+		for (size_t b(0); b < _biPartiteGraph->nB(); ++b) {
+			if (_biPartiteGraph->a(r, b) != 0) {
 				_s.get(r, b) = columnBuffer.size();
-//				columnBuffer.add(_input->a(r, b) * _input->inv_m(),
+//				columnBuffer.add(_biPartiteGraph->a(r, b) * _biPartiteGraph->inv_m(),
 //						CPX_CONTINUOUS, 0, CPX_INFBOUND,
 //						GetStr("S_", r, "_", b));
-				columnBuffer.add(_input->a(r, b) * _input->inv_m(),
+				columnBuffer.add(
+						_biPartiteGraph->a(r, b) * _biPartiteGraph->inv_m(),
 						CPX_CONTINUOUS, -CPX_INFBOUND, CPX_INFBOUND,
 						GetStr("S_", r, "_", b));
 			}
 		}
 	}
 	size_t const tR(
-			(size_t) std::ceil((std::log(_input->sum_kR() + 1) / log(2) - 1)));
+			(size_t) std::ceil(
+					(std::log(_biPartiteGraph->sum_kR() + 1) / log(2) - 1)));
 	size_t const tB(
-			(size_t) std::ceil((std::log(_input->sum_kB() + 1) / log(2) - 1)));
+			(size_t) std::ceil(
+					(std::log(_biPartiteGraph->sum_kB() + 1) / log(2) - 1)));
 	IntVector a(tR + 1);
 	for (size_t h(0); h < tR + 1; ++h) {
 		// ah binary
@@ -69,7 +74,8 @@ void BinaryDecompositionOracle::initOracle() {
 			// ahl >= 0
 			_ab.get(h, l) = columnBuffer.size();
 			columnBuffer.add(
-					-std::pow(2, l + h) * _input->inv_m() * _input->inv_m(),
+					-std::pow(2, l + h) * _biPartiteGraph->inv_m()
+							* _biPartiteGraph->inv_m(),
 					CPX_CONTINUOUS, 0, CPX_INFBOUND, GetStr("a_", h, "_", l));
 		}
 	}
@@ -93,8 +99,8 @@ void BinaryDecompositionOracle::initOracle() {
 	_rowBuffer.clear();
 	// R1 = sum kr Yr
 	_rowBuffer.add(0, 'E', "R1_k");
-	for (size_t r(0); r < _input->nR(); ++r) {
-		_rowBuffer.add(r, _input->k(r));
+	for (size_t r(0); r < _biPartiteGraph->nR(); ++r) {
+		_rowBuffer.add(r, _biPartiteGraph->k(r));
 	}
 	_rowBuffer.add(R1, -1);
 	// R1 = sum 2^h ah
@@ -105,8 +111,9 @@ void BinaryDecompositionOracle::initOracle() {
 	_rowBuffer.add(R1, -1);
 	// B1 = sum kb Yb
 	_rowBuffer.add(0, 'E', "B1_k");
-	for (size_t b(0); b < _input->nB(); ++b) {
-		_rowBuffer.add(_input->nR() + b, _input->k(_input->nR() + b));
+	for (size_t b(0); b < _biPartiteGraph->nB(); ++b) {
+		_rowBuffer.add(_biPartiteGraph->nR() + b,
+				_biPartiteGraph->k(_biPartiteGraph->nR() + b));
 	}
 	_rowBuffer.add(B1, -1);
 	// B1 = sum 2^l al
@@ -115,21 +122,21 @@ void BinaryDecompositionOracle::initOracle() {
 		_rowBuffer.add(b[l], std::pow(2, l));
 	}
 	_rowBuffer.add(B1, -1);
-	for (size_t r(0); r < _input->nR(); ++r) {
-		for (size_t b(0); b < _input->nB(); ++b) {
-			if (_input->a(r, b) != 0) {
+	for (size_t r(0); r < _biPartiteGraph->nR(); ++r) {
+		for (size_t b(0); b < _biPartiteGraph->nB(); ++b) {
+			if (_biPartiteGraph->a(r, b) != 0) {
 				// Srb <= Yr (r,b) in E
 				_rowBuffer.add(0, 'L', GetStr("S_LEQ_R_R", r, "_B", b));
 				_rowBuffer.add(r, -1);
 				_rowBuffer.add((int) _s.get(r, b), +1);
 				// Srb <= Yb (r,b) in E
 				_rowBuffer.add(0, 'L', GetStr("S_LEQ_B_R", r, "_B", b));
-				_rowBuffer.add(_input->nR() + b, -1);
+				_rowBuffer.add(_biPartiteGraph->nR() + b, -1);
 				_rowBuffer.add((int) _s.get(r, b), +1);
 //				// Srb >= Yr+ Yb -1  (r,b) in E
 //				_rowBuffer.add(-1, 'G', GetStr("SYRB_", r, "_", b));
 //				_rowBuffer.add(r, -1);
-//				_rowBuffer.add(_input->nR() + b, -1);
+//				_rowBuffer.add(_biPartiteGraph->nR() + b, -1);
 //				_rowBuffer.add((int) _s.get(r, b), +1);
 			}
 		}
@@ -187,24 +194,26 @@ void BinaryDecompositionOracle::checkSolutions() {
 		CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);
 		CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,
 				(int) (x.size() - 1));
-		Column column(_input);
+		Column column(_biPartiteGraph);
 
-		for (size_t v(0); v < _input->nV(); ++v) {
+		for (size_t v(0); v < _biPartiteGraph->nV(); ++v) {
 			if (x[v] > 0.5) {
 				column.insert(v);
 			}
 		}
-		for (size_t r(0); r < _input->nR(); ++r) {
-			for (size_t b(0); b < _input->nB(); ++b) {
-				if (_input->a(r, b) != 0) {
-					if (std::fabs(x[r] * x[_input->nR() + b] - x[_s.get(r, b)])
-							> 0.5) {
+		for (size_t r(0); r < _biPartiteGraph->nR(); ++r) {
+			for (size_t b(0); b < _biPartiteGraph->nB(); ++b) {
+				if (_biPartiteGraph->a(r, b) != 0) {
+					if (std::fabs(
+							x[r] * x[_biPartiteGraph->nR() + b]
+									- x[_s.get(r, b)]) > 0.5) {
 						std::cout << std::setw(8) << "ERROR S";
-						std::cout << std::setw(8) << _input->a(r, b);
+						std::cout << std::setw(8) << _biPartiteGraph->a(r, b);
 						std::cout << std::setw(4) << "Y_R" << r;
 						std::cout << std::setw(4) << x[r];
 						std::cout << std::setw(4) << "Y_B" << b;
-						std::cout << std::setw(4) << x[_input->nR() + b];
+						std::cout << std::setw(4)
+								<< x[_biPartiteGraph->nR() + b];
 						std::cout << std::setw(4) << x[_s.get(r, b)];
 						std::cout << std::endl;
 					}
@@ -224,3 +233,4 @@ void BinaryDecompositionOracle::checkSolutions() {
 		}
 	}
 }
+

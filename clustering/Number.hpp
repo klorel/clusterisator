@@ -24,5 +24,4 @@ inline long int Number::Generator() {
 	return _Distribution(_Generator);
 }
 
-
 #endif /* NUMBER_H */

@@ -7,8 +7,8 @@
 
 class Column {
 public:
-	Column(BipartiteGraph const &);
-	Column(BipartiteGraph const *);
+	Column(ICliquePartitionProblem const &);
+	Column(ICliquePartitionProblem const *);
 public:
 	Double & cost();
 	Double const & cost() const;
@@ -37,7 +37,7 @@ public:
 	size_t violation(Decision const &) const;
 	bool contains(size_t, size_t) const;
 private:
-	BipartiteGraph const * _input;
+	ICliquePartitionProblem const * _input;
 	Double _cost;
 	Double _reducedCost;
 	std::set<size_t> _v;

@@ -9,9 +9,10 @@
 #define I_MASTER_H_
 
 #include "gencol.h"
-class BipartiteGraph;
 #include "Column.hpp"
-class ModularityBPartition;
+
+class ICliquePartitionProblem;
+class IPartition;
 class IMaster {
 public:
 	virtual Double obj() const = 0;
@@ -19,13 +20,16 @@ public:
 	virtual void solveMaster() = 0;
 	virtual bool getSolution(FractionnarySolution &) = 0;
 public:
+
+	virtual void add(IPartition const & solution) = 0;
+
 	virtual void add(Column const & column) = 0;
 
 	virtual void add(std::set<Column> const & columns, size_t & nb,
 			Double&rd) = 0;
 	virtual void add(ReducedCostSorter const & columns, size_t, size_t & nb,
 			Double&rd) = 0;
-	virtual void add(ModularityBPartition const & column) = 0;
+
 	virtual void addSingleton() = 0;
 
 	virtual void write(std::string const & = "master.lp") const = 0;
@@ -50,10 +54,10 @@ public:
 	virtual std::vector<double> const & dual() const = 0;
 	virtual std::set<Column> const & columns() const = 0;
 public:
-	IMaster(BipartiteGraph const *, DecisionList const * decisions);
+	IMaster(ICliquePartitionProblem const *, DecisionList const * decisions);
 	virtual ~IMaster();
 protected:
-	BipartiteGraph const * _input;
+	ICliquePartitionProblem const * _input;
 	DecisionList const * _decisions;
 
 	std::set<Column> _columns;

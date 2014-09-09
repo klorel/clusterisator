@@ -10,6 +10,7 @@
 
 #include "ModularityBPartition.hpp"
 
+namespace bipartite {
 class Divisive {
 public:
 	Divisive(BipartiteGraph & instance, ModularityBPartition & solution);
@@ -20,5 +21,5 @@ private:
 	BipartiteGraph & _instance;
 	ModularityBPartition & _solution;
 };
-
+}
 #endif /* DIVISIVE_H_ */

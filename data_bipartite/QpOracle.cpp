@@ -6,7 +6,7 @@
 
 QpOracle::QpOracle(BipartiteGraph const * input, DoubleVector const * dual,
 		DecisionList const * decisions) :
-		CpxOracle(input, dual, decisions) {
+		CpxOracle(input, dual, decisions), _biPartiteGraph(input){
 	_diagRegularisation = 1e2 * 0;
 	initCpx();
 }
@@ -22,31 +22,31 @@ void QpOracle::initOracle() {
 	// 0..R-1 : Yr
 	// R..R+B-1 : Yb
 	ColumnBuffer columnBuffer;
-	_index.resize(_input->nV());
-	for (size_t v(0); v < _input->nV(); ++v) {
+	_index.resize(_biPartiteGraph->nV());
+	for (size_t v(0); v < _biPartiteGraph->nV(); ++v) {
 		_index[v] = columnBuffer.size();
 		columnBuffer.add(0, CPX_BINARY, 0, 1,
-				v < _input->nR() ?
-						GetStr("YR_", v) : GetStr("YB_", v - _input->nR()));
+				v < _biPartiteGraph->nR() ?
+						GetStr("YR_", v) : GetStr("YB_", v - _biPartiteGraph->nR()));
 	}
 
 	// Srb=Yr.Yb
 	std::map<size_t, std::map<size_t, Double> > q;
-	for (size_t r(0); r < _input->nR(); ++r) {
-		for (size_t b(0); b < _input->nB(); ++b) {
-			if (_input->w(r, b) != 0) {
-				q[r][_input->nR() + b] = _input->w(r, b);
-				q[_input->nR() + b][r] = _input->w(r, b);
+	for (size_t r(0); r < _biPartiteGraph->nR(); ++r) {
+		for (size_t b(0); b < _biPartiteGraph->nB(); ++b) {
+			if (_biPartiteGraph->w(r, b) != 0) {
+				q[r][_biPartiteGraph->nR() + b] = _biPartiteGraph->w(r, b);
+				q[_biPartiteGraph->nR() + b][r] = _biPartiteGraph->w(r, b);
 			}
 		}
 	}
-	for (size_t v(0); v < _input->nV(); ++v)
+	for (size_t v(0); v < _biPartiteGraph->nV(); ++v)
 		q[v][v] = -2 * _diagRegularisation;
 	columnBuffer.add(_env, _prob);
 	// quadratic declaration
 
-	std::vector<int> qmatbeg(_input->nV(), 0);
-	std::vector<int> qmatcnt(_input->nV(), 0);
+	std::vector<int> qmatbeg(_biPartiteGraph->nV(), 0);
+	std::vector<int> qmatcnt(_biPartiteGraph->nV(), 0);
 	std::vector<int> qmatind;
 	std::vector<double> qmatval;
 
@@ -78,7 +78,7 @@ void QpOracle::setUpOracle() {
 //	CPXchgobj(_env, _oracle, (int) _index.size(), _index.data(), _dual->data());
 	DoubleVector copyDual(*_dual);
 
-	for (size_t v(0); v < _input->nV(); ++v)
+	for (size_t v(0); v < _biPartiteGraph->nV(); ++v)
 		copyDual[v] += _diagRegularisation;
 	CPXchgobj(_env, _prob, (int) _index.size(), _index.data(), copyDual.data());
 	//	for (auto const & i : _index) {
@@ -140,8 +140,8 @@ void QpOracle::checkSolution() const {
 				<< std::endl;
 		CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,
 				(int) (x.size() - 1));
-		Column column(_input);
-		for (size_t v(0); v < _input->nV(); ++v) {
+		Column column(_biPartiteGraph);
+		for (size_t v(0); v < _biPartiteGraph->nV(); ++v) {
 			if (x[v] > 0.5) {
 				column.insert(v);
 			}
@@ -159,3 +159,4 @@ void QpOracle::checkSolution() const {
 		}
 	}
 }
+

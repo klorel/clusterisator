@@ -13,13 +13,14 @@
 #include "IPartition.hpp"
 
 class Acc: public IMeasure {
-  public:
-    virtual ~Acc();
+public:
+	virtual ~Acc();
 
-    Double compute(IPartition const & actual, IPartition const & candidate);
+	Double compute(IPartition const & actual, IPartition const & candidate);
 };
 
-Acc::~Acc() {}
+Acc::~Acc() {
+}
 
 Double Acc::compute(IPartition const & actual, IPartition const & candidate) {
 	Double score(0);

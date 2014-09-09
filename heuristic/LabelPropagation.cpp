@@ -7,6 +7,7 @@
 
 #include "LabelPropagation.hpp"
 
+namespace bipartite {
 LabelPropagation::LabelPropagation(BipartiteGraph const & input,
 		ModularityBPartition & solution) :
 		_input(&input), _solution(&solution) {
@@ -63,4 +64,5 @@ void LabelPropagation::buildGraph() {
 		_graph[e._i].insert(_input->nR() + e._j);
 		_graph[_input->nR() + e._j].insert(e._i);
 	}
+}
 }

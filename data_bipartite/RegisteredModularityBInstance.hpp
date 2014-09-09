@@ -107,5 +107,6 @@ inline void RegisteredModularityBInstance::exportAmpl(
 	//file << ";"<<std::endl;
 	//file.close();
 }
+
 #endif
 

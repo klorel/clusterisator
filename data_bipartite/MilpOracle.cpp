@@ -8,7 +8,7 @@
 
 MilpOracle::MilpOracle(BipartiteGraph const * input, DoubleVector const * dual,
 		DecisionList const * decisions) :
-		CpxOracle(input, dual, decisions) {
+		CpxOracle(input, dual, decisions), _biPartiteGraph(input) {
 	initCpx();
 }
 MilpOracle::~MilpOracle() {
@@ -23,23 +23,24 @@ void MilpOracle::initOracle() {
 	// 0..R-1 : Yr
 	// R..R+B-1 : Yb
 	ColumnBuffer columnBuffer;
-	_index.resize(_input->nV());
-	for (size_t v(0); v < _input->nV(); ++v) {
+	_index.resize(_biPartiteGraph->nV());
+	for (size_t v(0); v < _biPartiteGraph->nV(); ++v) {
 		_index[v] = columnBuffer.size();
 		columnBuffer.add(0, CPX_BINARY, 0, 1,
-				v < _input->nR() ?
-						GetStr("YR_", v) : GetStr("YB_", v - _input->nR()));
+				v < _biPartiteGraph->nR() ?
+						GetStr("YR_", v) :
+						GetStr("YB_", v - _biPartiteGraph->nR()));
 	}
 
 // Srb=Yr.Yb
-	_s = RectMatrix(_input->nR(), _input->nB());
-	for (size_t r(0); r < _input->nR(); ++r) {
-		for (size_t b(0); b < _input->nB(); ++b) {
-			if (_input->w(r, b) != 0) {
+	_s = RectMatrix(_biPartiteGraph->nR(), _biPartiteGraph->nB());
+	for (size_t r(0); r < _biPartiteGraph->nR(); ++r) {
+		for (size_t b(0); b < _biPartiteGraph->nB(); ++b) {
+			if (_biPartiteGraph->w(r, b) != 0) {
 				_s.get(r, b) = columnBuffer.size();
-				columnBuffer.add(_input->w(r, b), CPX_CONTINUOUS,
-						_input->w(r, b) < 0 ? 0 : -CPX_INFBOUND, CPX_INFBOUND,
-						GetStr("S_", r, "_", b));
+				columnBuffer.add(_biPartiteGraph->w(r, b), CPX_CONTINUOUS,
+						_biPartiteGraph->w(r, b) < 0 ? 0 : -CPX_INFBOUND,
+						CPX_INFBOUND, GetStr("S_", r, "_", b));
 			}
 		}
 	}
@@ -54,23 +55,23 @@ void MilpOracle::initOracle() {
 	std::vector<double> rmatval;
 	std::vector<std::string> rname;
 	_rowBuffer.clear();
-	for (size_t r(0); r < _input->nR(); ++r) {
-		for (size_t b(0); b < _input->nB(); ++b) {
-			if (_input->w(r, b) > 0) {
+	for (size_t r(0); r < _biPartiteGraph->nR(); ++r) {
+		for (size_t b(0); b < _biPartiteGraph->nB(); ++b) {
+			if (_biPartiteGraph->w(r, b) > 0) {
 				// Srb <= Yr (r,b) in RxB
 				_rowBuffer.add(0, 'L', GetStr("S_LEQ_R_R", r, "_B", b));
 				_rowBuffer.add(r, -1);
 				_rowBuffer.add((int) _s.get(r, b), +1);
 				// Srb <= Yb (r,b) in RxB
 				_rowBuffer.add(0, 'L', GetStr("S_LEQ_B_R", r, "_B", b));
-				_rowBuffer.add(_input->nR() + b, -1);
+				_rowBuffer.add(_biPartiteGraph->nR() + b, -1);
 				_rowBuffer.add((int) _s.get(r, b), +1);
-			} else if (_input->w(r, b) < 0) {
+			} else if (_biPartiteGraph->w(r, b) < 0) {
 				// Srb >= 0 already in
 				// Srb >= Yr+Yb-1
 				_rowBuffer.add(-1, 'G', GetStr("S_GEQ_RB_R_", r, "_YB", b));
 				_rowBuffer.add(r, -1);
-				_rowBuffer.add(_input->nR() + b, -1);
+				_rowBuffer.add(_biPartiteGraph->nR() + b, -1);
 				_rowBuffer.add((int) _s.get(r, b), +1);
 			}
 		}
@@ -84,7 +85,6 @@ void MilpOracle::initOracle() {
 //std::cout << "toto : "<<toto<<std::endl;
 }
 
-
 void MilpOracle::setUpOracle() {
 	_columns.clear();
 	CPXchgobj(_env, _prob, (int) _index.size(), _index.data(), _dual->data());
@@ -96,8 +96,7 @@ void MilpOracle::setUpOracle() {
 //	}
 //	writeOracle();
 	if (CPXgetnummipstarts(_env, _prob) > 1)
-		CPXdelmipstarts(_env, _prob, 0,
-				CPXgetnummipstarts(_env, _prob) - 1);
+		CPXdelmipstarts(_env, _prob, 0, CPXgetnummipstarts(_env, _prob) - 1);
 }
 
 void MilpOracle::checkMipSolution() const {
@@ -108,10 +107,10 @@ void MilpOracle::checkMipSolution() const {
 		CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);
 		std::cout << "SOLUTION" << std::setw(2) << i << std::setw(10) << obj
 				<< std::endl;
-		for (size_t r(0); r < _input->nR(); ++r) {
-			for (size_t b(0); b < _input->nB(); ++b) {
+		for (size_t r(0); r < _biPartiteGraph->nR(); ++r) {
+			for (size_t b(0); b < _biPartiteGraph->nB(); ++b) {
 				double const yR(x[r]);
-				double const yB(x[_input->nR() + b]);
+				double const yB(x[_biPartiteGraph->nR() + b]);
 				double const sRB(x[_s.get(r, b)]);
 //				std::cout << std::setw(4) << yR;
 //				std::cout << std::setw(4) << yB;
@@ -123,3 +122,4 @@ void MilpOracle::checkMipSolution() const {
 		}
 	}
 }
+

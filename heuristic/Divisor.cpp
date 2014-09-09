@@ -8,6 +8,7 @@
 
 #include <cplex.h>
 
+namespace bipartite {
 Divisor::Divisor(BipartiteGraph const &input) :
 		_env(NULL), _lp(NULL), _input(&input), _y() {
 	initCpx();
@@ -240,4 +241,5 @@ bool Divisor::run(ModularityBPartition & p, size_t label) {
 //	MY_PRINT(p.computeScore());
 //	MY_PRINT(_input->m());
 	return success;
+}
 }

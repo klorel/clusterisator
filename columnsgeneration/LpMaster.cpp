@@ -1,16 +1,15 @@
 #include "LpMaster.hpp"
-#include "BipartiteGraph.hpp"
-#include "BinaryDecompositionOracle.hpp"
-#include "VnsGenerator.hpp"
 #include "Timer.hpp"
 #include "Node.hpp"
 #include "LpBuffer.hpp"
 #include <cplex.h>
+#include "IPartition.hpp"
 
 Double const StabilizationBaseCost = 1;
 Double const StabilizationWidth = 1e-4;
 
-LpMaster::LpMaster(BipartiteGraph const *input, DecisionList const * decisions) :
+LpMaster::LpMaster(ICliquePartitionProblem const *input,
+		DecisionList const * decisions) :
 		IMaster(input, decisions), _env(NULL), _lp(NULL) {
 	build();
 }
@@ -116,7 +115,7 @@ void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer,
 				(int) result.first->id());
 		MY_PRINT(obj);
 		//		exit(0);
-		ASSERT_CHECK(column.check(_dual)); ASSERT_CHECK(column.violation(*_decisions) == 0);
+		ASSERT_CHECK(column.check(_dual));ASSERT_CHECK(column.violation(*_decisions) == 0);
 	} else {
 		rd = std::max(rd, column.reducedCost());
 		result.first->id() = current_n + nb;
@@ -369,7 +368,7 @@ void LpMaster::applyBranchingRule() {
 //	}
 //}
 
-void LpMaster::add(ModularityBPartition const & solution) {
+void LpMaster::add(IPartition const & solution) {
 	std::set<Column> columns;
 	for (size_t const & label : solution.usedLabels()) {
 		Column c(_input);

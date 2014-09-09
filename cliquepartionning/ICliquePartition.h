@@ -29,8 +29,18 @@ public:
 	virtual void checkScore() const = 0;
 
 	virtual ICliquePartitionProblem const & problem() const;
+
+	virtual IndexedList const & usedLabels()const = 0;
 private:
 	ICliquePartitionProblem const & _problem;
 };
+
+inline ICliquePartition::ICliquePartition(
+		ICliquePartitionProblem const & problem) :
+		_problem(problem) {
+}
+
+inline ICliquePartition::~ICliquePartition() {
+}
 
 #endif /* ICLIQUEPARTION_H_ */

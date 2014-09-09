@@ -8,6 +8,7 @@
 #include "VnsLabelPropagation.h"
 #include "LabelPropagation.hpp"
 
+namespace bipartite {
 VnsLabelPropagation::VnsLabelPropagation(BipartiteGraph & instance,
 		ModularityBPartition & solution, size_t kMax, size_t iteMax) :
 		_instance(instance), _solution(solution), _kMax(kMax), _iteMax(iteMax) {
@@ -75,4 +76,5 @@ void VnsLabelPropagation::run() {
 		} while (k <= _kMax);
 	} while (ite <= _iteMax);
 	set(best, _solution);
+}
 }

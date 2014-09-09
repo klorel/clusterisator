@@ -3,6 +3,7 @@
 #include "BinaryDecompositionOracle.hpp"
 #include "MilpOracle.hpp"
 #include "QpOracle.hpp"
+#include "VnsGenerator.hpp"
 #include "Node.hpp"
 
 BipartiteGraph::BipartiteGraph() :
@@ -71,6 +72,17 @@ void BipartiteGraph::build() {
 //	build();
 //}
 
+Double BipartiteGraph::computeCost(IndexedList const &v) const {
+	Double result(0);
+	for (auto const & r : v) {
+		for (auto const & b : v) {
+			if (r < b && r < nR() && b >= nR())
+				result += w(r, b - nR());
+		}
+	}
+	return result;
+}
+
 Double BipartiteGraph::computeCost(std::set<size_t> const & v) const {
 	Double result(0);
 	for (auto const & r : v) {
@@ -105,6 +117,10 @@ IOracle * BipartiteGraph::newOracle(AvailableOracle oracle,
 		break;
 	}
 	return result;
+}
+IOracle * BipartiteGraph::newVnsOracle(DoubleVector const * dual,
+		DecisionList const * decision) const {
+	return new VnsGenerator(this, dual, decision);
 }
 void BipartiteGraph::branchingSelection(Node const & node, size_t &noeud1,
 		size_t &noeud2) const {
@@ -218,3 +234,4 @@ void BipartiteGraph::writeSolution(FractionnarySolution const& bestSolution,
 	}
 	file.close();
 }
+

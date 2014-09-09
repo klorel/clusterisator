@@ -10,17 +10,18 @@
 #include "MilpOracle.hpp"
 #include "QpOracle.hpp"
 
-BranchAndBound::BranchAndBound(BipartiteGraph const &input,
+BranchAndBound::BranchAndBound(ICliquePartitionProblem const &input,
 		AvailableOracle oracle) :
 		_input(&input), _master(NULL), _vnsGenerator(NULL), _mipGenerator(NULL), _decision() {
 	_root = NULL;
-	_bestFeasible = std::numeric_limits<double>::min();
-	_bestPossible = std::numeric_limits<double>::max();
+	// maximisation
+	_bestFeasible = -std::numeric_limits<double>::max();
+	_bestPossible = +std::numeric_limits<double>::max();
 	_current = NULL;
 	_output = NULL;
 	_master = new LpMaster(&input, &_decision);
 	_mipGenerator = _input->newOracle(oracle, &_master->dual(), &_decision);
-	_vnsGenerator = new VnsGenerator(&input, &_master->dual(), &_decision);
+	_vnsGenerator = _input->newVnsOracle(&_master->dual(), &_decision);
 }
 
 BranchAndBound::~BranchAndBound() {

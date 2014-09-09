@@ -1,7 +1,7 @@
 #include "VnsGeneratorSolution.hpp"
 #include "Node.hpp"
 
-VnsGeneratorSolution::VnsGeneratorSolution(BipartiteGraph const * input,
+VnsGeneratorSolution::VnsGeneratorSolution(ICliquePartitionProblem const * input,
 		DoubleVector const * dual) :
 		_input(input), _dual(dual), _v(_input->nV()), _cost(0), _reducedCost(0) {
 
@@ -37,14 +37,7 @@ void VnsGeneratorSolution::swap(size_t id, Double deltaCost, Double deltaDual) {
 	_reducedCost += (deltaCost + deltaDual);
 }
 Double VnsGeneratorSolution::computeCost() const {
-	Double result(0);
-	for (auto const & r : _v) {
-		for (auto const & b : _v) {
-			if (r < b && r < _input->nR() && b >= _input->nR())
-				result += _input->w(r, b - _input->nR());
-		}
-	}
-	return result;
+	return _input->computeCost(_v);
 }
 Double VnsGeneratorSolution::computeReducedCost() const {
 	Double result(computeCost());
@@ -107,3 +100,4 @@ bool VnsGeneratorSolution::check() const {
 	}
 	return true;
 }
+

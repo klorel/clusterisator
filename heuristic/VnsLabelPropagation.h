@@ -13,7 +13,7 @@
 
 class ModularityBPartition;
 
-
+namespace bipartite {
 class VnsLabelPropagation {
 public:
 
@@ -33,5 +33,5 @@ private:
 	size_t _kMax;
 	size_t _iteMax;
 };
-
+}
 #endif /* VNSLABELPROPAGATION_H_ */

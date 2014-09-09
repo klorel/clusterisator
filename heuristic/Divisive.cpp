@@ -9,6 +9,7 @@
 
 #include "Divisor.hpp"
 
+namespace bipartite {
 Divisive::Divisive(BipartiteGraph & instance, ModularityBPartition & solution) :
 		_instance(instance), _solution(solution) {
 	// TODO Auto-generated constructor stub
@@ -44,4 +45,5 @@ void Divisive::run() {
 	}
 	std::cout << "DIVISIVE END" << std::endl;
 
+}
 }

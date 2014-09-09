@@ -28,10 +28,20 @@ public:
 
 	virtual IOracle * newOracle(AvailableOracle oracle,
 			DoubleVector const * dual, DecisionList const * decision) const=0;
+	virtual IOracle * newVnsOracle(DoubleVector const * dual,
+			DecisionList const * decision) const=0;
 
 	virtual void branchingSelection(Node const & node, size_t &noeud1,
 			size_t &noeud2) const = 0;
 	virtual void writeSolution(FractionnarySolution const&, double) const = 0;
+
+	virtual Double computeCost(std::set<size_t> const &) const = 0;
+	virtual Double computeCost(IndexedList const &) const = 0;
+
+	virtual Double gradient(size_t id, IndexedList const & v) const = 0;
+	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const= 0;
+	virtual void gradient(IndexedList const & v, DoubleVector &) const= 0;
+	virtual std::vector<Edge> const & costs() const = 0;
 public:
 	virtual void adjencyGraph(AdjencyGraph &) const;
 };

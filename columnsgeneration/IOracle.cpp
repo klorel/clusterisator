@@ -7,9 +7,9 @@
 
 #include "IOracle.h"
 
-IOracle::IOracle(BipartiteGraph const * input, DoubleVector const * dual,
-		DecisionList const * decisions) :
-		_input(input), _dual(dual), _decisions(decisions), _bestReducedCost(0) {
+IOracle::IOracle(ICliquePartitionProblem const * input,
+		DoubleVector const * dual, DecisionList const * decisions) :
+		_dual(dual), _decisions(decisions), _bestReducedCost(0), _input(input) {
 
 }
 
@@ -23,7 +23,7 @@ bool IOracle::generate() {
 Columns const & IOracle::columns() const {
 	return _columns;
 }
-Columns  & IOracle::columns()  {
+Columns & IOracle::columns() {
 	return _columns;
 }
 Double IOracle::bestReducedCost() const {
@@ -59,8 +59,7 @@ void IOracle::extractAndAddSolution(DoubleVector const & x, Double rd) {
 	Column column(_input);
 	extract(x, column);
 	column.reducedCost() = rd;
-	ASSERT_CHECK(column.check(*_dual));
-	ASSERT_CHECK(column.violation(*_decisions) == 0);
+	ASSERT_CHECK(column.check(*_dual));ASSERT_CHECK(column.violation(*_decisions) == 0);
 	_columns.insert(column);
 
 }

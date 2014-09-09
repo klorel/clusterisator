@@ -8,7 +8,6 @@
 #include "common.h"
 #include "Partition.hpp"
 
-
 void operator>>(std::string const & fileName, Partition & partition) {
 	std::ifstream file(fileName.c_str());
 	if (!file.good()) {

@@ -13,6 +13,7 @@
 #include "BipartiteGraph.hpp"
 #include "ModularityBPartition.hpp"
 
+namespace bipartite {
 class LabelPropagation {
 public:
 	LabelPropagation(BipartiteGraph const &, ModularityBPartition &);
@@ -40,5 +41,6 @@ inline Double LabelPropagation::w(size_t id, size_t neighbor) const {
 }
 inline Double LabelPropagation::k(size_t id) const {
 	return _input->k(id);
+}
 }
 #endif /* LABELPROPAGATION_HPP_ */

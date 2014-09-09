@@ -9,6 +9,7 @@
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 
+namespace bipartite {
 class Divisor {
 public:
 	Divisor(BipartiteGraph const &);
@@ -32,5 +33,5 @@ private:
 	std::vector<int> _y;
 
 };
-
+}
 #endif 

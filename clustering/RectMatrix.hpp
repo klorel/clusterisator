@@ -19,7 +19,7 @@ public:
 	RectMatrix(size_t n, size_t, DoubleVector const&);
 	virtual ~RectMatrix();
 
-  /**
+	/**
 	 * Reset the dimension and the content of the matrix. Set every coefficient to the same value
 	 */
 	void allocate(size_t n, size_t m, Double v = 0);
@@ -49,8 +49,8 @@ public:
 	void read(std::string const &);
 	void read(size_t i, std::string const &);
 
-	DoubleVector::const_iterator begin()const;
-	DoubleVector::const_iterator end()const;
+	DoubleVector::const_iterator begin() const;
+	DoubleVector::const_iterator end() const;
 private:
 	size_t key(size_t i, size_t j) const;
 	size_t _n;
@@ -59,7 +59,7 @@ private:
 };
 
 std::ostream & operator<<(std::ostream &, RectMatrix const &);
-void operator<<(RectMatrix  &matrix, std::istream & stream);
+void operator<<(RectMatrix &matrix, std::istream & stream);
 
 inline RectMatrix::RectMatrix(size_t n, size_t m, Double v) {
 	allocate(n, m, v);
@@ -67,7 +67,7 @@ inline RectMatrix::RectMatrix(size_t n, size_t m, Double v) {
 }
 inline RectMatrix::RectMatrix(size_t n, size_t m, DoubleVector const &matrix) :
 		_n(n), _m(m), _matrix(matrix) {
-  assert(n*m == matrix.size());
+	assert(n * m == matrix.size());
 }
 inline RectMatrix::~RectMatrix() {
 
@@ -118,7 +118,7 @@ inline std::ostream & operator<<(std::ostream & stream,
 	}
 	return stream;
 }
-inline void operator<<( RectMatrix  &matrix, std::istream & stream){
+inline void operator<<(RectMatrix &matrix, std::istream & stream) {
 	std::string line;
 	std::getline(stream, line);
 	size_t n;
@@ -128,12 +128,12 @@ inline void operator<<( RectMatrix  &matrix, std::istream & stream){
 		buffer >> n;
 		buffer >> m;
 	}
-	matrix.allocate(n,m);
-	for(size_t i(0); i<n; ++i){
+	matrix.allocate(n, m);
+	for (size_t i(0); i < n; ++i) {
 		std::getline(stream, line);
 		std::stringstream buffer(line);
-		for(size_t j(0); j<m; ++j){
-			buffer >> matrix.get(i,j);
+		for (size_t j(0); j < m; ++j) {
+			buffer >> matrix.get(i, j);
 		}
 	}
 	//std::cout << matrix<<std::endl;
@@ -165,10 +165,10 @@ inline DoubleVector const &RectMatrix::matrix() const {
 	return _matrix;
 }
 
-inline DoubleVector::const_iterator RectMatrix::begin()const{
+inline DoubleVector::const_iterator RectMatrix::begin() const {
 	return _matrix.begin();
 }
-inline DoubleVector::const_iterator RectMatrix::end()const{
+inline DoubleVector::const_iterator RectMatrix::end() const {
 	return _matrix.end();
 }
 

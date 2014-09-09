@@ -2,7 +2,6 @@
 #define VNS_GENERATOR_HPP
 
 #include "gencol.h"
-#include "BipartiteGraph.hpp"
 #include "Column.hpp"
 #include "IndexedList.hpp"
 #include "VnsGeneratorSolution.hpp"
@@ -12,7 +11,7 @@
 class Node;
 class VnsGenerator: public IOracle {
 public:
-	VnsGenerator(BipartiteGraph const *, DoubleVector const *,
+	VnsGenerator(ICliquePartitionProblem const *, DoubleVector const *,
 			DecisionList const *);
 	virtual ~VnsGenerator();
 public:
@@ -62,4 +61,5 @@ inline size_t VnsGenerator::violationIf(size_t id) const {
 	}
 	return result;
 }
+
 #endif /* GRAPH_HPP */

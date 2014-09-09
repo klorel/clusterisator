@@ -11,7 +11,8 @@
 #include "BipartiteGraph.hpp"
 #include "Column.hpp"
 
-IMaster::IMaster(BipartiteGraph const * input, DecisionList const * decisions) :
+IMaster::IMaster(ICliquePartitionProblem const * input,
+		DecisionList const * decisions) :
 		_input(input), _decisions(decisions), _columns(), _dual(), _primal() {
 
 }

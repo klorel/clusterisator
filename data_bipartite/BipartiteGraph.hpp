@@ -9,9 +9,10 @@
 #include "ICliquePartitionProblem.h"
 
 class IOracle;
-class BipartiteGraph;
 class Node;
-std::ostream & operator<<(std::ostream &out, BipartiteGraph const&);
+//std::ostream & operator<<(std::ostream &out, bipartite::BipartiteGraph const&);
+
+
 class BipartiteGraph: public ICliquePartitionProblem {
 public:
 	virtual size_t nV() const;
@@ -21,9 +22,19 @@ public:
 
 	virtual IOracle * newOracle(AvailableOracle oracle,
 			DoubleVector const * dual, DecisionList const * decision) const;
+
+	virtual IOracle * newVnsOracle(DoubleVector const * dual,
+			DecisionList const * decision) const;
+
 	virtual void branchingSelection(Node const & node, size_t &noeud1,
 			size_t &noeud2) const;
 	virtual void writeSolution(FractionnarySolution const&, double) const;
+	virtual Double computeCost(std::set<size_t> const &) const;
+	virtual Double computeCost(IndexedList const &) const;
+	virtual Double gradient(size_t id, IndexedList const & v) const;
+	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const;
+	virtual void gradient(IndexedList const & v, DoubleVector &) const;
+	virtual std::vector<Edge> const & costs() const;
 public:
 	void branchingWeights(FractionnarySolution const &,
 			BranchingWeights & result) const;
@@ -35,9 +46,6 @@ public:
 	BipartiteGraph(Edges const & edges);
 	void build();
 	virtual ~BipartiteGraph();
-	Double gradient(size_t id, IndexedList const & v) const;
-	void update(size_t id, bool wasIn, DoubleVector &gradient) const;
-	void gradient(IndexedList const & v, DoubleVector &) const;
 
 public:
 	size_t nR() const;
@@ -57,8 +65,7 @@ public:
 
 	virtual std::string name() const;
 
-	Double computeCost(std::set<size_t> const &) const;
-	std::vector<Edge> const & costs() const;
+
 
 public:
 	Double _m;
@@ -160,4 +167,5 @@ inline void BipartiteGraph::gradient(IndexedList const & v,
 		}
 	}
 }
+
 #endif /* GRAPH_HPP */

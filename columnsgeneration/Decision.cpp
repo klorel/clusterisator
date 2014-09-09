@@ -59,7 +59,8 @@ size_t &Decision::noeud2() {
 
 bool Decision::operator<(Decision const & rhs) const {
 	return std::less<std::pair<size_t, size_t>>()(
-			std::make_pair(_noeud1, _noeud2), std::make_pair(rhs.noeud1(), rhs.noeud2()));
+			std::make_pair(_noeud1, _noeud2),
+			std::make_pair(rhs.noeud1(), rhs.noeud2()));
 }
 
 void Decision::print(std::ostream & stream) const {

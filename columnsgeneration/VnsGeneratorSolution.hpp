@@ -2,7 +2,6 @@
 #define VNS_GENERATOR_SOLUTION_HPP
 
 #include "gencol.h"
-#include "BipartiteGraph.hpp"
 #include "Column.hpp"
 #include "IndexedList.hpp"
 #include "Decision.hpp"
@@ -10,7 +9,7 @@
 class Node;
 class VnsGeneratorSolution {
 public:
-	VnsGeneratorSolution(BipartiteGraph const *, DoubleVector const * dual);
+	VnsGeneratorSolution(ICliquePartitionProblem const *, DoubleVector const * dual);
 	virtual ~VnsGeneratorSolution();
 	VnsGeneratorSolution & operator=(VnsGeneratorSolution const &);
 public:
@@ -31,7 +30,7 @@ public:
 			VnsGeneratorSolution const & q, DecisionList const & decisions);
 	Double dual(size_t) const;
 private:
-	BipartiteGraph const * _input;
+	ICliquePartitionProblem const * _input;
 	DoubleVector const * _dual;
 public:
 	IndexedList _v;

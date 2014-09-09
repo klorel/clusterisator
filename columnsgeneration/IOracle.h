@@ -10,12 +10,11 @@
 
 #include "gencol.h"
 #include "Decision.hpp"
-#include "BipartiteGraph.hpp"
 #include "Column.hpp"
 
 class IOracle {
 public:
-	IOracle(BipartiteGraph const *, DoubleVector const * dual,
+	IOracle(ICliquePartitionProblem const *, DoubleVector const * dual,
 			DecisionList const * decisions);
 	virtual ~IOracle();
 public:
@@ -35,11 +34,13 @@ public:
 
 	virtual void extract(DoubleVector const & x, Column & column);
 protected:
-	BipartiteGraph const * _input;
 	DoubleVector const * _dual;
 	DecisionList const * _decisions;
 	Columns _columns;
 	Double _bestReducedCost;
+//private:
+	ICliquePartitionProblem const * _input;
+
 };
 
 #endif /* IGENERATOR_H_ */

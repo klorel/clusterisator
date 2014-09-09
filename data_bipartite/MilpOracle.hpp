@@ -6,8 +6,6 @@
 #include "BipartiteGraph.hpp"
 
 #include "CpxOracle.h"
-
-class Node;
 class MilpOracle: public CpxOracle {
 public:
 	MilpOracle(BipartiteGraph const *, DoubleVector const * dual,
@@ -20,6 +18,7 @@ public:
 	void checkMipSolution() const;
 private:
 	RectMatrix _s;
+	BipartiteGraph const *_biPartiteGraph;
 };
 
 #endif 

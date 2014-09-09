@@ -17,11 +17,12 @@ class IPartition;
  */
 class IMeasure {
 public:
-  /**
-   * Compute the metric
-   */
-  virtual Double compute(IPartition const & actual, IPartition const & candidate) = 0;
-  virtual ~IMeasure();
+	/**
+	 * Compute the metric
+	 */
+	virtual Double compute(IPartition const & actual,
+			IPartition const & candidate) = 0;
+	virtual ~IMeasure();
 };
 
 inline IMeasure::~IMeasure() {

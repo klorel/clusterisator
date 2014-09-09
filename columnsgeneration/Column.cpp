@@ -1,9 +1,9 @@
 #include "Column.hpp"
 
-Column::Column(BipartiteGraph const & input) :
+Column::Column(ICliquePartitionProblem const & input) :
 		_input(&input), _cost(0), _reducedCost(0), _id(0) {
 }
-Column::Column(BipartiteGraph const * input) :
+Column::Column(ICliquePartitionProblem const * input) :
 		_input(input), _cost(0), _reducedCost(0), _id(0) {
 }
 Column::~Column() {

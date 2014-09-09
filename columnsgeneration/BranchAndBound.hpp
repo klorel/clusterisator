@@ -2,20 +2,19 @@
 #define BRANCH_AND_BOUND_HPP
 
 #include "gencol.h"
-#include "BipartiteGraph.hpp"
 #include "LpMaster.hpp"
-
 #include "IOracle.h"
-#include "VnsGenerator.hpp"
-#include "ModularityBPartition.hpp"
+
+#include "ICliquePartitionProblem.h"
 
 class Node;
 class BranchAndBound {
 public:
-	BranchAndBound(BipartiteGraph const &, AvailableOracle oracle = bMILP);
+	BranchAndBound(ICliquePartitionProblem const &, AvailableOracle oracle =
+			bMILP);
 	virtual ~BranchAndBound();
 public:
-	BipartiteGraph const * _input;
+	ICliquePartitionProblem const * _input;
 
 	void columnGeneration();
 
@@ -32,7 +31,7 @@ public:
 
 	IMaster * _master;
 
-	VnsGenerator * _vnsGenerator;
+	IOracle * _vnsGenerator;
 	IOracle * _mipGenerator;
 private:
 	Node * _root;

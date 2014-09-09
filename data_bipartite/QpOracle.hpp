@@ -3,12 +3,10 @@
 
 #include "gencol.h"
 #include "Column.hpp"
-#include "BipartiteGraph.hpp"
 #include "CpxOracle.h"
 
-typedef struct cpxlp* CPXLPptr;
-typedef struct cpxenv* CPXENVptr;
-class Node;
+
+class BipartiteGraph;
 class QpOracle: public CpxOracle {
 public:
 	QpOracle(BipartiteGraph const *, DoubleVector const * dual,
@@ -22,6 +20,7 @@ public:
 	void initOracle();
 	void checkSolution() const;
 private:
+	BipartiteGraph const *_biPartiteGraph;
 	Double _diagRegularisation;
 };
 

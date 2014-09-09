@@ -7,8 +7,8 @@
 
 #include "CpxOracle.h"
 
-CpxOracle::CpxOracle(BipartiteGraph const * input, DoubleVector const * dual,
-		DecisionList const * decisions) :
+CpxOracle::CpxOracle(ICliquePartitionProblem const * input,
+		DoubleVector const * dual, DecisionList const * decisions) :
 		IOracle(input, dual, decisions), _env(NULL), _prob(NULL), _index() {
 
 }
@@ -60,7 +60,7 @@ bool CpxOracle::generate() {
 	setUpOracle();
 //	write();
 	CPXsetintparam(_env, CPX_PARAM_SOLUTIONTARGET,
-			CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
+	CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
 	CPXmipopt(_env, _prob);
 //	checkSolutions();
 //	checkSolution();

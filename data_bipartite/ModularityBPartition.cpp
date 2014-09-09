@@ -1,5 +1,6 @@
 #include "ModularityBPartition.hpp"
 
+
 ModularityBPartition::ModularityBPartition(BipartiteGraph const & input,
 		size_t k) :
 		Partition(input.nV(), k), _input(&input) {

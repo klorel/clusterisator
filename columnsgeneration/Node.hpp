@@ -20,7 +20,7 @@ public:
 	size_t id() const;
 	size_t & id();
 	FractionnarySolution & lbSolution();
-	FractionnarySolution const & lbSolution()const;
+	FractionnarySolution const & lbSolution() const;
 	bool &isInteger();
 	bool isInteger() const;
 	Node const * father() const;
