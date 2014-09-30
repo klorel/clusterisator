@@ -12,12 +12,12 @@ class IOracle;
 class Node;
 //std::ostream & operator<<(std::ostream &out, bipartite::BipartiteGraph const&);
 
-
 class BipartiteGraph: public ICliquePartitionProblem {
 public:
 	virtual size_t nV() const;
 	virtual Edges const & edges() const;
 
+	virtual std::string name(size_t v) const;
 	virtual Double k(size_t) const;
 
 	virtual IOracle * newOracle(AvailableOracle oracle,
@@ -63,10 +63,6 @@ public:
 
 	std::map<size_t, double> const & allLinks(size_t v) const;
 
-	virtual std::string name() const;
-
-
-
 public:
 	Double _m;
 	Double _inv_m;
@@ -77,7 +73,9 @@ public:
 	std::vector<std::map<size_t, double> > _allLinks;
 	std::vector<Edge> _costs;
 };
-
+inline std::string BipartiteGraph::name(size_t v) const {
+	return v < nR() ? GetStr("YR_", v) : GetStr("YB_", v - nR());
+}
 inline size_t BipartiteGraph::nR() const {
 	return _a.getN();
 }

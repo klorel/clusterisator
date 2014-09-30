@@ -18,8 +18,6 @@ typedef std::vector<std::map<size_t, Double>> AdjencyGraph;
 
 class ICliquePartitionProblem {
 public:
-	virtual ~ICliquePartitionProblem();
-
 	virtual size_t nV() const =0;
 
 	virtual Edges const & edges() const =0;
@@ -43,8 +41,14 @@ public:
 	virtual void gradient(IndexedList const & v, DoubleVector &) const= 0;
 	virtual std::vector<Edge> const & costs() const = 0;
 public:
+	virtual ~ICliquePartitionProblem();
+	virtual std::string problemName() const;
+	virtual std::string name(size_t v) const;
 	virtual void adjencyGraph(AdjencyGraph &) const;
 };
+inline std::string ICliquePartitionProblem::problemName() const {
+	return "";
+}
 
 inline ICliquePartitionProblem::~ICliquePartitionProblem() {
 
@@ -59,6 +63,9 @@ inline void ICliquePartitionProblem::adjencyGraph(AdjencyGraph & result) const {
 		result[e._j][e._i] += e._v;
 	}
 
+}
+inline std::string ICliquePartitionProblem::name(size_t v) const {
+	return GetStr("Y_", v);
 }
 
 #endif /* ICLIQUEPARTITIONNINPROBLEM_H_ */

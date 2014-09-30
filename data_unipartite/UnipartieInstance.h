@@ -8,9 +8,12 @@
 #ifndef UNIPARTIEINSTANCE_H_
 #define UNIPARTIEINSTANCE_H_
 
-#include "Edge.h"
+#include "ICliquePartitionProblem.h"
 
-class UnipartieInstance {
+class UnipartieInstance: public ICliquePartitionProblem {
+public:
+	virtual void writeSolution(FractionnarySolution const& bestSolution,
+			double lb)const;
 public:
 	UnipartieInstance();
 	virtual ~UnipartieInstance();

@@ -98,9 +98,6 @@ Double BipartiteGraph::computeCost(std::set<size_t> const & v) const {
 
 }
 
-std::string BipartiteGraph::name() const {
-	return "";
-}
 
 IOracle * BipartiteGraph::newOracle(AvailableOracle oracle,
 		DoubleVector const * dual, DecisionList const * decision) const {
@@ -219,7 +216,7 @@ void BipartiteGraph::branchingWeights(FractionnarySolution const & solution,
 }
 void BipartiteGraph::writeSolution(FractionnarySolution const& bestSolution,
 		double lb) const {
-	std::ofstream file(GetStr("optimal/", name(), "_", lb, ".txt").c_str());
+	std::ofstream file(GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
 	for (auto const & c : bestSolution) {
 		for (size_t r(0); r < nR(); ++r) {
 			for (size_t b(0); b < nB(); ++b) {
