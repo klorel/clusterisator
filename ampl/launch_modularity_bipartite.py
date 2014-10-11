@@ -4,45 +4,45 @@ import os
 import itertools
 # AMPL is useless for this ... so we do it with python
 INSTANCES = {
-	# 1:'south'
-	# ,
-	# 2:'SupremeCourtyes'
-	# ,
-	# 3:'SupremeCourtnot'
-	# ,
-	# 4:'SocialWorkJ'
-	# ,
-	# 5:'wafa'
-	# ,
-	# 6:'divorces'
-	# ,
-	# 7:'hollyw'
-	# ,
-	# 8:'scotl'
-	# ,
-	# 9:'graphprod'
-	# ,
-	# 10:'netscience'
-	# ,
+	 1:'south'
+	 ,
+	 2:'SupremeCourtyes'
+	 ,
+	 3:'SupremeCourtnot'
+	 ,
+	 4:'SocialWorkJ'
+	 ,
+	 5:'wafa'
+	 ,
+	 6:'divorces'
+	 ,
+	 7:'hollyw'
+	 ,
+	 8:'scotl'
+	 ,
+	 9:'graphprod'
+	 ,
+	 10:'netscience'
+	 ,
 	11:'OR_costBurbridge'
-	#,
-	#12:'OR_costBurbridge'
-	#,
-	#13:'OR_costChan'
-	#,
-	#14:'OR_costGroover'
-	#,
-	#15:'OR_costKing'
-	#,
-	#16:'OR_costKKV'
-	#,
-	#17:'OR_costLee'
-	#,
-	#18:'OR_costMalakooti_a'
-	#,
-	#19:'OR_costMalakooti_b'
-	#,
-	#20:'OR_costMiltenburg'
+	,
+	12:'OR_costBurbridge'
+	,
+	13:'OR_costChan'
+	,
+	14:'OR_costGroover'
+	,
+	15:'OR_costKing'
+	,
+	16:'OR_costKKV'
+	,
+	17:'OR_costLee'
+	,
+	18:'OR_costMalakooti_a'
+	,
+	19:'OR_costMalakooti_b'
+	,
+	20:'OR_costMiltenburg'
 }
 FORMULATIONS = [
 	"CPI"
