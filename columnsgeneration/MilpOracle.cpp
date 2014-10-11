@@ -39,6 +39,7 @@ void MilpOracle::initOracle() {
 						CPX_INFBOUND,
 						GetStr("PRODUCT_", _input->name(edge._i), "_",
 								_input->name(edge._j)));
+		++i;
 	}
 	//	_s = RectMatrix(_input->nR(), _input->nB());
 	//	for (size_t r(0); r < _input->nR(); ++r) {

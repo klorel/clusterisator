@@ -1,0 +1,46 @@
+
+let nb_variables	 	:= _snvars;
+let nb_constraints	 	:= _sncons; 
+let real_time			:= _solve_elapsed_time;
+let return_code			:= solve_result_num;
+let best_modularity	 	:= modularity;
+let number_of_nodes	 	:= num0(sub(solve_message, '@*^([0-9]+) branch-and@*', '\1'));
+option presolve 0;
+let transitivity_viol := card({kind in 1..3, (i,j,k) in V3:constraints[kind, i, j, k].body>1});
+
+if transitivity_viol == 0 then {
+	let {u in V} cluster[u] := 0;
+	let nb_cluster := 0;
+	let{(u,v) in V2} t_value[u,v] := t[u,v];
+	for{u in V}{
+		# display together_set[u];
+		if cluster[u] == 0 then{
+			let nb_cluster := nb_cluster+1;
+			let cluster[u] := nb_cluster;
+		};
+		let { v in together_set[u] : cluster[v] ==0} cluster[v] := cluster[u];				
+		# display cluster;
+	}
+}else{
+	let nb_cluster := 0;
+	for{kind in 1..3, (i,j,k) in V3:constraints[kind, i, j, k].body>1}{
+		printf"--- VIOLATED TRANSITIVITY ---\n";
+		printf"t[%2d,%2d] := %d\n", min(i,j), max(i,j), t[min(i,j),max(i,j)];
+		printf"t[%2d,%2d] := %d\n", min(i,k), max(i,k), t[min(i,k),max(i,k)];
+		printf"t[%2d,%2d] := %d\n", min(j,k), max(j,k), t[min(j,k),max(j,k)];
+		expand constraints[kind, i, j, k];
+	 };
+};
+
+# display return_code, best_modularity, number_of_nodes, real_time, transitivity_viol;
+
+display nb_cluster, nb_variables, nb_constraints, transitivity_viol;
+
+printf
+	"%s;%s;%d;%d;%d;%d;%f;%f;%d;%d;%d;%d;%d\n", 
+	instance, chosen_formulation, n, p, m,
+	nb_cluster, 	best_modularity, 
+	real_time,	number_of_nodes, 
+	nb_variables,	nb_constraints, 
+	transitivity_viol, return_code
+	>> result.csv;

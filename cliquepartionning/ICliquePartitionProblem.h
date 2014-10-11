@@ -28,9 +28,11 @@ public:
 			DoubleVector const * dual, DecisionList const * decision) const=0;
 	virtual IOracle * newVnsOracle(DoubleVector const * dual,
 			DecisionList const * decision) const=0;
-
+public:
 	virtual void branchingSelection(Node const & node, size_t &noeud1,
 			size_t &noeud2) const = 0;
+
+public:
 	virtual void writeSolution(FractionnarySolution const&, double) const = 0;
 
 	virtual Double computeCost(std::set<size_t> const &) const = 0;

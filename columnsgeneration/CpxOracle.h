@@ -26,8 +26,7 @@ public:
 	virtual bool generate();
 	virtual void setUpOracle()=0;
 	virtual void initOracle()=0;
-	virtual void checkSolutions() {
-	}
+	virtual void checkSolutions() const;
 public:
 	void initCpx();
 	void write(std::string const & fileName = "oracle.lp") const;

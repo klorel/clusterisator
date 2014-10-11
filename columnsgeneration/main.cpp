@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 	AvailableModularityBInstances id(
 			static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
 
-	AvailableOracle oracle(AvailableOracle::bMILP);
+	AvailableOracle oracle(AvailableOracle::MILP);
 	if (argc > 2) {
 		oracle = static_cast<AvailableOracle>(atoi(argv[2]));
 	}

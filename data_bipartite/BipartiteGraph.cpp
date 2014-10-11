@@ -98,7 +98,6 @@ Double BipartiteGraph::computeCost(std::set<size_t> const & v) const {
 
 }
 
-
 IOracle * BipartiteGraph::newOracle(AvailableOracle oracle,
 		DoubleVector const * dual, DecisionList const * decision) const {
 	IOracle * result(NULL);
@@ -134,12 +133,11 @@ std::pair<size_t, size_t> BipartiteGraph::branchingSelection(
 		DecisionSet const & decisions, BranchingWeights & weights) const {
 	BranchingWeights::const_iterator it(weights.begin());
 	while (decisions.find(
-			Decision(
-					std::make_pair(it->second.first, nR() + it->second.second)))
+			Decision(std::make_pair(it->second.first, it->second.second)))
 			!= decisions.end() && it != weights.end()) {
 		++it;
 	}
-	return std::make_pair(it->second.first, nR() + it->second.second);
+	return std::make_pair(it->second.first, it->second.second);
 }
 void BipartiteGraph::branchingWeights(FractionnarySolution const & solution,
 		BranchingWeights & weights) const {
@@ -150,9 +148,9 @@ void BipartiteGraph::branchingWeights(FractionnarySolution const & solution,
 		//		std::cout << std::setw(6) << kvp.first->id();
 		//		std::cout << std::setw(15) << kvp.second;
 		//		std::cout << std::endl;
-		for (Edge const & e : edges()) {
+		for (Edge const & e : costs()) {
 			bool const iFirst(kvp.first->contains(e._i));
-			bool const iSecond(kvp.first->contains(e._j + nR()));
+			bool const iSecond(kvp.first->contains(e._j));
 			if (iFirst && iSecond) {
 				toto[e].first.insert(kvp.first->id());
 			} else if (iFirst + iSecond == 1) {
@@ -179,18 +177,17 @@ void BipartiteGraph::branchingWeights(FractionnarySolution const & solution,
 		}
 	}
 	if (weights.empty()) {
-		std::cout << "weights.empty(), generating full weights" << std::endl;
+		std::cout << "Weights.empty(), generating full weights" << std::endl;
 		for (auto const & kvp : solution) {
-			for (size_t r(0); r < nR(); ++r) {
-				for (size_t b(0); b < nB(); ++b) {
-					bool const iR(kvp.first->contains(r));
-					bool const iB(kvp.first->contains(b) + nR());
-					if (iR && iB) {
-						toto[Edge(r, b, 1)].first.insert(kvp.first->id());
-					} else if (iR + iB == 1) {
-						toto[Edge(r, b, 1)].second.insert(kvp.first->id());
-					}
+			for (Edge const & e : costs()) {
+				bool const iR(kvp.first->contains(e._i));
+				bool const iB(kvp.first->contains(e._j));
+				if (iR && iB) {
+					toto[Edge(e._i, e._j, 1)].first.insert(kvp.first->id());
+				} else if (iR + iB == 1) {
+					toto[Edge(e._i, e._j, 1)].second.insert(kvp.first->id());
 				}
+
 			}
 		}
 
@@ -216,7 +213,8 @@ void BipartiteGraph::branchingWeights(FractionnarySolution const & solution,
 }
 void BipartiteGraph::writeSolution(FractionnarySolution const& bestSolution,
 		double lb) const {
-	std::ofstream file(GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
+	std::ofstream file(
+			GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
 	for (auto const & c : bestSolution) {
 		for (size_t r(0); r < nR(); ++r) {
 			for (size_t b(0); b < nB(); ++b) {
