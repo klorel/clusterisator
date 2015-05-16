@@ -153,7 +153,7 @@ void BipartiteGraph::branchingWeights(FractionnarySolution const & solution,
 			bool const iSecond(kvp.first->contains(e._j));
 			if (iFirst && iSecond) {
 				toto[e].first.insert(kvp.first->id());
-			} else if (iFirst + iSecond == 1) {
+			} else if (iFirst || iSecond) {
 				toto[e].second.insert(kvp.first->id());
 			}
 		}
@@ -184,7 +184,7 @@ void BipartiteGraph::branchingWeights(FractionnarySolution const & solution,
 				bool const iB(kvp.first->contains(e._j));
 				if (iR && iB) {
 					toto[Edge(e._i, e._j, 1)].first.insert(kvp.first->id());
-				} else if (iR + iB == 1) {
+				} else if (iR || iB) {
 					toto[Edge(e._i, e._j, 1)].second.insert(kvp.first->id());
 				}
 
@@ -216,16 +216,26 @@ void BipartiteGraph::writeSolution(FractionnarySolution const& bestSolution,
 	std::ofstream file(
 			GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
 	for (auto const & c : bestSolution) {
-		for (size_t r(0); r < nR(); ++r) {
-			for (size_t b(0); b < nB(); ++b) {
-				if (c.first->contains(r) && c.first->contains(nR() + b)) {
-					file << std::setw(6) << 1 + r;
-					file << std::setw(6) << 1 + b + nR();
-					file << std::endl;
-				}
-
+		for (auto const & edge : costs()) {
+			size_t const r(edge._i);
+			size_t const b(edge._j);
+			if (c.first->contains(r) && c.first->contains(b)) {
+				file << std::setw(6) << 1 + r;
+				file << std::setw(6) << 1 + b;
+				file << std::endl;
 			}
+
 		}
+//		for (size_t r(0); r < nR(); ++r) {
+//			for (size_t b(0); b < nB(); ++b) {
+//				if (c.first->contains(r) && c.first->contains(nR() + b)) {
+//					file << std::setw(6) << 1 + r;
+//					file << std::setw(6) << 1 + b + nR();
+//					file << std::endl;
+//				}
+//
+//			}
+//		}
 	}
 	file.close();
 }
