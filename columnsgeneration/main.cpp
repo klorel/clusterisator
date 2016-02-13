@@ -7,6 +7,8 @@
 
 #include "common.h"
 #include "RegisteredModularityBInstance.hpp"
+#include "RegisteredModularityInstance.hpp"
+
 #include "BranchAndBound.hpp"
 
 #include "Timer.hpp"
@@ -16,6 +18,7 @@
 //std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
 
 std::string RegisteredModularityBInstance::InstancesPath = "../txt/";
+std::string RegisteredModularityInstance::InstancesPath = "../txt/";
 
 int usage() {
 	std::cout << "Available instances : \n";

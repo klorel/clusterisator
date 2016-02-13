@@ -11,48 +11,46 @@ enum AvailableModularityInstances {
 	AvailableModularityInstancesSize
 };
 
-//class RegisteredModularityInstance: public UnipartieInstance {
-//public:
-//	static std::string InstancesPath;
-//public:
-//	void setName(AvailableModularityInstances id);
-//public:
-//	std::string name;
-//public:
-//	void out() const;
-//private:
-//	std::string dataName;
-//public:
-//	RegisteredModularityInstance(AvailableModularityInstances id);
-//	virtual ~RegisteredModularityInstance() {
-//	}
-//	void exportAmpl(std::string const & fileName);
-//};
-//std::string RegisteredModularityInstance::InstancesPath =
-//		"../modularity_instances/";
-//void RegisteredModularityInstance::out() const {
-//	OUT<<"Instance name is "<<name<<"\n";
-//	OUT<<"Data were read from "<<InstancesPath + dataName + ".graph"<<"\n";
-//}
-//inline RegisteredModularityInstance::RegisteredModularityInstance(
-//		AvailableModularityInstances id) {
-//	setName(id);
+class RegisteredModularityInstance: public UnipartieInstance {
+public:
+	static std::string InstancesPath;
+public:
+	void setName(AvailableModularityInstances id);
+public:
+	std::string name;
+public:
+	void out() const;
+private:
+	std::string dataName;
+public:
+	RegisteredModularityInstance(AvailableModularityInstances id);
+	virtual ~RegisteredModularityInstance() {
+	}
+	void exportAmpl(std::string const & fileName);
+};
+void RegisteredModularityInstance::out() const {
+	OUT<<"Instance name is "<<name<<"\n";
+	OUT<<"Data were read from "<<InstancesPath + dataName + ".graph"<<"\n";
+}
+inline RegisteredModularityInstance::RegisteredModularityInstance(
+		AvailableModularityInstances id) {
+	setName(id);
 //	read(InstancesPath + dataName + ".graph");
-//}
-//
-//inline void RegisteredModularityInstance::setName(
-//		AvailableModularityInstances id) {
-//	switch (id) {
-//#define REGISTER_INSTANCE(x) case x:dataName = #x;break;
-//#include "RegisteredModularityInstance.hxx"
-//#undef REGISTER_INSTANCE
-//	default:
-//		std::cout << id << std::endl;
-//		assert("UN_KONW INSTANCE" && false);
-//		break;
-//	}
-//	name = dataName;
-//}
+}
+
+inline void RegisteredModularityInstance::setName(
+		AvailableModularityInstances id) {
+	switch (id) {
+#define REGISTER_INSTANCE(x) case x:dataName = #x;break;
+#include "RegisteredModularityInstance.hxx"
+#undef REGISTER_INSTANCE
+	default:
+		std::cout << id << std::endl;
+		assert("UN_KONW INSTANCE" && false);
+		break;
+	}
+	name = dataName;
+}
 //void RegisteredModularityInstance::exportAmpl(std::string const & fileName) {
 //	std::ofstream file(fileName.c_str());
 //	file << "param N := " << nbNodes() << ";" << std::endl;

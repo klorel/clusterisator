@@ -41,7 +41,7 @@ SET(CPLEX_LIB /opt/ibm/ILOG/CPLEX_Studio126/cplex/lib/x86-64_linux/static_pic)
 SET(CPLEX_INC /opt/ibm/ILOG/CPLEX_Studio126/cplex/include/ilcplex)
 INCLUDE_DIRECTORIES( ${CPLEX_INC} )
 
-INCLUDE_DIRECTORIES( cliquepartionning clustering data_bipartite columnsgeneration heuristic)
+INCLUDE_DIRECTORIES( cliquepartionning clustering data_bipartite data_unipartite columnsgeneration heuristic)
 
 ADD_SUBDIRECTORY(clustering)
 # ADD_SUBDIRECTORY(projet_zz)
