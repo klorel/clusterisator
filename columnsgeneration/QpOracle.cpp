@@ -1,5 +1,4 @@
 #include "QpOracle.hpp"
-#include "BipartiteGraph.hpp"
 #include "Timer.hpp"
 #include "Column.hpp"
 

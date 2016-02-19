@@ -8,7 +8,6 @@
 #include "IMaster.h"
 
 #include "Decision.hpp"
-#include "BipartiteGraph.hpp"
 #include "Column.hpp"
 
 IMaster::IMaster(ICliquePartitionProblem const * input,

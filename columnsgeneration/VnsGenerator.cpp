@@ -63,17 +63,8 @@ void VnsGenerator::compute() {
 }
 
 bool VnsGenerator::checkGradient() const {
-	bool result(true);
-	for (size_t v(0); v < _input->nV(); ++v)
-		if (std::fabs(_gradient[v] - _input->gradient(v, _current._v))
-				> 1e-10) {
-			result = false;
-			std::cout << "WRONG GRADIENT " << std::setw(6) << v;
-			std::cout << std::setw(16) << _gradient[v];
-			std::cout << std::setw(16) << _input->gradient(v, _current._v);
-			std::cout << std::endl;
-		}
-	return result;
+	return _input->checkGradient(_current._v, _gradient);
+
 }
 bool VnsGenerator::tryMove(size_t v, Double deltaCost, Double deltaDual) {
 	Double const delta(deltaCost + deltaDual);

@@ -142,6 +142,16 @@ inline std::string GetStr(T1 const & t1, T2 const & t2, T3 const & t3,
 
 #define __SEG_FAULT__ {std::vector<int> __toto__;__toto__[10]=1;}
 
+inline size_t ijtok(size_t n, size_t i, size_t j) {
+	if (i == j) {
+		std::cout << "error " << i << " = " << j << std::endl;
+		std::exit(-1);
+	}
+	size_t const l(std::min(i, j));
+	size_t const u(std::max(i, j));
+	return (2 * n - l - 1) * l / 2 + u - l - 1;
+}
+
 //#define ASSERT_NON_ZERO(x) assert(x>0 && "THIS VALUE MUST BE STRICLY POSITIVE" );
 //#define ASSERT_NON_ZERO(x)
 #endif /* COMMON_H_ */

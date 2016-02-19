@@ -1,14 +1,9 @@
 #include "BranchAndBound.hpp"
-#include "BipartiteGraph.hpp"
-#include "VnsGenerator.hpp"
+
 #include "Timer.hpp"
-#include <cplex.h>
+
 #include "LpMaster.hpp"
 #include "Node.hpp"
-
-#include "BinaryDecompositionOracle.hpp"
-#include "MilpOracle.hpp"
-#include "QpOracle.hpp"
 
 BranchAndBound::BranchAndBound(ICliquePartitionProblem const &input,
 		AvailableOracle oracle) :
@@ -225,6 +220,12 @@ IMaster & BranchAndBound::master() {
 }
 IMaster const & BranchAndBound::master() const {
 	return *_master;
+}
+double BranchAndBound::bestFeasible() const {
+	return _bestFeasible;
+}
+double BranchAndBound::bestPossible() const {
+	return _bestPossible;
 }
 void BranchAndBound::writeSolution() const {
 	_input->writeSolution(_bestSolution, _bestPossible);

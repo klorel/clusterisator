@@ -23,36 +23,44 @@ public:
 	virtual Edges const & edges() const =0;
 
 	virtual double k(size_t i) const=0;
-
-	virtual IOracle * newOracle(AvailableOracle oracle,
-			DoubleVector const * dual, DecisionList const * decision) const;
-	virtual IOracle * newVnsOracle(DoubleVector const * dual,
-			DecisionList const * decision) const;
 public:
-
-	virtual void branchingSelection(Node const & node, size_t &noeud1,
-			size_t &noeud2) const;
-	virtual void branchingWeights(FractionnarySolution const &,
-			BranchingWeights & result) const;
-
-	virtual std::pair<size_t, size_t> branchingSelection(DecisionSet const & decisions,
-			BranchingWeights & weights) const;
 public:
 	virtual void writeSolution(FractionnarySolution const&, double) const = 0;
 
 	virtual Double computeCost(std::set<size_t> const &) const = 0;
 	virtual Double computeCost(IndexedList const &) const = 0;
 
-	virtual Double gradient(size_t id, IndexedList const & v) const = 0;
 	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const= 0;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const= 0;
 	virtual std::vector<Edge> const & costs() const = 0;
+
 public:
 	virtual ~ICliquePartitionProblem();
 	virtual std::string problemName() const;
 	virtual std::string name(size_t v) const;
 	virtual void adjencyGraph(AdjencyGraph &) const;
+	virtual bool checkGradient(IndexedList const & v,
+			DoubleVector const & g) const;
+
+	virtual void branchingSelection(Node const & node, size_t &noeud1,
+			size_t &noeud2) const;
+	virtual void branchingWeights(FractionnarySolution const &,
+			BranchingWeights & result) const;
+
+	virtual std::pair<size_t, size_t> branchingSelection(
+			DecisionSet const & decisions, BranchingWeights & weights) const;
+
+	virtual IOracle * newOracle(AvailableOracle oracle,
+			DoubleVector const * dual, DecisionList const * decision) const;
+	virtual IOracle * newVnsOracle(DoubleVector const * dual,
+			DecisionList const * decision) const;
+	virtual double cst() const;
+	virtual void cps(std::string const &fileName)const;
 };
+
+inline double ICliquePartitionProblem::cst() const {
+	return 0;
+}
 inline std::string ICliquePartitionProblem::problemName() const {
 	return "";
 }

@@ -15,7 +15,7 @@ public:
 	size_t _i;
 	size_t _j;
 	Double _v;
-	Edge(size_t i, size_t j, Double v = 1) :
+	Edge(size_t i = -1, size_t j = -1, Double v = 1) :
 			_i(i), _j(j), _v(v) {
 	}
 	bool operator<(Edge const & rhs) const {

@@ -15,12 +15,10 @@
 #include "VnsLabelPropagation.h"
 #include "Divisive.h"
 
-
 std::string RegisteredModularityBInstance::InstancesPath = "../txt/";
 
-
 int usage() {
-	std::cout << "Available instances : \n";
+	std::cout << "Available instances : " << std::endl;
 	for (size_t i(0);
 			i < AvailableModularityBInstances::AvailableModularityBInstancesSize;
 			++i) {
@@ -34,8 +32,10 @@ int usage() {
 		std::cout << "\n";
 	}
 	std::cout
-			<< "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP)2(bMILP default)>\n";
-	std::cout << "The program launch the column generation algorithm\n";
+			<< "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP)2(bMILP default)>"
+			<< std::endl;
+	std::cout << "The program launch the column generation algorithm"
+			<< std::endl;
 	return 0;
 }
 

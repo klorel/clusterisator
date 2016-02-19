@@ -2,8 +2,8 @@
 #define COLUMN_HPP
 
 #include "gencol.h"
-#include "BipartiteGraph.hpp"
 #include "Decision.hpp"
+#include "ICliquePartitionProblem.h"
 
 class Column {
 public:
