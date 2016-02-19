@@ -23,9 +23,6 @@ public:
 	virtual IOracle * newOracle(AvailableOracle oracle,
 			DoubleVector const * dual, DecisionList const * decision) const;
 
-	virtual IOracle * newVnsOracle(DoubleVector const * dual,
-			DecisionList const * decision) const;
-
 	virtual void writeSolution(FractionnarySolution const&, double) const;
 	virtual Double computeCost(std::set<size_t> const &) const;
 	virtual Double computeCost(IndexedList const &) const;
@@ -33,14 +30,6 @@ public:
 	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 	virtual std::vector<Edge> const & costs() const;
-public:
-	virtual void branchingSelection(Node const & node, size_t &noeud1,
-			size_t &noeud2) const;
-	virtual void branchingWeights(FractionnarySolution const &,
-			BranchingWeights & result) const;
-
-	virtual std::pair<size_t, size_t> branchingSelection(DecisionSet const & decisions,
-			BranchingWeights & weights) const;
 public:
 	BipartiteGraph();
 	BipartiteGraph(Edges const & edges);

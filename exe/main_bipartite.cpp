@@ -7,7 +7,6 @@
 
 #include "common.h"
 #include "RegisteredModularityBInstance.hpp"
-//#include "RegisteredModularityInstance.hpp"
 
 #include "BranchAndBound.hpp"
 
@@ -15,24 +14,19 @@
 
 #include "VnsLabelPropagation.h"
 #include "Divisive.h"
-//std::string  RegisteredModularityBInstance::InstancesPath = "C:\\Users\\manuel\\Documents\\Github\\clusterisator\\bipartite_instances\\";
+
 
 std::string RegisteredModularityBInstance::InstancesPath = "../txt/";
-//std::string RegisteredModularityInstance::InstancesPath = "../txt/";
+
 
 int usage() {
 	std::cout << "Available instances : \n";
 	for (size_t i(0);
 			i < AvailableModularityBInstances::AvailableModularityBInstancesSize;
-//			i < AvailableModularityInstances::AvailableModularityInstancesSize;
 			++i) {
 		AvailableModularityBInstances id(
 				static_cast<AvailableModularityBInstances>(i));
 		RegisteredModularityBInstance instance(id);
-
-//		AvailableModularityInstances id(
-//				static_cast<AvailableModularityInstances>(i));
-//		RegisteredModularityInstance instance(id);
 		std::cout << std::setw(3) << i + 1;
 		std::cout << " : ";
 		std::cout << std::setw(30) << std::left << instance._name << std::right;
@@ -53,10 +47,7 @@ int main(int argc, char** argv) {
 	AvailableModularityBInstances id(
 			static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
 
-//	AvailableModularityInstances id(
-//			static_cast<AvailableModularityInstances>(atoi(argv[1]) - 1));
-
-	AvailableOracle oracle(AvailableOracle::MILP);
+	AvailableOracle oracle(AvailableOracle::bMILP);
 	if (argc > 2) {
 		oracle = static_cast<AvailableOracle>(atoi(argv[2]));
 	}

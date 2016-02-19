@@ -17,11 +17,11 @@ public:
 public:
 	void setName(AvailableModularityInstances id);
 public:
-	std::string name;
+	std::string _name;
 public:
 	void out() const;
 private:
-	std::string dataName;
+	std::string _dataName;
 public:
 	RegisteredModularityInstance(AvailableModularityInstances id);
 	virtual ~RegisteredModularityInstance() {
@@ -29,8 +29,8 @@ public:
 	void exportAmpl(std::string const & fileName);
 };
 void RegisteredModularityInstance::out() const {
-	OUT<<"Instance name is "<<name<<"\n";
-	OUT<<"Data were read from "<<InstancesPath + dataName + ".graph"<<"\n";
+	OUT<<"Instance name is "<<_name<<"\n";
+	OUT<<"Data were read from "<<InstancesPath + _dataName + ".graph"<<"\n";
 }
 inline RegisteredModularityInstance::RegisteredModularityInstance(
 		AvailableModularityInstances id) {
@@ -41,7 +41,7 @@ inline RegisteredModularityInstance::RegisteredModularityInstance(
 inline void RegisteredModularityInstance::setName(
 		AvailableModularityInstances id) {
 	switch (id) {
-#define REGISTER_INSTANCE(x) case x:dataName = #x;break;
+#define REGISTER_INSTANCE(x) case x:_dataName = #x;break;
 #include "RegisteredModularityInstance.hxx"
 #undef REGISTER_INSTANCE
 	default:
@@ -49,7 +49,7 @@ inline void RegisteredModularityInstance::setName(
 		assert("UN_KONW INSTANCE" && false);
 		break;
 	}
-	name = dataName;
+	_name = _dataName;
 }
 //void RegisteredModularityInstance::exportAmpl(std::string const & fileName) {
 //	std::ofstream file(fileName.c_str());

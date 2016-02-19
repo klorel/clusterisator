@@ -34,3 +34,4 @@ void UnipartieInstance::writeSolution(FractionnarySolution const& bestSolution,
 	}
 	file.close();
 }
+

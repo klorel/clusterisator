@@ -25,13 +25,18 @@ public:
 	virtual double k(size_t i) const=0;
 
 	virtual IOracle * newOracle(AvailableOracle oracle,
-			DoubleVector const * dual, DecisionList const * decision) const=0;
+			DoubleVector const * dual, DecisionList const * decision) const;
 	virtual IOracle * newVnsOracle(DoubleVector const * dual,
-			DecisionList const * decision) const=0;
+			DecisionList const * decision) const;
 public:
-	virtual void branchingSelection(Node const & node, size_t &noeud1,
-			size_t &noeud2) const = 0;
 
+	virtual void branchingSelection(Node const & node, size_t &noeud1,
+			size_t &noeud2) const;
+	virtual void branchingWeights(FractionnarySolution const &,
+			BranchingWeights & result) const;
+
+	virtual std::pair<size_t, size_t> branchingSelection(DecisionSet const & decisions,
+			BranchingWeights & weights) const;
 public:
 	virtual void writeSolution(FractionnarySolution const&, double) const = 0;
 
