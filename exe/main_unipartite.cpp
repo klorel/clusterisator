@@ -54,11 +54,7 @@ int main(int argc, char** argv) {
 		file_name = GetStr("node/", instance.name(), "_node_", id_node);
 		++id_node;
 	} while (std::remove(file_name.c_str()) == 0);
-	//RegisteredModularityBInstance instance(divorces);
-	//RegisteredModularityBInstance instance(hollyw);
-	//RegisteredModularityBInstance instance(scotl);
-	//RegisteredModularityBInstance instance(graphprod);
-	//RegisteredModularityBInstance instance(netscience);
+
 	instance.out();
 //	std::cout << instance.a() << std::endl;
 

@@ -129,6 +129,7 @@ inline std::vector<Edge> const & BipartiteGraph::costs() const {
 }
 inline void BipartiteGraph::gradient(IndexedList const & v,
 		DoubleVector & result) const {
+	ASSERT_CHECK(v.max_size()==nV());
 	result.assign(v.max_size(), 0);
 	for (auto const & e : _costs) {
 		if (v.contains(e._j)) {
