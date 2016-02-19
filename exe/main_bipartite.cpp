@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
 //	branchAndBound.writeSolution();
 	std::cout << "program run in " << std::setprecision(10) << total.elapsed()
 			<< std::endl;
+	instance.cps("toto");
 	return 0;
 }
 

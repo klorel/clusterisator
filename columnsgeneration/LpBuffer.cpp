@@ -127,7 +127,7 @@ void ColumnBuffer::add(CPXENVptr env, CPXLPptr lp) {
 }
 void ColumnBuffer::add(Double rhsObj, char type, Double lower, Double upper,
 		std::string const & name) {
-	_objRhs.push_back(rhsObj);
+	_objRhs.push_back(checkCoeff(rhsObj));
 	_begin.push_back(nz());
 	_type.push_back(type);
 	if (type != CPX_CONTINUOUS)

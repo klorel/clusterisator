@@ -152,6 +152,10 @@ inline size_t ijtok(size_t n, size_t i, size_t j) {
 	return (2 * n - l - 1) * l / 2 + u - l - 1;
 }
 
+inline double checkCoeff(double v) {
+	return std::fabs(v) < 1e-20 ? 0 : v;
+}
+
 //#define ASSERT_NON_ZERO(x) assert(x>0 && "THIS VALUE MUST BE STRICLY POSITIVE" );
 //#define ASSERT_NON_ZERO(x)
 #endif /* COMMON_H_ */

@@ -162,9 +162,9 @@ void ICliquePartitionProblem::cps(std::string const &fileName) const {
 			}
 		}
 	}
+
 	columnBuffer.add(cst(), CPX_CONTINUOUS, 1, 1, "CST");
 	columnBuffer.add(env, prob);
-
 	RowBuffer rowBuffer;
 	for (size_t u(0); u < nV(); ++u) {
 		for (size_t v(u + 1); v < nV(); ++v) {
@@ -185,7 +185,7 @@ void ICliquePartitionProblem::cps(std::string const &fileName) const {
 	CPXwriteprob(env, prob, ("cps_" + fileName + ".lp").c_str(), "LP");
 
 	CPXsetintparam(env, CPX_PARAM_SOLUTIONTARGET,
-			CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
+	CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
 	CPXmipopt(env, prob);
 
 	CPXcloseCPLEX(&env);
