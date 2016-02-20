@@ -34,8 +34,8 @@ public:
 	IOracle * _vnsGenerator;
 	IOracle * _mipGenerator;
 
-	double bestFeasible()const;
-	double bestPossible()const;
+	double bestFeasible() const;
+	double bestPossible() const;
 private:
 	Node * _root;
 	Node * _current;

@@ -202,6 +202,7 @@ void ICliquePartitionProblem::cps(std::string const &fileName) const {
 
 	CPXsetintparam(env, CPX_PARAM_SOLUTIONTARGET,
 	CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
+	CPXsetintparam(env, CPX_PARAM_CUTPASS, -1);
 	CPXmipopt(env, prob);
 
 	double objval;

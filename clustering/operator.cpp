@@ -11,7 +11,7 @@
 void operator>>(std::string const & fileName, Partition & partition) {
 	std::ifstream file(fileName.c_str());
 	if (!file.good()) {
-		OUT<< "unable to open : "<<fileName<<"\n";
+		std::cout << "unable to open : " << fileName << "\n";
 	} else {
 		file >> partition;
 	}

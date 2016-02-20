@@ -30,7 +30,7 @@ public:
 
 	virtual ICliquePartitionProblem const & problem() const;
 
-	virtual IndexedList const & usedLabels()const = 0;
+	virtual IndexedList const & usedLabels() const = 0;
 private:
 	ICliquePartitionProblem const & _problem;
 };

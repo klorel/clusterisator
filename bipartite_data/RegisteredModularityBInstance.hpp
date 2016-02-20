@@ -19,7 +19,7 @@ public:
 public:
 	std::string _name;
 public:
-	void out() const;
+	void out(std::ostream & stream = std::cout) const;
 private:
 	std::string _dataName;
 public:
@@ -32,9 +32,10 @@ public:
 inline std::string RegisteredModularityBInstance::name() const {
 	return _name;
 }
-inline void RegisteredModularityBInstance::out() const {
-	OUT<<"Instance name is "<<_name<<"\n";
-	OUT<<"Data were read from "<<InstancesPath + _dataName + ".txt"<<"\n";
+inline void RegisteredModularityBInstance::out(std::ostream & stream) const {
+	stream << "Instance name is " << _name << std::endl;
+	stream << "Data were read from " << InstancesPath + _dataName + ".txt"
+			<< std::endl;
 }
 inline RegisteredModularityBInstance::RegisteredModularityBInstance(
 		AvailableModularityBInstances id) {

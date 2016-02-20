@@ -10,8 +10,6 @@
 
 #include "typedef.h"
 
-#define OUT std::cout
-
 std::ostream & operator<<(std::ostream &out, Graph const&);
 
 template<class T> inline void DisplayContainer(std::ostream & stream,

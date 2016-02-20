@@ -128,11 +128,11 @@ bool Partition::shift(size_t observation, size_t to) {
 bool Partition::checkLists() const {
 	for (auto const & l : usedLabels()) {
 		if (sizeOfLabel(l) == 0) {
-			OUT<< "error on size of label " << l << "\n";
+			std::cout << "error on size of label " << l << "\n";
 		}
 		for (auto const & n : observations(l)) {
 			if (n != *_nodePosition[n]) {
-				OUT << n << " iterator in label " << l << " is wrong\n";
+				std::cout << n << " iterator in label " << l << " is wrong\n";
 			}
 		}
 	}
@@ -145,8 +145,8 @@ bool Partition::checkWeights() const {
 		for (auto const & n : _labelLists[l])
 			w += obsWeight(n);
 		if (!IsEqual(w, labelWeight(l))) {
-			OUT<< "wrong label weight of "<<l << " : ";
-			OUT << labelWeight(l) << " != "<<w<<"\n";
+			std::cout << "wrong label weight of " << l << " : ";
+			std::cout << labelWeight(l) << " != " << w << "\n";
 			return false;
 		}
 	}

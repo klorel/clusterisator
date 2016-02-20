@@ -9,7 +9,8 @@
 class Node;
 class VnsGeneratorSolution {
 public:
-	VnsGeneratorSolution(ICliquePartitionProblem const *, DoubleVector const * dual);
+	VnsGeneratorSolution(ICliquePartitionProblem const *,
+			DoubleVector const * dual);
 	virtual ~VnsGeneratorSolution();
 	VnsGeneratorSolution & operator=(VnsGeneratorSolution const &);
 public:

@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 //		++id_node;
 //	} while (std::remove(file_name.c_str()) == 0);
 
-//	instance.out();
+	instance.out();
 
 	BranchAndBound branchAndBound(instance, oracle);
 	branchAndBound.init();

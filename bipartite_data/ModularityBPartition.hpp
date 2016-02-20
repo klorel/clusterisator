@@ -27,5 +27,4 @@ private:
 	Double _score;
 };
 
-
 #endif /* GRAPH_HPP */

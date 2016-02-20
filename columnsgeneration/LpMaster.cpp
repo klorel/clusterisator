@@ -226,19 +226,19 @@ void LpMaster::getSolution() {
 	assert(CPXgetnumcols(_env, _lp) == _primal.size());
 	CPXgetx(_env, _lp, _primal.data(), 0, (int) (_primal.size() - 1));
 	CPXgetobjval(_env, _lp, &_obj);
-	std::vector<int> cstat(CPXgetnumcols(_env, _lp));
-	std::vector<int> rstat(CPXgetnumrows(_env, _lp));
-	CPXgetbase(_env, _lp, cstat.data(), rstat.data());
-	size_t nBasis(0);
-	size_t nBasisDegen(0);
-	for (size_t i(0); i < cstat.size(); ++i) {
-		if (cstat[i] == CPX_BASIC)
-			++nBasis;
-		if (cstat[i] == CPX_BASIC && _primal[i] < 1e-6)
-			++nBasisDegen;
-	}
-	std::cout << "Degenerated variables in basis " << nBasisDegen << " / "
-			<< nBasis << std::endl;
+//	std::vector<int> cstat(CPXgetnumcols(_env, _lp));
+//	std::vector<int> rstat(CPXgetnumrows(_env, _lp));
+//	CPXgetbase(_env, _lp, cstat.data(), rstat.data());
+//	size_t nBasis(0);
+//	size_t nBasisDegen(0);
+//	for (size_t i(0); i < cstat.size(); ++i) {
+//		if (cstat[i] == CPX_BASIC)
+//			++nBasis;
+//		if (cstat[i] == CPX_BASIC && _primal[i] < 1e-6)
+//			++nBasisDegen;
+//	}
+//	std::cout << "Degenerated variables in basis " << nBasisDegen << " / "
+//			<< nBasis << std::endl;
 }
 
 bool LpMaster::getSolution(FractionnarySolution & solution) {

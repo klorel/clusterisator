@@ -55,9 +55,9 @@ public:
 	virtual IOracle * newVnsOracle(DoubleVector const * dual,
 			DecisionList const * decision) const;
 	virtual double cst() const;
-	virtual void cps(std::string const &fileName)const;
+	virtual void cps(std::string const &fileName) const;
 
-	virtual void cpCost(DoubleVector &)const = 0;
+	virtual void cpCost(DoubleVector &) const = 0;
 };
 
 inline double ICliquePartitionProblem::cst() const {
