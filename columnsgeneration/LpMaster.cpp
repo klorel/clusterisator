@@ -226,6 +226,9 @@ void LpMaster::getSolution() {
 	assert(CPXgetnumcols(_env, _lp) == _primal.size());
 	CPXgetx(_env, _lp, _primal.data(), 0, (int) (_primal.size() - 1));
 	CPXgetobjval(_env, _lp, &_obj);
+	std::vector<int> cstat(CPXgetnumcols(_env, _lp));
+	std::vector<int> rstat(CPXgetnumrows(_env, _lp));
+	CPXgetbase(_env, _lp, cstat.data(), rstat.data());
 }
 
 bool LpMaster::getSolution(FractionnarySolution & solution) {
@@ -246,7 +249,7 @@ bool LpMaster::getSolution(FractionnarySolution & solution) {
 }
 
 void LpMaster::solveMaster() {
-	write();
+//	write();
 	CPXlpopt(_env, _lp);
 	getSolution();
 }

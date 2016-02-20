@@ -63,7 +63,7 @@ bool CpxOracle::generate() {
 	CPXsetintparam(_env, CPX_PARAM_SOLUTIONTARGET,
 	CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
 	CPXmipopt(_env, _prob);
-	checkSolutions();
+//	checkSolutions();
 //	checkSolution();
 	//	CPXpopulate(_env, _oracle);
 	bool result(false);

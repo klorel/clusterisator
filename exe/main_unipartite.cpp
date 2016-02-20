@@ -58,35 +58,35 @@ int main(int argc, char** argv) {
 	} while (std::remove(file_name.c_str()) == 0);
 
 	instance.out();
-//	std::cout << instance.a() << std::endl;
+	//		instance.cps(instance.name());
+	//	std::cout << instance.a() << std::endl;
 
-//	ModularityBPartition p(instance, instance.nV());
-//	p.score() = p.computeScore();
-//	std::cout << "DIVISIVE STARTED" << std::endl;
-//	Divisive divisive(instance, p);
-//	divisive.run();
-//	std::cout << "VNS STARTED" << std::endl;
-//	VnsLabelPropagation vns(instance, p, 20, 5);
-//	vns.run();
-//	std::cout << "B&B STARTED" << std::endl;
+	//	ModularityBPartition p(instance, instance.nV());
+	//	p.score() = p.computeScore();
+	//	std::cout << "DIVISIVE STARTED" << std::endl;
+	//	Divisive divisive(instance, p);
+	//	divisive.run();
+	//	std::cout << "VNS STARTED" << std::endl;
+	//	VnsLabelPropagation vns(instance, p, 20, 5);
+	//	vns.run();
+	//	std::cout << "B&B STARTED" << std::endl;
 
-//	return 0;
+	//	return 0;
 	BranchAndBound branchAndBound(instance, oracle);
 	branchAndBound.init();
-//	branchAndBound.master().add(p);
-//	branchAndBound.master().addEdge();
+	//	branchAndBound.master().add(p);
+	//	branchAndBound.master().addEdge();
 	branchAndBound.master().addSingleton();
-//	branchAndBound.master().write();
+	//	branchAndBound.master().write();
 	branchAndBound.setOutput();
 	branchAndBound.run();
-//	for (size_t i(0); i < 1; ++i)
-//		branchAndBound._vnsGenerator->run(1, false);
-//	branchAndBound.writeSolution();
+	//	for (size_t i(0); i < 1; ++i)
+	//		branchAndBound._vnsGenerator->run(1, false);
+	//	branchAndBound.writeSolution();
 	std::cout << "program run in " << std::setprecision(10) << total.elapsed()
 			<< std::endl;
 	std::cout << "Solution is "
 			<< branchAndBound.bestFeasible() + instance.cst() << std::endl;
-	instance.cps(instance.name());
 	return 0;
 }
 

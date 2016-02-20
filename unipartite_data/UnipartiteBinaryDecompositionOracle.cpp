@@ -53,15 +53,16 @@ void UnipartiteBinaryDecompositionOracle::initOracle() {
 		_a[h] = columnBuffer.size();
 		columnBuffer.add(0, CPX_BINARY, 0, 1, GetStr("a_", h));
 	}
-	MY_PRINT(_uniPartiteGraph->inv_m());
-	_aa = RectMatrix(_tD + 1, _tD + 1, 0);
+	double const tempCoeff(
+			_uniPartiteGraph->inv_m() * _uniPartiteGraph->inv_m() * 0.5 * 0.5);
+
+//	_aa = RectMatrix(_tD + 1, _tD + 1, 0);
+	_aa.resize((_tD + 1) * _tD * 0.5);
 	for (size_t h(0); h < _tD + 1; ++h) {
-		for (size_t l(0); l < _tD + 1; ++l) {
+		for (size_t l(h + 1); l < _tD + 1; ++l) {
 			// ahl >= 0
-			_aa.get(h, l) = columnBuffer.size();
-			double const cost(
-					-std::pow(2, h + l) * _uniPartiteGraph->inv_m()
-							* _uniPartiteGraph->inv_m() * 0.5);
+			_aa[ijtok(_tD + 1, h, l)] = columnBuffer.size();
+			double const cost(-std::pow(2, h + l) * tempCoeff);
 			columnBuffer.add(cost,
 			CPX_CONTINUOUS, 0, CPX_INFBOUND, GetStr("a_H", h, "_L", l));
 		}
@@ -69,11 +70,22 @@ void UnipartiteBinaryDecompositionOracle::initOracle() {
 	size_t const D(columnBuffer.size());
 	columnBuffer.add(0, CPX_CONTINUOUS, -CPX_INFBOUND, +CPX_INFBOUND, "D");
 
+	_c = columnBuffer.size();
+	columnBuffer.add(tempCoeff, CPX_CONTINUOUS, -CPX_INFBOUND, +CPX_INFBOUND,
+			"D");
+
 	columnBuffer.add(_env, _prob);
 	// binary declaration
 
 	// constraints
 	_rowBuffer.clear();
+	// C = sum kr² Yr
+	_rowBuffer.add(0, 'E', "D_k");
+	for (size_t v(0); v < n; ++v) {
+		_rowBuffer.add(v, _uniPartiteGraph->k(v) * _uniPartiteGraph->k(v));
+	}
+	_rowBuffer.add(_c, -1);
+
 	// D = sum kr Yr
 	_rowBuffer.add(0, 'E', "D_k");
 	for (size_t v(0); v < n; ++v) {
@@ -253,10 +265,17 @@ void UnipartiteBinaryDecompositionOracle::checkSolutions() const {
 			MY_PRINT(binD2);
 			std::exit(0);
 		}
-
+		double temp(0);
+		for (size_t v(0); v < _uniPartiteGraph->nV(); ++v) {
+			if (x[v] > 0.5) {
+				temp += _uniPartiteGraph->k(v) * _uniPartiteGraph->k(v);
+			}
+		}
 		double computedObj(
 				local * _uniPartiteGraph->inv_m()
-						- std::pow(binD * 0.5 * _uniPartiteGraph->inv_m(), 2));
+						- 0.5 * _uniPartiteGraph->inv_m()
+								* _uniPartiteGraph->inv_m() * 0.5
+								* (binD2 - temp));
 		MY_PRINT(computedObj);
 		MY_PRINT(verifMod);
 		MY_PRINT(verifD);

@@ -46,7 +46,7 @@ void BranchAndBound::columnGeneration() {
 	size_t ite(0);
 	Double rd(0);
 
-	size_t const nColumnsByIte(0);
+	size_t const nColumnsByIte(10);
 
 	if (_output != NULL) {
 		output() << std::setw(6) << "ite";
@@ -69,8 +69,8 @@ void BranchAndBound::columnGeneration() {
 		//		bool heuristicSucceeded(false);
 		_vnsGenerator->columns().clear();
 		bool heuristicSucceeded(false);
-		bool stopvns(true);
-		for (size_t i(0); i < 5 && !stopvns; ++i) {
+		bool stopvns(false);
+		for (size_t i(0); i < 10 && !stopvns; ++i) {
 			if (nColumnsByIte == 0) {
 				if (_vnsGenerator->run(1, true)) {
 					heuristicSucceeded = true;
@@ -79,6 +79,8 @@ void BranchAndBound::columnGeneration() {
 			} else {
 				if (_vnsGenerator->run(1, false))
 					heuristicSucceeded = true;
+				if (_vnsGenerator->columns().size() > nColumnsByIte)
+					stopvns = true;
 			}
 		}
 		//		if(!heuristicSucceeded )

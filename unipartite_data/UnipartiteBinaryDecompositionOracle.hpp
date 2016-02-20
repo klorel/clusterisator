@@ -21,7 +21,9 @@ private:
 	IntVector _s;
 	IntVector _a;
 	size_t _tD;
-	RectMatrix _aa;
+	size_t _c;
+//	RectMatrix _aa;
+	IntVector _aa;
 	UnipartieInstance const *_uniPartiteGraph;
 };
 
