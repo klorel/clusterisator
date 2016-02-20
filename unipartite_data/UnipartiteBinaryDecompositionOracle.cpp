@@ -47,26 +47,28 @@ void UnipartiteBinaryDecompositionOracle::initOracle() {
 
 	_tD = (size_t) std::ceil(
 			(std::log(_uniPartiteGraph->sum_k() + 1) / log(2) - 1));
+	double const tempCoeff(
+			_uniPartiteGraph->inv_m() * _uniPartiteGraph->inv_m() * 0.5 * 0.5);
+
 	_a.resize(_tD + 1);
 	for (size_t h(0); h < _tD + 1; ++h) {
 		// ah binary
 		_a[h] = columnBuffer.size();
-		columnBuffer.add(0, CPX_BINARY, 0, 1, GetStr("a_", h));
+		columnBuffer.add(-std::pow(2, 2 * h) * tempCoeff, CPX_BINARY, 0, 1,
+				GetStr("a_", h));
 	}
-	double const tempCoeff(
-			_uniPartiteGraph->inv_m() * _uniPartiteGraph->inv_m() * 0.5 * 0.5);
-
 //	_aa = RectMatrix(_tD + 1, _tD + 1, 0);
 	_aa.resize((_tD + 1) * _tD * 0.5);
 	for (size_t h(0); h < _tD + 1; ++h) {
 		for (size_t l(h + 1); l < _tD + 1; ++l) {
 			// ahl >= 0
 			_aa[ijtok(_tD + 1, h, l)] = columnBuffer.size();
-			double const cost(-std::pow(2, h + l) * tempCoeff);
+			double const cost(-std::pow(2, h + l + 1) * tempCoeff);
 			columnBuffer.add(cost,
 			CPX_CONTINUOUS, 0, CPX_INFBOUND, GetStr("a_H", h, "_L", l));
 		}
 	}
+
 	size_t const D(columnBuffer.size());
 	columnBuffer.add(0, CPX_CONTINUOUS, -CPX_INFBOUND, +CPX_INFBOUND, "D");
 
@@ -113,7 +115,7 @@ void UnipartiteBinaryDecompositionOracle::initOracle() {
 	}
 	// abhl >= ah+bl-1
 	for (size_t h(0); h < _tD + 1; ++h) {
-		for (size_t l(0); l < _tD + 1; ++l) {
+		for (size_t l(h + 1); l < _tD + 1; ++l) {
 			_rowBuffer.add(-1, 'G', GetStr("FORTET_H", h, "_L", l));
 			if (h == l) {
 				_rowBuffer.add(_a[h], -2);
@@ -121,7 +123,8 @@ void UnipartiteBinaryDecompositionOracle::initOracle() {
 				_rowBuffer.add(_a[h], -1);
 				_rowBuffer.add(_a[l], -1);
 			}
-			_rowBuffer.add((int) _aa.get(h, l), 1);
+			size_t const hl(ijtok(_tD + 1, h, l));
+			_rowBuffer.add(_aa[hl], 1);
 		}
 	}
 	_rowBuffer.add(_env, _prob);
@@ -189,8 +192,8 @@ void UnipartiteBinaryDecompositionOracle::checkSolutions() const {
 		}
 		// abhl >= ah+bl-1
 		for (size_t h(0); h < _tD + 1; ++h) {
-			for (size_t l(0); l < _tD + 1; ++l) {
-				size_t hl((int) _aa.get(h, l));
+			for (size_t l(h + 1); l < _tD + 1; ++l) {
+				size_t const hl(ijtok(_tD + 1, h, l));
 				if (std::fabs(x[_a[h]] * x[_a[l]] - x[hl]) > 0.5) {
 					std::cout << std::setw(8) << "ERROR AA";
 					std::cout << std::setw(8) << "a_" << h;
@@ -235,8 +238,8 @@ void UnipartiteBinaryDecompositionOracle::checkSolutions() const {
 		}
 		double binD2(0);
 		for (size_t h(0); h < _tD + 1; ++h) {
-			for (size_t l(0); l < _tD + 1; ++l) {
-				size_t hl((int) _aa.get(h, l));
+			for (size_t l(h + 1); l < _tD + 1; ++l) {
+				size_t const hl(ijtok(_tD + 1, h, l));
 				binD2 += x[hl] * std::pow(2, h + l);
 //				if (x[hl] > 0.5) {
 //					std::cout << std::setw(4) << h;
