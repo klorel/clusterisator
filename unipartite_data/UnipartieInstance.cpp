@@ -1,6 +1,10 @@
 #include "UnipartieInstance.h"
 #include "Column.hpp"
 
+#include "MilpOracle.hpp"
+#include "QpOracle.hpp"
+#include "UnipartiteBinaryDecompositionOracle.hpp"
+
 UnipartieInstance::UnipartieInstance() :
 		_m(0), _inv_m(0), _cst(0), _edges() {
 
@@ -21,9 +25,7 @@ void UnipartieInstance::build() {
 		n = std::max(n, edge._j);
 		_m += edge._v;
 	}
-	MY_PRINT(n);
-	MY_PRINT(_m);
-
+	n += 1;
 	_k.assign(n, 0);
 	for (auto const & edge : _edges) {
 		_k[edge._i] += edge._v;
@@ -55,9 +57,22 @@ void UnipartieInstance::build() {
 	_cst = 0;
 	for (size_t i(0); i < n; ++i) {
 		_cst -= _k[i] * _k[i];
-		MY_PRINT(_k[i]);
 	}
 	_cst /= (2 * _m * 2 * _m);
+	MY_PRINT(n);
+	MY_PRINT(_m);
+	MY_PRINT(_cst);
+}
+
+void UnipartieInstance::cpCost(DoubleVector &result) const {
+	size_t const n(nV());
+	result.assign(n * (n - 1) / 2, 0);
+	for (size_t i(0); i < n; ++i) {
+		for (size_t j(i + 1); j < n; ++j) {
+			size_t const ij(ijtok(n, i, j));
+			result[ij] = _costs[ij]._v;
+		}
+	}
 }
 
 //void UnipartieInstance::read(std::string const & fileName, std::ostream & stream) {
@@ -140,4 +155,19 @@ void UnipartieInstance::writeSolution(FractionnarySolution const& bestSolution,
 	}
 	file.close();
 }
-
+IOracle * UnipartieInstance::newOracle(AvailableOracle oracle,
+		DoubleVector const * dual, DecisionList const * decision) const {
+	IOracle * result(NULL);
+	switch (oracle) {
+	case MILP:
+		result = new MilpOracle(this, dual, decision);
+		break;
+	case MIQP:
+		result = new QpOracle(this, dual, decision);
+		break;
+	default:
+		result = new UnipartiteBinaryDecompositionOracle(this, dual, decision);
+		break;
+	}
+	return result;
+}

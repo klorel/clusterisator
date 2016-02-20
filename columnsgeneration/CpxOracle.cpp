@@ -23,9 +23,11 @@ void CpxOracle::initCpx() {
 	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_OFF);
 //	CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_ON);
 //	CPXsetintparam(_env, CPX_PARAM_THREADS, 1);
+//	CPXsetintparam(_env, CPX_PARAM_PREPASS, 0);
 //	CPXsetintparam(_env, CPX_PARAM_CUTPASS, -1);
 //	CPXsetintparam(_env, CPX_PARAM_VARSEL, 4);
 	CPXsetintparam(_env, CPX_PARAM_MIPDISPLAY, 2);
+
 	initOracle();
 
 }
@@ -61,7 +63,7 @@ bool CpxOracle::generate() {
 	CPXsetintparam(_env, CPX_PARAM_SOLUTIONTARGET,
 	CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
 	CPXmipopt(_env, _prob);
-//	checkSolutions();
+	checkSolutions();
 //	checkSolution();
 	//	CPXpopulate(_env, _oracle);
 	bool result(false);
@@ -96,9 +98,9 @@ bool CpxOracle::generate() {
 				}
 			}
 		}
-	} else{
+	} else {
 		std::cout << "CPXgetstat : " << CPXgetstat(_env, _prob) << std::endl;
-		std::cout << "Exporting lp into error.lp"<<std::endl;
+		std::cout << "Exporting lp into error.lp" << std::endl;
 		write("error.lp");
 		__SEG_FAULT__;
 	}
@@ -122,8 +124,6 @@ void CpxOracle::checkSolutions() const {
 	size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
 	for (size_t i(0); i < n; ++i) {
 		CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);
-		std::cout << "SOLUTION" << std::setw(2) << i << std::setw(10) << obj
-				<< std::endl;
 		CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,
 				(int) (x.size() - 1));
 		Column column(_input);
@@ -134,6 +134,11 @@ void CpxOracle::checkSolutions() const {
 		}
 		column.cost() = column.computeCost();
 		column.reducedCost() = obj;
+		std::cout << "ID";
+		std::cout << std::setw(6) << i;
+		std::cout << std::setw(20) << column.cost();
+		std::cout << std::setw(20) << obj;
+		std::cout << std::endl;
 		ASSERT_CHECK(column.check(*_dual));
 		for (Decision const & decision : *_decisions) {
 			if (column.violation(decision) > 0) {

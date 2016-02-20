@@ -138,32 +138,6 @@ bool QpOracle::generate() {
 }
 
 void QpOracle::checkSolution() const {
-	Double obj;
-	DoubleVector x(CPXgetnumcols(_env, _prob));
-	size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
-	for (size_t i(0); i < n; ++i) {
-		CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);
-		std::cout << "SOLUTION" << std::setw(2) << i << std::setw(10) << obj
-				<< std::endl;
-		CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,
-				(int) (x.size() - 1));
-		Column column(_input);
-		for (size_t v(0); v < _input->nV(); ++v) {
-			if (x[v] > 0.5) {
-				column.insert(v);
-			}
-		}
-		column.cost() = column.computeCost();
-		column.reducedCost() = obj;
-		ASSERT_CHECK(column.check(*_dual));
-		for (Decision const & decision : *_decisions) {
-			if (column.violation(decision) > 0) {
-				decision.print(
-						std::cout << "violation in MipGenerator::generate() ");
-				std::cout << std::endl;
-				column.print();
-			}
-		}
-	}
+
 }
 

@@ -35,18 +35,14 @@ void BipartiteGraph::build() {
 	_inv_m = 1.0 / _m;
 	_allLinks.assign(nV(), std::map<size_t, double>());
 	_costs.reserve(nR() * nB());
+
 	for (size_t r(0); r < nR(); ++r) {
 		for (size_t b(0); b < nB(); ++b) {
 			double const value(w(r, b));
-			_costs.push_back(Edge(r, nR() + b, value));
-
 			if (value != 0) {
+				_costs.push_back(Edge(r, nR() + b, value));
 				_allLinks[r][nR() + b] = value;
 				_allLinks[nR() + b][r] = value;
-				std::cout << std::setw(6) << r;
-				std::cout << std::setw(6) << b;
-				std::cout << std::setw(15) << value;
-				std::cout << std::endl;
 			}
 		}
 	}
@@ -59,7 +55,19 @@ void BipartiteGraph::build() {
 //	MY_PRINT(nR());
 //	MY_PRINT(nB());
 }
-
+void BipartiteGraph::cpCost(DoubleVector &result) const {
+	size_t const n(nV());
+	result.assign(n * (n - 1) / 2, 0);
+	for (size_t r(0); r < nR(); ++r) {
+		for (size_t b(0); b < nB(); ++b) {
+			double const value(w(r, b));
+			if (value != 0) {
+				size_t const ij(ijtok(n, r, nR() + b));
+				result[ij] = value;
+			}
+		}
+	}
+}
 //void BipartiteGraph::read(std::string const & fileName, std::ostream & stream) {
 //	std::ifstream file(fileName.c_str());
 //	//_a << file;

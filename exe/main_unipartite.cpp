@@ -15,7 +15,7 @@
 std::string RegisteredModularityInstance::InstancesPath = "../txt/";
 
 int usage() {
-	std::cout << "Available instances : "<<std::endl;
+	std::cout << "Available instances : " << std::endl;
 	for (size_t i(0);
 			i < AvailableModularityInstances::AvailableModularityInstancesSize;
 			++i) {
@@ -29,8 +29,10 @@ int usage() {
 		std::cout << "\n";
 	}
 	std::cout
-			<< "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP)2(bMILP default)>"<<std::endl;
-	std::cout << "The program launch the column generation algorithm"<<std::endl;
+			<< "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP)2(bMILP default)>"
+			<< std::endl;
+	std::cout << "The program launch the column generation algorithm"
+			<< std::endl;
 	return 0;
 }
 
@@ -38,7 +40,7 @@ int main(int argc, char** argv) {
 	Timer total;
 	if (argc == 1)
 		return usage();
-	std::cout << "argc is "<<argc<<std::endl;
+	std::cout << "argc is " << argc << std::endl;
 	AvailableModularityInstances id(
 			static_cast<AvailableModularityInstances>(atoi(argv[1]) - 1));
 
@@ -67,8 +69,8 @@ int main(int argc, char** argv) {
 //	VnsLabelPropagation vns(instance, p, 20, 5);
 //	vns.run();
 //	std::cout << "B&B STARTED" << std::endl;
-	instance.cps(instance.name());
-	return 0;
+
+//	return 0;
 	BranchAndBound branchAndBound(instance, oracle);
 	branchAndBound.init();
 //	branchAndBound.master().add(p);
@@ -84,6 +86,7 @@ int main(int argc, char** argv) {
 			<< std::endl;
 	std::cout << "Solution is "
 			<< branchAndBound.bestFeasible() + instance.cst() << std::endl;
+	instance.cps(instance.name());
 	return 0;
 }
 

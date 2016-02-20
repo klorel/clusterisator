@@ -69,7 +69,7 @@ void BranchAndBound::columnGeneration() {
 		//		bool heuristicSucceeded(false);
 		_vnsGenerator->columns().clear();
 		bool heuristicSucceeded(false);
-		bool stopvns(false);
+		bool stopvns(true);
 		for (size_t i(0); i < 5 && !stopvns; ++i) {
 			if (nColumnsByIte == 0) {
 				if (_vnsGenerator->run(1, true)) {

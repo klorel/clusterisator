@@ -42,14 +42,14 @@ size_t & Column::id() const {
 
 bool Column::check(DoubleVector const & dual) const {
 	if (std::fabs(computeCost() - _cost) > 1e-6) {
-		std::cout << "wrong cost " << std::endl;
-		std::cout << _cost << std::endl;
+		std::cout << "wrong cost ";
+		std::cout << _cost << ", should be ";
 		std::cout << computeCost() << std::endl;
 		return false;
 	}
 	if (std::fabs(computeReducedCost(dual) - _reducedCost) > 1e-6) {
-		std::cout << "wrong reduced cost " << std::endl;
-		std::cout << _reducedCost << std::endl;
+		std::cout << "wrong reduced cost ";
+		std::cout << _reducedCost << ", should be ";
 		std::cout << computeReducedCost(dual) << std::endl;
 		return false;
 	}

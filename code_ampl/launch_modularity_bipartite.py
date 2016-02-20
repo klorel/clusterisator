@@ -111,7 +111,7 @@ def LaunchBipartite():
 
 def LaunchUnipartite():
 	for (instance, formulation) in itertools.product(UNIPARTITE_INSTANCES, FORMULATIONS):
-		if instance==1:
+		if instance==5:
 			print instance, UNIPARTITE_INSTANCES[instance]
 			CreateInstance(UNIPARTITE_INSTANCES[instance])
 			CreateFormulation(formulation)

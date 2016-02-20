@@ -1,1 +1,1 @@
-set IJ := include ../txt/karate.txt;
+set IJ := include ../txt/polbooks.txt;

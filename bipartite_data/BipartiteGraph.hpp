@@ -30,6 +30,7 @@ public:
 	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 	virtual std::vector<Edge> const & costs() const;
+	virtual void cpCost(DoubleVector &) const;
 public:
 	BipartiteGraph();
 	BipartiteGraph(Edges const & edges);
@@ -61,6 +62,7 @@ public:
 	RectMatrix _a;
 	std::vector<std::map<size_t, double> > _allLinks;
 	std::vector<Edge> _costs;
+
 };
 inline std::string BipartiteGraph::name(size_t v) const {
 	return v < nR() ? GetStr("YR_", v) : GetStr("YB_", v - nR());

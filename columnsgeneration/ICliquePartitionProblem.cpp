@@ -139,6 +139,7 @@ bool ICliquePartitionProblem::checkGradient(IndexedList const & nodes,
 #include <cplex.h>
 
 void ICliquePartitionProblem::cps(std::string const &fileName) const {
+	size_t const n(nV());
 	int err;
 	CPXENVptr env = CPXopenCPLEX(&err);
 	CPXLPptr prob = CPXcreateprob(env, &err, "cps");
@@ -147,14 +148,14 @@ void ICliquePartitionProblem::cps(std::string const &fileName) const {
 	CPXsetintparam(env, CPX_PARAM_SCRIND, CPX_ON);
 
 	ColumnBuffer columnBuffer;
-
-	IntVector index(nV() * (nV() - 1));
+	DoubleVector denseCost;
+	cpCost(denseCost);
+	IntVector index(n * (n - 1));
 	size_t nCols(0);
-	size_t const n(nV());
 	for (size_t u(0); u < nV(); ++u) {
 		for (size_t v(u + 1); v < nV(); ++v, ++nCols) {
 			size_t const id(ijtok(n, u, v));
-			columnBuffer.add(costs()[id]._v, CPX_BINARY, 0, 1,
+			columnBuffer.add(denseCost[id], CPX_BINARY, 0, 1,
 					GetStr("x_", u, "_", v));
 			if (id != nCols) {
 				std::cout << "wrong numbering" << std::endl;
@@ -166,27 +167,47 @@ void ICliquePartitionProblem::cps(std::string const &fileName) const {
 	columnBuffer.add(cst(), CPX_CONTINUOUS, 1, 1, "CST");
 	columnBuffer.add(env, prob);
 	RowBuffer rowBuffer;
+	double const eps(1e-20);
 	for (size_t u(0); u < nV(); ++u) {
 		for (size_t v(u + 1); v < nV(); ++v) {
 			size_t const uv(ijtok(n, u, v));
 			for (size_t w(v + 1); w < nV(); ++w) {
 				size_t const uw(ijtok(n, u, w));
 				size_t const vw(ijtok(n, v, w));
-				rowBuffer.add(1, 'L', GetStr("T_", u, "_", v, "_", w));
-				rowBuffer.add(uv, 1);
-				rowBuffer.add(vw, 1);
-				rowBuffer.add(uw, -1);
+				if (denseCost[uv] > -eps || denseCost[vw] > -eps) {
+					rowBuffer.add(1, 'L', GetStr("T_", u, "_", v, "_", w));
+					rowBuffer.add(uv, 1);
+					rowBuffer.add(vw, 1);
+					rowBuffer.add(uw, -1);
+				}
+				if (denseCost[vw] > -eps || denseCost[uw] > -eps) {
+					rowBuffer.add(1, 'L', GetStr("T_", v, "_", w, "_", u));
+					rowBuffer.add(vw, 1);
+					rowBuffer.add(uw, 1);
+					rowBuffer.add(uv, -1);
+				}
+				if (denseCost[uw] > -eps || denseCost[uv] > -eps) {
+					rowBuffer.add(1, 'L', GetStr("T_", w, "_", u, "_", v));
+					rowBuffer.add(uw, 1);
+					rowBuffer.add(uv, 1);
+					rowBuffer.add(vw, -1);
+				}
 			}
 		}
 	}
 	rowBuffer.add(env, prob);
 	CPXchgobjsen(env, prob, -1);
 
-	CPXwriteprob(env, prob, ("cps_" + fileName + ".lp").c_str(), "LP");
+	CPXwriteprob(env, prob, (fileName + ".lp").c_str(), "LP");
 
 	CPXsetintparam(env, CPX_PARAM_SOLUTIONTARGET,
 	CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
 	CPXmipopt(env, prob);
+
+	double objval;
+	CPXgetobjval(env, prob, &objval);
+	std::cout << "optimal solution value  : " << std::setprecision(20) << objval
+			<< std::endl;
 
 	CPXcloseCPLEX(&env);
 	CPXfreeprob(env, &prob);

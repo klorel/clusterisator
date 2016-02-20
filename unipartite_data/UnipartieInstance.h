@@ -16,7 +16,10 @@
 
 class UnipartieInstance: public ICliquePartitionProblem {
 public:
-	virtual double cst()const;
+	virtual IOracle * newOracle(AvailableOracle oracle,
+			DoubleVector const * dual, DecisionList const * decision) const;
+public:
+	virtual double cst() const;
 	virtual size_t nV() const;
 	virtual Edges const & edges() const;
 
@@ -31,6 +34,7 @@ public:
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 
 	virtual std::vector<Edge> const & costs() const;
+	virtual void cpCost(DoubleVector &) const;
 public:
 	void build();
 public:
@@ -58,7 +62,7 @@ private:
 	std::vector<Edge> _costs;
 };
 
-inline  double UnipartieInstance::cst()const{
+inline double UnipartieInstance::cst() const {
 	return _cst;
 }
 inline std::string UnipartieInstance::name(size_t v) const {

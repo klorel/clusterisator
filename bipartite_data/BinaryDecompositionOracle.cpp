@@ -1,10 +1,9 @@
 #include "BinaryDecompositionOracle.hpp"
 #include "BipartiteGraph.hpp"
-#include "VnsGenerator.hpp"
+
 #include "Timer.hpp"
 #include "Node.hpp"
 
-#include "BipartiteGraph.hpp"
 #include <cplex.h>
 
 BinaryDecompositionOracle::BinaryDecompositionOracle(
@@ -81,11 +80,9 @@ void BinaryDecompositionOracle::initOracle() {
 	}
 	size_t const R1(columnBuffer.size());
 	columnBuffer.add(0, CPX_CONTINUOUS, -CPX_INFBOUND, +CPX_INFBOUND, "R1");
-	_cname.push_back("R1");
 
 	size_t const B1(columnBuffer.size());
 	columnBuffer.add(0, CPX_CONTINUOUS, -CPX_INFBOUND, +CPX_INFBOUND, "B1");
-	_cname.push_back("B1");
 	columnBuffer.add(_env, _prob);
 	// binary declaration
 
@@ -186,6 +183,7 @@ void BinaryDecompositionOracle::setUpOracle() {
 		CPXdelmipstarts(_env, _prob, 0, CPXgetnummipstarts(_env, _prob) - 1);
 }
 void BinaryDecompositionOracle::checkSolutions() {
+	CpxOracle::checkSolutions();
 	DoubleVector x(CPXgetnumcols(_env, _prob));
 	size_t const n(1 + 0 * CPXgetsolnpoolnumsolns(_env, _prob));
 	//			std::cout << std::setw(4) << n << std::endl;

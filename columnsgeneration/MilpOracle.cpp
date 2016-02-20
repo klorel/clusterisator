@@ -36,9 +36,9 @@ void MilpOracle::initOracle() {
 		_products[i]._coeff = edge._v;
 		columnBuffer.add(edge._v, CPX_CONTINUOUS,
 				edge._v < 0 ? 0 : -CPX_INFBOUND,
-						CPX_INFBOUND,
-						GetStr("PRODUCT_", _input->name(edge._i), "_",
-								_input->name(edge._j)));
+				CPX_INFBOUND,
+				GetStr("PRODUCT_", _input->name(edge._i), "_",
+						_input->name(edge._j)));
 		++i;
 	}
 	//	_s = RectMatrix(_input->nR(), _input->nB());
@@ -91,6 +91,12 @@ void MilpOracle::initOracle() {
 
 	_rowBuffer.add(_env, _prob);
 	CPXchgobjsen(_env, _prob, -1);
+//	CPXwriteprob(_env, _prob, "MILP.lp", "LP");
+//	CPXmipopt(_env, _prob);
+//	double toto;
+//	CPXgetobjval(_env, _prob, &toto);
+//	std::cout << "toto : " << toto << std::endl;
+//	std::exit(0);
 }
 
 void MilpOracle::setUpOracle() {
@@ -108,26 +114,6 @@ void MilpOracle::setUpOracle() {
 }
 
 void MilpOracle::checkMipSolution() const {
-	Double obj;
-	DoubleVector x(CPXgetnumcols(_env, _prob));
-	size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
-	for (size_t i(0); i < n; ++i) {
-		CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);
-		std::cout << "SOLUTION" << std::setw(2) << i << std::setw(10) << obj
-				<< std::endl;
-
-		for (auto const & product : _products) {
-			size_t const r(product._first);
-			size_t const b(product._second);
-			double const yR(x[r]);
-			double const yB(x[b]);
-			double const sRB(x[product._firstTimeSecond]);
-			//				std::cout << std::setw(4) << yR;
-			//				std::cout << std::setw(4) << yB;
-			//				std::cout << std::setw(4) << sRB;
-			//				std::cout << std::endl;
-			assert(std::abs(yR * yB - sRB) < 1e-10);
-		}
-	}
+	CpxOracle::checkSolutions();
 }
 

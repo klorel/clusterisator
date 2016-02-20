@@ -32,6 +32,6 @@ include after_solve.run;
 
 display C;
 display n, m;
-display H[1,2];
-display H[1,12];
-display d;
+
+printf{u in 1..n, v in u+1..n}"%6d%6d%20.11f\n", u, v, H[u,v]>h.log;
+

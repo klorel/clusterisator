@@ -113,9 +113,8 @@ void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer,
 		double obj;
 		CPXgetobj(_env, _lp, &obj, (int) result.first->id(),
 				(int) result.first->id());
-		MY_PRINT(obj);
-		//		exit(0);
-		ASSERT_CHECK(column.check(_dual));ASSERT_CHECK(column.violation(*_decisions) == 0);
+		MY_PRINT(obj);ASSERT_CHECK(column.check(_dual));ASSERT_CHECK(column.violation(*_decisions) == 0);
+		exit(0);
 	} else {
 		rd = std::max(rd, column.reducedCost());
 		result.first->id() = current_n + nb;
@@ -247,7 +246,7 @@ bool LpMaster::getSolution(FractionnarySolution & solution) {
 }
 
 void LpMaster::solveMaster() {
-//write();
+	write();
 	CPXlpopt(_env, _lp);
 	getSolution();
 }

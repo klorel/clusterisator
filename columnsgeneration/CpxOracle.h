@@ -35,7 +35,6 @@ protected:
 	CPXENVptr _env;
 	CPXLPptr _prob;
 	std::vector<int> _index;
-	std::vector<std::string> _cname;
 
 	RowBuffer _rowBuffer;
 	RowBuffer _decisionBuffer;
