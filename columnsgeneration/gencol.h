@@ -9,6 +9,8 @@ class Decision;
 typedef std::list<Decision> DecisionList;
 typedef std::set<Decision> DecisionSet;
 
+typedef std::set<Column> ColumnSet;
+
 typedef std::multimap<Double, Column const *, std::greater<Double> > ReducedCostSorter;
 typedef std::map<Column const *, Double> FractionnarySolution;
 

@@ -20,10 +20,10 @@ IOracle::~IOracle() {
 bool IOracle::generate() {
 	return false;
 }
-Columns const & IOracle::columns() const {
+ColumnSet const & IOracle::columns() const {
 	return _columns;
 }
-Columns & IOracle::columns() {
+ColumnSet & IOracle::columns() {
 	return _columns;
 }
 Double IOracle::bestReducedCost() const {

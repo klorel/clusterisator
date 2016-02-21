@@ -6,7 +6,7 @@
 #include "ClusteringProblem.h"
 
 BranchAndBound::BranchAndBound(CliquePartitionProblem const &input) :
-		_input(&input), _master(NULL), _vnsGenerator(NULL), _mipGenerator(NULL), _decision() {
+		_input(&input), _master(NULL), _columnGenerator(), _decision() {
 	_root = NULL;
 	// maximisation
 	_bestFeasible = -std::numeric_limits<double>::max();
@@ -16,12 +16,9 @@ BranchAndBound::BranchAndBound(CliquePartitionProblem const &input) :
 	_master = new LpMaster(&input, &_decision);
 //	_mipGenerator = _input->newOracle(oracle, &_master->dual(), &_decision);
 //	_vnsGenerator = _input->newVnsOracle(&_master->dual(), &_decision);
-
-	_mipGenerator = _input->getExactOracle();
-	_vnsGenerator = _input->getVnsOracle();
-
-	_mipGenerator->setData(_master->dual(), _decision);
-	_vnsGenerator->setData(_master->dual(), _decision);
+	_columnGenerator.setExact(_input->getExactOracle(), _master->dual(),
+			_decision);
+	_columnGenerator.setVns(_input->getVnsOracle(), _master->dual(), _decision);
 }
 
 BranchAndBound::~BranchAndBound() {
@@ -38,18 +35,13 @@ void BranchAndBound::columnGeneration() {
 	//_master->readColumns("bug.txt");
 	Timer timer;
 	Double m(0);
-	Double h(0);
-	Double e(0);
 	Double a(0);
 	Timer total;
-	ReducedCostSorter sorter;
-	std::string step;
+	double rc;
 	size_t nb(0);
 	size_t ite(0);
-	Double rd(0);
-
 	size_t const nColumnsByIte(10);
-
+	_columnGenerator.setNumberByIte(nColumnsByIte);
 	if (_output != NULL) {
 		output() << std::setw(6) << "ite";
 		output() << std::setw(10) << "nb col";
@@ -60,6 +52,7 @@ void BranchAndBound::columnGeneration() {
 		output() << std::setw(15) << "time";
 		output() << std::endl;
 	}
+
 	do {
 		++ite;
 		//write();
@@ -68,55 +61,27 @@ void BranchAndBound::columnGeneration() {
 		_master->solveMaster();
 		m += timer.elapsed();
 		timer.restart();
-		//		bool heuristicSucceeded(false);
-		_vnsGenerator->columns().clear();
-		bool heuristicSucceeded(false);
-		bool stopvns(false);
-		for (size_t i(0); i < 10 && !stopvns; ++i) {
-			if (nColumnsByIte == 0) {
-				if (_vnsGenerator->run(1, true)) {
-					heuristicSucceeded = true;
-					stopvns = true;
-				}
-			} else {
-				if (_vnsGenerator->run(1, false))
-					heuristicSucceeded = true;
-				if (_vnsGenerator->columns().size() > nColumnsByIte)
-					stopvns = true;
-			}
-		}
-		//		if(!heuristicSucceeded )
-		//			heuristicSucceeded  = _vnsGenerator->run(2, true)
-		h += timer.elapsed();
-		nb = 0;
-		rd = -1;
-		if (heuristicSucceeded) {
-			step = "HEURISTIC";
-			timer.restart();
-			_vnsGenerator->sortedColumns(sorter);
-			_master->add(sorter, nColumnsByIte, nb, rd);
+
+		// generate columns
+
+		bool foundColumn = _columnGenerator.run();
+		// add columns
+		if (foundColumn) {
+			rc = _columnGenerator.rc();
+			nb = 0;
+			_master->add(_columnGenerator.result(), nColumnsByIte, nb, rc);
 			a += timer.elapsed();
 		} else {
-			step = "EXACT";
-			timer.restart();
-			//stop = !generate();
-			stop = !_mipGenerator->generate();
-			e += timer.elapsed();
-			if (!stop) {
-				timer.restart();
-				_master->add(_mipGenerator->columns(), nb, rd);
-				a += timer.elapsed();
-			} else
-				rd = _mipGenerator->bestReducedCost();
+			stop = true;
 		}
 		if (_output != NULL) {
 			output() << std::setw(6) << ite;
 			output() << std::setw(10) << _master->columns().size();
-			output() << std::setw(20) << step;
+			output() << std::setw(20) << _columnGenerator.step();
 			output() << std::setw(8) << nb;
 			output() << std::setw(25) << std::setprecision(10)
 					<< _master->obj();
-			output() << std::setw(25) << std::setprecision(10) << rd;
+			output() << std::setw(25) << std::setprecision(10) << rc;
 			output() << std::setw(15) << std::setprecision(8)
 					<< total.elapsed();
 			output() << std::endl;
@@ -169,9 +134,9 @@ void BranchAndBound::treat(Node * node) {
 
 	_decision.clear();
 	_current->decisions(_decision);
-	_master->applyBranchingRule();
 
-	_mipGenerator->applyBranchingRule();
+	_master->applyBranchingRule();
+	_columnGenerator.applyBranchingRule();
 
 	columnGeneration();
 
@@ -188,6 +153,10 @@ void BranchAndBound::treat(Node * node) {
 				<< _current->lb() << std::endl;
 	}
 	if (_output != NULL) {
+		output() << "Id " << _current->id() << std::endl;
+		output() << "Lb " << _current->lb() << std::endl;
+		output() << "Ub " << _current->ub() << std::endl;
+
 		for (auto const & i : _current->lbSolution()) {
 			output() << std::setw(10) << i.second << std::endl;
 		}

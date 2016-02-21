@@ -13,6 +13,7 @@
 
 class CliquePartitionProblem;
 class IPartition;
+class ColumnBuffer;
 class IMaster {
 public:
 	virtual Double obj() const = 0;
@@ -25,7 +26,7 @@ public:
 
 	virtual void add(Column const & column) = 0;
 
-	virtual void add(std::set<Column> const & columns, size_t & nb,
+	virtual void add(ColumnSet const & columns, size_t & nb,
 			Double&rd) = 0;
 	virtual void add(ReducedCostSorter const & columns, size_t, size_t & nb,
 			Double&rd) = 0;
@@ -52,17 +53,20 @@ public:
 
 	virtual std::vector<double> const & primal() const = 0;
 	virtual std::vector<double> const & dual() const = 0;
-	virtual std::set<Column> const & columns() const = 0;
+	virtual ColumnSet const & columns() const = 0;
 public:
 	IMaster(CliquePartitionProblem const *, DecisionList const * decisions);
 	virtual ~IMaster();
+	virtual void getBasis(ColumnBuffer &) const;
 protected:
 	CliquePartitionProblem const * _input;
 	DecisionList const * _decisions;
 
-	std::set<Column> _columns;
+	ColumnSet _columns;
 	std::vector<double> _dual;
 	std::vector<double> _primal;
+	std::vector<int> _cstat;
+	std::vector<int> _rstat;
 };
 
 #endif /* IMASTER_H_ */

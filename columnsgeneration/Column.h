@@ -43,7 +43,5 @@ private:
 	std::set<size_t> _v;
 	mutable size_t _id;
 };
-
-typedef std::set<Column> Columns;
 #endif 
 

@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
 			<< std::endl;
 	std::cout << "Solution is "
 			<< branchAndBound.bestFeasible() + instance.cst() << std::endl;
-	instance.cps(instance.name());
+//	instance.cps(instance.name());
 	return 0;
 }
 

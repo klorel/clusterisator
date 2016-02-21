@@ -19,10 +19,10 @@ public:
 	void initLp();
 	virtual void add(IPartition const & solution);
 	virtual void add(Column const & column);
-	void add(std::set<Column> const & columns);
+	void add(ColumnSet const & columns);
 	void add(Column const &, ColumnBuffer &) const;
 
-	virtual void add(std::set<Column> const & columns, size_t & nb, Double&rd);
+	virtual void add(ColumnSet const & columns, size_t & nb, Double&rd);
 
 	void add(Column const & column, ColumnBuffer & columnBuffer,
 			size_t current_n, Double & rd, size_t &nb);
@@ -43,9 +43,9 @@ public:
 	void writeColumns(std::string const & = "columns.txt") const;
 	Double obj() const;
 
-	std::vector<double> const & primal() const;
-	std::vector<double> const & dual() const;
-	std::set<Column> const & columns() const;
+	DoubleVector const & primal() const;
+	DoubleVector const & dual() const;
+	ColumnSet const & columns() const;
 
 	void applyBranchingRule();
 //	void branchingWeights(FractionnarySolution const &, BranchingWeights &);

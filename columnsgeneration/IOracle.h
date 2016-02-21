@@ -18,8 +18,8 @@ public:
 	IOracle(ClusteringProblem const *);
 	virtual ~IOracle();
 public:
-	Columns & columns();
-	Columns const & columns() const;
+	ColumnSet & columns();
+	ColumnSet const & columns() const;
 public:
 	virtual bool generate();
 	virtual Double bestReducedCost() const;
@@ -39,7 +39,7 @@ public:
 protected:
 	DoubleVector const * _dual;
 	DecisionList const * _decisions;
-	Columns _columns;
+	ColumnSet _columns;
 	Double _bestReducedCost;
 //private:
 	ClusteringProblem const * _input;

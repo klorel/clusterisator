@@ -60,6 +60,7 @@ void LpMaster::initLp() {
 	for (size_t v(0); v < _input->nV(); ++v)
 		rowBuffer.add(1, 'E', GetStr("ROW_Y", v));
 	_dual.assign(rowBuffer.size(), 0);
+	_rstat.assign(rowBuffer.size(), 0);
 	rowBuffer.add(_env, _lp);
 	assert(CPXgetnumrows(_env, _lp) == rowBuffer.size());
 	CPXchgobjsen(_env, _lp, -1);
@@ -128,7 +129,7 @@ void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer,
 		++nb;
 	}
 }
-void LpMaster::add(std::set<Column> const & columns, size_t & nb, Double&rd) {
+void LpMaster::add(ColumnSet const & columns, size_t & nb, Double&rd) {
 	ColumnBuffer columnBuffer;
 	size_t const current_n(CPXgetnumcols(_env, _lp));
 	nb = 0;
@@ -142,7 +143,7 @@ void LpMaster::add(std::set<Column> const & columns, size_t & nb, Double&rd) {
 	assert(nb == columnBuffer.size());
 }
 
-void LpMaster::add(std::set<Column> const & columns) {
+void LpMaster::add(ColumnSet const & columns) {
 	size_t nb;
 	Double rd;
 	add(columns, nb, rd);
@@ -228,9 +229,8 @@ void LpMaster::getSolution() {
 	assert(CPXgetnumcols(_env, _lp) == _primal.size());
 	CPXgetx(_env, _lp, _primal.data(), 0, (int) (_primal.size() - 1));
 	CPXgetobjval(_env, _lp, &_obj);
-//	std::vector<int> cstat(CPXgetnumcols(_env, _lp));
-//	std::vector<int> rstat(CPXgetnumrows(_env, _lp));
-//	CPXgetbase(_env, _lp, cstat.data(), rstat.data());
+	_cstat.resize(CPXgetnumcols(_env, _lp));
+	CPXgetbase(_env, _lp, _cstat.data(), _rstat.data());
 //	size_t nBasis(0);
 //	size_t nBasisDegen(0);
 //	for (size_t i(0); i < cstat.size(); ++i) {
@@ -276,7 +276,7 @@ void LpMaster::writeColumns(std::string const & fileName) const {
 	file.close();
 }
 
-std::set<Column> const & LpMaster::columns() const {
+ColumnSet const & LpMaster::columns() const {
 	return _columns;
 }
 
@@ -284,7 +284,7 @@ std::vector<double> const & LpMaster::dual() const {
 	return _dual;
 }
 
-std::vector<double> const & LpMaster::primal() const {
+DoubleVector const & LpMaster::primal() const {
 	return _primal;
 }
 
@@ -308,82 +308,9 @@ void LpMaster::applyBranchingRule() {
 	}
 	CPXchgobj(_env, _lp, (int) index.size(), index.data(), obj.data());
 }
-//void LpMaster::branchingWeights(FractionnarySolution const & solution,
-//		BranchingWeights & weights) {
-//// on cherche des arrêtes présentes et semi-présentes dans deux colonnes
-//	BranchingWeights2 temp;
-//	std::map<Edge, std::pair<IntSet, IntSet> > toto;
-//	for (auto const & kvp : solution) {
-//		//		std::cout << std::setw(6) << kvp.first->id();
-//		//		std::cout << std::setw(15) << kvp.second;
-//		//		std::cout << std::endl;
-//		for (Edge const & e : _input->edges()) {
-//			bool const iFirst(kvp.first->contains(e._i));
-//			bool const iSecond(kvp.first->contains(e._j + _input->nR()));
-//			if (iFirst && iSecond) {
-//				toto[e].first.insert(kvp.first->id());
-//			} else if (iFirst + iSecond == 1) {
-//				toto[e].second.insert(kvp.first->id());
-//			}
-//		}
-//	}
-////	std::cout << "synthese" << std::endl;
-//	weights.clear();
-//	for (auto const & t : toto) {
-//		//		std::cout << std::setw(6) << t.second.first.size();
-//		//		std::cout << std::setw(6) << t.second.second.size();
-//		//		std::cout << std::endl;
-//		if (!t.second.first.empty() && !t.second.second.empty()) {
-//			//			std::cout << std::setw(6) << t.first._i;
-//			//			std::cout << std::setw(6) << t.first._j;
-//			//			std::cout << std::endl;
-//			weights.insert(
-//					std::make_pair(
-//							0.5
-//									* ((int) ((t.second.first.size()
-//											+ t.second.second.size()))),
-//							std::make_pair(t.first._i, t.first._j)));
-//		}
-//	}
-//	if (weights.empty()) {
-//		std::cout << "weights.empty(), generating full weights" << std::endl;
-//		for (auto const & kvp : solution) {
-//			for (size_t r(0); r < _input->nR(); ++r) {
-//				for (size_t b(0); b < _input->nB(); ++b) {
-//					bool const iR(kvp.first->contains(r));
-//					bool const iB(kvp.first->contains(b) + _input->nR());
-//					if (iR && iB) {
-//						toto[Edge(r, b, 1)].first.insert(kvp.first->id());
-//					} else if (iR + iB == 1) {
-//						toto[Edge(r, b, 1)].second.insert(kvp.first->id());
-//					}
-//				}
-//			}
-//		}
-//
-//		for (auto const & t : toto) {
-//			//		std::cout << std::setw(6) << t.second.first.size();
-//			//		std::cout << std::setw(6) << t.second.second.size();
-//			//		std::cout << std::endl;
-//			if (!t.second.first.empty() && !t.second.second.empty()) {
-//				//			std::cout << std::setw(6) << t.first._i;
-//				//			std::cout << std::setw(6) << t.first._j;
-//				//			std::cout << std::endl;
-//				weights.insert(
-//						std::make_pair(
-//								0.5
-//										* ((int) ((t.second.first.size()
-//												+ t.second.second.size()))),
-//								std::make_pair(t.first._i, t.first._j)));
-//			}
-//		}
-//		if (weights.empty())
-//			std::cout << "weights.empty()" << std::endl;
-//	}
-//}
 
 void LpMaster::add(IPartition const & solution) {
-	std::set<Column> columns;
+	ColumnSet columns;
 	for (size_t const & label : solution.usedLabels()) {
 		Column c(_input);
 		for (size_t const & n : solution.observations(label)) {
@@ -400,19 +327,7 @@ void LpMaster::add(IPartition const & solution) {
 			clone.reducedCost() = clone.computeReducedCost(_dual);
 			columns.insert(clone);
 		}
-		//for (size_t const & n1 : solution.observations(label)) {
-		//	for (size_t const & n2 : solution.observations(label)) {
-		//		if(n1<n2){
-		//			Column clone(c);
-		//			clone.delElement(n1);
-		//			clone.delElement(n2);
-		//			clone.cost() = clone.computeCost();
-		//			columns.insert(clone);
-		//		}
-		//	}
-		//}
 	}
 	add(columns);
-//write();
 }
 

@@ -6,6 +6,7 @@
 #include "IOracle.h"
 
 #include "LpMaster.h"
+#include "ColumnGenerator.h"
 
 class Node;
 class BranchAndBound {
@@ -30,8 +31,7 @@ public:
 
 	IMaster * _master;
 
-	IOracle * _vnsGenerator;
-	IOracle * _mipGenerator;
+	ColumnGenerator _columnGenerator;
 
 	double bestFeasible() const;
 	double bestPossible() const;
