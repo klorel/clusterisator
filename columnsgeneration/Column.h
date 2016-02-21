@@ -1,8 +1,8 @@
 #ifndef COLUMN_HPP
 #define COLUMN_HPP
 
+#include "Decision.h"
 #include "gencol.h"
-#include "Decision.hpp"
 #include "ICliquePartitionProblem.h"
 
 class Column {

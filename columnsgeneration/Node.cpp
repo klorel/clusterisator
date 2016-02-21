@@ -1,4 +1,4 @@
-#include "Node.hpp"
+#include "Node.h"
 
 Node::Node(BranchAndBound const& branchAndBound) :
 		_branchAndBound(&branchAndBound), _father(NULL), _ub(1e50), _lb(-1e50), _decision() {

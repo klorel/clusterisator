@@ -1,5 +1,5 @@
 /*
- * LabelPropagation.hpp
+ * LabelPropagation.h
  *
  *  Created on: 11 août 2013
  *      Author: manuel
@@ -10,8 +10,8 @@
 
 #include "common.h"
 
-#include "BipartiteGraph.hpp"
-#include "ModularityBPartition.hpp"
+#include "BipartiteGraph.h"
+#include "ModularityBPartition.h"
 
 #include "ICliquePartition.h"
 #include "ICliquePartitionProblem.h"

@@ -9,7 +9,7 @@
 #define VNSLABELPROPAGATION_H_
 
 #include "common.h"
-#include "ModularityBPartition.hpp"
+#include "ModularityBPartition.h"
 
 class ModularityBPartition;
 

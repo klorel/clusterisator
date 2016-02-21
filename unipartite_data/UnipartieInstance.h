@@ -8,9 +8,9 @@
 #ifndef UNIPARTIEINSTANCE_H_
 #define UNIPARTIEINSTANCE_H_
 
+#include "../clustering/IndexedList.h"
 #include "common.h"
 #include "Edge.h"
-#include "IndexedList.hpp"
 #include "gencol.h"
 #include "ICliquePartitionProblem.h"
 

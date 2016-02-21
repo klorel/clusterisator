@@ -1,10 +1,10 @@
 #ifndef UNIPARTITE_BINARY_DECOMPOSITION_ORACLE_HPP
 #define UNIPARTITE_BINARY_DECOMPOSITION_ORACLE_HPP
 
+#include "../clustering/RectMatrix.h"
 #include "gencol.h"
 #include "CpxOracle.h"
 #include "UnipartieInstance.h"
-#include "RectMatrix.hpp"
 
 class UnipartiteBinaryDecompositionOracle: public CpxOracle {
 public:

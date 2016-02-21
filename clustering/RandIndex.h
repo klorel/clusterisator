@@ -1,5 +1,5 @@
 /*
- * RandIndex.hpp
+ * RandIndex.h
  *
  *  Created on: 20 août 2012
  *      Author: manuel
@@ -8,9 +8,9 @@
 #ifndef RANDINDEX_HPP_
 #define RANDINDEX_HPP_
 
-#include "IMeasure.hpp"
 #include "common.h"
-#include "IPartition.hpp"
+#include "IMeasure.h"
+#include "IPartition.h"
 
 class RandIndex: public IMeasure {
 public:

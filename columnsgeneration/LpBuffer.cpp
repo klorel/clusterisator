@@ -1,4 +1,4 @@
-#include "LpBuffer.hpp"
+#include "LpBuffer.h"
 
 #include <cplex.h>
 

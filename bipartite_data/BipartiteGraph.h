@@ -1,10 +1,10 @@
 #ifndef BIPARTITE_GRAPH_HPP
 #define BIPARTITE_GRAPH_HPP
 
+#include "../clustering/IndexedList.h"
+#include "../clustering/RectMatrix.h"
 #include "common.h"
-#include "RectMatrix.hpp"
 #include "Edge.h"
-#include "IndexedList.hpp"
 #include "gencol.h"
 #include "ICliquePartitionProblem.h"
 

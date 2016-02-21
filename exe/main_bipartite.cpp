@@ -5,13 +5,10 @@
  *      Author: manuel
  */
 
+#include "../bipartite_data/RegisteredModularityBInstance.h"
+#include "../clustering/Timer.h"
+#include "../columnsgeneration/BranchAndBound.h"
 #include "common.h"
-#include "RegisteredModularityBInstance.hpp"
-
-#include "BranchAndBound.hpp"
-
-#include "Timer.hpp"
-
 #include "VnsLabelPropagation.h"
 #include "Divisive.h"
 

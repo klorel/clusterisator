@@ -1,5 +1,5 @@
 /*
- * Acc.hpp
+ * Acc.h
  *
  *  Created on: 6 août 2012
  *      Author: manuel
@@ -9,8 +9,8 @@
 #define ACC_HPP_
 
 #include "common.h"
-#include "IMeasure.hpp"
-#include "IPartition.hpp"
+#include "IMeasure.h"
+#include "IPartition.h"
 
 class Acc: public IMeasure {
 public:

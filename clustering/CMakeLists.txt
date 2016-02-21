@@ -4,9 +4,10 @@ FILE(
 	GLOB_RECURSE 
 	clustering_files 
 	./*.cpp
-	./*.hpp
 	./*.h
-)
+    ./*.hxx
+	)
+
 
 
 ADD_LIBRARY(clustering STATIC ${clustering_files} ) 

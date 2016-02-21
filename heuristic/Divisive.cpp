@@ -7,7 +7,7 @@
 
 #include "Divisive.h"
 
-#include "Divisor.hpp"
+#include "Divisor.h"
 
 namespace bipartite {
 Divisive::Divisive(BipartiteGraph & instance, ModularityBPartition & solution) :

@@ -1,4 +1,4 @@
-#include "Number.hpp"
+#include "Number.h"
 size_t Number::_SEED = 0;
 
 std::default_random_engine Number::_Generator = std::default_random_engine(1);

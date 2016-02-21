@@ -5,12 +5,11 @@
  *      Author: manuel
  */
 
+#include "../clustering/Timer.h"
+#include "../columnsgeneration/BranchAndBound.h"
+#include "../unipartite_data/RegisteredModularityInstance.h"
 #include "common.h"
-#include "RegisteredModularityInstance.hpp"
 
-#include "BranchAndBound.hpp"
-
-#include "Timer.hpp"
 
 std::string RegisteredModularityInstance::InstancesPath = "../txt/";
 

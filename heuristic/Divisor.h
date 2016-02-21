@@ -1,10 +1,10 @@
 #ifndef DIVISOR_HPP
 #define DIVISOR_HPP
 
+#include "../bipartite_data/BipartiteGraph.h"
+#include "../bipartite_data/ModularityBPartition.h"
+#include "../columnsgeneration/Column.h"
 #include "gencol.h"
-#include "Column.hpp"
-#include "BipartiteGraph.hpp"
-#include "ModularityBPartition.hpp"
 
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;

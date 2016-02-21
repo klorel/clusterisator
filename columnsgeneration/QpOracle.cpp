@@ -1,6 +1,7 @@
-#include "QpOracle.hpp"
-#include "Timer.hpp"
-#include "Column.hpp"
+#include "QpOracle.h"
+
+#include "../clustering/Timer.h"
+#include "Column.h"
 
 QpOracle::QpOracle(ICliquePartitionProblem const * input,
 		DoubleVector const * dual, DecisionList const * decisions) :

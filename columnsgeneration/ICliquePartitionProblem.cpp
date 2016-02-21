@@ -1,8 +1,9 @@
 #include "ICliquePartitionProblem.h"
-#include "MilpOracle.hpp"
-#include "QpOracle.hpp"
-#include "VnsGenerator.hpp"
-#include "Node.hpp"
+
+#include "MilpOracle.h"
+#include "Node.h"
+#include "QpOracle.h"
+#include "VnsGenerator.h"
 
 IOracle * ICliquePartitionProblem::newOracle(AvailableOracle oracle,
 		DoubleVector const * dual, DecisionList const * decision) const {

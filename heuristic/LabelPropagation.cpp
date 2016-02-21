@@ -5,7 +5,7 @@
  *      Author: manuel
  */
 
-#include "LabelPropagation.hpp"
+#include "LabelPropagation.h"
 
 namespace bipartite {
 LabelPropagation::LabelPropagation(BipartiteGraph const & input,

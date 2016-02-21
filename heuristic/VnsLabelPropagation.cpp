@@ -6,7 +6,8 @@
  */
 
 #include "VnsLabelPropagation.h"
-#include "LabelPropagation.hpp"
+
+#include "LabelPropagation.h"
 
 namespace bipartite {
 VnsLabelPropagation::VnsLabelPropagation(BipartiteGraph & instance,

@@ -6,7 +6,6 @@ FILE(
 	heuristic_files
    ./*.cpp
    ./*.h
-   ./*.hpp
    ./*.hxx 
    )
 

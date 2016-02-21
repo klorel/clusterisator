@@ -6,7 +6,8 @@
  */
 
 #include "common.h"
-#include "Number.hpp"
+
+#include "Number.h"
 
 IntVector SortLocation(IntVector const &location) {
 	IntVector ret(location.size());

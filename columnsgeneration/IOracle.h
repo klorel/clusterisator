@@ -8,9 +8,9 @@
 #ifndef I_ORACLE_H_
 #define I_ORACLE_H_
 
+#include "Column.h"
+#include "Decision.h"
 #include "gencol.h"
-#include "Decision.hpp"
-#include "Column.hpp"
 
 class IOracle {
 public:

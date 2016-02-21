@@ -1,5 +1,5 @@
 /*
- * RectMatrix.hpp
+ * RectMatrix.h
  *
  *  Created on: 11 août 2012
  *      Author: manuel

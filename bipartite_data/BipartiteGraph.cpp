@@ -1,8 +1,8 @@
-#include "BipartiteGraph.hpp"
-#include "MilpOracle.hpp"
-#include "QpOracle.hpp"
+#include "BipartiteGraph.h"
 
-#include "BinaryDecompositionOracle.hpp"
+#include "../columnsgeneration/MilpOracle.h"
+#include "../columnsgeneration/QpOracle.h"
+#include "BinaryDecompositionOracle.h"
 
 BipartiteGraph::BipartiteGraph() :
 		_m(0), _inv_m(0), _edges(), _a() {

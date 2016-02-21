@@ -1,5 +1,5 @@
 /*
- * Partition.hpp
+ * Partition.h
  *
  *  Created on: 6 août 2012
  *      Author: manuel
@@ -9,7 +9,7 @@
 #define PARTITION_HPP_
 
 #include "common.h"
-#include "IPartition.hpp"
+#include "IPartition.h"
 
 class Partition;
 

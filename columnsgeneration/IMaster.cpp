@@ -7,8 +7,8 @@
 
 #include "IMaster.h"
 
-#include "Decision.hpp"
-#include "Column.hpp"
+#include "Column.h"
+#include "Decision.h"
 
 IMaster::IMaster(ICliquePartitionProblem const * input,
 		DecisionList const * decisions) :

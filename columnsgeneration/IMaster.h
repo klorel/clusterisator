@@ -8,8 +8,8 @@
 #ifndef I_MASTER_H_
 #define I_MASTER_H_
 
+#include "Column.h"
 #include "gencol.h"
-#include "Column.hpp"
 
 class ICliquePartitionProblem;
 class IPartition;

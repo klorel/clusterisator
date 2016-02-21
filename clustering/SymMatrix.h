@@ -1,5 +1,5 @@
 /*
- * SymMatrix.hpp
+ * SymMatrix.h
  *
  *  Created on: 11 août 2012
  *      Author: manuel

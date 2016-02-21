@@ -1,10 +1,10 @@
 #ifndef VNS_GENERATOR_SOLUTION_HPP
 #define VNS_GENERATOR_SOLUTION_HPP
 
+#include "../clustering/IndexedList.h"
+#include "Column.h"
+#include "Decision.h"
 #include "gencol.h"
-#include "Column.hpp"
-#include "IndexedList.hpp"
-#include "Decision.hpp"
 
 class Node;
 class VnsGeneratorSolution {

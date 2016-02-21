@@ -1,5 +1,5 @@
 /*
- * IPartition.hpp
+ * IPartition.h
  *
  *  Created on: 4 août 2012
  *      Author: manuel
@@ -13,7 +13,7 @@
  * It represents a dynamic partition of the observations
  */
 
-#include "IndexedList.hpp"
+#include "IndexedList.h"
 
 class IPartition {
 public:

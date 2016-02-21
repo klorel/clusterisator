@@ -1,9 +1,9 @@
-#include "BranchAndBound.hpp"
+#include "BranchAndBound.h"
 
-#include "Timer.hpp"
+#include "../clustering/Timer.h"
+#include "LpMaster.h"
+#include "Node.h"
 
-#include "LpMaster.hpp"
-#include "Node.hpp"
 
 BranchAndBound::BranchAndBound(ICliquePartitionProblem const &input,
 		AvailableOracle oracle) :

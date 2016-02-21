@@ -1,9 +1,9 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include "BranchAndBound.h"
+#include "Decision.h"
 #include "gencol.h"
-#include "BranchAndBound.hpp"
-#include "Decision.hpp"
 
 class Node {
 public:

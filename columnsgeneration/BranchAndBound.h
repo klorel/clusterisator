@@ -2,10 +2,10 @@
 #define BRANCH_AND_BOUND_HPP
 
 #include "gencol.h"
-#include "LpMaster.hpp"
 #include "IOracle.h"
 
 #include "ICliquePartitionProblem.h"
+#include "LpMaster.h"
 
 class Node;
 class BranchAndBound {

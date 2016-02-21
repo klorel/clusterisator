@@ -1,5 +1,6 @@
-#include "VnsGeneratorSolution.hpp"
-#include "Node.hpp"
+#include "VnsGeneratorSolution.h"
+
+#include "Node.h"
 
 VnsGeneratorSolution::VnsGeneratorSolution(
 		ICliquePartitionProblem const * input, DoubleVector const * dual) :

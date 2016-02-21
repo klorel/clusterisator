@@ -5,7 +5,7 @@
  *      Author: manuel
  */
 
-#include "LabelPropagation2.hpp"
+#include "LabelPropagation2.h"
 
 LabelPropagation2::LabelPropagation2(ICliquePartition & solution) :
 		_input(solution.problem()), _solution(solution) {

@@ -1,9 +1,11 @@
-#include "LpMaster.hpp"
-#include "Timer.hpp"
-#include "Node.hpp"
-#include "LpBuffer.hpp"
+#include "LpMaster.h"
+
 #include <cplex.h>
-#include "IPartition.hpp"
+
+#include "../clustering/IPartition.h"
+#include "../clustering/Timer.h"
+#include "LpBuffer.h"
+#include "Node.h"
 
 Double const StabilizationBaseCost = 1;
 Double const StabilizationWidth = 1e-4;

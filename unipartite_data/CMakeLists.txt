@@ -4,8 +4,8 @@ FILE(
 	GLOB_RECURSE 
 	dataunipartite_files 
 	./*.cpp
-	./*.hpp
 	./*.h
+	./*.hxx
 )
 
 

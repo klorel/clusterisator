@@ -1,9 +1,9 @@
-#include "UnipartiteBinaryDecompositionOracle.hpp"
-
-#include "Timer.hpp"
-#include "Node.hpp"
+#include "UnipartiteBinaryDecompositionOracle.h"
 
 #include <cplex.h>
+
+#include "../clustering/Timer.h"
+#include "../columnsgeneration/Node.h"
 
 UnipartiteBinaryDecompositionOracle::UnipartiteBinaryDecompositionOracle(
 		UnipartieInstance const * input, DoubleVector const * dual,

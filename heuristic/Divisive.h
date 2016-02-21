@@ -8,7 +8,7 @@
 #ifndef DIVISIVE_H_
 #define DIVISIVE_H_
 
-#include "ModularityBPartition.hpp"
+#include "ModularityBPartition.h"
 
 namespace bipartite {
 class Divisive {

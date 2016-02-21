@@ -1,10 +1,10 @@
 #ifndef LP_MASTER_HPP
 #define LP_MASTER_HPP
 
+#include "Column.h"
+#include "Decision.h"
 #include "gencol.h"
 #include "IMaster.h"
-#include "Column.hpp"
-#include "Decision.hpp"
 
 class Node;
 typedef struct cpxlp* CPXLPptr;

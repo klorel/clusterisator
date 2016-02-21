@@ -4,9 +4,8 @@ FILE(
 	GLOB_RECURSE 
 	databipartite_files 
 	./*.cpp
-	./*.hpp
-	./*.h
-)
+	./*.h	
+	./*.hxx )
 
 
 ADD_LIBRARY(databipartite STATIC ${databipartite_files} )

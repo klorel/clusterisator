@@ -1,9 +1,9 @@
 #ifndef BINARY_DECOMPOSITION_ORACLE_HPP
 #define BINARY_DECOMPOSITION_ORACLE_HPP
 
+#include "BipartiteGraph.h"
 #include "gencol.h"
 #include "CpxOracle.h"
-#include "BipartiteGraph.hpp"
 
 class BinaryDecompositionOracle: public CpxOracle {
 public:

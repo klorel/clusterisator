@@ -1,4 +1,4 @@
-#include "Column.hpp"
+#include "Column.h"
 
 Column::Column(ICliquePartitionProblem const & input) :
 		_input(&input), _cost(0), _reducedCost(0), _id(0) {

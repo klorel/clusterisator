@@ -1,5 +1,6 @@
-#include "VnsGenerator.hpp"
-#include "Node.hpp"
+#include "VnsGenerator.h"
+
+#include "Node.h"
 
 VnsGenerator::VnsGenerator(ICliquePartitionProblem const * input,
 		DoubleVector const * dual, DecisionList const * decisions) :
@@ -109,7 +110,7 @@ bool VnsGenerator::localSearch() {
 	return true;
 }
 
-#include "Timer.hpp"
+#include "../clustering/Timer.h"
 
 bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 	//	_columns.clear();

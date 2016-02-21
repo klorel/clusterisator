@@ -1,12 +1,12 @@
-#include "Divisor.hpp"
-#include "BipartiteGraph.hpp"
-#include "VnsGenerator.hpp"
-#include "Timer.hpp"
-#include "Node.hpp"
-
-#include "LpBuffer.hpp"
+#include "Divisor.h"
 
 #include <cplex.h>
+
+#include "../bipartite_data/BipartiteGraph.h"
+#include "../clustering/Timer.h"
+#include "../columnsgeneration/LpBuffer.h"
+#include "../columnsgeneration/Node.h"
+#include "../columnsgeneration/VnsGenerator.h"
 
 namespace bipartite {
 Divisor::Divisor(BipartiteGraph const &input) :

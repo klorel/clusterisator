@@ -1,8 +1,8 @@
 #ifndef REGISTERED_MODULARITY_B_INSTANCE_HPP_
 #define REGISTERED_MODULARITY_B_INSTANCE_HPP_
 
+#include "BipartiteGraph.h"
 #include "gencol.h"
-#include "BipartiteGraph.hpp"
 
 enum AvailableModularityBInstances {
 #define REGISTER_INSTANCE(x) x,

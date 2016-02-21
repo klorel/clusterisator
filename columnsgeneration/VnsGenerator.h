@@ -1,12 +1,12 @@
 #ifndef VNS_GENERATOR_HPP
 #define VNS_GENERATOR_HPP
 
+#include "../clustering/IndexedList.h"
+#include "Column.h"
+#include "Decision.h"
 #include "gencol.h"
-#include "Column.hpp"
-#include "IndexedList.hpp"
-#include "VnsGeneratorSolution.hpp"
-#include "Decision.hpp"
 #include "IOracle.h"
+#include "VnsGeneratorSolution.h"
 
 class Node;
 class VnsGenerator: public IOracle {

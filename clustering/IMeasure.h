@@ -1,5 +1,5 @@
 /*
- * IMeasure.hpp
+ * IMeasure.h
  *
  *  Created on: 4 août 2012
  *      Author: manuel

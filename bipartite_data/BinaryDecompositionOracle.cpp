@@ -1,10 +1,10 @@
-#include "BinaryDecompositionOracle.hpp"
-#include "BipartiteGraph.hpp"
-
-#include "Timer.hpp"
-#include "Node.hpp"
+#include "BinaryDecompositionOracle.h"
 
 #include <cplex.h>
+
+#include "../clustering/Timer.h"
+#include "../columnsgeneration/Node.h"
+#include "BipartiteGraph.h"
 
 BinaryDecompositionOracle::BinaryDecompositionOracle(
 		BipartiteGraph const * input, DoubleVector const * dual,

@@ -5,7 +5,7 @@
  *      Author: manuel
  */
 
-#include "Partition.hpp"
+#include "Partition.h"
 
 Partition::Partition(size_t nbObs, size_t nbMaxLabels) {
 	oneLabel(nbObs, nbMaxLabels);

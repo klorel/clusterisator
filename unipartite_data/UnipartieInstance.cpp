@@ -1,9 +1,9 @@
 #include "UnipartieInstance.h"
-#include "Column.hpp"
 
-#include "MilpOracle.hpp"
-#include "QpOracle.hpp"
-#include "UnipartiteBinaryDecompositionOracle.hpp"
+#include "../columnsgeneration/Column.h"
+#include "../columnsgeneration/MilpOracle.h"
+#include "../columnsgeneration/QpOracle.h"
+#include "UnipartiteBinaryDecompositionOracle.h"
 
 UnipartieInstance::UnipartieInstance() :
 		_m(0), _inv_m(0), _cst(0), _edges() {

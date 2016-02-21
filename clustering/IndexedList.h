@@ -3,7 +3,7 @@
 
 #include "common.h"
 
-#include "Number.hpp"
+#include "Number.h"
 
 /**
  * Behave like a specialized and optimized unordered_set.

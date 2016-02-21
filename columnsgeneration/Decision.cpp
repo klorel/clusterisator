@@ -5,7 +5,7 @@
  *      Author: manuel
  */
 
-#include "Decision.hpp"
+#include "Decision.h"
 
 Decision::Decision() :
 		_noeud1(0), _noeud2(0), _cannot(0), _empty(true) {

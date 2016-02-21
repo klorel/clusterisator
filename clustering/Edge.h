@@ -1,5 +1,5 @@
 /*
- * Edge.hpp
+ * Edge.h
  *
  *  Created on: 11 août 2013
  *      Author: manuel

@@ -1,4 +1,4 @@
-#include "ModularityBPartition.hpp"
+#include "ModularityBPartition.h"
 
 ModularityBPartition::ModularityBPartition(BipartiteGraph const & input,
 		size_t k) :
