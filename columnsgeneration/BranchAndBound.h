@@ -10,11 +10,10 @@
 class Node;
 class BranchAndBound {
 public:
-	BranchAndBound(CliquePartitionProblem const &, AvailableOracle oracle =
-			bMILP);
+	BranchAndBound(CliquePartitionProblem const &);
 	virtual ~BranchAndBound();
 public:
-	CliquePartitionProblem const * _input;
+	ClusteringProblem const * _input;
 
 	void columnGeneration();
 

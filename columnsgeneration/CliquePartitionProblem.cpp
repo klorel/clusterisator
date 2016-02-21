@@ -10,10 +10,10 @@ IOracle * CliquePartitionProblem::newOracle(AvailableOracle oracle,
 	IOracle * result(NULL);
 	switch (oracle) {
 	case MILP:
-		result = new MilpOracle(this, dual, decision);
+		result = new MilpOracle(this);
 		break;
 	case MIQP:
-		result = new QpOracle(this, dual, decision);
+		result = new QpOracle(this);
 		break;
 	default:
 		break;
@@ -22,31 +22,9 @@ IOracle * CliquePartitionProblem::newOracle(AvailableOracle oracle,
 }
 IOracle * CliquePartitionProblem::newVnsOracle(DoubleVector const * dual,
 		DecisionList const * decision) const {
-	return new VnsGenerator(this, dual, decision);
+	return new VnsGenerator(this);
 }
 
-void CliquePartitionProblem::branchingSelection(Node const & node,
-		size_t &noeud1, size_t &noeud2) const {
-	DecisionSet decisions;
-	node.decisions(decisions);
-	BranchingWeights weights;
-	branchingWeights(node.lbSolution(), weights);
-	std::pair<size_t, size_t> const noeud1noeud2(
-			branchingSelection(decisions, weights));
-	noeud1 = noeud1noeud2.first;
-	noeud2 = noeud1noeud2.second;
-}
-
-std::pair<size_t, size_t> CliquePartitionProblem::branchingSelection(
-		DecisionSet const & decisions, BranchingWeights & weights) const {
-	BranchingWeights::const_iterator it(weights.begin());
-	while (decisions.find(
-			Decision(std::make_pair(it->second.first, it->second.second)))
-			!= decisions.end() && it != weights.end()) {
-		++it;
-	}
-	return std::make_pair(it->second.first, it->second.second);
-}
 void CliquePartitionProblem::branchingWeights(
 		FractionnarySolution const & solution,
 		BranchingWeights & weights) const {
@@ -120,23 +98,6 @@ void CliquePartitionProblem::branchingWeights(
 			std::cout << "weights.empty()" << std::endl;
 	}
 }
-
-bool CliquePartitionProblem::checkGradient(IndexedList const & nodes,
-		DoubleVector const & g) const {
-	bool result(true);
-	DoubleVector values(nV(), 0);
-	gradient(nodes, values);
-	for (size_t v(0); v < nV(); ++v)
-		if (std::fabs(g[v] - values[v]) > 1e-10) {
-			result = false;
-			std::cout << "WRONG GRADIENT " << std::setw(6) << v;
-			std::cout << std::setw(16) << g[v];
-			std::cout << std::setw(16) << values[v];
-			std::cout << std::endl;
-		}
-	return result;
-}
-
 #include <cplex.h>
 
 void CliquePartitionProblem::cps(std::string const &fileName) const {

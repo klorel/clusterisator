@@ -6,8 +6,7 @@
 
 class QpOracle: public CpxOracle {
 public:
-	QpOracle(CliquePartitionProblem const *, DoubleVector const * dual,
-			DecisionList const * decisions);
+	QpOracle(CliquePartitionProblem const *);
 	virtual ~QpOracle();
 public:
 	virtual bool generate();
@@ -17,6 +16,7 @@ public:
 	void checkSolution() const;
 private:
 	Double _diagRegularisation;
+	CliquePartitionProblem const  * const _cpp;
 };
 
 #endif 

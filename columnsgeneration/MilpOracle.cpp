@@ -2,9 +2,8 @@
 
 #include <cplex.h>
 
-MilpOracle::MilpOracle(CliquePartitionProblem const * input,
-		DoubleVector const * dual, DecisionList const * decisions) :
-		CpxOracle(input, dual, decisions) {
+MilpOracle::MilpOracle(CliquePartitionProblem const * input) :
+		CpxOracle(input), _cpp(input) {
 	initCpx();
 }
 MilpOracle::~MilpOracle() {
@@ -22,11 +21,11 @@ void MilpOracle::initOracle() {
 	_index.resize(_input->nV());
 	for (size_t v(0); v < _input->nV(); ++v) {
 		_index[v] = columnBuffer.size();
-		columnBuffer.add(0, CPX_BINARY, 0, 1, _input->name(v));
+		columnBuffer.add(0, CPX_BINARY, 0, 1, _cpp->name(v));
 	}
 
 	// Srb=Yr.Yb
-	std::vector<Edge> const & costs(_input->costs());
+	std::vector<Edge> const & costs(_cpp->costs());
 	_products.assign(costs.size(), Product());
 	size_t i(0);
 	for (auto const & edge : costs) {
@@ -37,8 +36,8 @@ void MilpOracle::initOracle() {
 		columnBuffer.add(edge._v, CPX_CONTINUOUS,
 				edge._v < 0 ? 0 : -CPX_INFBOUND,
 				CPX_INFBOUND,
-				GetStr("PRODUCT_", _input->name(edge._i), "_",
-						_input->name(edge._j)));
+				GetStr("PRODUCT_", _cpp->name(edge._i), "_",
+						_cpp->name(edge._j)));
 		++i;
 	}
 	//	_s = RectMatrix(_input->nR(), _input->nB());
@@ -64,8 +63,8 @@ void MilpOracle::initOracle() {
 	std::vector<std::string> rname;
 	_rowBuffer.clear();
 	for (auto const & product : _products) {
-		std::string const & firstName(_input->name(product._first));
-		std::string const & secondName(_input->name(product._second));
+		std::string const & firstName(_cpp->name(product._first));
+		std::string const & secondName(_cpp->name(product._second));
 		std::string const & productName(firstName + "_" + secondName);
 		size_t const r(product._first);
 		size_t const b(product._second);

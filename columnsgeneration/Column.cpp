@@ -1,9 +1,9 @@
 #include "Column.h"
 
-Column::Column(CliquePartitionProblem const & input) :
+Column::Column(ClusteringProblem const & input) :
 		_input(&input), _cost(0), _reducedCost(0), _id(0) {
 }
-Column::Column(CliquePartitionProblem const * input) :
+Column::Column(ClusteringProblem const * input) :
 		_input(input), _cost(0), _reducedCost(0), _id(0) {
 }
 Column::~Column() {

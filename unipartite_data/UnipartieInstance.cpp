@@ -51,7 +51,7 @@ void UnipartieInstance::build() {
 			_costs[ij]._v *= _inv_m;
 			_allLinks[i][j] = _costs[ij]._v;
 			_allLinks[j][i] = _costs[ij]._v;
-	}
+		}
 	}
 	//
 	_cst = 0;
@@ -160,13 +160,13 @@ IOracle * UnipartieInstance::newOracle(AvailableOracle oracle,
 	IOracle * result(NULL);
 	switch (oracle) {
 	case MILP:
-		result = new MilpOracle(this, dual, decision);
+		result = new MilpOracle(this);
 		break;
 	case MIQP:
-		result = new QpOracle(this, dual, decision);
+		result = new QpOracle(this);
 		break;
 	default:
-		result = new UnipartiteBinaryDecompositionOracle(this, dual, decision);
+		result = new UnipartiteBinaryDecompositionOracle(this);
 		break;
 	}
 	return result;

@@ -2,13 +2,20 @@
 
 #include "Node.h"
 
-VnsGenerator::VnsGenerator(CliquePartitionProblem const * input,
-		DoubleVector const * dual, DecisionList const * decisions) :
-		IOracle(input, dual, decisions), _allNodes(input->nV(), true), _current(
-				input, dual), _best(input, dual), _gradient(input->nV(), 0), _wasSwapped(
+VnsGenerator::VnsGenerator(CliquePartitionProblem const * input) :
+		IOracle(input), _allNodes(input->nV(), true), _current(input, NULL), _best(
+				input, NULL), _gradient(input->nV(), 0), _wasSwapped(
 				input->nV(), false) {
 }
 VnsGenerator::~VnsGenerator() {
+}
+
+void VnsGenerator::setData(DoubleVector const &dual,
+		DecisionList const &decision) {
+	IOracle::setData(dual, decision);
+	_current.setDual(dual);
+	_best.setDual(dual);
+
 }
 void VnsGenerator::swap(size_t id, Double deltaCost, Double deltaDual) {
 	swap(id, _current._v.contains(id), deltaCost, deltaDual);
@@ -33,14 +40,14 @@ void VnsGenerator::swap(size_t id) {
 }
 void VnsGenerator::shake(size_t k) {
 	_allNodes.fill();
-	//	_current.check();
+//	_current.check();
 	for (size_t p(0); p < k && !_allNodes.empty(); ++p) {
 		size_t const id(_allNodes.pop_random());
 		//		_current.swap(id);
 		swap(id);
 	}
-	//	compute();
-	//	_current.check();
+//	compute();
+//	_current.check();
 }
 bool VnsGenerator::check(bool alsoDecision) const {
 	if (_current.violation(*_decisions) == 0) {
@@ -81,11 +88,11 @@ bool VnsGenerator::tryMove(size_t v, Double deltaCost, Double deltaDual) {
 	return success;
 }
 bool VnsGenerator::localSearch() {
-	//	IntVector temp(_input->nV());
+//	IntVector temp(_input->nV());
 	size_t violations(_current.violation(*_decisions));
 	assert(violations == _current.violation(*_decisions));
-	//	for (size_t v(0); v < _input->nV(); ++v)
-	//		_gradient[v] += _current.gradient(v);
+//	for (size_t v(0); v < _input->nV(); ++v)
+//		_gradient[v] += _current.gradient(v);
 	bool stop(false);
 	do {
 		ASSERT_CHECK(check());
@@ -103,28 +110,28 @@ bool VnsGenerator::localSearch() {
 			}ASSERT_CHECK(checkGradient());
 		}
 	} while (!stop);
-	//
+//
 	ASSERT_CHECK(violations == _current.violation(*_decisions));
 
-	//
+//
 	return true;
 }
 
 #include "../clustering/Timer.h"
 
 bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
-	//	_columns.clear();
+//	_columns.clear();
 	size_t ite(0);
-	//	Double kMax((Double) std::max(_input->nR(), _input->nB()));
-	//	Double kMax((Double) std::min(_input->nR(), _input->nB()));
+//	Double kMax((Double) std::max(_input->nR(), _input->nB()));
+//	Double kMax((Double) std::min(_input->nR(), _input->nB()));
 	Double kMax(_input->nV() > 100 ? 100 : (Double) _input->nV());
-	//	Double kMax((Double) _input->nV() * 0.3 + 1);
-	//	Double kMax(3);
-	//	_current.clear();
-	//	compute();
+//	Double kMax((Double) _input->nV() * 0.3 + 1);
+//	Double kMax(3);
+//	_current.clear();
+//	compute();
 	initialize();
 	Column column(_input);
-	//	MY_PRINT(ite);
+//	MY_PRINT(ite);
 	bool success(false);
 	do {
 		++ite;
@@ -180,7 +187,7 @@ void VnsGenerator::initialize() {
 	_current.clear();
 	_best.clear();
 	_input->gradient(_current._v, _gradient);
-	//	_input->gradient(_current._v, _gradient);
+//	_input->gradient(_current._v, _gradient);
 
 //	for (Edge const & edge : _input->edges()) {
 //		if (dual(edge._i) + dual(_input->nR() + edge._j) > 1e-6) {
@@ -190,16 +197,16 @@ void VnsGenerator::initialize() {
 //				swap(_input->nR() + edge._j);
 //		}
 //	}
-	for (Edge const & edge : _input->costs()) {
-		if (dual(edge._i) + dual(edge._j) > 1e-6) {
-			if (!_current._v.contains(edge._i))
-				swap(edge._i);
-			if (!_current._v.contains(edge._j))
-				swap(edge._j);
-		}
-	}
+//	for (Edge const & edge : _cpp->costs()) {
+//		if (dual(edge._i) + dual(edge._j) > 1e-6) {
+//			if (!_current._v.contains(edge._i))
+//				swap(edge._i);
+//			if (!_current._v.contains(edge._j))
+//				swap(edge._j);
+//		}
+//	}
 	_best = _current;
 	_wasSwapped.clear();
-	//	compute();
+//	compute();
 }
 

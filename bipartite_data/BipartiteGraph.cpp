@@ -151,13 +151,13 @@ IOracle * BipartiteGraph::newOracle(AvailableOracle oracle,
 	IOracle * result(NULL);
 	switch (oracle) {
 	case MILP:
-		result = new MilpOracle(this, dual, decision);
+		result = new MilpOracle(this);
 		break;
 	case MIQP:
-		result = new QpOracle(this, dual, decision);
+		result = new QpOracle(this);
 		break;
 	default:
-		result = new BinaryDecompositionOracle(this, dual, decision);
+		result = new BinaryDecompositionOracle(this);
 		break;
 	}
 	return result;

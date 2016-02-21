@@ -6,10 +6,10 @@
  */
 
 #include "IOracle.h"
+#include "ClusteringProblem.h"
 
-IOracle::IOracle(CliquePartitionProblem const * input,
-		DoubleVector const * dual, DecisionList const * decisions) :
-		_dual(dual), _decisions(decisions), _bestReducedCost(0), _input(input) {
+IOracle::IOracle(ClusteringProblem const * input) :
+		_dual(NULL), _decisions(NULL), _bestReducedCost(0), _input(input) {
 
 }
 
@@ -72,5 +72,12 @@ void IOracle::extractAndAddSolution(DoubleVector const & x) {
 	if (column.reducedCost() > ZERO_REDUCED_COST
 			&& column.violation(*_decisions) == 0)
 		_columns.insert(column);
+
+}
+
+void IOracle::setData(DoubleVector const & dual,
+		DecisionList const & decisions) {
+	_dual = &dual;
+	_decisions = &decisions;
 
 }

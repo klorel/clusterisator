@@ -7,9 +7,8 @@
 #include "BipartiteGraph.h"
 
 BinaryDecompositionOracle::BinaryDecompositionOracle(
-		BipartiteGraph const * input, DoubleVector const * dual,
-		DecisionList const * decisions) :
-		CpxOracle(input, dual, decisions), _biPartiteGraph(input) {
+		BipartiteGraph const * input) :
+		CpxOracle(input), _biPartiteGraph(input) {
 	initCpx();
 }
 BinaryDecompositionOracle::~BinaryDecompositionOracle() {

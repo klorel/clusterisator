@@ -6,10 +6,15 @@
  */
 
 #include "../clustering/Timer.h"
-#include "../columnsgeneration/BranchAndBound.h"
-#include "../unipartite_data/RegisteredModularityInstance.h"
-#include "common.h"
 
+#include "../unipartite_data/RegisteredModularityInstance.h"
+#include "../unipartite_data/UnipartiteBinaryDecompositionOracle.h"
+#include "../clustering/common.h"
+
+#include "../columnsgeneration/BranchAndBound.h"
+#include "../columnsgeneration/VnsGenerator.h"
+#include "../columnsgeneration/MilpOracle.h"
+#include "../columnsgeneration/QpOracle.h"
 
 std::string RegisteredModularityInstance::InstancesPath = "../txt/";
 
@@ -57,7 +62,6 @@ int main(int argc, char** argv) {
 	} while (std::remove(file_name.c_str()) == 0);
 
 	instance.out();
-	//		instance.cps(instance.name());
 	//	std::cout << instance.a() << std::endl;
 
 	//	ModularityBPartition p(instance, instance.nV());
@@ -71,7 +75,27 @@ int main(int argc, char** argv) {
 	//	std::cout << "B&B STARTED" << std::endl;
 
 	//	return 0;
-	BranchAndBound branchAndBound(instance, oracle);
+
+	// oracles creation
+	VnsGenerator vnsOracle(&instance);
+	instance.setVnsOracle(&vnsOracle);
+
+	MilpOracle milpOracle(&instance);
+	QpOracle miqpOracle(&instance);
+	UnipartiteBinaryDecompositionOracle bMilpOracle(&instance);
+	switch (oracle) {
+	case MIQP:
+		instance.setExactOracle(&miqpOracle);
+		break;
+	case MILP:
+		instance.setExactOracle(&milpOracle);
+		break;
+	case bMILP:
+	default:
+		instance.setExactOracle(&bMilpOracle);
+		break;
+	}
+	BranchAndBound branchAndBound(instance);
 	branchAndBound.init();
 	//	branchAndBound.master().add(p);
 	//	branchAndBound.master().addEdge();
@@ -86,6 +110,7 @@ int main(int argc, char** argv) {
 			<< std::endl;
 	std::cout << "Solution is "
 			<< branchAndBound.bestFeasible() + instance.cst() << std::endl;
+	instance.cps(instance.name());
 	return 0;
 }
 

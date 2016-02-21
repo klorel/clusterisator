@@ -6,9 +6,8 @@
 #include "../columnsgeneration/Node.h"
 
 UnipartiteBinaryDecompositionOracle::UnipartiteBinaryDecompositionOracle(
-		UnipartieInstance const * input, DoubleVector const * dual,
-		DecisionList const * decisions) :
-		CpxOracle(input, dual, decisions), _uniPartiteGraph(input) {
+		UnipartieInstance const * input) :
+		CpxOracle(input), _uniPartiteGraph(input) {
 	_tD = 0;
 	_c = 0;
 	initCpx();

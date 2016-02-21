@@ -13,8 +13,7 @@ struct Product {
 typedef std::vector<Product> Products;
 class MilpOracle: public CpxOracle {
 public:
-	MilpOracle(CliquePartitionProblem const *, DoubleVector const * dual,
-			DecisionList const * decisions);
+	MilpOracle(CliquePartitionProblem const *);
 	virtual ~MilpOracle();
 public:
 	void initOracle();
@@ -23,6 +22,7 @@ public:
 	void checkMipSolution() const;
 private:
 	Products _products;
+	CliquePartitionProblem const  * const _cpp;
 };
 
 #endif 

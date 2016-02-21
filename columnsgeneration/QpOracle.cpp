@@ -3,9 +3,8 @@
 #include "../clustering/Timer.h"
 #include "Column.h"
 
-QpOracle::QpOracle(CliquePartitionProblem const * input,
-		DoubleVector const * dual, DecisionList const * decisions) :
-		CpxOracle(input, dual, decisions) {
+QpOracle::QpOracle(CliquePartitionProblem const * input) :
+		CpxOracle(input), _cpp(input) {
 	_diagRegularisation = 1e2 * 0;
 	initCpx();
 }
@@ -24,12 +23,12 @@ void QpOracle::initOracle() {
 	_index.resize(_input->nV());
 	for (size_t v(0); v < _input->nV(); ++v) {
 		_index[v] = columnBuffer.size();
-		columnBuffer.add(0, CPX_BINARY, 0, 1, _input->name(v));
+		columnBuffer.add(0, CPX_BINARY, 0, 1, _cpp->name(v));
 	}
 
 	// Srb=Yr.Yb
 	std::map<size_t, std::map<size_t, Double> > q;
-	for (auto const & edge : _input->costs()) {
+	for (auto const & edge : _cpp->costs()) {
 		if (edge._v != 0) {
 			q[edge._j][edge._i] = edge._v;
 			q[edge._i][edge._j] = edge._v;

@@ -8,8 +8,7 @@
 
 class UnipartiteBinaryDecompositionOracle: public CpxOracle {
 public:
-	UnipartiteBinaryDecompositionOracle(UnipartieInstance const *,
-			DoubleVector const * dual, DecisionList const * decisions);
+	UnipartiteBinaryDecompositionOracle(UnipartieInstance const *);
 	virtual ~UnipartiteBinaryDecompositionOracle();
 public:
 	void initOracle();

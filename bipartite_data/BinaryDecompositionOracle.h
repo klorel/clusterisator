@@ -7,8 +7,7 @@
 
 class BinaryDecompositionOracle: public CpxOracle {
 public:
-	BinaryDecompositionOracle(BipartiteGraph const *, DoubleVector const * dual,
-			DecisionList const * decisions);
+	BinaryDecompositionOracle(BipartiteGraph const *);
 	virtual ~BinaryDecompositionOracle();
 public:
 	void initOracle();

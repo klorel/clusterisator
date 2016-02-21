@@ -6,11 +6,12 @@
 #include "Decision.h"
 #include "gencol.h"
 
+class ClusteringProblem;
+
 class Node;
 class VnsGeneratorSolution {
 public:
-	VnsGeneratorSolution(CliquePartitionProblem const *,
-			DoubleVector const * dual);
+	VnsGeneratorSolution(ClusteringProblem const *, DoubleVector const * dual);
 	virtual ~VnsGeneratorSolution();
 	VnsGeneratorSolution & operator=(VnsGeneratorSolution const &);
 public:
@@ -27,8 +28,9 @@ public:
 	static bool IsBetter(VnsGeneratorSolution const & p,
 			VnsGeneratorSolution const & q, DecisionList const & decisions);
 	Double dual(size_t) const;
+	void setDual(DoubleVector const &);
 private:
-	CliquePartitionProblem const * _input;
+	ClusteringProblem const * _input;
 	DoubleVector const * _dual;
 public:
 	IndexedList _v;

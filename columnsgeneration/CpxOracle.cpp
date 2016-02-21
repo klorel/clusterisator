@@ -6,10 +6,10 @@
  */
 
 #include "CpxOracle.h"
+#include "CliquePartitionProblem.h"
 
-CpxOracle::CpxOracle(CliquePartitionProblem const * input,
-		DoubleVector const * dual, DecisionList const * decisions) :
-		IOracle(input, dual, decisions), _env(NULL), _prob(NULL), _index() {
+CpxOracle::CpxOracle(CliquePartitionProblem const * input) :
+		IOracle(input), _env(NULL), _prob(NULL), _index() {
 
 }
 

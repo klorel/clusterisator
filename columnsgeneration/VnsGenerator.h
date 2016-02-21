@@ -11,11 +11,11 @@
 class Node;
 class VnsGenerator: public IOracle {
 public:
-	VnsGenerator(CliquePartitionProblem const *, DoubleVector const *,
-			DecisionList const *);
+	VnsGenerator(CliquePartitionProblem const *);
 	virtual ~VnsGenerator();
 public:
 	virtual bool run(size_t iteMax, bool stopAtFirst);
+	virtual void setData(DoubleVector const &, DecisionList const &);
 public:
 	bool check(bool alsoDecision = false) const;
 	void shake(size_t k);
@@ -42,6 +42,7 @@ private:
 
 	DoubleVector _gradient;
 	IndexedList _wasSwapped;
+
 };
 
 inline Double VnsGenerator::dual(size_t n) const {

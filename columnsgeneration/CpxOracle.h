@@ -15,10 +15,11 @@
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 
+#include "CliquePartitionProblem.h"
+
 class CpxOracle: public IOracle {
 public:
-	CpxOracle(CliquePartitionProblem const * input, DoubleVector const * dual,
-			DecisionList const * decisions);
+	CpxOracle(CliquePartitionProblem const * input);
 	virtual ~CpxOracle();
 public:
 	virtual void applyBranchingRule();

@@ -6,11 +6,18 @@
  */
 
 #include "../bipartite_data/RegisteredModularityBInstance.h"
+#include "../bipartite_data/BinaryDecompositionOracle.h"
+
 #include "../clustering/Timer.h"
+#include "../clustering/common.h"
+
+#include "../heuristic/VnsLabelPropagation.h"
+#include "../heuristic/Divisive.h"
+
 #include "../columnsgeneration/BranchAndBound.h"
-#include "common.h"
-#include "VnsLabelPropagation.h"
-#include "Divisive.h"
+#include "../columnsgeneration/VnsGenerator.h"
+#include "../columnsgeneration/MilpOracle.h"
+#include "../columnsgeneration/QpOracle.h"
 
 std::string RegisteredModularityBInstance::InstancesPath = "../txt/";
 
@@ -60,7 +67,27 @@ int main(int argc, char** argv) {
 
 	instance.out();
 
-	BranchAndBound branchAndBound(instance, oracle);
+	// oracles creation
+	VnsGenerator vnsOracle(&instance);
+	instance.setVnsOracle(&vnsOracle);
+
+	MilpOracle milpOracle(&instance);
+	QpOracle miqpOracle(&instance);
+	BinaryDecompositionOracle bMilpOracle(&instance);
+	switch (oracle) {
+	case MIQP:
+		instance.setExactOracle(&miqpOracle);
+		break;
+	case MILP:
+		instance.setExactOracle(&milpOracle);
+		break;
+	case bMILP:
+	default:
+		instance.setExactOracle(&bMilpOracle);
+		break;
+	}
+
+	BranchAndBound branchAndBound(instance);
 	branchAndBound.init();
 	branchAndBound.master().addSingleton();
 	branchAndBound.setOutput();

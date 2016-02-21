@@ -2,8 +2,10 @@
 
 #include "Node.h"
 
-VnsGeneratorSolution::VnsGeneratorSolution(
-		CliquePartitionProblem const * input, DoubleVector const * dual) :
+#include "ClusteringProblem.h"
+
+VnsGeneratorSolution::VnsGeneratorSolution(ClusteringProblem const * input,
+		DoubleVector const * dual) :
 		_input(input), _dual(dual), _v(_input->nV()), _cost(0), _reducedCost(0) {
 
 }
@@ -100,5 +102,9 @@ bool VnsGeneratorSolution::check() const {
 		return false;
 	}
 	return true;
+}
+void VnsGeneratorSolution::setDual(DoubleVector const & v) {
+	_dual = &v;
+
 }
 

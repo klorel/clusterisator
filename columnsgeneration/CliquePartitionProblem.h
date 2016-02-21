@@ -11,28 +11,20 @@
 #include "common.h"
 #include "Edge.h"
 #include "gencol.h"
+#include "ClusteringProblem.h"
 
 class IOracle;
 class Node;
 
 typedef std::vector<std::map<size_t, Double>> AdjencyGraph;
 
-class CliquePartitionProblem {
+class CliquePartitionProblem: public ClusteringProblem {
 public:
 	enum AvailableOrable {
 		MILP, MIQP
 	};
 public:
-	virtual size_t nV() const =0;
 	virtual Edges const & edges() const = 0;
-public:
-	virtual void writeSolution(FractionnarySolution const&, double) const = 0;
-
-	virtual Double computeCost(std::set<size_t> const &) const = 0;
-	virtual Double computeCost(IndexedList const &) const = 0;
-
-	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const= 0;
-	virtual void gradient(IndexedList const & v, DoubleVector &) const= 0;
 	virtual std::vector<Edge> const & costs() const = 0;
 
 public:
@@ -40,16 +32,9 @@ public:
 	virtual std::string problemName() const;
 	virtual std::string name(size_t v) const;
 	virtual void adjencyGraph(AdjencyGraph &) const;
-	virtual bool checkGradient(IndexedList const & v,
-			DoubleVector const & g) const;
 
-	virtual void branchingSelection(Node const & node, size_t &noeud1,
-			size_t &noeud2) const;
 	virtual void branchingWeights(FractionnarySolution const &,
 			BranchingWeights & result) const;
-
-	virtual std::pair<size_t, size_t> branchingSelection(
-			DecisionSet const & decisions, BranchingWeights & weights) const;
 
 	virtual IOracle * newOracle(AvailableOracle oracle,
 			DoubleVector const * dual, DecisionList const * decision) const;
@@ -61,6 +46,9 @@ public:
 	virtual void cpCost(DoubleVector &) const = 0;
 
 	virtual void exportAmpl(std::string const &) const;
+public:
+//	Edges const * const _edges;
+//	DoubleVector const * const _denseCost;
 
 };
 

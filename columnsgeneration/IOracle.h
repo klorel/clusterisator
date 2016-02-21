@@ -11,11 +11,11 @@
 #include "Column.h"
 #include "Decision.h"
 #include "gencol.h"
-
+class ClusteringProblem;
+class CliquePartitionProblem;
 class IOracle {
 public:
-	IOracle(CliquePartitionProblem const *, DoubleVector const * dual,
-			DecisionList const * decisions);
+	IOracle(ClusteringProblem const *);
 	virtual ~IOracle();
 public:
 	Columns & columns();
@@ -33,13 +33,16 @@ public:
 	virtual void extractAndAddSolution(DoubleVector const & x);
 
 	virtual void extract(DoubleVector const & x, Column & column);
+
+	virtual void setData(DoubleVector const & dual,
+			DecisionList const & decisions);
 protected:
 	DoubleVector const * _dual;
 	DecisionList const * _decisions;
 	Columns _columns;
 	Double _bestReducedCost;
 //private:
-	CliquePartitionProblem const * _input;
+	ClusteringProblem const * _input;
 
 };
 

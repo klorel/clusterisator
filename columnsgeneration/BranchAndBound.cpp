@@ -3,10 +3,9 @@
 #include "../clustering/Timer.h"
 #include "LpMaster.h"
 #include "Node.h"
+#include "ClusteringProblem.h"
 
-
-BranchAndBound::BranchAndBound(CliquePartitionProblem const &input,
-		AvailableOracle oracle) :
+BranchAndBound::BranchAndBound(CliquePartitionProblem const &input) :
 		_input(&input), _master(NULL), _vnsGenerator(NULL), _mipGenerator(NULL), _decision() {
 	_root = NULL;
 	// maximisation
@@ -15,8 +14,14 @@ BranchAndBound::BranchAndBound(CliquePartitionProblem const &input,
 	_current = NULL;
 	_output = NULL;
 	_master = new LpMaster(&input, &_decision);
-	_mipGenerator = _input->newOracle(oracle, &_master->dual(), &_decision);
-	_vnsGenerator = _input->newVnsOracle(&_master->dual(), &_decision);
+//	_mipGenerator = _input->newOracle(oracle, &_master->dual(), &_decision);
+//	_vnsGenerator = _input->newVnsOracle(&_master->dual(), &_decision);
+
+	_mipGenerator = _input->getExactOracle();
+	_vnsGenerator = _input->getVnsOracle();
+
+	_mipGenerator->setData(_master->dual(), _decision);
+	_vnsGenerator->setData(_master->dual(), _decision);
 }
 
 BranchAndBound::~BranchAndBound() {
@@ -24,10 +29,7 @@ BranchAndBound::~BranchAndBound() {
 		delete _root;
 	if (_master != NULL)
 		delete _master;
-	if (_mipGenerator != NULL)
-		delete _mipGenerator;
-	if (_vnsGenerator != NULL)
-		delete _vnsGenerator;
+
 }
 
 void BranchAndBound::columnGeneration() {
