@@ -1,9 +1,8 @@
 #ifndef MILP_GENERATOR_HPP
 #define MILP_GENERATOR_HPP
 
+#include "CliquePartitionProblem.h"
 #include "gencol.h"
-#include "ICliquePartitionProblem.h"
-
 #include "CpxOracle.h"
 struct Product {
 	size_t _first;
@@ -14,7 +13,7 @@ struct Product {
 typedef std::vector<Product> Products;
 class MilpOracle: public CpxOracle {
 public:
-	MilpOracle(ICliquePartitionProblem const *, DoubleVector const * dual,
+	MilpOracle(CliquePartitionProblem const *, DoubleVector const * dual,
 			DecisionList const * decisions);
 	virtual ~MilpOracle();
 public:

@@ -1,20 +1,20 @@
 #ifndef BRANCH_AND_BOUND_HPP
 #define BRANCH_AND_BOUND_HPP
 
+#include "CliquePartitionProblem.h"
 #include "gencol.h"
 #include "IOracle.h"
 
-#include "ICliquePartitionProblem.h"
 #include "LpMaster.h"
 
 class Node;
 class BranchAndBound {
 public:
-	BranchAndBound(ICliquePartitionProblem const &, AvailableOracle oracle =
+	BranchAndBound(CliquePartitionProblem const &, AvailableOracle oracle =
 			bMILP);
 	virtual ~BranchAndBound();
 public:
-	ICliquePartitionProblem const * _input;
+	CliquePartitionProblem const * _input;
 
 	void columnGeneration();
 

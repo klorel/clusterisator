@@ -6,7 +6,7 @@
 
 class QpOracle: public CpxOracle {
 public:
-	QpOracle(ICliquePartitionProblem const *, DoubleVector const * dual,
+	QpOracle(CliquePartitionProblem const *, DoubleVector const * dual,
 			DecisionList const * decisions);
 	virtual ~QpOracle();
 public:

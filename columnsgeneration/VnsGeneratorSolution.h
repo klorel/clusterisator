@@ -9,7 +9,7 @@
 class Node;
 class VnsGeneratorSolution {
 public:
-	VnsGeneratorSolution(ICliquePartitionProblem const *,
+	VnsGeneratorSolution(CliquePartitionProblem const *,
 			DoubleVector const * dual);
 	virtual ~VnsGeneratorSolution();
 	VnsGeneratorSolution & operator=(VnsGeneratorSolution const &);
@@ -28,7 +28,7 @@ public:
 			VnsGeneratorSolution const & q, DecisionList const & decisions);
 	Double dual(size_t) const;
 private:
-	ICliquePartitionProblem const * _input;
+	CliquePartitionProblem const * _input;
 	DoubleVector const * _dual;
 public:
 	IndexedList _v;

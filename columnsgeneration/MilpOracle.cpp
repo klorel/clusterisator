@@ -2,7 +2,7 @@
 
 #include <cplex.h>
 
-MilpOracle::MilpOracle(ICliquePartitionProblem const * input,
+MilpOracle::MilpOracle(CliquePartitionProblem const * input,
 		DoubleVector const * dual, DecisionList const * decisions) :
 		CpxOracle(input, dual, decisions) {
 	initCpx();

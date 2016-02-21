@@ -1,11 +1,11 @@
-#include "ICliquePartitionProblem.h"
+#include "CliquePartitionProblem.h"
 
 #include "MilpOracle.h"
 #include "Node.h"
 #include "QpOracle.h"
 #include "VnsGenerator.h"
 
-IOracle * ICliquePartitionProblem::newOracle(AvailableOracle oracle,
+IOracle * CliquePartitionProblem::newOracle(AvailableOracle oracle,
 		DoubleVector const * dual, DecisionList const * decision) const {
 	IOracle * result(NULL);
 	switch (oracle) {
@@ -20,12 +20,12 @@ IOracle * ICliquePartitionProblem::newOracle(AvailableOracle oracle,
 	}
 	return result;
 }
-IOracle * ICliquePartitionProblem::newVnsOracle(DoubleVector const * dual,
+IOracle * CliquePartitionProblem::newVnsOracle(DoubleVector const * dual,
 		DecisionList const * decision) const {
 	return new VnsGenerator(this, dual, decision);
 }
 
-void ICliquePartitionProblem::branchingSelection(Node const & node,
+void CliquePartitionProblem::branchingSelection(Node const & node,
 		size_t &noeud1, size_t &noeud2) const {
 	DecisionSet decisions;
 	node.decisions(decisions);
@@ -37,7 +37,7 @@ void ICliquePartitionProblem::branchingSelection(Node const & node,
 	noeud2 = noeud1noeud2.second;
 }
 
-std::pair<size_t, size_t> ICliquePartitionProblem::branchingSelection(
+std::pair<size_t, size_t> CliquePartitionProblem::branchingSelection(
 		DecisionSet const & decisions, BranchingWeights & weights) const {
 	BranchingWeights::const_iterator it(weights.begin());
 	while (decisions.find(
@@ -47,7 +47,7 @@ std::pair<size_t, size_t> ICliquePartitionProblem::branchingSelection(
 	}
 	return std::make_pair(it->second.first, it->second.second);
 }
-void ICliquePartitionProblem::branchingWeights(
+void CliquePartitionProblem::branchingWeights(
 		FractionnarySolution const & solution,
 		BranchingWeights & weights) const {
 // on cherche des arrêtes présentes et semi-présentes dans deux colonnes
@@ -121,7 +121,7 @@ void ICliquePartitionProblem::branchingWeights(
 	}
 }
 
-bool ICliquePartitionProblem::checkGradient(IndexedList const & nodes,
+bool CliquePartitionProblem::checkGradient(IndexedList const & nodes,
 		DoubleVector const & g) const {
 	bool result(true);
 	DoubleVector values(nV(), 0);
@@ -139,7 +139,7 @@ bool ICliquePartitionProblem::checkGradient(IndexedList const & nodes,
 
 #include <cplex.h>
 
-void ICliquePartitionProblem::cps(std::string const &fileName) const {
+void CliquePartitionProblem::cps(std::string const &fileName) const {
 	size_t const n(nV());
 	int err;
 	CPXENVptr env = CPXopenCPLEX(&err);
@@ -196,6 +196,7 @@ void ICliquePartitionProblem::cps(std::string const &fileName) const {
 			}
 		}
 	}
+
 	rowBuffer.add(env, prob);
 	CPXchgobjsen(env, prob, -1);
 
@@ -204,6 +205,7 @@ void ICliquePartitionProblem::cps(std::string const &fileName) const {
 	CPXsetintparam(env, CPX_PARAM_SOLUTIONTARGET,
 	CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
 	CPXsetintparam(env, CPX_PARAM_CUTPASS, -1);
+
 	CPXmipopt(env, prob);
 
 	double objval;

@@ -10,7 +10,7 @@
 #include "Column.h"
 #include "Decision.h"
 
-IMaster::IMaster(ICliquePartitionProblem const * input,
+IMaster::IMaster(CliquePartitionProblem const * input,
 		DecisionList const * decisions) :
 		_input(input), _decisions(decisions), _columns(), _dual(), _primal() {
 

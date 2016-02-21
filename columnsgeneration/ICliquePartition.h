@@ -9,11 +9,11 @@
 #define I_CLIQUE_PARTITION_H_
 
 #include "common.h"
-class ICliquePartitionProblem;
+class CliquePartitionProblem;
 
 class ICliquePartition {
 public:
-	ICliquePartition(ICliquePartitionProblem const &);
+	ICliquePartition(CliquePartitionProblem const &);
 	virtual ~ICliquePartition();
 public:
 	virtual double score() const=0;
@@ -28,15 +28,15 @@ public:
 
 	virtual void checkScore() const = 0;
 
-	virtual ICliquePartitionProblem const & problem() const;
+	virtual CliquePartitionProblem const & problem() const;
 
 	virtual IndexedList const & usedLabels() const = 0;
 private:
-	ICliquePartitionProblem const & _problem;
+	CliquePartitionProblem const & _problem;
 };
 
 inline ICliquePartition::ICliquePartition(
-		ICliquePartitionProblem const & problem) :
+		CliquePartitionProblem const & problem) :
 		_problem(problem) {
 }
 

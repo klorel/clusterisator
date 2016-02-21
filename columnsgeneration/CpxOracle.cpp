@@ -7,7 +7,7 @@
 
 #include "CpxOracle.h"
 
-CpxOracle::CpxOracle(ICliquePartitionProblem const * input,
+CpxOracle::CpxOracle(CliquePartitionProblem const * input,
 		DoubleVector const * dual, DecisionList const * decisions) :
 		IOracle(input, dual, decisions), _env(NULL), _prob(NULL), _index() {
 

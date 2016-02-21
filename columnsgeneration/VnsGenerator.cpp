@@ -2,7 +2,7 @@
 
 #include "Node.h"
 
-VnsGenerator::VnsGenerator(ICliquePartitionProblem const * input,
+VnsGenerator::VnsGenerator(CliquePartitionProblem const * input,
 		DoubleVector const * dual, DecisionList const * decisions) :
 		IOracle(input, dual, decisions), _allNodes(input->nV(), true), _current(
 				input, dual), _best(input, dual), _gradient(input->nV(), 0), _wasSwapped(

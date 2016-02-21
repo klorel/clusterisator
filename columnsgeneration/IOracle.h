@@ -14,7 +14,7 @@
 
 class IOracle {
 public:
-	IOracle(ICliquePartitionProblem const *, DoubleVector const * dual,
+	IOracle(CliquePartitionProblem const *, DoubleVector const * dual,
 			DecisionList const * decisions);
 	virtual ~IOracle();
 public:
@@ -39,7 +39,7 @@ protected:
 	Columns _columns;
 	Double _bestReducedCost;
 //private:
-	ICliquePartitionProblem const * _input;
+	CliquePartitionProblem const * _input;
 
 };
 

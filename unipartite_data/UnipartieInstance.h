@@ -9,12 +9,12 @@
 #define UNIPARTIEINSTANCE_H_
 
 #include "../clustering/IndexedList.h"
+#include "../columnsgeneration/CliquePartitionProblem.h"
 #include "common.h"
 #include "Edge.h"
 #include "gencol.h"
-#include "ICliquePartitionProblem.h"
 
-class UnipartieInstance: public ICliquePartitionProblem {
+class UnipartieInstance: public CliquePartitionProblem {
 public:
 	virtual IOracle * newOracle(AvailableOracle oracle,
 			DoubleVector const * dual, DecisionList const * decision) const;

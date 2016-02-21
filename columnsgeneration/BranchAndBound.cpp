@@ -5,7 +5,7 @@
 #include "Node.h"
 
 
-BranchAndBound::BranchAndBound(ICliquePartitionProblem const &input,
+BranchAndBound::BranchAndBound(CliquePartitionProblem const &input,
 		AvailableOracle oracle) :
 		_input(&input), _master(NULL), _vnsGenerator(NULL), _mipGenerator(NULL), _decision() {
 	_root = NULL;

@@ -11,7 +11,7 @@
 class Node;
 class VnsGenerator: public IOracle {
 public:
-	VnsGenerator(ICliquePartitionProblem const *, DoubleVector const *,
+	VnsGenerator(CliquePartitionProblem const *, DoubleVector const *,
 			DecisionList const *);
 	virtual ~VnsGenerator();
 public:

@@ -7,7 +7,7 @@
 
 #include "IOracle.h"
 
-IOracle::IOracle(ICliquePartitionProblem const * input,
+IOracle::IOracle(CliquePartitionProblem const * input,
 		DoubleVector const * dual, DecisionList const * decisions) :
 		_dual(dual), _decisions(decisions), _bestReducedCost(0), _input(input) {
 

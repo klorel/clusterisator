@@ -1,14 +1,14 @@
 #ifndef COLUMN_HPP
 #define COLUMN_HPP
 
+#include "CliquePartitionProblem.h"
 #include "Decision.h"
 #include "gencol.h"
-#include "ICliquePartitionProblem.h"
 
 class Column {
 public:
-	Column(ICliquePartitionProblem const &);
-	Column(ICliquePartitionProblem const *);
+	Column(CliquePartitionProblem const &);
+	Column(CliquePartitionProblem const *);
 public:
 	Double & cost();
 	Double const & cost() const;
@@ -37,7 +37,7 @@ public:
 	size_t violation(Decision const &) const;
 	bool contains(size_t, size_t) const;
 private:
-	ICliquePartitionProblem const * _input;
+	CliquePartitionProblem const * _input;
 	Double _cost;
 	Double _reducedCost;
 	std::set<size_t> _v;

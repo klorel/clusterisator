@@ -5,18 +5,23 @@
  *      Author: manuel
  */
 
-#ifndef I_CLIQUE_PARTITION_PROBLEM_H_
-#define I_CLIQUE_PARTITION_PROBLEM_H_
+#ifndef CLIQUE_PARTITION_PROBLEM_H_
+#define CLIQUE_PARTITION_PROBLEM_H_
 
 #include "common.h"
 #include "Edge.h"
 #include "gencol.h"
+
 class IOracle;
 class Node;
 
 typedef std::vector<std::map<size_t, Double>> AdjencyGraph;
 
-class ICliquePartitionProblem {
+class CliquePartitionProblem {
+public:
+	enum AvailableOrable {
+		MILP, MIQP
+	};
 public:
 	virtual size_t nV() const =0;
 	virtual Edges const & edges() const = 0;
@@ -31,7 +36,7 @@ public:
 	virtual std::vector<Edge> const & costs() const = 0;
 
 public:
-	virtual ~ICliquePartitionProblem();
+	virtual ~CliquePartitionProblem();
 	virtual std::string problemName() const;
 	virtual std::string name(size_t v) const;
 	virtual void adjencyGraph(AdjencyGraph &) const;
@@ -59,7 +64,7 @@ public:
 
 };
 
-inline void ICliquePartitionProblem::exportAmpl(
+inline void CliquePartitionProblem::exportAmpl(
 		std::string const & fileName) const {
 	std::ofstream file(fileName.c_str());
 	for (auto const & edge : edges()) {
@@ -71,18 +76,18 @@ inline void ICliquePartitionProblem::exportAmpl(
 	file.close();
 }
 
-inline double ICliquePartitionProblem::cst() const {
+inline double CliquePartitionProblem::cst() const {
 	return 0;
 }
-inline std::string ICliquePartitionProblem::problemName() const {
+inline std::string CliquePartitionProblem::problemName() const {
 	return "";
 }
 
-inline ICliquePartitionProblem::~ICliquePartitionProblem() {
+inline CliquePartitionProblem::~CliquePartitionProblem() {
 
 }
 
-inline void ICliquePartitionProblem::adjencyGraph(AdjencyGraph & result) const {
+inline void CliquePartitionProblem::adjencyGraph(AdjencyGraph & result) const {
 	result.assign(nV(), AdjencyGraph::value_type());
 	for (auto & s : result)
 		s.clear();
@@ -92,7 +97,7 @@ inline void ICliquePartitionProblem::adjencyGraph(AdjencyGraph & result) const {
 	}
 
 }
-inline std::string ICliquePartitionProblem::name(size_t v) const {
+inline std::string CliquePartitionProblem::name(size_t v) const {
 	return GetStr("Y_", v);
 }
 

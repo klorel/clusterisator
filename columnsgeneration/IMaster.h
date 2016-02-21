@@ -11,7 +11,7 @@
 #include "Column.h"
 #include "gencol.h"
 
-class ICliquePartitionProblem;
+class CliquePartitionProblem;
 class IPartition;
 class IMaster {
 public:
@@ -54,10 +54,10 @@ public:
 	virtual std::vector<double> const & dual() const = 0;
 	virtual std::set<Column> const & columns() const = 0;
 public:
-	IMaster(ICliquePartitionProblem const *, DecisionList const * decisions);
+	IMaster(CliquePartitionProblem const *, DecisionList const * decisions);
 	virtual ~IMaster();
 protected:
-	ICliquePartitionProblem const * _input;
+	CliquePartitionProblem const * _input;
 	DecisionList const * _decisions;
 
 	std::set<Column> _columns;

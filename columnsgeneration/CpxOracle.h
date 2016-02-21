@@ -17,7 +17,7 @@ typedef struct cpxenv* CPXENVptr;
 
 class CpxOracle: public IOracle {
 public:
-	CpxOracle(ICliquePartitionProblem const * input, DoubleVector const * dual,
+	CpxOracle(CliquePartitionProblem const * input, DoubleVector const * dual,
 			DecisionList const * decisions);
 	virtual ~CpxOracle();
 public:

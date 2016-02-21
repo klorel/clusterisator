@@ -3,7 +3,7 @@
 #include "../clustering/Timer.h"
 #include "Column.h"
 
-QpOracle::QpOracle(ICliquePartitionProblem const * input,
+QpOracle::QpOracle(CliquePartitionProblem const * input,
 		DoubleVector const * dual, DecisionList const * decisions) :
 		CpxOracle(input, dual, decisions) {
 	_diagRegularisation = 1e2 * 0;

@@ -8,13 +8,13 @@
 #ifndef LABELPROPAGATION_HPP_
 #define LABELPROPAGATION_HPP_
 
+#include "../columnsgeneration/CliquePartitionProblem.h"
 #include "common.h"
 
 #include "BipartiteGraph.h"
 #include "ModularityBPartition.h"
 
 #include "ICliquePartition.h"
-#include "ICliquePartitionProblem.h"
 
 class LabelPropagation2 {
 public:
@@ -26,7 +26,7 @@ public:
 private:
 	void buildGraph();
 private:
-	ICliquePartitionProblem const & _input;
+	CliquePartitionProblem const & _input;
 	ICliquePartition & _solution;
 	AdjencyGraph _graph;
 };

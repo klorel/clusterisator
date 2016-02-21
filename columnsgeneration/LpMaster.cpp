@@ -10,7 +10,7 @@
 Double const StabilizationBaseCost = 1;
 Double const StabilizationWidth = 1e-4;
 
-LpMaster::LpMaster(ICliquePartitionProblem const *input,
+LpMaster::LpMaster(CliquePartitionProblem const *input,
 		DecisionList const * decisions) :
 		IMaster(input, decisions), _env(NULL), _lp(NULL) {
 	build();

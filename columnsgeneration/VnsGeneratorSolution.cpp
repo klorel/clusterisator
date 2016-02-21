@@ -3,7 +3,7 @@
 #include "Node.h"
 
 VnsGeneratorSolution::VnsGeneratorSolution(
-		ICliquePartitionProblem const * input, DoubleVector const * dual) :
+		CliquePartitionProblem const * input, DoubleVector const * dual) :
 		_input(input), _dual(dual), _v(_input->nV()), _cost(0), _reducedCost(0) {
 
 }

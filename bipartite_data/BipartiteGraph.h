@@ -3,16 +3,16 @@
 
 #include "../clustering/IndexedList.h"
 #include "../clustering/RectMatrix.h"
+#include "../columnsgeneration/CliquePartitionProblem.h"
 #include "common.h"
 #include "Edge.h"
 #include "gencol.h"
-#include "ICliquePartitionProblem.h"
 
 class IOracle;
 class Node;
 //std::ostream & operator<<(std::ostream &out, bipartite::BipartiteGraph const&);
 
-class BipartiteGraph: public ICliquePartitionProblem {
+class BipartiteGraph: public CliquePartitionProblem {
 public:
 	virtual size_t nV() const;
 	virtual Edges const & edges() const;
