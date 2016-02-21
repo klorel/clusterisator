@@ -138,7 +138,8 @@ inline void IndexedList::erase(size_t const&e) {
 
 		//		std::cout << "_list[" << size() - 1 << "] = -1;" << std::endl;
 
-		_list.erase(_list.begin() + _list.size() - 1);
+		_list.pop_back();
+//		_list.erase(_list.begin() + _list.size() - 1);
 		//		std::cout << "###########" << std::endl;
 		//		for (IntVector::const_iterator i(_list.begin()); i != _list.end(); ++i)
 		//			std::cout << *i << std::endl;

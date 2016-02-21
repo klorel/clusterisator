@@ -10,6 +10,7 @@ UnipartiteBinaryDecompositionOracle::UnipartiteBinaryDecompositionOracle(
 		DecisionList const * decisions) :
 		CpxOracle(input, dual, decisions), _uniPartiteGraph(input) {
 	_tD = 0;
+	_c = 0;
 	initCpx();
 }
 UnipartiteBinaryDecompositionOracle::~UnipartiteBinaryDecompositionOracle() {
@@ -171,7 +172,7 @@ void UnipartiteBinaryDecompositionOracle::checkSolutions() const {
 		for (size_t v(0); v < _uniPartiteGraph->nV(); ++v) {
 			if (x[v] > 0.5) {
 				column.insert(v);
-				verifD += _input->k(v);
+				verifD += _uniPartiteGraph->k(v);
 			}
 		}
 		for (auto const & edge : _uniPartiteGraph->edges()) {
@@ -285,19 +286,6 @@ void UnipartiteBinaryDecompositionOracle::checkSolutions() const {
 		MY_PRINT(binD);
 		MY_PRINT(binD * binD);
 		MY_PRINT(binD2);
-		column.cost() = column.computeCost();
-		column.reducedCost() = obj;
-		if (!column.check(*_dual)) {
-			std::exit(0);
-		}
-		for (Decision const & decision : *_decisions) {
-			if (column.violation(decision) > 0) {
-				decision.print(
-						std::cout << "violation in MipGenerator::generate() ");
-				std::cout << std::endl;
-				column.print();
-			}
-		}
 
 	}
 }

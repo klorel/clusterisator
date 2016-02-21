@@ -33,7 +33,7 @@ void UnipartieInstance::build() {
 	}
 	_inv_m = 1.0 / _m;
 	_costs.resize(n * (n - 1) / 2);
-	_allLinks.assign(nV(), std::map<size_t, double>());
+	_allLinks.assign(nV(), Links());
 
 	for (size_t i(0); i < n; ++i) {
 		for (size_t j(i + 1); j < n; ++j) {
@@ -51,7 +51,7 @@ void UnipartieInstance::build() {
 			_costs[ij]._v *= _inv_m;
 			_allLinks[i][j] = _costs[ij]._v;
 			_allLinks[j][i] = _costs[ij]._v;
-		}
+	}
 	}
 	//
 	_cst = 0;

@@ -46,7 +46,6 @@ public:
 	Double inv_m() const;
 	Double sum_k() const;
 
-	std::map<size_t, double> const & allLinks(size_t v) const;
 public:
 	UnipartieInstance();
 	UnipartieInstance(Edges const & edges);
@@ -58,7 +57,15 @@ private:
 	DoubleVector _k;
 
 	Edges _edges;
-	std::vector<std::map<size_t, double> > _allLinks;
+
+//	typedef std::pair<size_t, double> Link;
+//	typedef std::vector<Link> Links;
+//	typedef std::vector<Links> AllLinks;
+
+	typedef std::map<size_t, double> Links;
+	typedef std::vector<Links> AllLinks;
+
+	AllLinks _allLinks;
 	std::vector<Edge> _costs;
 };
 
@@ -95,12 +102,6 @@ inline Double UnipartieInstance::inv_m() const {
 }
 inline Double UnipartieInstance::sum_k() const {
 	return std::accumulate(_k.begin(), _k.end(), 0);
-}
-inline std::map<size_t, double> const & UnipartieInstance::allLinks(
-		size_t v) const {
-//	MY_PRINT(v);
-//	MY_PRINT(nV());
-	return _allLinks[v];
 }
 
 inline void UnipartieInstance::update(size_t id, bool wasIn,

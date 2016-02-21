@@ -218,17 +218,6 @@ void BinaryDecompositionOracle::checkSolutions() {
 				}
 			}
 		}
-		column.cost() = column.computeCost();
-		column.reducedCost() = obj;
-		ASSERT_CHECK(column.check(*_dual));
-		for (Decision const & decision : *_decisions) {
-			if (column.violation(decision) > 0) {
-				decision.print(
-						std::cout << "violation in MipGenerator::generate() ");
-				std::cout << std::endl;
-				column.print();
-			}
-		}
 	}
 }
 

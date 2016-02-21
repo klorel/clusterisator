@@ -25,16 +25,13 @@ ELSE()
 #	ELSE( WITH_DEBUG )
 #		SET ( CMAKE_BUILD_TYPE "RELEASE"     )
 #	ENDIF( WITH_DEBUG )
-
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -pedantic -fmessage-length=0  -fPIC" )
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-conversion -Wno-sign-compare")
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-strict-aliasing -Wno-unused-parameter")
 ENDIF( WIN32 )
 
-#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
-IF( WITH_PROF )
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pg")
-ENDIF( WITH_PROF )
+
  
 #INCLUDE_DIRECTORIES($ENV{CPLEX_INC})
 SET(CPLEX_LIB /opt/ibm/ILOG/CPLEX_Studio126/cplex/lib/x86-64_linux/static_pic)

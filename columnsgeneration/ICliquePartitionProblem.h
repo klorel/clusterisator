@@ -19,11 +19,7 @@ typedef std::vector<std::map<size_t, Double>> AdjencyGraph;
 class ICliquePartitionProblem {
 public:
 	virtual size_t nV() const =0;
-
-	virtual Edges const & edges() const =0;
-
-	virtual double k(size_t i) const=0;
-public:
+	virtual Edges const & edges() const = 0;
 public:
 	virtual void writeSolution(FractionnarySolution const&, double) const = 0;
 
@@ -58,7 +54,22 @@ public:
 	virtual void cps(std::string const &fileName) const;
 
 	virtual void cpCost(DoubleVector &) const = 0;
+
+	virtual void exportAmpl(std::string const &) const;
+
 };
+
+inline void ICliquePartitionProblem::exportAmpl(
+		std::string const & fileName) const {
+	std::ofstream file(fileName.c_str());
+	for (auto const & edge : edges()) {
+		file << std::setw(6) << 1 + edge._i;
+		file << std::setw(6) << 1 + edge._j;
+		file << std::endl;
+	}
+	file << ";" << std::endl;
+	file.close();
+}
 
 inline double ICliquePartitionProblem::cst() const {
 	return 0;
