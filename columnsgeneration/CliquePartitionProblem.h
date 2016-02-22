@@ -18,18 +18,15 @@ class Node;
 
 typedef std::vector<std::map<size_t, Double>> AdjencyGraph;
 
+typedef std::vector<std::map<size_t, double> > AllLinks;
+
 class CliquePartitionProblem: public ClusteringProblem {
 public:
 	enum AvailableOrable {
 		MILP, MIQP
 	};
 public:
-	virtual Edges const & edges() const = 0;
-	virtual std::vector<Edge> const & costs() const = 0;
-
-public:
 	virtual ~CliquePartitionProblem();
-	virtual std::string problemName() const;
 	virtual std::string name(size_t v) const;
 	virtual void adjencyGraph(AdjencyGraph &) const;
 
@@ -43,19 +40,46 @@ public:
 	virtual double cst() const;
 	virtual void cps(std::string const &fileName) const;
 
-	virtual void cpCost(DoubleVector &) const = 0;
-
 	virtual void exportAmpl(std::string const &) const;
-public:
-//	Edges const * const _edges;
-//	DoubleVector const * const _denseCost;
 
+	IOracle * newMilpOracle() const;
+	IOracle * newMiqpOracle() const;
+
+	virtual void writeSolution(FractionnarySolution const&, double) const;
+public:
+	virtual Double computeCost(std::set<size_t> const &) const;
+	virtual Double computeCost(IndexedList const &) const;
+
+	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const;
+	virtual void gradient(IndexedList const & v, DoubleVector &) const;
+public:
+	Edges & getEdges();
+	Edges const & getEdges() const;
+
+	std::map<size_t, double> const & allLinks(size_t v) const;
+
+	std::vector<Edge> & getCosts();
+	std::vector<Edge> const & getCosts() const;
+
+	AllLinks & getAllLinks();
+	AllLinks const & getAllLinks() const;
+
+	virtual size_t nV() const;
+	size_t &nV();
+	void clear();
+public:
+	size_t _n;
+	// edges with cost
+	Edges _edges2;
+
+	AllLinks _allLinks;
+	std::vector<Edge> _costs;
 };
 
 inline void CliquePartitionProblem::exportAmpl(
 		std::string const & fileName) const {
 	std::ofstream file(fileName.c_str());
-	for (auto const & edge : edges()) {
+	for (auto const & edge : getEdges()) {
 		file << std::setw(6) << 1 + edge._i;
 		file << std::setw(6) << 1 + edge._j;
 		file << std::endl;
@@ -67,9 +91,6 @@ inline void CliquePartitionProblem::exportAmpl(
 inline double CliquePartitionProblem::cst() const {
 	return 0;
 }
-inline std::string CliquePartitionProblem::problemName() const {
-	return "";
-}
 
 inline CliquePartitionProblem::~CliquePartitionProblem() {
 
@@ -79,7 +100,7 @@ inline void CliquePartitionProblem::adjencyGraph(AdjencyGraph & result) const {
 	result.assign(nV(), AdjencyGraph::value_type());
 	for (auto & s : result)
 		s.clear();
-	for (auto const & e : edges()) {
+	for (auto const & e : getEdges()) {
 		result[e._i][e._j] += e._v;
 		result[e._j][e._i] += e._v;
 	}

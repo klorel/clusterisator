@@ -12,7 +12,7 @@ typedef struct cpxenv* CPXENVptr;
 class ColumnBuffer;
 class LpMaster: public IMaster {
 public:
-	LpMaster(CliquePartitionProblem const *, DecisionList const * decisions);
+	LpMaster(ClusteringProblem const *, DecisionList const * decisions);
 	~LpMaster();
 public:
 	void freeLp();

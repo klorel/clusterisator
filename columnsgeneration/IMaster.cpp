@@ -12,8 +12,9 @@
 #include "LpBuffer.h"
 
 #include <cplex.h>
+#include "ClusteringProblem.h"
 
-IMaster::IMaster(CliquePartitionProblem const * input,
+IMaster::IMaster(ClusteringProblem const * input,
 		DecisionList const * decisions) :
 		_input(input), _decisions(decisions), _columns(), _dual(), _primal(), _cstat(), _rstat() {
 

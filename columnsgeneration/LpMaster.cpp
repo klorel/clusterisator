@@ -6,11 +6,12 @@
 #include "../clustering/Timer.h"
 #include "LpBuffer.h"
 #include "Node.h"
+#include "ClusteringProblem.h"
 
 Double const StabilizationBaseCost = 1;
 Double const StabilizationWidth = 1e-4;
 
-LpMaster::LpMaster(CliquePartitionProblem const *input,
+LpMaster::LpMaster(ClusteringProblem const *input,
 		DecisionList const * decisions) :
 		IMaster(input, decisions), _env(NULL), _lp(NULL) {
 	build();

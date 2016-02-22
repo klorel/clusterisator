@@ -8,7 +8,6 @@
 #include "../clustering/Timer.h"
 
 #include "../unipartite_data/RegisteredModularityInstance.h"
-#include "../unipartite_data/UnipartiteBinaryDecompositionOracle.h"
 #include "../clustering/common.h"
 
 #include "../columnsgeneration/BranchAndBound.h"
@@ -83,17 +82,13 @@ int main(int argc, char** argv) {
 	instance.getCliquePartitionProblem(cpp);
 	MilpOracle milpOracle(&cpp);
 	QpOracle miqpOracle(&cpp);
-	UnipartiteBinaryDecompositionOracle bMilpOracle(&instance);
 	switch (oracle) {
 	case MIQP:
 		instance.setExactOracle(&miqpOracle);
 		break;
 	case MILP:
-		instance.setExactOracle(&milpOracle);
-		break;
-	case bMILP:
 	default:
-		instance.setExactOracle(&bMilpOracle);
+		instance.setExactOracle(&milpOracle);
 		break;
 	}
 	BranchAndBound branchAndBound(instance);

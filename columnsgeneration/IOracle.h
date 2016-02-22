@@ -12,7 +12,7 @@
 #include "Decision.h"
 #include "gencol.h"
 class ClusteringProblem;
-class CliquePartitionProblem;
+class ClusteringProblem;
 class IOracle {
 public:
 	IOracle(ClusteringProblem const *);

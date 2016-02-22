@@ -20,9 +20,6 @@ public:
 	virtual std::string name(size_t v) const;
 	virtual Double k(size_t) const;
 
-	virtual IOracle * newOracle(AvailableOracle oracle,
-			DoubleVector const * dual, DecisionList const * decision) const;
-
 	virtual void writeSolution(FractionnarySolution const&, double) const;
 	virtual Double computeCost(std::set<size_t> const &) const;
 	virtual Double computeCost(IndexedList const &) const;
@@ -31,6 +28,10 @@ public:
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 	virtual std::vector<Edge> const & costs() const;
 	virtual void cpCost(DoubleVector &) const;
+
+	virtual void branchingWeights(FractionnarySolution const &,
+			BranchingWeights & result) const;
+
 public:
 	BipartiteGraph();
 	BipartiteGraph(Edges const & edges);
@@ -53,6 +54,7 @@ public:
 
 	std::map<size_t, double> const & allLinks(size_t v) const;
 
+	void getCliquePartitionProblem(CliquePartitionProblem & result)const;
 public:
 	Double _m;
 	Double _inv_m;
@@ -116,6 +118,9 @@ inline std::map<size_t, double> const & BipartiteGraph::allLinks(
 	return _allLinks[v];
 }
 
+inline std::vector<Edge> const & BipartiteGraph::costs() const {
+	return _costs;
+}
 inline void BipartiteGraph::update(size_t id, bool wasIn,
 		DoubleVector & gradient) const {
 	for (auto const & link : _allLinks[id]) {
@@ -126,9 +131,6 @@ inline void BipartiteGraph::update(size_t id, bool wasIn,
 	}
 }
 
-inline std::vector<Edge> const & BipartiteGraph::costs() const {
-	return _costs;
-}
 inline void BipartiteGraph::gradient(IndexedList const & v,
 		DoubleVector & result) const {
 	ASSERT_CHECK(v.max_size()==nV());

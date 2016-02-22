@@ -2,6 +2,7 @@
 
 #include "../clustering/Timer.h"
 #include "Column.h"
+#include "CliquePartitionProblem.h"
 
 QpOracle::QpOracle(CliquePartitionProblem const * input) :
 		CpxOracle(input), _cpp(input) {
@@ -28,7 +29,7 @@ void QpOracle::initOracle() {
 
 	// Srb=Yr.Yb
 	std::map<size_t, std::map<size_t, Double> > q;
-	for (auto const & edge : _cpp->costs()) {
+	for (auto const & edge : _cpp->getCosts()) {
 		if (edge._v != 0) {
 			q[edge._j][edge._i] = edge._v;
 			q[edge._i][edge._j] = edge._v;

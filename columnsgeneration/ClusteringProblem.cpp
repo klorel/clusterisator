@@ -61,3 +61,8 @@ bool ClusteringProblem::checkGradient(IndexedList const & nodes,
 	}
 	return result;
 }
+
+
+std::string ClusteringProblem::problemName() const {
+	return "";
+}

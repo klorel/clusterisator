@@ -3,6 +3,7 @@
 
 #include "gencol.h"
 #include "CpxOracle.h"
+#include "CliquePartitionProblem.h"
 
 class QpOracle: public CpxOracle {
 public:

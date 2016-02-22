@@ -25,7 +25,7 @@ void MilpOracle::initOracle() {
 	}
 
 	// Srb=Yr.Yb
-	std::vector<Edge> const & costs(_cpp->costs());
+	std::vector<Edge> const & costs(_cpp->getCosts());
 	_products.assign(costs.size(), Product());
 	size_t i(0);
 	for (auto const & edge : costs) {

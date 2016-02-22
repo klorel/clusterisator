@@ -14,10 +14,7 @@
 #include "Edge.h"
 #include "gencol.h"
 
-class UnipartieInstance: public CliquePartitionProblem {
-public:
-	virtual IOracle * newOracle(AvailableOracle oracle,
-			DoubleVector const * dual, DecisionList const * decision) const;
+class UnipartieInstance: public ClusteringProblem {
 public:
 	virtual double cst() const;
 	virtual size_t nV() const;
@@ -35,6 +32,10 @@ public:
 
 	virtual std::vector<Edge> const & costs() const;
 	virtual void cpCost(DoubleVector &) const;
+
+	virtual void branchingWeights(FractionnarySolution const &,
+			BranchingWeights & result) const;
+
 public:
 	void build();
 public:
@@ -50,6 +51,8 @@ public:
 	UnipartieInstance();
 	UnipartieInstance(Edges const & edges);
 	virtual ~UnipartieInstance();
+
+	void getCliquePartitionProblem(CliquePartitionProblem & result) const;
 private:
 	Double _m;
 	Double _inv_m;

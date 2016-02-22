@@ -6,9 +6,9 @@
  */
 
 #include "CpxOracle.h"
-#include "CliquePartitionProblem.h"
+#include "ClusteringProblem.h"
 
-CpxOracle::CpxOracle(CliquePartitionProblem const * input) :
+CpxOracle::CpxOracle(ClusteringProblem const * input) :
 		IOracle(input), _env(NULL), _prob(NULL), _index() {
 
 }

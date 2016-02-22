@@ -55,11 +55,11 @@ public:
 	virtual std::vector<double> const & dual() const = 0;
 	virtual ColumnSet const & columns() const = 0;
 public:
-	IMaster(CliquePartitionProblem const *, DecisionList const * decisions);
+	IMaster(ClusteringProblem const *, DecisionList const * decisions);
 	virtual ~IMaster();
 	virtual void getBasis(ColumnBuffer &) const;
 protected:
-	CliquePartitionProblem const * _input;
+	ClusteringProblem const * _input;
 	DecisionList const * _decisions;
 
 	ColumnSet _columns;

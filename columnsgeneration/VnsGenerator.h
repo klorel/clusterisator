@@ -11,7 +11,7 @@
 class Node;
 class VnsGenerator: public IOracle {
 public:
-	VnsGenerator(CliquePartitionProblem const *);
+	VnsGenerator(ClusteringProblem const *);
 	virtual ~VnsGenerator();
 public:
 	virtual bool run(size_t iteMax, bool stopAtFirst);

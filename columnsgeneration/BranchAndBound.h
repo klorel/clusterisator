@@ -1,7 +1,6 @@
 #ifndef BRANCH_AND_BOUND_HPP
 #define BRANCH_AND_BOUND_HPP
 
-#include "CliquePartitionProblem.h"
 #include "gencol.h"
 #include "IOracle.h"
 
@@ -9,9 +8,10 @@
 #include "ColumnGenerator.h"
 
 class Node;
+class ClusteringProblem;
 class BranchAndBound {
 public:
-	BranchAndBound(CliquePartitionProblem const &);
+	BranchAndBound(ClusteringProblem const &);
 	virtual ~BranchAndBound();
 public:
 	ClusteringProblem const * _input;

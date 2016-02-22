@@ -5,7 +5,7 @@
 #include "Node.h"
 #include "ClusteringProblem.h"
 
-BranchAndBound::BranchAndBound(CliquePartitionProblem const &input) :
+BranchAndBound::BranchAndBound(ClusteringProblem const &input) :
 		_input(&input), _master(NULL), _columnGenerator(), _decision() {
 	_root = NULL;
 	// maximisation

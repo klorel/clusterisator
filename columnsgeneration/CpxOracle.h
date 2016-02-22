@@ -15,11 +15,9 @@
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 
-#include "CliquePartitionProblem.h"
-
 class CpxOracle: public IOracle {
 public:
-	CpxOracle(CliquePartitionProblem const * input);
+	CpxOracle(ClusteringProblem const * input);
 	virtual ~CpxOracle();
 public:
 	virtual void applyBranchingRule();

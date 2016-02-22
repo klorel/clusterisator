@@ -5,6 +5,50 @@
 #include "QpOracle.h"
 #include "VnsGenerator.h"
 
+void CliquePartitionProblem::clear() {
+	_edges2.clear();
+	_costs.clear();
+	_allLinks.clear();
+	_n = 0;
+}
+size_t CliquePartitionProblem::nV() const {
+	return _n;
+}
+size_t &CliquePartitionProblem::nV() {
+	return _n;
+}
+
+Edges & CliquePartitionProblem::getEdges() {
+	return _edges2;
+}
+Edges const & CliquePartitionProblem::getEdges() const {
+	return _edges2;
+}
+AllLinks & CliquePartitionProblem::getAllLinks() {
+	return _allLinks;
+}
+AllLinks const & CliquePartitionProblem::getAllLinks() const {
+	return _allLinks;
+}
+std::map<size_t, double> const & CliquePartitionProblem::allLinks(
+		size_t v) const {
+	return _allLinks[v];
+}
+std::vector<Edge> & CliquePartitionProblem::getCosts() {
+	return _costs;
+}
+std::vector<Edge> const & CliquePartitionProblem::getCosts() const {
+	return _costs;
+}
+
+IOracle * CliquePartitionProblem::newMilpOracle() const {
+	return new MilpOracle(this);
+}
+IOracle * CliquePartitionProblem::newMiqpOracle() const {
+	return new QpOracle(this);
+
+}
+
 IOracle * CliquePartitionProblem::newOracle(AvailableOracle oracle,
 		DoubleVector const * dual, DecisionList const * decision) const {
 	IOracle * result(NULL);
@@ -35,7 +79,7 @@ void CliquePartitionProblem::branchingWeights(
 		//		std::cout << std::setw(6) << kvp.first->id();
 		//		std::cout << std::setw(15) << kvp.second;
 		//		std::cout << std::endl;
-		for (Edge const & e : costs()) {
+		for (Edge const & e : getCosts()) {
 			bool const iFirst(kvp.first->contains(e._i));
 			bool const iSecond(kvp.first->contains(e._j));
 			if (iFirst && iSecond) {
@@ -66,7 +110,7 @@ void CliquePartitionProblem::branchingWeights(
 	if (weights.empty()) {
 		std::cout << "Weights.empty(), generating full weights" << std::endl;
 		for (auto const & kvp : solution) {
-			for (Edge const & e : costs()) {
+			for (Edge const & e : getCosts()) {
 				bool const iR(kvp.first->contains(e._i));
 				bool const iB(kvp.first->contains(e._j));
 				if (iR && iB) {
@@ -111,7 +155,7 @@ void CliquePartitionProblem::cps(std::string const &fileName) const {
 
 	ColumnBuffer columnBuffer;
 	DoubleVector denseCost;
-	cpCost(denseCost);
+//	cpCost(denseCost);
 	IntVector index(n * (n - 1));
 	size_t nCols(0);
 	for (size_t u(0); u < nV(); ++u) {
@@ -177,4 +221,85 @@ void CliquePartitionProblem::cps(std::string const &fileName) const {
 	CPXcloseCPLEX(&env);
 	CPXfreeprob(env, &prob);
 
+}
+Double CliquePartitionProblem::computeCost(IndexedList const &v) const {
+	Double result(0);
+	size_t const n(nV());
+	for (auto i : v) {
+		for (auto j : v) {
+			if (i < j) {
+				size_t const ij(ijtok(n, i, j));
+				result += _costs[ij]._v;
+			}
+		}
+	}
+	return result;
+}
+
+Double CliquePartitionProblem::computeCost(std::set<size_t> const & v) const {
+	Double result(0);
+	size_t const n(nV());
+	for (auto i : v) {
+		for (auto j : v) {
+			if (i < j) {
+				size_t const ij(ijtok(n, i, j));
+				result += _costs[ij]._v;
+			}
+		}
+	}
+	return result;
+
+}
+
+void CliquePartitionProblem::update(size_t id, bool wasIn,
+		DoubleVector & gradient) const {
+	for (auto const & link : _allLinks[id]) {
+		if (wasIn)
+			gradient[link.first] -= link.second;
+		else
+			gradient[link.first] += link.second;
+	}
+}
+
+void CliquePartitionProblem::gradient(IndexedList const & v,
+		DoubleVector & result) const {
+	ASSERT_CHECK(v.max_size()==nV());
+	result.assign(v.max_size(), 0);
+	for (auto const & e : _costs) {
+		if (v.contains(e._j)) {
+			result[e._i] += e._v;
+		}
+		if (v.contains(e._i)) {
+			result[e._j] += e._v;
+		}
+	}
+}
+
+void CliquePartitionProblem::writeSolution(
+		FractionnarySolution const& bestSolution, double lb) const {
+	std::ofstream file(
+			GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
+	for (auto const & c : bestSolution) {
+		for (auto const & edge : getCosts()) {
+			size_t const r(edge._i);
+			size_t const b(edge._j);
+			if (c.first->contains(r) && c.first->contains(b)) {
+				file << std::setw(6) << 1 + r;
+				file << std::setw(6) << 1 + b;
+				file << std::endl;
+			}
+
+		}
+//		for (size_t r(0); r < nR(); ++r) {
+//			for (size_t b(0); b < nB(); ++b) {
+//				if (c.first->contains(r) && c.first->contains(nR() + b)) {
+//					file << std::setw(6) << 1 + r;
+//					file << std::setw(6) << 1 + b + nR();
+//					file << std::endl;
+//				}
+//
+//			}
+//		}
+	}
+	file.close();
 }

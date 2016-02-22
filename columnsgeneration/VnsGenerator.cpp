@@ -1,8 +1,9 @@
 #include "VnsGenerator.h"
 
 #include "Node.h"
+#include "ClusteringProblem.h"
 
-VnsGenerator::VnsGenerator(CliquePartitionProblem const * input) :
+VnsGenerator::VnsGenerator(ClusteringProblem const * input) :
 		IOracle(input), _allNodes(input->nV(), true), _current(input, NULL), _best(
 				input, NULL), _gradient(input->nV(), 0), _wasSwapped(
 				input->nV(), false) {

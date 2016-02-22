@@ -40,6 +40,8 @@ public:
 
 	virtual IOracle * getVnsOracle() const;
 
+	virtual std::string problemName() const;
+
 public:
 	void setExactOracle(IOracle *);
 	void setVnsOracle(IOracle *);
