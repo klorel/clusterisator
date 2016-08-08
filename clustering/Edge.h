@@ -12,14 +12,14 @@
 
 class Edge {
 public:
-	size_t _i;
-	size_t _j;
+	int _i;
+	int  _j;
 	Double _v;
-	Edge(size_t i = -1, size_t j = -1, Double v = 1) :
+	Edge(int  i = -1, int  j = -1, Double v = 1) :
 			_i(i), _j(j), _v(v) {
 	}
 	bool operator<(Edge const & rhs) const {
-		return std::less<std::pair<size_t, size_t>>()(std::make_pair(_i, _j),
+		return std::less<std::pair<int, int >>()(std::make_pair(_i, _j),
 				std::make_pair(rhs._i, rhs._j));
 	}
 };

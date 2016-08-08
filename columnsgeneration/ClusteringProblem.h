@@ -14,23 +14,23 @@
 class IOracle;
 class Node;
 
-typedef std::vector<std::map<size_t, Double>> AdjencyGraph;
+typedef std::vector<std::map<int, Double>> AdjencyGraph;
 
 class ClusteringProblem {
 public:
-	virtual size_t nV() const =0;
+	virtual int nV() const =0;
 	virtual void writeSolution(FractionnarySolution const&, double) const = 0;
-	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const= 0;
+	virtual void update(int id, bool wasIn, DoubleVector &gradient) const= 0;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const= 0;
-	virtual Double computeCost(std::set<size_t> const &) const = 0;
+	virtual Double computeCost(IntSet const &) const = 0;
 	virtual Double computeCost(IndexedList const &) const = 0;
 	virtual void branchingWeights(FractionnarySolution const &,
 			BranchingWeights & result) const = 0;
 public:
-	virtual void branchingSelection(Node const & node, size_t &noeud1,
-			size_t &noeud2) const;
+	virtual void branchingSelection(Node const & node, int &noeud1,
+		int &noeud2) const;
 
-	virtual std::pair<size_t, size_t> branchingSelection(
+	virtual std::pair<int, int> branchingSelection(
 			DecisionSet const & decisions, BranchingWeights & weights) const;
 
 	virtual bool checkGradient(IndexedList const & v,

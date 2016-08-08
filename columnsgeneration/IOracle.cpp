@@ -48,7 +48,7 @@ bool IOracle::run(size_t iteMax, bool stopAtFirst) {
 }
 
 void IOracle::extract(DoubleVector const & x, Column & column) {
-	for (size_t v(0); v < _input->nV(); ++v) {
+	for (int v(0); v < _input->nV(); ++v) {
 		if (x[v] > 0.5) {
 			column.insert(v);
 		}

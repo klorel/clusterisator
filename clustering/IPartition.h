@@ -40,48 +40,48 @@ public:
 	virtual void setWeights(DoubleVector const & weights) = 0;
 
 	/// Get the number of observations present in the partition
-	virtual size_t nbObs() const = 0;
+	virtual int nbObs() const = 0;
 	/// Get the number of used labels
-	virtual size_t nbLabels() const = 0;
+	virtual int nbLabels() const = 0;
 	/// Get the maximum number of labels allowed.
-	virtual size_t maxNbLabels() const=0;
+	virtual int maxNbLabels() const=0;
 	/// Get the weight of a given observation
-	virtual Double obsWeight(size_t obs) const=0;
+	virtual Double obsWeight(int obs) const=0;
 	/// Get the sum of the weights of the observations contained in a given label
-	virtual Double labelWeight(size_t label) const=0;
+	virtual Double labelWeight(int label) const=0;
 	/// Get the label in which belong a given observation
-	virtual size_t label(size_t obs) const = 0;
+	virtual int label(int obs) const = 0;
 	/// Get the number of observation contained in the given label
-	virtual size_t sizeOfLabel(size_t label) const = 0;
+	virtual int sizeOfLabel(int label) const = 0;
 
 	/**
 	 * Returns an arbitrary unused label, assuming one exist.
 	 * If every label if used, the behavior is undefined
 	 */
-	virtual size_t getUnUsedLabel() const = 0;
+	virtual int getUnUsedLabel() const = 0;
 	/// @return TRUE is every label is used, FALSE if at least one is empty
 	virtual bool allLabelsUsed() const = 0;
 	/// @return The list of every unused labels 
 	virtual IndexedList const & unUsed() const = 0;
 	/// @return TRUE is at least one observation has the given label 
-	virtual bool isUsed(size_t label) const = 0;
+	virtual bool isUsed(int label) const = 0;
 	/// @return The list of every used label
 	virtual IndexedList const & usedLabels() const =0;
 	/// @return The list of every unused label
 	virtual IndexedList const & unUsedLabels() const =0;
 
 	/// @returns The observations contained by the given label
-	virtual IntList const & observations(size_t label) const = 0;
+	virtual IntList const & observations(int label) const = 0;
 
 	/// Change the label of one observation
-	virtual bool shift(size_t observation, size_t to) = 0;
+	virtual bool shift(int observation, int to) = 0;
 
 	/**
 	 * Merge one label into another
 	 *
 	 * @return The label which contains every observation (the other one is then empty)
 	 */
-	virtual size_t fusion(size_t const & label1, size_t const & label2) = 0;
+	virtual int fusion(int label1, int label2) = 0;
 
 	virtual ~IPartition();
 };

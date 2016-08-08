@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 	case MILP:
 		instance.setExactOracle(&milpOracle);
 		break;
-	case bMILP:
+	//case bMILP:
 	default:
 		instance.setExactOracle(&bMilpOracle);
 		break;

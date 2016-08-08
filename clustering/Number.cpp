@@ -1,16 +1,16 @@
 #include "Number.h"
-size_t Number::_SEED = 0;
+int  Number::_SEED = 0;
 
 std::default_random_engine Number::_Generator = std::default_random_engine(1);
 
 //	std::default_random_engine generator;
-std::uniform_int_distribution<size_t> Number::_Distribution =
-		std::uniform_int_distribution < size_t
-				> (0, std::numeric_limits<size_t>::max());
+std::uniform_int_distribution<int > Number::_Distribution =
+std::uniform_int_distribution < int
+>(0, std::numeric_limits<int >::max());
 
-void Number::SetSeed(size_t seed) {
+void Number::SetSeed(int  seed) {
 	assert(seed != 0);
 	_SEED = seed;
 	_Generator.seed(seed);
-//	srand48(_SEED);
+	//	srand48(_SEED);
 }

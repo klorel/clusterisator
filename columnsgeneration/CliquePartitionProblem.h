@@ -13,12 +13,13 @@
 #include "gencol.h"
 #include "ClusteringProblem.h"
 
+class ILpSolver;
 class IOracle;
 class Node;
 
-typedef std::vector<std::map<size_t, Double>> AdjencyGraph;
+typedef std::vector<std::map<int, Double>> AdjencyGraph;
 
-typedef std::vector<std::map<size_t, double> > AllLinks;
+typedef std::vector<std::map<int, double> > AllLinks;
 
 class CliquePartitionProblem: public ClusteringProblem {
 public:
@@ -27,7 +28,7 @@ public:
 	};
 public:
 	virtual ~CliquePartitionProblem();
-	virtual std::string name(size_t v) const;
+	virtual std::string name(int v) const;
 	virtual void adjencyGraph(AdjencyGraph &) const;
 
 	virtual void branchingWeights(FractionnarySolution const &,
@@ -38,7 +39,7 @@ public:
 	virtual IOracle * newVnsOracle(DoubleVector const * dual,
 			DecisionList const * decision) const;
 	virtual double cst() const;
-	virtual void cps(std::string const &fileName) const;
+	virtual void cps(std::string const &fileName, ILpSolver & solver) const;
 
 	virtual void exportAmpl(std::string const &) const;
 
@@ -47,16 +48,16 @@ public:
 
 	virtual void writeSolution(FractionnarySolution const&, double) const;
 public:
-	virtual Double computeCost(std::set<size_t> const &) const;
+	virtual Double computeCost(IntSet const &) const;
 	virtual Double computeCost(IndexedList const &) const;
 
-	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const;
+	virtual void update(int id, bool wasIn, DoubleVector &gradient) const;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 public:
 	Edges & getEdges();
 	Edges const & getEdges() const;
 
-	std::map<size_t, double> const & allLinks(size_t v) const;
+	std::map<int, double> const & allLinks(int v) const;
 
 	std::vector<Edge> & getCosts();
 	std::vector<Edge> const & getCosts() const;
@@ -64,11 +65,14 @@ public:
 	AllLinks & getAllLinks();
 	AllLinks const & getAllLinks() const;
 
-	virtual size_t nV() const;
-	size_t &nV();
+	virtual int nV() const;
+	int &nV();
 	void clear();
+
+	virtual void cpCost(DoubleVector &result) const {};
+
 public:
-	size_t _n;
+	int _n;
 	// edges with cost
 	Edges _edges2;
 
@@ -106,7 +110,7 @@ inline void CliquePartitionProblem::adjencyGraph(AdjencyGraph & result) const {
 	}
 
 }
-inline std::string CliquePartitionProblem::name(size_t v) const {
+inline std::string CliquePartitionProblem::name(int v) const {
 	return GetStr("Y_", v);
 }
 

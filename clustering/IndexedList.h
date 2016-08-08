@@ -24,25 +24,25 @@ protected:
 	/// vecteur des positions des elements dans _list
 	IntVector _element;
 public:
-	IndexedList(size_t const & = 0);
-	IndexedList(size_t const &, bool const & fill);
+	IndexedList(int = 0);
+	IndexedList(int, bool fill);
 	IndexedList(IndexedList const&);
 
 	IndexedList & operator=(IndexedList const &);
 
-	size_t front() const;
-	size_t random() const;
-	size_t pop_random();
-	size_t size() const;
-	size_t max_size() const;
+	int front() const;
+	int random() const;
+	int pop_random();
+	int size() const;
+	int max_size() const;
 
-	void insert(size_t const&);
-	void erase(size_t const&);
+	void insert(int );
+	void erase(int );
 
 	void fill();
-	bool contains(size_t const &) const;
+	bool contains(int ) const;
 	void clear();
-	void reset(size_t const &);
+	void reset(int );
 
 	bool empty() const;
 
@@ -56,11 +56,11 @@ public:
 
 };
 
-inline IndexedList::IndexedList(size_t const & nbClust) :
+inline IndexedList::IndexedList(int nbClust) :
 		_list(), _element(nbClust, nbClust) {
 	_list.reserve(max_size());
 }
-inline IndexedList::IndexedList(size_t const & nbClust, bool const & doFill) :
+inline IndexedList::IndexedList(int nbClust, bool doFill) :
 		_list(), _element(nbClust, nbClust) {
 	_list.reserve(nbClust);
 	if (doFill) {
@@ -74,21 +74,21 @@ inline IndexedList::IndexedList(IndexedList const & orig) :
 }
 
 inline void IndexedList::fill() {
-	for (size_t i(0); i < _element.size(); ++i)
+	for (int i(0); i < _element.size(); ++i)
 		insert(i);
 }
-inline void IndexedList::reset(size_t const & s) {
+inline void IndexedList::reset(int s) {
 	_element.assign(s, s);
 	_list.clear();
 	_list.reserve(max_size());
 }
 
-inline size_t IndexedList::size() const {
-	return _list.size();
+inline int IndexedList::size() const {
+	return (int)_list.size();
 }
 
-inline size_t IndexedList::max_size() const {
-	return _element.size();
+inline int IndexedList::max_size() const {
+	return (int)_element.size();
 }
 
 inline void IndexedList::clear(void) {
@@ -96,14 +96,14 @@ inline void IndexedList::clear(void) {
 	_element.assign(max_size(), max_size());
 }
 
-inline bool IndexedList::contains(size_t const &e) const {
+inline bool IndexedList::contains(int e) const {
 	return _element[e] != max_size();
 }
 inline bool IndexedList::empty(void) const {
 	return _list.empty();
 }
 
-inline void IndexedList::insert(size_t const&e) {
+inline void IndexedList::insert(int e) {
 	/// si l'element n'est pas deja dans la liste
 	if (!contains(e)) {
 		//		DEBUG_TRACE("add "<<e<<std::endl);
@@ -116,7 +116,7 @@ inline void IndexedList::insert(size_t const&e) {
 	//	DEBUG_ASSERT("NO REALLOCATION ALLOWED"&&size()<=max_size());
 }
 
-inline void IndexedList::erase(size_t const&e) {
+inline void IndexedList::erase(int e) {
 
 	//	check();
 	if (contains(e)) {
@@ -152,7 +152,7 @@ inline void IndexedList::erase(size_t const&e) {
 }
 
 inline void IndexedList::check() const {
-	for (size_t e(0); e < max_size(); ++e) {
+	for (int  e(0); e < max_size(); ++e) {
 		std::cout << e << " = " << _element[e] << std::endl;
 		if (contains(e)) {
 			assert(_list[_element[e]] == e);
@@ -175,16 +175,16 @@ inline IndexedList::const_iterator IndexedList::begin() const {
 inline IndexedList::const_iterator IndexedList::end() const {
 	return _list.rend();
 }
-inline size_t IndexedList::front() const {
+inline int IndexedList::front() const {
 	return _list.back();
 }
-inline size_t IndexedList::random() const {
+inline int IndexedList::random() const {
 	assert(size() > 0);
 	return _list[Number::Generator() % size()];
 }
-inline size_t IndexedList::pop_random() {
+inline int IndexedList::pop_random() {
 	assert(size() > 0);
-	size_t const e(_list[Number::Generator() % size()]);
+	int const e(_list[Number::Generator() % size()]);
 	erase(e);
 	return e;
 }

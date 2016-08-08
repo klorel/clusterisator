@@ -10,8 +10,8 @@ Edges::~Edges() {
 bool Edges::read(std::string const & fileName, std::ostream & stream) {
 	std::ifstream file(fileName.c_str());
 	std::string line;
-	size_t i;
-	size_t j;
+	int i;
+	int j;
 	double v;
 	while (std::getline(file, line)) {
 		std::stringstream buffer(line);

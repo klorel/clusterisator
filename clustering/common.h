@@ -39,10 +39,10 @@ template<class T, class U> inline void PushBack(T const & t, U & u, size_t n) {
 IntVector SortLocation(IntVector const &location);
 
 void Random(IntVector &);
-size_t RandomElement(IntVector const &);
-IntVector Random(size_t n);
+int RandomElement(IntVector const &);
+IntVector Random(int n);
 
-size_t PopRandom(IntVector &, size_t & n);
+int PopRandom(IntVector &, int & n);
 
 template<class T> inline bool IsEqual(T const & t1, T const & t2) {
 	return std::abs(t1 - t2) <= 1e-6;
@@ -140,13 +140,13 @@ inline std::string GetStr(T1 const & t1, T2 const & t2, T3 const & t3,
 
 #define __SEG_FAULT__ {std::vector<int> __toto__;__toto__[10]=1;}
 
-inline size_t ijtok(size_t n, size_t i, size_t j) {
+inline int ijtok(int n, int i, int j) {
 	if (i == j) {
 		std::cout << "error " << i << " = " << j << std::endl;
 		std::exit(-1);
 	}
-	size_t const l(std::min(i, j));
-	size_t const u(std::max(i, j));
+	int const l(std::min(i, j));
+	int const u(std::max(i, j));
 	return (2 * n - l - 1) * l / 2 + u - l - 1;
 }
 

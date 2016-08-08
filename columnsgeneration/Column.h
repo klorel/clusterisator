@@ -19,29 +19,29 @@ public:
 	Double computeReducedCost(DoubleVector const & dual) const;
 	virtual ~Column();
 
-	size_t size() const;
-	size_t & id() const;
+	int size() const;
+	int & id() const;
 	bool check(DoubleVector const &) const;
 	bool check() const;
 	void print(std::ostream & = std::cout) const;
 
-	bool insert(size_t v);
-	void erase(size_t v);
-	bool contains(size_t v) const;
-	std::set<size_t> & v();
-	std::set<size_t> const & v() const;
+	bool insert(int v);
+	void erase(int v);
+	bool contains(int v) const;
+	IntSet & v();
+	IntSet const & v() const;
 
 	bool operator<(Column const &) const;
 
-	size_t violation(DecisionList const &) const;
-	size_t violation(Decision const &) const;
-	bool contains(size_t, size_t) const;
+	int violation(DecisionList const &) const;
+	int violation(Decision const &) const;
+	bool contains(int, int) const;
 private:
 	ClusteringProblem const * _input;
 	Double _cost;
 	Double _reducedCost;
-	std::set<size_t> _v;
-	mutable size_t _id;
+	IntSet _v;
+	mutable int _id;
 };
 #endif 
 

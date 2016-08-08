@@ -10,15 +10,15 @@ public:
 public:
 	bool isRoot() const;
 	Node(BranchAndBound const&);
-	Node(Node const * father, bool cannot, size_t noeud1, size_t noeud2);
+	Node(Node const * father, bool cannot, int noeud1, int noeud2);
 	virtual ~Node();
 public:
 	Double lb() const;
 	Double ub() const;
 	Double &lb();
 	Double &ub();
-	size_t id() const;
-	size_t & id();
+	int id() const;
+	int & id();
 	FractionnarySolution & lbSolution();
 	FractionnarySolution const & lbSolution() const;
 	bool &isInteger();
@@ -38,7 +38,7 @@ private:
 
 	Decision _decision;
 
-	size_t _id;
+	int _id;
 };
 
 class LbPredicate {

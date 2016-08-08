@@ -22,19 +22,17 @@ IOracle * ClusteringProblem::getVnsOracle() const {
 	return _vnsOracle;
 }
 
-void ClusteringProblem::branchingSelection(Node const & node, size_t &noeud1,
-		size_t &noeud2) const {
+void ClusteringProblem::branchingSelection(Node const & node, int &noeud1, int &noeud2) const {
 	DecisionSet decisions;
 	node.decisions(decisions);
 	BranchingWeights weights;
 	branchingWeights(node.lbSolution(), weights);
-	std::pair<size_t, size_t> const noeud1noeud2(
-			branchingSelection(decisions, weights));
+	std::pair<int, int> const noeud1noeud2(branchingSelection(decisions, weights));
 	noeud1 = noeud1noeud2.first;
 	noeud2 = noeud1noeud2.second;
 }
 
-std::pair<size_t, size_t> ClusteringProblem::branchingSelection(
+std::pair<int, int> ClusteringProblem::branchingSelection(
 		DecisionSet const & decisions, BranchingWeights & weights) const {
 	BranchingWeights::const_iterator it(weights.begin());
 	while (decisions.find(

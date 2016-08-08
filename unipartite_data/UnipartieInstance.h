@@ -17,17 +17,17 @@
 class UnipartieInstance: public ClusteringProblem {
 public:
 	virtual double cst() const;
-	virtual size_t nV() const;
+	virtual int nV() const;
 	virtual Edges const & edges() const;
 
-	virtual std::string name(size_t v) const;
-	virtual Double k(size_t) const;
+	virtual std::string name(int v) const;
+	virtual Double k(int) const;
 
 	virtual void writeSolution(FractionnarySolution const&, double) const;
-	virtual Double computeCost(std::set<size_t> const &) const;
+	virtual Double computeCost(IntSet const &) const;
 	virtual Double computeCost(IndexedList const &) const;
 
-	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const;
+	virtual void update(int id, bool wasIn, DoubleVector &gradient) const;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 
 	virtual std::vector<Edge> const & costs() const;
@@ -41,7 +41,7 @@ public:
 public:
 	Edges & edges();
 
-	Double w(size_t vi, size_t vj) const;
+	Double w(int vi, int vj) const;
 
 	Double m() const;
 	Double inv_m() const;
@@ -65,7 +65,7 @@ private:
 //	typedef std::vector<Link> Links;
 //	typedef std::vector<Links> AllLinks;
 
-	typedef std::map<size_t, double> Links;
+	typedef std::map<int, double> Links;
 	typedef std::vector<Links> AllLinks;
 
 	AllLinks _allLinks;
@@ -75,14 +75,14 @@ private:
 inline double UnipartieInstance::cst() const {
 	return _cst;
 }
-inline std::string UnipartieInstance::name(size_t v) const {
+inline std::string UnipartieInstance::name(int v) const {
 	return GetStr("YR_", v);
 }
-inline size_t UnipartieInstance::nV() const {
-	return _k.size();
+inline int UnipartieInstance::nV() const {
+	return (int) _k.size();
 }
 
-inline Double UnipartieInstance::k(size_t id) const {
+inline Double UnipartieInstance::k(int id) const {
 	return _k[id];
 }
 
@@ -92,7 +92,7 @@ inline Edges const & UnipartieInstance::edges() const {
 inline Edges & UnipartieInstance::edges() {
 	return _edges;
 }
-inline Double UnipartieInstance::w(size_t vi, size_t vj) const {
+inline Double UnipartieInstance::w(int vi, int vj) const {
 	return 0;
 //	return (_a.get(r, b) - _k[r] * _k[nR() + b] / _m) / _m;
 }
@@ -104,10 +104,10 @@ inline Double UnipartieInstance::inv_m() const {
 	return _inv_m;
 }
 inline Double UnipartieInstance::sum_k() const {
-	return std::accumulate(_k.begin(), _k.end(), 0);
+	return std::accumulate(_k.begin(), _k.end(), 0.0);
 }
 
-inline void UnipartieInstance::update(size_t id, bool wasIn,
+inline void UnipartieInstance::update(int id, bool wasIn,
 		DoubleVector & gradient) const {
 	for (auto const & link : _allLinks[id]) {
 		if (wasIn)

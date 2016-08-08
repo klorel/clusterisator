@@ -4,6 +4,8 @@
 #include "Node.h"
 #include "QpOracle.h"
 #include "VnsGenerator.h"
+#include "ILpSolver.h"
+
 
 void CliquePartitionProblem::clear() {
 	_edges2.clear();
@@ -11,10 +13,10 @@ void CliquePartitionProblem::clear() {
 	_allLinks.clear();
 	_n = 0;
 }
-size_t CliquePartitionProblem::nV() const {
+int CliquePartitionProblem::nV() const {
 	return _n;
 }
-size_t &CliquePartitionProblem::nV() {
+int &CliquePartitionProblem::nV() {
 	return _n;
 }
 
@@ -30,8 +32,7 @@ AllLinks & CliquePartitionProblem::getAllLinks() {
 AllLinks const & CliquePartitionProblem::getAllLinks() const {
 	return _allLinks;
 }
-std::map<size_t, double> const & CliquePartitionProblem::allLinks(
-		size_t v) const {
+std::map<int, double> const & CliquePartitionProblem::allLinks(int v) const {
 	return _allLinks[v];
 }
 std::vector<Edge> & CliquePartitionProblem::getCosts() {
@@ -142,26 +143,31 @@ void CliquePartitionProblem::branchingWeights(
 			std::cout << "weights.empty()" << std::endl;
 	}
 }
-#include <cplex.h>
 
-void CliquePartitionProblem::cps(std::string const &fileName) const {
-	size_t const n(nV());
-	int err;
-	CPXENVptr env = CPXopenCPLEX(&err);
-	CPXLPptr prob = CPXcreateprob(env, &err, "cps");
+//#include <cplex.h>
+//
+void CliquePartitionProblem::cps(std::string const &fileName, ILpSolver & solver) const {
+	int const n(nV());
+	solver.add(std::cout);
+	solver.initLp(fileName);
 
-	CPXsetintparam(env, CPX_PARAM_SCRIND, CPX_OFF);
-	CPXsetintparam(env, CPX_PARAM_SCRIND, CPX_ON);
-
-	ColumnBuffer columnBuffer;
+//
+	char const binary(solver.binary());
+	char const continuous(solver.continuous());
+	char const leq(solver.leq());
+	char const eq(solver.eq());
+	char const geq(solver.geq());
+	//
+	ColumnBuffer columnBuffer(continuous);
 	DoubleVector denseCost;
-//	cpCost(denseCost);
-	IntVector index(n * (n - 1));
-	size_t nCols(0);
-	for (size_t u(0); u < nV(); ++u) {
-		for (size_t v(u + 1); v < nV(); ++v, ++nCols) {
-			size_t const id(ijtok(n, u, v));
-			columnBuffer.add(denseCost[id], CPX_BINARY, 0, 1,
+	cpCost(denseCost);
+	//cpCost(denseCost);
+	//IntVector index(n * (n - 1));
+	int nCols(0);
+	for (int u(0); u < nV(); ++u) {
+		for (int v(u + 1); v < nV(); ++v, ++nCols) {
+			int const id(ijtok(n, u, v));
+			columnBuffer.add(denseCost[id], binary, 0, 1,
 					GetStr("x_", u, "_", v));
 			if (id != nCols) {
 				std::cout << "wrong numbering" << std::endl;
@@ -169,31 +175,31 @@ void CliquePartitionProblem::cps(std::string const &fileName) const {
 			}
 		}
 	}
+	columnBuffer.add(cst(), continuous, 1, 1, "CST");
+	solver.add(columnBuffer);
 
-	columnBuffer.add(cst(), CPX_CONTINUOUS, 1, 1, "CST");
-	columnBuffer.add(env, prob);
 	RowBuffer rowBuffer;
 	double const eps(1e-20);
-	for (size_t u(0); u < nV(); ++u) {
-		for (size_t v(u + 1); v < nV(); ++v) {
-			size_t const uv(ijtok(n, u, v));
-			for (size_t w(v + 1); w < nV(); ++w) {
-				size_t const uw(ijtok(n, u, w));
-				size_t const vw(ijtok(n, v, w));
+	for (int u(0); u < nV(); ++u) {
+		for (int v(u + 1); v < nV(); ++v) {
+			int const uv(ijtok(n, u, v));
+			for (int w(v + 1); w < nV(); ++w) {
+				int const uw(ijtok(n, u, w));
+				int const vw(ijtok(n, v, w));
 				if (denseCost[uv] > -eps || denseCost[vw] > -eps) {
-					rowBuffer.add(1, 'L', GetStr("T_", u, "_", v, "_", w));
+					rowBuffer.add(1, leq, GetStr("T_", u, "_", v, "_", w));
 					rowBuffer.add(uv, 1);
 					rowBuffer.add(vw, 1);
 					rowBuffer.add(uw, -1);
 				}
 				if (denseCost[vw] > -eps || denseCost[uw] > -eps) {
-					rowBuffer.add(1, 'L', GetStr("T_", v, "_", w, "_", u));
+					rowBuffer.add(1, leq, GetStr("T_", v, "_", w, "_", u));
 					rowBuffer.add(vw, 1);
 					rowBuffer.add(uw, 1);
 					rowBuffer.add(uv, -1);
 				}
 				if (denseCost[uw] > -eps || denseCost[uv] > -eps) {
-					rowBuffer.add(1, 'L', GetStr("T_", w, "_", u, "_", v));
+					rowBuffer.add(1, leq, GetStr("T_", w, "_", u, "_", v));
 					rowBuffer.add(uw, 1);
 					rowBuffer.add(uv, 1);
 					rowBuffer.add(vw, -1);
@@ -201,34 +207,24 @@ void CliquePartitionProblem::cps(std::string const &fileName) const {
 			}
 		}
 	}
+	solver.add(rowBuffer);
+	solver.maximize();
+	solver.write(fileName + ".lp");
 
-	rowBuffer.add(env, prob);
-	CPXchgobjsen(env, prob, -1);
+	solver.run();
 
-	CPXwriteprob(env, prob, (fileName + ".lp").c_str(), "LP");
-
-	CPXsetintparam(env, CPX_PARAM_SOLUTIONTARGET,
-	CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
-	CPXsetintparam(env, CPX_PARAM_CUTPASS, -1);
-
-	CPXmipopt(env, prob);
-
-	double objval;
-	CPXgetobjval(env, prob, &objval);
-	std::cout << "optimal solution value  : " << std::setprecision(20) << objval
-			<< std::endl;
-
-	CPXcloseCPLEX(&env);
-	CPXfreeprob(env, &prob);
+	double objval = solver.objValue();
+	std::cout << "optimal solution value  : " << std::setprecision(20) << objval << std::endl;
 
 }
+
 Double CliquePartitionProblem::computeCost(IndexedList const &v) const {
 	Double result(0);
-	size_t const n(nV());
+	int const n(nV());
 	for (auto i : v) {
 		for (auto j : v) {
 			if (i < j) {
-				size_t const ij(ijtok(n, i, j));
+				int const ij(ijtok(n, i, j));
 				result += _costs[ij]._v;
 			}
 		}
@@ -236,9 +232,9 @@ Double CliquePartitionProblem::computeCost(IndexedList const &v) const {
 	return result;
 }
 
-Double CliquePartitionProblem::computeCost(std::set<size_t> const & v) const {
+Double CliquePartitionProblem::computeCost(IntSet const & v) const {
 	Double result(0);
-	size_t const n(nV());
+	int const n(nV());
 	for (auto i : v) {
 		for (auto j : v) {
 			if (i < j) {
@@ -251,7 +247,7 @@ Double CliquePartitionProblem::computeCost(std::set<size_t> const & v) const {
 
 }
 
-void CliquePartitionProblem::update(size_t id, bool wasIn,
+void CliquePartitionProblem::update(int id, bool wasIn,
 		DoubleVector & gradient) const {
 	for (auto const & link : _allLinks[id]) {
 		if (wasIn)
@@ -281,8 +277,8 @@ void CliquePartitionProblem::writeSolution(
 			GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
 	for (auto const & c : bestSolution) {
 		for (auto const & edge : getCosts()) {
-			size_t const r(edge._i);
-			size_t const b(edge._j);
+			int const r(edge._i);
+			int const b(edge._j);
 			if (c.first->contains(r) && c.first->contains(b)) {
 				file << std::setw(6) << 1 + r;
 				file << std::setw(6) << 1 + b;

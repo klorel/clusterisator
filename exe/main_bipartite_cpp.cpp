@@ -18,6 +18,8 @@
 #include "../columnsgeneration/MilpOracle.h"
 #include "../columnsgeneration/QpOracle.h"
 
+#include "../mip_solver/XpressSolver.h"
+
 std::string RegisteredModularityBInstance::InstancesPath = "../txt/";
 
 int usage() {
@@ -65,33 +67,9 @@ int main(int argc, char** argv) {
 //	} while (std::remove(file_name.c_str()) == 0);
 
 	instance.out();
+	XpressSolver xpress;
+	instance.cps("cps", xpress);
 
-	CliquePartitionProblem cpp;
-	instance.getCliquePartitionProblem(cpp);
-	// oracles creation
-	VnsGenerator vnsOracle(&cpp);
-	instance.setVnsOracle(&vnsOracle);
-	MilpOracle milpOracle(&cpp);
-	QpOracle miqpOracle(&cpp);
-
-	switch (oracle) {
-	case MIQP:
-		instance.setExactOracle(&miqpOracle);
-		break;
-	case MILP:
-	default:
-		instance.setExactOracle(&milpOracle);
-		break;
-	}
-	BranchAndBound branchAndBound(instance);
-	branchAndBound.init();
-	branchAndBound.master().addSingleton();
-	branchAndBound.setOutput();
-	branchAndBound.run();
-//	branchAndBound.writeSolution();
-	std::cout << "program run in " << std::setprecision(10) << total.elapsed()
-			<< std::endl;
-//	instance.cps("toto");
 	return 0;
 }
 

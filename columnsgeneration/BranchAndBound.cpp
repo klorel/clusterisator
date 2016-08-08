@@ -103,9 +103,9 @@ void BranchAndBound::init() {
 }
 void BranchAndBound::run() {
 	treat(_root);
-	size_t ite(0);
-	size_t noeud1;
-	size_t noeud2;
+	int ite(0);
+	int noeud1;
+	int noeud2;
 	while (_nodesByUpperBounds.begin()->first > _bestFeasible + 1e-6) {
 		_bestPossible = _nodesByUpperBounds.begin()->second->ub();
 		++ite;
@@ -128,7 +128,7 @@ void BranchAndBound::run() {
 
 void BranchAndBound::treat(Node * node) {
 	_current = node;
-	_current->id() = _nodesByUpperBounds.size();
+	_current->id() = (int) _nodesByUpperBounds.size();
 	//	std::ofstream file(
 	//			GetStr("node/", _input->name(), "_node_", _current->id()).c_str());
 

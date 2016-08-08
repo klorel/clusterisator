@@ -1,6 +1,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 PROJECT(clusterisator)
 
+SET(XPRESS_DIR)
+SET(CPLEX_DIR)
+
 OPTION( WITH_TESTS "Build tests" OFF)
 OPTION( WITH_PROF "Build with profiling" OFF)
 OPTION( WITH_DEBUG "Build in debug mode" OFF)
@@ -34,13 +37,28 @@ ENDIF( WIN32 )
 
  
 #INCLUDE_DIRECTORIES($ENV{CPLEX_INC})
-SET(CPLEX_LIB /opt/ibm/ILOG/CPLEX_Studio126/cplex/lib/x86-64_linux/static_pic)
-SET(CPLEX_INC /opt/ibm/ILOG/CPLEX_Studio126/cplex/include/ilcplex)
-INCLUDE_DIRECTORIES( ${CPLEX_INC} )
+IF(NOT ${CPLEX_DIR} STREQUAL "")
+	SET(CPLEX_LIB /opt/ibm/ILOG/CPLEX_Studio126/cplex/lib/x86-64_linux/static_pic)
+	SET(CPLEX_INC /opt/ibm/ILOG/CPLEX_Studio126/cplex/include/ilcplex)
+	INCLUDE_DIRECTORIES( ${CPLEX_INC}  )
+	MESSAGE("CPLEX_DIR is ${CPLEX_DIR}")
+	MESSAGE("CPLEX_INC is ${CPLEX_INC}")
+	MESSAGE("CPLEX_LIB is ${CPLEX_LIB}")
+ENDIF()
+SET(XPRESS_DIR $ENV{XPRESSDIR})
+IF(NOT ${XPRESS_DIR} STREQUAL "")
+	SET(XPRESS_INC ${XPRESS_DIR}/include )
+	SET(XPRESS_LIB ${XPRESS_DIR}/lib )
+	INCLUDE_DIRECTORIES( ${XPRESS_INC}  )
+	MESSAGE("XPRESS_DIR is ${XPRESS_DIR}")
+	MESSAGE("XPRESS_INC is ${XPRESS_INC}")
+	MESSAGE("XPRESS_LIB is ${XPRESS_LIB}")
+ENDIF()
 
-INCLUDE_DIRECTORIES( clustering bipartite_data unipartite_data columnsgeneration heuristic)
+INCLUDE_DIRECTORIES( clustering bipartite_data unipartite_data columnsgeneration heuristic mip_solver)
 
 ADD_SUBDIRECTORY(clustering)
+ADD_SUBDIRECTORY(mip_solver)
 ADD_SUBDIRECTORY(heuristic)
 ADD_SUBDIRECTORY(columnsgeneration)
 

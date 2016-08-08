@@ -9,11 +9,9 @@
 #define CPXORACLE_H_
 
 #include "IOracle.h"
-#include <cplex.h>
-#include "LpBuffer.h"
+#include "../mip_solver/LpBuffer.h"
+#include "../mip_solver/ILpSolver.h"
 
-typedef struct cpxlp* CPXLPptr;
-typedef struct cpxenv* CPXENVptr;
 
 class CpxOracle: public IOracle {
 public:
@@ -30,12 +28,12 @@ public:
 	void write(std::string const & fileName = "oracle.lp") const;
 	void freeLp();
 protected:
-	CPXENVptr _env;
-	CPXLPptr _prob;
 	std::vector<int> _index;
 
 	RowBuffer _rowBuffer;
 	RowBuffer _decisionBuffer;
+
+	ILpSolver * _solver;
 };
 
 #endif /* CPXORACLE_H_ */

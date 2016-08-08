@@ -7,17 +7,17 @@
 class Number {
 public:
 
-	static long int Generator();
-	static void SetSeed(size_t);
+	static int Generator();
+	static void SetSeed(int);
 private:
-	static size_t _SEED;
+	static int  _SEED;
 
 	static std::default_random_engine _Generator;
 //	std::default_random_engine generator;
-	static std::uniform_int_distribution<size_t> _Distribution;
+	static std::uniform_int_distribution<int> _Distribution;
 };
 
-inline long int Number::Generator() {
+inline int Number::Generator() {
 //	long int const i(lrand48());
 	//	std::cout << i << "\n";
 //	return i;

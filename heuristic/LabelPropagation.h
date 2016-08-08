@@ -19,10 +19,10 @@ public:
 	LabelPropagation(BipartiteGraph const &, ModularityBPartition &);
 	virtual ~LabelPropagation();
 
-	bool operator()(size_t);
+	bool operator()(int);
 	bool operator()();
-	Double w(size_t id, size_t neighbor) const;
-	Double k(size_t id) const;
+	Double w(int id, int neighbor) const;
+	Double k(int id) const;
 private:
 	void buildGraph();
 private:
@@ -30,7 +30,7 @@ private:
 	ModularityBPartition * _solution;
 	std::vector<IntSet> _graph;
 };
-inline Double LabelPropagation::w(size_t id, size_t neighbor) const {
+inline Double LabelPropagation::w(int id, int neighbor) const {
 	if (id < _input->nR()) {
 		assert(neighbor >= _input->nR());
 		return _input->w(id, neighbor - _input->nR());
@@ -39,7 +39,7 @@ inline Double LabelPropagation::w(size_t id, size_t neighbor) const {
 		return _input->w(neighbor, id - _input->nR());
 	}
 }
-inline Double LabelPropagation::k(size_t id) const {
+inline Double LabelPropagation::k(int id) const {
 	return _input->k(id);
 }
 }

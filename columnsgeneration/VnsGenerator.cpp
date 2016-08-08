@@ -18,10 +18,10 @@ void VnsGenerator::setData(DoubleVector const &dual,
 	_best.setDual(dual);
 
 }
-void VnsGenerator::swap(size_t id, Double deltaCost, Double deltaDual) {
+void VnsGenerator::swap(int id, Double deltaCost, Double deltaDual) {
 	swap(id, _current._v.contains(id), deltaCost, deltaDual);
 }
-void VnsGenerator::swap(size_t id, bool wasIn, Double deltaCost,
+void VnsGenerator::swap(int id, bool wasIn, Double deltaCost,
 		Double deltaDual) {
 	_input->update(id, wasIn, _gradient);
 	_current.swap(id, deltaCost, deltaDual);
@@ -30,7 +30,7 @@ void VnsGenerator::swap(size_t id, bool wasIn, Double deltaCost,
 	else
 		_wasSwapped.insert(id);
 }
-void VnsGenerator::swap(size_t id) {
+void VnsGenerator::swap(int id) {
 
 	ASSERT_CHECK(checkGradient());ASSERT_CHECK(check());
 	bool const wasIn(_current._v.contains(id));
@@ -39,11 +39,11 @@ void VnsGenerator::swap(size_t id) {
 	swap(id, wasIn, deltaCost, deltaDual);
 	ASSERT_CHECK(checkGradient());ASSERT_CHECK(check());
 }
-void VnsGenerator::shake(size_t k) {
+void VnsGenerator::shake(int k) {
 	_allNodes.fill();
 //	_current.check();
-	for (size_t p(0); p < k && !_allNodes.empty(); ++p) {
-		size_t const id(_allNodes.pop_random());
+	for (int p(0); p < k && !_allNodes.empty(); ++p) {
+		int const id(_allNodes.pop_random());
 		//		_current.swap(id);
 		swap(id);
 	}
@@ -75,7 +75,7 @@ bool VnsGenerator::checkGradient() const {
 	return _input->checkGradient(_current._v, _gradient);
 
 }
-bool VnsGenerator::tryMove(size_t v, Double deltaCost, Double deltaDual) {
+bool VnsGenerator::tryMove(int v, Double deltaCost, Double deltaDual) {
 	Double const delta(deltaCost + deltaDual);
 	bool success(false);
 	if (delta > ZERO_REDUCED_COST && !_current._v.contains(v)) {
@@ -90,7 +90,7 @@ bool VnsGenerator::tryMove(size_t v, Double deltaCost, Double deltaDual) {
 }
 bool VnsGenerator::localSearch() {
 //	IntVector temp(_input->nV());
-	size_t violations(_current.violation(*_decisions));
+	int violations(_current.violation(*_decisions));
 	assert(violations == _current.violation(*_decisions));
 //	for (size_t v(0); v < _input->nV(); ++v)
 //		_gradient[v] += _current.gradient(v);
@@ -98,9 +98,9 @@ bool VnsGenerator::localSearch() {
 	do {
 		ASSERT_CHECK(check());
 		stop = true;
-		for (size_t v(0); v < _input->nV(); ++v) {
+		for (int v(0); v < _input->nV(); ++v) {
 			//			MY_PRINT(_current._reducedCost);
-			size_t const newViolations(violationIf(v));
+			int const newViolations(violationIf(v));
 			if (newViolations == 0 || newViolations < violations) {
 				Double const deltaCost(_gradient[v]);
 				Double const deltaDual(dual(v));
@@ -120,9 +120,9 @@ bool VnsGenerator::localSearch() {
 
 #include "../clustering/Timer.h"
 
-bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
+bool VnsGenerator::run(int iteMax, bool stopAtFirst) {
 //	_columns.clear();
-	size_t ite(0);
+	int ite(0);
 //	Double kMax((Double) std::max(_input->nR(), _input->nB()));
 //	Double kMax((Double) std::min(_input->nR(), _input->nB()));
 	Double kMax(_input->nV() > 100 ? 100 : (Double) _input->nV());
@@ -137,7 +137,7 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 	do {
 		++ite;
 		//		shake(_input->nV() * 0.5);
-		size_t k(0);
+		int k(0);
 		do {
 			++k;
 
@@ -170,7 +170,7 @@ bool VnsGenerator::run(size_t iteMax, bool stopAtFirst) {
 			}
 			//			MY_PRINT(_current._reducedCost);
 			if (success && stopAtFirst) {
-				k = std::ceil(kMax);
+				k = (int)std::ceil(kMax);
 			}
 		} while (k < kMax);
 	} while (ite < iteMax && !success);

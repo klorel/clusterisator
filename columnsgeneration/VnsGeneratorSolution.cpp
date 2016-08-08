@@ -27,14 +27,14 @@ VnsGeneratorSolution & VnsGeneratorSolution::operator=(
 VnsGeneratorSolution::~VnsGeneratorSolution() {
 }
 
-void VnsGeneratorSolution::swap(size_t id) {
+void VnsGeneratorSolution::swap(int id) {
 	if (_v.contains(id)) {
 		_v.erase(id);
 	} else {
 		_v.insert(id);
 	}
 }
-void VnsGeneratorSolution::swap(size_t id, Double deltaCost, Double deltaDual) {
+void VnsGeneratorSolution::swap(int id, Double deltaCost, Double deltaDual) {
 	swap(id);
 	_cost += deltaCost;
 	_reducedCost += (deltaCost + deltaDual);
@@ -62,8 +62,8 @@ void VnsGeneratorSolution::build(Column & column) {
 //	column.print();
 }
 
-size_t VnsGeneratorSolution::violation(DecisionList const & decisions) const {
-	size_t result(0);
+int VnsGeneratorSolution::violation(DecisionList const & decisions) const {
+	int result(0);
 	for (auto const & decision : decisions) {
 		result += decision.violation(_v.contains(decision.noeud1()),
 				_v.contains(decision.noeud2()));
@@ -105,6 +105,5 @@ bool VnsGeneratorSolution::check() const {
 }
 void VnsGeneratorSolution::setDual(DoubleVector const & v) {
 	_dual = &v;
-
 }
 

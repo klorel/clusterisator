@@ -15,19 +15,19 @@ public:
 	virtual ~VnsGeneratorSolution();
 	VnsGeneratorSolution & operator=(VnsGeneratorSolution const &);
 public:
-	void swap(size_t id);
-	void swap(size_t id, Double, Double);
+	void swap(int id);
+	void swap(int id, Double, Double);
 
 	Double computeCost() const;
 	Double computeReducedCost() const;
 	void build(Column &);
-	size_t violation(DecisionList const &) const;
+	int violation(DecisionList const &) const;
 	void clear();
 	bool check() const;
 public:
 	static bool IsBetter(VnsGeneratorSolution const & p,
 			VnsGeneratorSolution const & q, DecisionList const & decisions);
-	Double dual(size_t) const;
+	Double dual(int) const;
 	void setDual(DoubleVector const &);
 private:
 	ClusteringProblem const * _input;
@@ -39,7 +39,7 @@ public:
 	Double _reducedCost;
 };
 
-inline Double VnsGeneratorSolution::dual(size_t n) const {
+inline Double VnsGeneratorSolution::dual(int n) const {
 	return (*_dual)[n];
 }
 #endif /* GRAPH_HPP */

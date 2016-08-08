@@ -24,8 +24,8 @@ VnsLabelPropagation::~VnsLabelPropagation() {
 void VnsLabelPropagation::singletize(size_t i, IndexedList & allNodes,
 		ModularityBPartition & solution) {
 	allNodes.fill();
-	for (size_t p(0); p < i && !allNodes.empty(); ++p) {
-		size_t const id(allNodes.pop_random());
+	for (int p(0); p < i && !allNodes.empty(); ++p) {
+		int const id(allNodes.pop_random());
 		if (solution.sizeOfLabel(solution.label(id)) > 1) {
 			solution.shift(id, solution.getUnUsedLabel());
 			++p;
@@ -36,7 +36,7 @@ void VnsLabelPropagation::singletize(size_t i, IndexedList & allNodes,
 
 void VnsLabelPropagation::set(IntVector const & l,
 		ModularityBPartition & solution) {
-	for (size_t i(0); i < l.size(); ++i)
+	for (int i(0); i < l.size(); ++i)
 		solution.shift(i, l[i]);
 }
 

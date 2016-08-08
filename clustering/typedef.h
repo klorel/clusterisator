@@ -27,6 +27,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <limits>
+#include <exception>
+#include <stdexcept>
 
 #undef NDEBUG
 #include <cassert>
@@ -38,14 +40,14 @@
 //#endif
 typedef double Double;
 
-typedef std::pair<size_t, size_t> Position;
+typedef std::pair<int, int> Position;
 typedef std::vector<bool> BoolVector;
 
-typedef std::set<size_t> IntSet;
-typedef std::list<size_t> IntList;
-typedef std::vector<size_t> IntVector;
+typedef std::set<int> IntSet;
+typedef std::list<int> IntList;
+typedef std::vector<int> IntVector;
 
-typedef std::map<size_t, size_t> IntMap;
+typedef std::map<int, int> IntMap;
 typedef std::set<Double> DoubleSet;
 typedef std::list<Double> DoubleList;
 typedef std::vector<Double> DoubleVector;

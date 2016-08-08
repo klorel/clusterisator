@@ -20,8 +20,8 @@ Double Column::computeReducedCost(DoubleVector const & dual) const {
 	}
 	return result;
 }
-size_t Column::size() const {
-	return _v.size();
+int Column::size() const {
+	return (int) _v.size();
 }
 
 Double & Column::cost() {
@@ -36,7 +36,7 @@ Double & Column::reducedCost() {
 Double const & Column::reducedCost() const {
 	return _reducedCost;
 }
-size_t & Column::id() const {
+int & Column::id() const {
 	return _id;
 }
 
@@ -74,38 +74,38 @@ void Column::print(std::ostream & stream) const {
 			std::ostream_iterator<size_t>(stream << "V : ", " "));
 	stream << std::endl;
 }
-std::set<size_t> & Column::v() {
+IntSet & Column::v() {
 	return _v;
 }
-std::set<size_t> const & Column::v() const {
+IntSet const & Column::v() const {
 	return _v;
 }
 bool Column::operator<(Column const & rhs) const {
 	return _v < rhs._v;
 }
 
-size_t Column::violation(DecisionList const & decisions) const {
-	size_t result(0);
+int Column::violation(DecisionList const & decisions) const {
+	int result(0);
 	for (auto const & decision : decisions) {
 		result += violation(decision);
 	}
 	return result;
 
 }
-size_t Column::violation(Decision const & decision) const {
+int Column::violation(Decision const & decision) const {
 	bool const isR(contains(decision.noeud1()));
 	bool const isB(contains(decision.noeud2()));
 	return decision.violation(isR, isB);
 }
 
-bool Column::insert(size_t v) {
+bool Column::insert(int v) {
 	return _v.insert(v).second;
 
 }
-void Column::erase(size_t v) {
+void Column::erase(int v) {
 	_v.erase(v);
 
 }
-bool Column::contains(size_t v) const {
+bool Column::contains(int v) const {
 	return _v.find(v) != _v.end();
 }

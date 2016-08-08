@@ -11,11 +11,11 @@ Decision::Decision() :
 		_noeud1(0), _noeud2(0), _cannot(0), _empty(true) {
 
 }
-Decision::Decision(size_t noeud1, size_t noeud2, bool cannot) :
+Decision::Decision(int noeud1, int noeud2, bool cannot) :
 		_noeud1(noeud1), _noeud2(noeud2), _cannot(cannot), _empty(false) {
 
 }
-Decision::Decision(std::pair<size_t, size_t> noeud1noeud2, bool cannot) :
+Decision::Decision(std::pair<int, int> noeud1noeud2, bool cannot) :
 		_noeud1(noeud1noeud2.first), _noeud2(noeud1noeud2.second), _cannot(
 				cannot), _empty(false) {
 
@@ -44,16 +44,16 @@ bool Decision::cannot() const {
 bool &Decision::cannot() {
 	return _cannot;
 }
-size_t Decision::noeud1() const {
+int Decision::noeud1() const {
 	return _noeud1;
 }
-size_t &Decision::noeud1() {
+int &Decision::noeud1() {
 	return _noeud1;
 }
-size_t Decision::noeud2() const {
+int Decision::noeud2() const {
 	return _noeud2;
 }
-size_t &Decision::noeud2() {
+int &Decision::noeud2() {
 	return _noeud2;
 }
 
@@ -87,8 +87,8 @@ void Decision::Print(DecisionSet const &list, std::ostream & stream) {
 		stream << std::endl;
 	}
 }
-size_t Decision::violation(bool isNoeud1, bool isNoeud2) const {
-	size_t result(0);
+int Decision::violation(bool isNoeud1, bool isNoeud2) const {
+	int result(0);
 	if (cannot()) {
 		if (isNoeud1 && isNoeud2)
 			++result;

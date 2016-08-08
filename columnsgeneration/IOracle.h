@@ -11,6 +11,7 @@
 #include "Column.h"
 #include "Decision.h"
 #include "gencol.h"
+
 class ClusteringProblem;
 class ClusteringProblem;
 class IOracle {

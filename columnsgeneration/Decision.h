@@ -13,16 +13,16 @@ class Decision {
 public:
 	Decision();
 	Decision(Decision const &);
-	Decision(size_t, size_t, bool);
-	Decision(std::pair<size_t, size_t> noeud1noeud2, bool = false);
+	Decision(int, int, bool);
+	Decision(std::pair<int, int> noeud1noeud2, bool = false);
 	Decision & operator=(Decision const &);
 	virtual ~Decision();
 	bool cannot() const;
 	bool &cannot();
-	size_t noeud1() const;
-	size_t &noeud1();
-	size_t noeud2() const;
-	size_t &noeud2();
+	int noeud1() const;
+	int &noeud1();
+	int noeud2() const;
+	int &noeud2();
 
 	bool operator<(Decision const &) const;
 	void print(std::ostream & = std::cout) const;
@@ -31,10 +31,10 @@ public:
 	static void Print(DecisionList const &, std::ostream & = std::cout);
 	static void Print(DecisionSet const &, std::ostream & = std::cout);
 
-	size_t violation(bool, bool) const;
+	int violation(bool, bool) const;
 private:
-	size_t _noeud1;
-	size_t _noeud2;
+	int _noeud1;
+	int _noeud2;
 	bool _cannot;
 	bool _empty;
 };

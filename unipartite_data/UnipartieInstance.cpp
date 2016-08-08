@@ -18,7 +18,7 @@ UnipartieInstance::UnipartieInstance(Edges const & edges) :
 UnipartieInstance::~UnipartieInstance() {
 }
 void UnipartieInstance::build() {
-	size_t n(0);
+	int n(0);
 	_m = 0;
 	for (auto const & edge : _edges) {
 		n = std::max(n, edge._i);
@@ -35,19 +35,19 @@ void UnipartieInstance::build() {
 	_costs.resize(n * (n - 1) / 2);
 	_allLinks.assign(nV(), Links());
 
-	for (size_t i(0); i < n; ++i) {
-		for (size_t j(i + 1); j < n; ++j) {
-			size_t const ij(ijtok(n, i, j));
+	for (int i(0); i < n; ++i) {
+		for (int j(i + 1); j < n; ++j) {
+			int const ij(ijtok(n, i, j));
 			_costs[ij] = Edge(i, j, -_k[i] * _k[j] * _inv_m / 2.0);
 		}
 	}
 	for (auto const & edge : _edges) {
-		size_t const ij(ijtok(n, edge._i, edge._j));
+		int const ij(ijtok(n, edge._i, edge._j));
 		_costs[ij]._v += 1;
 	}
-	for (size_t i(0); i < n; ++i) {
-		for (size_t j(i + 1); j < n; ++j) {
-			size_t const ij(ijtok(n, i, j));
+	for (int i(0); i < n; ++i) {
+		for (int j(i + 1); j < n; ++j) {
+			int const ij(ijtok(n, i, j));
 			_costs[ij]._v *= _inv_m;
 			_allLinks[i][j] = _costs[ij]._v;
 			_allLinks[j][i] = _costs[ij]._v;
@@ -65,11 +65,11 @@ void UnipartieInstance::build() {
 }
 
 void UnipartieInstance::cpCost(DoubleVector &result) const {
-	size_t const n(nV());
+	int const n(nV());
 	result.assign(n * (n - 1) / 2, 0);
-	for (size_t i(0); i < n; ++i) {
-		for (size_t j(i + 1); j < n; ++j) {
-			size_t const ij(ijtok(n, i, j));
+	for (int i(0); i < n; ++i) {
+		for (int j(i + 1); j < n; ++j) {
+			int const ij(ijtok(n, i, j));
 			result[ij] = _costs[ij]._v;
 		}
 	}
@@ -100,11 +100,11 @@ void UnipartieInstance::cpCost(DoubleVector &result) const {
 
 Double UnipartieInstance::computeCost(IndexedList const &v) const {
 	Double result(0);
-	size_t const n(nV());
+	int const n(nV());
 	for (auto i : v) {
 		for (auto j : v) {
 			if (i < j) {
-				size_t const ij(ijtok(n, i, j));
+				int const ij(ijtok(n, i, j));
 				result += _costs[ij]._v;
 			}
 		}
@@ -112,13 +112,13 @@ Double UnipartieInstance::computeCost(IndexedList const &v) const {
 	return result;
 }
 
-Double UnipartieInstance::computeCost(std::set<size_t> const & v) const {
+Double UnipartieInstance::computeCost(IntSet const & v) const {
 	Double result(0);
-	size_t const n(nV());
+	int const n(nV());
 	for (auto i : v) {
 		for (auto j : v) {
 			if (i < j) {
-				size_t const ij(ijtok(n, i, j));
+				int const ij(ijtok(n, i, j));
 				result += _costs[ij]._v;
 			}
 		}
@@ -133,8 +133,8 @@ void UnipartieInstance::writeSolution(FractionnarySolution const& bestSolution,
 			GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
 	for (auto const & c : bestSolution) {
 		for (auto const & edge : costs()) {
-			size_t const r(edge._i);
-			size_t const b(edge._j);
+			int const r(edge._i);
+			int const b(edge._j);
 			if (c.first->contains(r) && c.first->contains(b)) {
 				file << std::setw(6) << 1 + r;
 				file << std::setw(6) << 1 + b;

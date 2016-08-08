@@ -7,12 +7,12 @@
 
 #include "Partition.h"
 
-Partition::Partition(size_t nbObs, size_t nbMaxLabels) {
+Partition::Partition(int nbObs, int nbMaxLabels) {
 	oneLabel(nbObs, nbMaxLabels);
 }
 Partition::Partition(Partition const & rhs) {
 	oneLabel(rhs.nbObs(), rhs.maxNbLabels());
-	for (size_t n(0); n < nbObs(); ++n)
+	for (int n(0); n < nbObs(); ++n)
 		shift(n, rhs.label(n));
 }
 
@@ -21,7 +21,7 @@ Partition & Partition::operator=(Partition const & rhs) {
 		if (rhs.nbObs() != nbObs() || rhs.maxNbLabels() != maxNbLabels()) {
 			oneLabel(rhs.nbObs(), rhs.maxNbLabels());
 		}
-		for (size_t n(0); n < nbObs(); ++n)
+		for (int n(0); n < nbObs(); ++n)
 			shift(n, rhs.label(n));
 	}
 	return *this;
@@ -32,7 +32,7 @@ Partition::~Partition() {
 
 }
 
-size_t Partition::fusion(size_t const & label1, size_t const & label2) {
+int Partition::fusion(int label1, int label2) {
 	assert(label1 < maxNbLabels());
 	assert(label2 < maxNbLabels());
 
@@ -41,7 +41,8 @@ size_t Partition::fusion(size_t const & label1, size_t const & label2) {
 	}
 
 	//Move obs from the smallest into the biggest label, to minimize movements
-	size_t destLabel, origLabel;
+	int destLabel;
+	int origLabel;
 	if (label1 < label2) {
 		destLabel = label1;
 		origLabel = label2;
@@ -60,7 +61,7 @@ size_t Partition::fusion(size_t const & label1, size_t const & label2) {
 	return destLabel;
 }
 
-void Partition::oneLabel(size_t nbObs, size_t nbMaxLabels) {
+void Partition::oneLabel(int nbObs, int nbMaxLabels) {
 	_labelLists.assign(nbMaxLabels, IntList());
 	_size.assign(nbMaxLabels, 0);
 	_usedLabels.reset(nbMaxLabels);
@@ -78,7 +79,7 @@ void Partition::oneLabel(size_t nbObs, size_t nbMaxLabels) {
 	_unUsedLabels.fill();
 	_unUsedLabels.erase(0);
 
-	for (size_t n(0); n < this->nbObs(); ++n) {
+	for (int n(0); n < this->nbObs(); ++n) {
 		_labelLists[0].push_front(n);
 		_nodePosition[n] = _labelLists[0].begin();
 	}
@@ -88,7 +89,7 @@ void Partition::oneLabel(size_t nbObs, size_t nbMaxLabels) {
 void Partition::setLabels(IntVector const & labels) {
 	assert(labels.size() == nbObs());
 
-	for (size_t i(0); i < labels.size(); ++i) {
+	for (int i(0); i < labels.size(); ++i) {
 		assert(
 				labels[i] < maxNbLabels()
 						&& "you must provide labels l : 0<=l<maxNbLabels()");
@@ -99,10 +100,10 @@ void Partition::setLabels(IntVector const & labels) {
 void Partition::setLabels(Partition const & rhs) {
 	setLabels(rhs._labels);
 }
-bool Partition::shift(size_t observation, size_t to) {
+bool Partition::shift(int observation, int to) {
 	assert(observation < nbObs());
 
-	size_t const from(_labels[observation]);
+	int const from(_labels[observation]);
 	if (from != to) {
 		--_size[from];
 		_labelLists[from].erase(_nodePosition[observation]);
@@ -158,12 +159,12 @@ void Partition::random() {
 	for (auto const & n : nodes)
 		shift(n, Number::Generator() % maxNbLabels());
 }
-void Partition::random(size_t k) {
+void Partition::random(int k) {
 	assert(k < maxNbLabels());
 	assert(nbObs() > 0);
 	IndexedList nodes(nbObs(), true);
-	for (size_t i(0); i < (k == 0 ? maxNbLabels() : k); ++i) {
-		size_t const n(nodes.pop_random());
+	for (int i(0); i < (k == 0 ? maxNbLabels() : k); ++i) {
+		int const n(nodes.pop_random());
 //		OUT<< n << " "<<i<<"\n";
 		shift(n, i);
 	}
@@ -176,6 +177,6 @@ void Partition::setWeights(DoubleVector const & weights) {
 
 	_nodeWeights = weights;
 	_labelWeights.assign(maxNbLabels(), 0);
-	for (size_t i(0); i < nbObs(); ++i)
+	for (int i(0); i < nbObs(); ++i)
 		_labelWeights[_labels[i]] += _nodeWeights[i];
 }

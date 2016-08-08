@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 	AvailableModularityBInstances id(
 			static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
 
-	AvailableOracle oracle(AvailableOracle::bMILP);
+	AvailableOracle oracle(AvailableOracle::MIQP);
 	if (argc > 2) {
 		oracle = static_cast<AvailableOracle>(atoi(argv[2]));
 	}
@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
 	case MILP:
 		instance.setExactOracle(&milpOracle);
 		break;
-	case bMILP:
+	//case bMILP:
 	default:
 		instance.setExactOracle(&bMilpOracle);
 		break;

@@ -20,7 +20,7 @@ void operator>>(std::string const & fileName, Partition & partition) {
 
 void operator>>(std::istream & stream, Partition & partition) {
 	std::map<std::string, IntSet> codes;
-	size_t i(0);
+	int i(0);
 	std::string code;
 	while (stream >> code) {
 //		std::cout << i << " in " << code << "\n";
@@ -29,7 +29,7 @@ void operator>>(std::istream & stream, Partition & partition) {
 	}
 //	std::cout << codes.size() << " labels\n";
 //	std::cout << i << " observations\n";
-	partition.oneLabel(i, codes.size());
+	partition.oneLabel(i, (int)codes.size());
 	i = 0;
 	for (auto const & s : codes) {
 //		std::cout << "label " << i << "\n";
@@ -42,7 +42,7 @@ void operator>>(std::istream & stream, Partition & partition) {
 
 void operator>>(std::istream & stream, IntVector & values) {
 	values.clear();
-	size_t value(0);
+	int value(0);
 	values.reserve(10000);
 	while (stream >> value)
 		values.push_back(value);

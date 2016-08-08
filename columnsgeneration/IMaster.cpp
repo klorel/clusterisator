@@ -9,9 +9,8 @@
 
 #include "Column.h"
 #include "Decision.h"
-#include "LpBuffer.h"
+#include "../mip_solver/LpBuffer.h"
 
-#include <cplex.h>
 #include "ClusteringProblem.h"
 
 IMaster::IMaster(ClusteringProblem const * input,
@@ -25,14 +24,15 @@ IMaster::~IMaster() {
 }
 
 void IMaster::getBasis(ColumnBuffer & result) const {
-	result.clear();
-	for (auto const & column : _columns) {
-		size_t const id(column.id());
-		if (_cstat[id] == CPX_BASIC) {
-			result.add(0, CPX_CONTINUOUS, 0, CPX_INFBOUND, GetStr("C_", id));
-			for (auto const & v : column.v()) {
-				result.add(v, 1);
-			}
-		}
-	}
+	throw std::invalid_argument("");
+//	result.clear();
+//	for (auto const & column : _columns) {
+//		size_t const id(column.id());
+//		if (_cstat[id] == CPX_BASIC) {
+//			result.add(0, CPX_CONTINUOUS, 0, CPX_INFBOUND, GetStr("C_", id));
+//			for (auto const & v : column.v()) {
+//				result.add(v, 1);
+//			}
+//		}
+//	}
 }

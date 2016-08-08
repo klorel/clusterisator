@@ -18,8 +18,8 @@ BipartiteGraph::BipartiteGraph(Edges const & edges) :
 BipartiteGraph::~BipartiteGraph() {
 }
 void BipartiteGraph::build() {
-	size_t R(0);
-	size_t B(0);
+	int R(0);
+	int B(0);
 //	std::cout << _edges << std::endl;
 	for (auto const & e : _edges) {
 		R = std::max(R, e._i);
@@ -34,11 +34,11 @@ void BipartiteGraph::build() {
 		_m += e._v;
 	}
 	_inv_m = 1.0 / _m;
-	_allLinks.assign(nV(), std::map<size_t, double>());
+	_allLinks.assign(nV(), std::map<int, double>());
 	_costs.reserve(nR() * nB());
 
-	for (size_t r(0); r < nR(); ++r) {
-		for (size_t b(0); b < nB(); ++b) {
+	for (int r(0); r < nR(); ++r) {
+		for (int b(0); b < nB(); ++b) {
 			double const value(w(r, b));
 			if (value != 0) {
 				_costs.push_back(Edge(r, nR() + b, value));
@@ -57,13 +57,13 @@ void BipartiteGraph::build() {
 //	MY_PRINT(nB());
 }
 void BipartiteGraph::cpCost(DoubleVector &result) const {
-	size_t const n(nV());
+	int const n(nV());
 	result.assign(n * (n - 1) / 2, 0);
-	for (size_t r(0); r < nR(); ++r) {
-		for (size_t b(0); b < nB(); ++b) {
+	for (int r(0); r < nR(); ++r) {
+		for (int b(0); b < nB(); ++b) {
 			double const value(w(r, b));
 			if (value != 0) {
-				size_t const ij(ijtok(n, r, nR() + b));
+				int const ij(ijtok(n, r, nR() + b));
 				result[ij] = value;
 			}
 		}
@@ -103,7 +103,7 @@ Double BipartiteGraph::computeCost(IndexedList const &v) const {
 	return result;
 }
 
-Double BipartiteGraph::computeCost(std::set<size_t> const & v) const {
+Double BipartiteGraph::computeCost(IntSet const & v) const {
 	Double result(0);
 	for (auto const & r : v) {
 		if (r < nR()) {
@@ -124,8 +124,8 @@ void BipartiteGraph::writeSolution(FractionnarySolution const& bestSolution,
 			GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
 	for (auto const & c : bestSolution) {
 		for (auto const & edge : costs()) {
-			size_t const r(edge._i);
-			size_t const b(edge._j);
+			int const r(edge._i);
+			int const b(edge._j);
 			if (c.first->contains(r) && c.first->contains(b)) {
 				file << std::setw(6) << 1 + r;
 				file << std::setw(6) << 1 + b;

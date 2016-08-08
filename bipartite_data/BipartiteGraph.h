@@ -14,17 +14,17 @@ class Node;
 
 class BipartiteGraph: public CliquePartitionProblem {
 public:
-	virtual size_t nV() const;
+	virtual int nV() const;
 	virtual Edges const & edges() const;
 
-	virtual std::string name(size_t v) const;
-	virtual Double k(size_t) const;
+	virtual std::string name(int v) const;
+	virtual Double k(int) const;
 
 	virtual void writeSolution(FractionnarySolution const&, double) const;
-	virtual Double computeCost(std::set<size_t> const &) const;
+	virtual Double computeCost(IntSet const &) const;
 	virtual Double computeCost(IndexedList const &) const;
 
-	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const;
+	virtual void update(int id, bool wasIn, DoubleVector &gradient) const;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 	virtual std::vector<Edge> const & costs() const;
 	virtual void cpCost(DoubleVector &) const;
@@ -39,20 +39,20 @@ public:
 	virtual ~BipartiteGraph();
 
 public:
-	size_t nR() const;
-	size_t nB() const;
+	int nR() const;
+	int nB() const;
 
 	Edges & edges();
 	RectMatrix const & a() const;
-	Double w(size_t r, size_t b) const;
-	Double a(size_t r, size_t b) const;
+	Double w(int r, int b) const;
+	Double a(int r, int b) const;
 
 	Double m() const;
 	Double inv_m() const;
 	Double sum_kR() const;
 	Double sum_kB() const;
 
-	std::map<size_t, double> const & allLinks(size_t v) const;
+	std::map<int, double> const & allLinks(int v) const;
 
 	void getCliquePartitionProblem(CliquePartitionProblem & result)const;
 public:
@@ -62,24 +62,24 @@ public:
 
 	Edges _edges;
 	RectMatrix _a;
-	std::vector<std::map<size_t, double> > _allLinks;
+	std::vector<std::map<int, double> > _allLinks;
 	std::vector<Edge> _costs;
 
 };
-inline std::string BipartiteGraph::name(size_t v) const {
+inline std::string BipartiteGraph::name(int v) const {
 	return v < nR() ? GetStr("YR_", v) : GetStr("YB_", v - nR());
 }
-inline size_t BipartiteGraph::nR() const {
+inline int BipartiteGraph::nR() const {
 	return _a.getN();
 }
-inline size_t BipartiteGraph::nB() const {
+inline int BipartiteGraph::nB() const {
 	return _a.getM();
 }
-inline size_t BipartiteGraph::nV() const {
-	return _k.size();
+inline int BipartiteGraph::nV() const {
+	return (int)_k.size();
 }
 
-inline Double BipartiteGraph::k(size_t id) const {
+inline Double BipartiteGraph::k(int id) const {
 	return _k[id];
 }
 inline RectMatrix const & BipartiteGraph::a() const {
@@ -92,10 +92,10 @@ inline Edges const & BipartiteGraph::edges() const {
 inline Edges & BipartiteGraph::edges() {
 	return _edges;
 }
-inline Double BipartiteGraph::w(size_t r, size_t b) const {
+inline Double BipartiteGraph::w(int r, int b) const {
 	return (_a.get(r, b) - _k[r] * _k[nR() + b] / _m) / _m;
 }
-inline Double BipartiteGraph::a(size_t r, size_t b) const {
+inline Double BipartiteGraph::a(int r, int b) const {
 	return _a.get(r, b);
 }
 
@@ -106,13 +106,13 @@ inline Double BipartiteGraph::inv_m() const {
 	return _inv_m;
 }
 inline Double BipartiteGraph::sum_kR() const {
-	return std::accumulate(_k.begin(), _k.begin() + nR(), 0);
+	return std::accumulate(_k.begin(), _k.begin() + nR(), 0.0);
 }
 inline Double BipartiteGraph::sum_kB() const {
-	return std::accumulate(_k.begin() + nR(), _k.end(), 0);
+	return std::accumulate(_k.begin() + nR(), _k.end(), 0.0);
 }
-inline std::map<size_t, double> const & BipartiteGraph::allLinks(
-		size_t v) const {
+inline std::map<int, double> const & BipartiteGraph::allLinks(
+	int v) const {
 //	MY_PRINT(v);
 //	MY_PRINT(nV());
 	return _allLinks[v];
@@ -121,7 +121,7 @@ inline std::map<size_t, double> const & BipartiteGraph::allLinks(
 inline std::vector<Edge> const & BipartiteGraph::costs() const {
 	return _costs;
 }
-inline void BipartiteGraph::update(size_t id, bool wasIn,
+inline void BipartiteGraph::update(int id, bool wasIn,
 		DoubleVector & gradient) const {
 	for (auto const & link : _allLinks[id]) {
 		if (wasIn)

@@ -18,16 +18,16 @@ LabelPropagation::~LabelPropagation() {
 
 }
 
-bool LabelPropagation::operator()(size_t id) {
-	std::map<size_t, Double> links;
-	for (size_t r(0); r < _input->nR() && id >= _input->nR(); ++r) {
+bool LabelPropagation::operator()(int id) {
+	std::map<int, Double> links;
+	for (int r(0); r < _input->nR() && id >= _input->nR(); ++r) {
 		links[_solution->label(r)] += w(id, r);
 	}
-	for (size_t b(0); b < _input->nB() && id < _input->nR(); ++b) {
+	for (int b(0); b < _input->nB() && id < _input->nR(); ++b) {
 		links[_solution->label(_input->nR() + b)] += w(id, _input->nR() + b);
 	}
 	Double const loss(links[_solution->label(id)]);
-	std::multimap<Double, size_t, std::greater<Double>> delta;
+	std::multimap<Double, int, std::greater<Double>> delta;
 	for (auto const & n : links) {
 		delta.insert(std::make_pair(n.second - loss, n.first));
 	}
@@ -46,7 +46,7 @@ bool LabelPropagation::operator()() {
 	_solution->checkScore();
 	do {
 		stop = true;
-		for (size_t id(0); id < _input->nV(); ++id) {
+		for (int id(0); id < _input->nV(); ++id) {
 			if (operator ()(id)) {
 				stop = false;
 				success = true;
