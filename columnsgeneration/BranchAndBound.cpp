@@ -14,8 +14,6 @@ BranchAndBound::BranchAndBound(ClusteringProblem const &input) :
 	_current = NULL;
 	_output = NULL;
 	_master = new LpMaster(&input, &_decision);
-//	_mipGenerator = _input->newOracle(oracle, &_master->dual(), &_decision);
-//	_vnsGenerator = _input->newVnsOracle(&_master->dual(), &_decision);
 	_columnGenerator.setExact(_input->getExactOracle(), _master->dual(),
 			_decision);
 	_columnGenerator.setVns(_input->getVnsOracle(), _master->dual(), _decision);

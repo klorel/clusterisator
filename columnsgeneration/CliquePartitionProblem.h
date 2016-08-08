@@ -50,7 +50,7 @@ public:
 	virtual Double computeCost(std::set<size_t> const &) const;
 	virtual Double computeCost(IndexedList const &) const;
 
-	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const;
+	virtual void update(size_t id, IndexedList const &, DoubleVector &) const;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 public:
 	Edges & getEdges();

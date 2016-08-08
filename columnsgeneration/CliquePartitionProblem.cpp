@@ -251,8 +251,9 @@ Double CliquePartitionProblem::computeCost(std::set<size_t> const & v) const {
 
 }
 
-void CliquePartitionProblem::update(size_t id, bool wasIn,
+void CliquePartitionProblem::update(size_t id, IndexedList const & v,
 		DoubleVector & gradient) const {
+	bool const wasIn(v.contains(id));
 	for (auto const & link : _allLinks[id]) {
 		if (wasIn)
 			gradient[link.first] -= link.second;

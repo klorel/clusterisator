@@ -32,7 +32,7 @@ int usage() {
 		std::cout << "\n";
 	}
 	std::cout
-			<< "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP)2(bMILP default)>"
+			<< "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP default)>"
 			<< std::endl;
 	std::cout << "The program launch the column generation algorithm"
 			<< std::endl;
@@ -78,8 +78,10 @@ int main(int argc, char** argv) {
 	// oracles creation
 	VnsGenerator vnsOracle(&instance);
 	instance.setVnsOracle(&vnsOracle);
+
 	CliquePartitionProblem cpp;
 	instance.getCliquePartitionProblem(cpp);
+
 	MilpOracle milpOracle(&cpp);
 	QpOracle miqpOracle(&cpp);
 	switch (oracle) {

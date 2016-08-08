@@ -3,7 +3,7 @@
 
 #include "../clustering/IndexedList.h"
 #include "../clustering/RectMatrix.h"
-#include "../columnsgeneration/CliquePartitionProblem.h"
+#include "../columnsgeneration/ClusteringProblem.h"
 #include "common.h"
 #include "Edge.h"
 #include "gencol.h"
@@ -11,8 +11,8 @@
 class IOracle;
 class Node;
 //std::ostream & operator<<(std::ostream &out, bipartite::BipartiteGraph const&);
-
-class BipartiteGraph: public CliquePartitionProblem {
+class CliquePartitionProblem;
+class BipartiteGraph: public ClusteringProblem {
 public:
 	virtual size_t nV() const;
 	virtual Edges const & edges() const;
@@ -24,7 +24,7 @@ public:
 	virtual Double computeCost(std::set<size_t> const &) const;
 	virtual Double computeCost(IndexedList const &) const;
 
-	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const;
+	virtual void update(size_t id, IndexedList const & v, DoubleVector &) const;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 	virtual std::vector<Edge> const & costs() const;
 	virtual void cpCost(DoubleVector &) const;
@@ -54,7 +54,7 @@ public:
 
 	std::map<size_t, double> const & allLinks(size_t v) const;
 
-	void getCliquePartitionProblem(CliquePartitionProblem & result)const;
+	void getCliquePartitionProblem(CliquePartitionProblem & result) const;
 public:
 	Double _m;
 	Double _inv_m;
@@ -121,8 +121,9 @@ inline std::map<size_t, double> const & BipartiteGraph::allLinks(
 inline std::vector<Edge> const & BipartiteGraph::costs() const {
 	return _costs;
 }
-inline void BipartiteGraph::update(size_t id, bool wasIn,
+inline void BipartiteGraph::update(size_t id, IndexedList const & v,
 		DoubleVector & gradient) const {
+	bool const wasIn(v.contains(id));
 	for (auto const & link : _allLinks[id]) {
 		if (wasIn)
 			gradient[link.first] -= link.second;

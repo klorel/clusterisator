@@ -20,7 +20,7 @@ class ClusteringProblem {
 public:
 	virtual size_t nV() const =0;
 	virtual void writeSolution(FractionnarySolution const&, double) const = 0;
-	virtual void update(size_t id, bool wasIn, DoubleVector &gradient) const= 0;
+	virtual void update(size_t, IndexedList const &, DoubleVector &) const= 0;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const= 0;
 	virtual Double computeCost(std::set<size_t> const &) const = 0;
 	virtual Double computeCost(IndexedList const &) const = 0;

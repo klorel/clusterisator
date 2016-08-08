@@ -23,7 +23,7 @@ void VnsGenerator::swap(size_t id, Double deltaCost, Double deltaDual) {
 }
 void VnsGenerator::swap(size_t id, bool wasIn, Double deltaCost,
 		Double deltaDual) {
-	_input->update(id, wasIn, _gradient);
+	_input->update(id, _current._v, _gradient);
 	_current.swap(id, deltaCost, deltaDual);
 	if (_wasSwapped.contains(id))
 		_wasSwapped.erase(id);
