@@ -9,11 +9,13 @@
 #define UNIPARTIEINSTANCE_H_
 
 #include "../clustering/IndexedList.h"
-#include "../columnsgeneration/CliquePartitionProblem.h"
+#include "../columnsgeneration/ClusteringProblem.h"
 #include "common.h"
 #include "Edge.h"
 #include "gencol.h"
+class CliquePartitionProblem;
 
+// (xr)/m - (D/2m)²
 class UnipartieInstance: public ClusteringProblem {
 public:
 	virtual double cst() const;
@@ -27,7 +29,7 @@ public:
 	virtual Double computeCost(IntSet const &) const;
 	virtual Double computeCost(IndexedList const &) const;
 
-	virtual void update(int id, bool wasIn, DoubleVector &gradient) const;
+	virtual void update(int, IndexedList const &, DoubleVector &) const;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 
 	virtual std::vector<Edge> const & costs() const;
@@ -69,7 +71,10 @@ private:
 	typedef std::vector<Links> AllLinks;
 
 	AllLinks _allLinks;
+	AllLinks _negLinks;
 	std::vector<Edge> _costs;
+
+	AdjencyGraph _adjencyGraph;
 };
 
 inline double UnipartieInstance::cst() const {
@@ -107,30 +112,8 @@ inline Double UnipartieInstance::sum_k() const {
 	return std::accumulate(_k.begin(), _k.end(), 0.0);
 }
 
-inline void UnipartieInstance::update(int id, bool wasIn,
-		DoubleVector & gradient) const {
-	for (auto const & link : _allLinks[id]) {
-		if (wasIn)
-			gradient[link.first] -= link.second;
-		else
-			gradient[link.first] += link.second;
-	}
-}
-
 inline std::vector<Edge> const & UnipartieInstance::costs() const {
 	return _costs;
-}
-inline void UnipartieInstance::gradient(IndexedList const & v,
-		DoubleVector & result) const {
-	result.assign(v.max_size(), 0);
-	for (auto const & e : _costs) {
-		if (v.contains(e._j)) {
-			result[e._i] += e._v;
-		}
-		if (v.contains(e._i)) {
-			result[e._j] += e._v;
-		}
-	}
 }
 
 #endif /* UNIPARTIEINSTANCE_H_ */

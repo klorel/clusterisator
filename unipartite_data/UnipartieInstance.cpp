@@ -59,9 +59,9 @@ void UnipartieInstance::build() {
 		_cst -= _k[i] * _k[i];
 	}
 	_cst /= (2 * _m * 2 * _m);
-	MY_PRINT(n);
-	MY_PRINT(_m);
-	MY_PRINT(_cst);
+//	MY_PRINT(n);
+//	MY_PRINT(_m);
+//	MY_PRINT(_cst);
 }
 
 void UnipartieInstance::cpCost(DoubleVector &result) const {
@@ -109,6 +109,18 @@ Double UnipartieInstance::computeCost(IndexedList const &v) const {
 			}
 		}
 	}
+//	double intra(0);
+//	for (auto const & edge : _edges) {
+//		if (v.contains(edge._i) && v.contains(edge._j))
+//			intra += edge._v;
+//	}
+//	double d(0);
+//	for (auto i : v) {
+//		if (v.contains(i))
+//			d += _k[i];
+//	}
+//	double temp(intra * _inv_m - (d * 0.5 * _inv_m)*(d * 0.5 * _inv_m) );
+
 	return result;
 }
 
@@ -123,8 +135,88 @@ Double UnipartieInstance::computeCost(IntSet const & v) const {
 			}
 		}
 	}
+//	double intra(0);
+//	for (auto const & edge : _edges) {
+//		intra += edge._v;
+//	}
+//	double d(0);
+//	for (auto i : v) {
+//		d += _k[i];
+//	}
+//	double temp(intra * _inv_m - (d * 0.5 * _inv_m) * (d * 0.5 * _inv_m));
 	return result;
+}
+// (xr)/m - (D/2m)²
+void UnipartieInstance::update(size_t id, IndexedList const & v,
+		DoubleVector & gradient) const {
+	bool const wasIn(v.contains(id));
+	for (auto const & link : _allLinks[id]) {
+		if (wasIn)
+			gradient[link.first] -= link.second;
+		else
+			gradient[link.first] += link.second;
+	}
 
+//	for (auto const & edge : _adjencyGraph[id]) {
+//		size_t const i(edge.first);
+//		size_t const j(edge.second);
+//		bool const idIsI(id == i);
+//		bool const idIsJ(id == j);
+//		bool const isI(idIsI ? !v.contains(i) : v.contains(i));
+//		bool const isJ(idIsJ ? !v.contains(j) : v.contains(j));
+//		if (isI && isJ) {
+//			gradient[i] -= 2 * _inv_m;
+//			gradient[j] -= 2 * _inv_m;
+//		} else if (isI && !isJ) {
+//			gradient[j] += 2 * _inv_m;
+//		} else if (!isI && isJ) {
+//			gradient[i] += 2 * _inv_m;
+//		}
+//
+//	}
+}
+
+// (xr)/m - (D/2m)²
+void UnipartieInstance::gradient(IndexedList const & v,
+		DoubleVector & result) const {
+	result.assign(v.max_size(), 0);
+
+	for (auto const & edge : _edges) {
+		size_t const i(edge._i);
+		size_t const j(edge._j);
+		bool const isI(v.contains(i));
+		bool const isJ(v.contains(j));
+		if (isI && isJ) {
+			result[i] -= _inv_m;
+			result[j] -= _inv_m;
+		} else if (isI && !isJ) {
+			result[j] += _inv_m;
+		} else if (!isI && isJ) {
+			result[i] += _inv_m;
+		}
+	}
+//	double factor(std::pow(0.5 * _inv_m, 2));
+//	double d(0);
+//	for (size_t i(0); i < nV(); ++i) {
+//		if (v.contains(i)) {
+//			d += k(i);
+//		}
+//	}
+//	for (size_t i(0); i < nV(); ++i) {
+//		if (v.contains(i)) {
+//			result[i] -= factor * (k(i) * k(i) + 2 * k(i) * (d - k(i)));
+//		} else {
+//			result[i] += factor * (k(i) * k(i) + 2 * k(i) * (d + k(i)));
+//		}
+//	}
+//	for (auto const & e : _costs) {
+//		if (v.contains(e._j)) {
+//			result[e._i] += e._v;
+//		}
+//		if (v.contains(e._i)) {
+//			result[e._j] += e._v;
+//		}
+//	}
 }
 
 void UnipartieInstance::writeSolution(FractionnarySolution const& bestSolution,
@@ -163,8 +255,7 @@ void UnipartieInstance::getCliquePartitionProblem(
 	result.getAllLinks() = _allLinks;
 }
 
-void UnipartieInstance::branchingWeights(
-		FractionnarySolution const & solution,
+void UnipartieInstance::branchingWeights(FractionnarySolution const & solution,
 		BranchingWeights & weights) const {
 // on cherche des arrêtes présentes et semi-présentes dans deux colonnes
 	BranchingWeights2 temp;

@@ -36,7 +36,7 @@ int usage() {
 		std::cout << "\n";
 	}
 	std::cout
-			<< "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP)2(bMILP default)>"
+			<< "<exe> <id of selected instance>"
 			<< std::endl;
 	std::cout << "The program launch the column generation algorithm"
 			<< std::endl;
@@ -51,10 +51,6 @@ int main(int argc, char** argv) {
 	AvailableModularityBInstances id(
 			static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
 
-	AvailableOracle oracle(AvailableOracle::MIQP);
-	if (argc > 2) {
-		oracle = static_cast<AvailableOracle>(atoi(argv[2]));
-	}
 
 	RegisteredModularityBInstance instance(id);
 
@@ -71,21 +67,9 @@ int main(int argc, char** argv) {
 	VnsGenerator vnsOracle(&instance);
 	instance.setVnsOracle(&vnsOracle);
 
-	MilpOracle milpOracle(&instance);
-	QpOracle miqpOracle(&instance);
 	BinaryDecompositionOracle bMilpOracle(&instance);
-	switch (oracle) {
-	case MIQP:
-		instance.setExactOracle(&miqpOracle);
-		break;
-	case MILP:
-		instance.setExactOracle(&milpOracle);
-		break;
-	//case bMILP:
-	default:
-		instance.setExactOracle(&bMilpOracle);
-		break;
-	}
+
+	instance.setExactOracle(&bMilpOracle);
 
 	BranchAndBound branchAndBound(instance);
 	branchAndBound.init();

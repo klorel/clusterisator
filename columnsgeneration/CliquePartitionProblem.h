@@ -51,7 +51,7 @@ public:
 	virtual Double computeCost(IntSet const &) const;
 	virtual Double computeCost(IndexedList const &) const;
 
-	virtual void update(int id, bool wasIn, DoubleVector &gradient) const;
+	virtual void update(int id, IndexedList const &, DoubleVector &) const;
 	virtual void gradient(IndexedList const & v, DoubleVector &) const;
 public:
 	Edges & getEdges();
