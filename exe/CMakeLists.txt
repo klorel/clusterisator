@@ -1,23 +1,5 @@
 
-###
-# MIP SOLVER
-### 
-SET(MIP_LIB mip_solver )
-IF( WIN32 )
-	IF(NOT ${CPLEX_LIB} STREQUAL "")
-		SET(MIP_LIB ${MIP_LIB} ${CPLEX_LIB}/ilocplex.lib ${CPLEX_LIB}/cplex124.lib)
-	ELSEIF(NOT ${XPRESS_LIB} STREQUAL "")
-		SET(MIP_LIB ${MIP_LIB} ${XPRESS_LIB}/xprs.lib)
-	ENDIF()
-ELSE()
-	IF(NOT ${CPLEX_LIB} STREQUAL "")
-		SET(MIP_LIB ${MIP_LIB} ${CPLEX_LIB}/libilocplex.a ${CPLEX_LIB}/libcplex.a pthread ) 
-	ELSEIF(NOT ${XPRESS_LIB} STREQUAL "")
-		SET(MIP_LIB ${MIP_LIB} ${XPRESS_LIB}/xprs.a)
-	ENDIF()
-ENDIF()
-
-MESSAGE("MIP_LIB is ${MIP_LIB}")
+MESSAGE("IN EXE MIP_LIB is ${MIP_LIB}")
 
 ADD_EXECUTABLE( unipartite  main_unipartite.cpp )
 ADD_EXECUTABLE( unipartite_cpp  main_unipartite_cpp.cpp )

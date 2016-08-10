@@ -159,14 +159,20 @@ void CliquePartitionProblem::cps(std::string const &fileName, ILpSolver & solver
 	char const geq(solver.geq());
 	//
 	ColumnBuffer columnBuffer(continuous);
-	DoubleVector denseCost;
-	cpCost(denseCost);
+	DoubleVector denseCost(n * (n - 1), 0);
+	for (auto const & e : _costs) {
+		int const u(e._i);
+		int const v(e._j);
+		int const id(ijtok(n, u, v));
+		denseCost[id] = e._v;
+	}
 	//cpCost(denseCost);
 	//IntVector index(n * (n - 1));
 	int nCols(0);
 	for (int u(0); u < nV(); ++u) {
 		for (int v(u + 1); v < nV(); ++v, ++nCols) {
 			int const id(ijtok(n, u, v));
+			
 			columnBuffer.add(denseCost[id], binary, 0, 1,
 					GetStr("x_", u, "_", v));
 			if (id != nCols) {
@@ -209,7 +215,7 @@ void CliquePartitionProblem::cps(std::string const &fileName, ILpSolver & solver
 	}
 	solver.add(rowBuffer);
 	solver.maximize();
-	solver.write(fileName + ".lp");
+	//solver.write(fileName + ".lp");
 
 	solver.run();
 

@@ -18,30 +18,28 @@ public:
 	ILpSolver();
 	virtual ~ILpSolver();
 public:
-	virtual int add(RowBuffer & )=0;
-	virtual int add(ColumnBuffer & )=0;
+	virtual void add(RowBuffer &);
+	virtual void add(ColumnBuffer &);
 
-	virtual void write(std::string const & fileName) const=0;
+	virtual void write(std::string const & fileName) const;
 
-	virtual void initLp(std::string const & name)=0;
-	virtual void freeLp()=0;
+	virtual void initLp(std::string const & name);
+	virtual void freeLp();
 
-	virtual void chgObj(IntVector const & indexe, DoubleVector const & values)=0;
+	virtual void chgObj(IntVector const & indexe, DoubleVector const & values);
 
-	virtual size_t numMipStarts()=0;
-	virtual int delMipStarts()=0;
+	virtual void  delMipStarts();
 
-	virtual bool isOptimal()const=0;
-	virtual double objValue()const=0;
+	virtual bool isOptimal()const;
+	virtual double objValue()const;
 
-	virtual char binary()const = 0;
-	virtual char continuous()const = 0;
+	virtual char binary()const;
+	virtual char continuous()const;
+	virtual char leq()const;
+	virtual char eq()const;
+	virtual char geq()const;
 
-	virtual char leq()const = 0;
-	virtual char eq()const = 0;
-	virtual char geq()const = 0;
-public:
-	virtual void run() = 0;
+	virtual void run();
 public:
 	bool & is_minimize();
 	bool is_minimize()const;
@@ -55,6 +53,7 @@ public:
 
 protected:
 	bool _is_minimize;
+	bool _is_mip;
 	std::list<std::ostream *> _stream;
 };
 

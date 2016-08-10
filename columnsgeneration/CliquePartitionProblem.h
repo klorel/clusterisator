@@ -31,13 +31,10 @@ public:
 	virtual std::string name(int v) const;
 	virtual void adjencyGraph(AdjencyGraph &) const;
 
-	virtual void branchingWeights(FractionnarySolution const &,
-			BranchingWeights & result) const;
+	virtual void branchingWeights(FractionnarySolution const &, BranchingWeights & result) const;
 
-	virtual IOracle * newOracle(AvailableOracle oracle,
-			DoubleVector const * dual, DecisionList const * decision) const;
-	virtual IOracle * newVnsOracle(DoubleVector const * dual,
-			DecisionList const * decision) const;
+	virtual IOracle * newOracle(AvailableOracle oracle, DoubleVector const * dual, DecisionList const * decision) const;
+	virtual IOracle * newVnsOracle(DoubleVector const * dual, DecisionList const * decision) const;
 	virtual double cst() const;
 	virtual void cps(std::string const &fileName, ILpSolver & solver) const;
 

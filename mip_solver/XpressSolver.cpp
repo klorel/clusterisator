@@ -7,23 +7,13 @@
 
 #include "XpressSolver.h"
 #include "LpBuffer.h"
-#include <xprs.h>
+
 #include <stdexcept>
 #include <cassert>
 #include <exception>
 
 bool XpressSolver::WasInit = false;
 
-void XPRS_CC optimizermsg(XPRSprob prob, void* data, const char *sMsg, int nLen,
-	int nMsglvl);
-
-void XpressSolver::run() {
-	XPRSchgobjsense(_lp, _is_minimize ? XPRS_OBJ_MINIMIZE : XPRS_OBJ_MAXIMIZE);
-	if (_is_mip)
-		XPRSmipoptimize(_lp, "");
-	else
-		XPRSlpoptimize(_lp, "");
-}
 XpressSolver::XpressSolver() {
 	_lp = NULL;
 }
@@ -32,7 +22,42 @@ XpressSolver::~XpressSolver() {
 	freeLp();
 }
 
-int XpressSolver::add(RowBuffer & buffer) {
+#ifdef  __LAZY_XPRESS__
+void XpressSolver::errormsg(const char *sSubName, int nLineNo, int nErrCode) {
+}
+#else
+
+#include <xprs.h>
+
+void XPRS_CC optimizermsg(XPRSprob prob, void* data, const char *sMsg, int nLen,
+	int nMsglvl);
+
+
+char XpressSolver::binary()const {
+	return 'B';
+}
+char XpressSolver::continuous()const { 
+	return 'C';
+}
+
+char XpressSolver::leq()const { 
+	return 'L'; 
+}
+char XpressSolver::eq()const { 
+	return 'E';
+}
+char XpressSolver::geq()const {
+	return 'G';
+}
+
+void XpressSolver::run() {
+	XPRSchgobjsense(_lp, _is_minimize ? XPRS_OBJ_MINIMIZE : XPRS_OBJ_MAXIMIZE);
+	if (_is_mip)
+		XPRSmipoptimize(_lp, "");
+	else
+		XPRSlpoptimize(_lp, "");
+}
+void XpressSolver::add(RowBuffer & buffer) {
 	int nReturn(-1);
 
 	buffer.add_last_begin();
@@ -46,9 +71,8 @@ int XpressSolver::add(RowBuffer & buffer) {
 		if (nReturn)errormsg("XPRSaddnames", __LINE__, nReturn);
 	}
 	buffer.rem_last_begin();
-	return nReturn;
 }
-int XpressSolver::add(ColumnBuffer & buffer) {
+void XpressSolver::add(ColumnBuffer & buffer) {
 	int nReturn(-1);
 	buffer.add_last_begin();
 	nReturn = XPRSaddcols(_lp, buffer.size(), buffer.nz(), buffer.rhsObj(), buffer.begin(), buffer.index(), buffer.value(), buffer.lower(), buffer.upper());
@@ -60,6 +84,7 @@ int XpressSolver::add(ColumnBuffer & buffer) {
 		if (nReturn)errormsg("XPRSaddnames", __LINE__, nReturn);
 	}
 	if (!buffer.only_continous()) {
+		_is_mip = true;
 		IntVector sequence(buffer.size());
 		int ncols;
 		nReturn = XPRSgetintattrib(_lp, XPRS_COLS, &ncols);
@@ -69,10 +94,8 @@ int XpressSolver::add(ColumnBuffer & buffer) {
 		}
 		nReturn = XPRSchgcoltype(_lp, buffer.size(), sequence.data(), buffer.type());
 		if (nReturn)errormsg("XPRSchgcoltype", __LINE__, nReturn);
-
 	}
 	buffer.rem_last_begin();
-	return nReturn;
 }
 
 void XpressSolver::write(std::string const & fileName) const {
@@ -80,11 +103,12 @@ void XpressSolver::write(std::string const & fileName) const {
 }
 
 void XpressSolver::initLp(std::string const & name) {
+	int nReturn = -1;
 	if (!WasInit) {
-		XPRSinit("");
+		nReturn =XPRSinit("");
 		WasInit = true;
 	}
-	int nReturn = -1;
+	
 	if (_lp)
 		freeLp();
 	nReturn = XPRScreateprob(&_lp);
@@ -108,6 +132,7 @@ void XpressSolver::initLp(std::string const & name) {
 	XPRSsetintcontrol(_lp, XPRS_THREADS, 1);
 }
 void XpressSolver::freeLp() {
+	if(_lp)
 	XPRSdestroyprob(_lp);
 	_lp = NULL;
 }
@@ -117,11 +142,7 @@ void XpressSolver::chgObj(IntVector const & indexe,
 	XPRSchgobj(_lp, (int)indexe.size(), indexe.data(), values.data());
 }
 
-size_t XpressSolver::numMipStarts() {
-	return 0;
-}
-int XpressSolver::delMipStarts() {
-	return 0;
+void XpressSolver::delMipStarts() {
 }
 bool XpressSolver::isOptimal() const {
 
@@ -202,3 +223,4 @@ void XpressSolver::errormsg(const char *sSubName, int nLineNo, int nErrCode) {
 	exit(nErrCode);
 }
 
+#endif

@@ -19,6 +19,7 @@
 #include "../columnsgeneration/QpOracle.h"
 
 #include "../mip_solver/XpressSolver.h"
+#include "../mip_solver/CplexSolver.h"
 
 std::string RegisteredModularityBInstance::InstancesPath = "../txt/";
 
@@ -67,9 +68,12 @@ int main(int argc, char** argv) {
 //	} while (std::remove(file_name.c_str()) == 0);
 
 	instance.out();
+	CliquePartitionProblem cpp;
+	instance.getCliquePartitionProblem(cpp);
 	XpressSolver xpress;
-	instance.cps("cps", xpress);
-
+	//cpp.cps("cps_xpress", xpress);
+	CplexSolver cplex;
+	cpp.cps("cps_cplex", cplex);
 	return 0;
 }
 

@@ -147,7 +147,7 @@ Double UnipartieInstance::computeCost(IntSet const & v) const {
 	return result;
 }
 // (xr)/m - (D/2m)²
-void UnipartieInstance::update(size_t id, IndexedList const & v,
+void UnipartieInstance::update(int id, IndexedList const & v,
 		DoubleVector & gradient) const {
 	bool const wasIn(v.contains(id));
 	for (auto const & link : _allLinks[id]) {
@@ -182,8 +182,8 @@ void UnipartieInstance::gradient(IndexedList const & v,
 	result.assign(v.max_size(), 0);
 
 	for (auto const & edge : _edges) {
-		size_t const i(edge._i);
-		size_t const j(edge._j);
+		int const i(edge._i);
+		int const j(edge._j);
 		bool const isI(v.contains(i));
 		bool const isJ(v.contains(j));
 		if (isI && isJ) {

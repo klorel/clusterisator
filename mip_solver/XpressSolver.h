@@ -10,14 +10,13 @@
 
 #include "ILpSolver.h"
 
+//#define __LAZY_XPRESS__
 typedef struct xo_prob_struct* XPRSprob;
 class XpressSolver: public ILpSolver {
 public:
-	XpressSolver();
-	virtual ~XpressSolver();
-
-	virtual int add(RowBuffer & );
-	virtual int add(ColumnBuffer & );
+#ifndef __LAZY_XPRESS__
+	virtual void add(RowBuffer & );
+	virtual void add(ColumnBuffer & );
 
 	virtual void write(std::string const & fileName) const;
 
@@ -26,8 +25,7 @@ public:
 
 	virtual void chgObj(IntVector const & indexe, DoubleVector const & values);
 
-	virtual size_t numMipStarts();
-	virtual int delMipStarts();
+	virtual void delMipStarts();
 
 	virtual bool isOptimal()const;
 	virtual double objValue()const;
@@ -35,19 +33,19 @@ public:
 
 	virtual void run();
 
-	virtual char binary()const { return 'B'; }
-	virtual char continuous()const { return 'C'; }
+	virtual char binary()const;
+	virtual char continuous()const;
 
-	virtual char leq()const { return 'L'; }
-	virtual char eq()const { return 'E'; }
-	virtual char geq()const { return 'G'; }
-
-
-
+	virtual char leq()const;
+	virtual char eq()const;
+	virtual char geq()const;
+#endif
+public:
+	XpressSolver();
+	virtual ~XpressSolver();
+	void errormsg(const char *sSubName, int nLineno, int nErrorCode);
 public:
 	XPRSprob _lp;
-	void errormsg(const char *sSubName, int nLineno, int nErrorCode);
-	bool _is_mip;
 
 	static bool WasInit;
 };
