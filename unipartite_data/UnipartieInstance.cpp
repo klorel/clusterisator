@@ -5,74 +5,80 @@
 #include "../columnsgeneration/QpOracle.h"
 #include "UnipartiteBinaryDecompositionOracle.h"
 
-UnipartieInstance::UnipartieInstance() :
-		_m(0), _inv_m(0), _cst(0), _edges() {
+UnipartieInstance::UnipartieInstance()
+    : _m(0),
+      _inv_m(0),
+      _cst(0),
+      _edges() {
 
 }
 
-UnipartieInstance::UnipartieInstance(Edges const & edges) :
-		_m(0), _inv_m(0), _cst(0), _edges(edges) {
-	build();
+UnipartieInstance::UnipartieInstance(Edges const & edges)
+    : _m(0),
+      _inv_m(0),
+      _cst(0),
+      _edges(edges) {
+  build();
 }
 
 UnipartieInstance::~UnipartieInstance() {
 }
 void UnipartieInstance::build() {
-	int n(0);
-	_m = 0;
-	for (auto const & edge : _edges) {
-		n = std::max(n, edge._i);
-		n = std::max(n, edge._j);
-		_m += edge._v;
-	}
-	n += 1;
-	_k.assign(n, 0);
-	for (auto const & edge : _edges) {
-		_k[edge._i] += edge._v;
-		_k[edge._j] += edge._v;
-	}
-	_inv_m = 1.0 / _m;
-	_costs.resize(n * (n - 1) / 2);
-	_allLinks.assign(nV(), Links());
+  int n(0);
+  _m = 0;
+  for (auto const & edge : _edges) {
+    n = std::max(n, edge._i);
+    n = std::max(n, edge._j);
+    _m += edge._v;
+  }
+  n += 1;
+  _k.assign(n, 0);
+  for (auto const & edge : _edges) {
+    _k[edge._i] += edge._v;
+    _k[edge._j] += edge._v;
+  }
+  _inv_m = 1.0 / _m;
+  _costs.resize(n * (n - 1) / 2);
+  _allLinks.assign(nV(), Links());
 
-	for (int i(0); i < n; ++i) {
-		for (int j(i + 1); j < n; ++j) {
-			int const ij(ijtok(n, i, j));
-			_costs[ij] = Edge(i, j, -_k[i] * _k[j] * _inv_m / 2.0);
-		}
-	}
-	for (auto const & edge : _edges) {
-		int const ij(ijtok(n, edge._i, edge._j));
-		_costs[ij]._v += 1;
-	}
-	for (int i(0); i < n; ++i) {
-		for (int j(i + 1); j < n; ++j) {
-			int const ij(ijtok(n, i, j));
-			_costs[ij]._v *= _inv_m;
-			_allLinks[i][j] = _costs[ij]._v;
-			_allLinks[j][i] = _costs[ij]._v;
-		}
-	}
-	//
-	_cst = 0;
-	for (size_t i(0); i < n; ++i) {
-		_cst -= _k[i] * _k[i];
-	}
-	_cst /= (2 * _m * 2 * _m);
+  for (int i(0); i < n; ++i) {
+    for (int j(i + 1); j < n; ++j) {
+      int const ij(ijtok(n, i, j));
+      _costs[ij] = Edge(i, j, -_k[i] * _k[j] * _inv_m / 2.0);
+    }
+  }
+  for (auto const & edge : _edges) {
+    int const ij(ijtok(n, edge._i, edge._j));
+    _costs[ij]._v += 1;
+  }
+  for (int i(0); i < n; ++i) {
+    for (int j(i + 1); j < n; ++j) {
+      int const ij(ijtok(n, i, j));
+      _costs[ij]._v *= _inv_m;
+      _allLinks[i][j] = _costs[ij]._v;
+      _allLinks[j][i] = _costs[ij]._v;
+    }
+  }
+  //
+  _cst = 0;
+  for (int i(0); i < n; ++i) {
+    _cst -= _k[i] * _k[i];
+  }
+  _cst /= (2 * _m * 2 * _m);
 //	MY_PRINT(n);
 //	MY_PRINT(_m);
 //	MY_PRINT(_cst);
 }
 
 void UnipartieInstance::cpCost(DoubleVector &result) const {
-	int const n(nV());
-	result.assign(n * (n - 1) / 2, 0);
-	for (int i(0); i < n; ++i) {
-		for (int j(i + 1); j < n; ++j) {
-			int const ij(ijtok(n, i, j));
-			result[ij] = _costs[ij]._v;
-		}
-	}
+  int const n(nV());
+  result.assign(n * (n - 1) / 2, 0);
+  for (int i(0); i < n; ++i) {
+    for (int j(i + 1); j < n; ++j) {
+      int const ij(ijtok(n, i, j));
+      result[ij] = _costs[ij]._v;
+    }
+  }
 }
 
 //void UnipartieInstance::read(std::string const & fileName, std::ostream & stream) {
@@ -80,8 +86,8 @@ void UnipartieInstance::cpCost(DoubleVector &result) const {
 //	//_a << file;
 //	std::string line;
 //	std::getline(file, line);
-//	size_t r;
-//	size_t b;
+//	int r;
+//	int b;
 //	{
 //		std::stringstream buffer(line);
 //		buffer >> r;
@@ -99,16 +105,16 @@ void UnipartieInstance::cpCost(DoubleVector &result) const {
 //}
 
 Double UnipartieInstance::computeCost(IndexedList const &v) const {
-	Double result(0);
-	int const n(nV());
-	for (auto i : v) {
-		for (auto j : v) {
-			if (i < j) {
-				int const ij(ijtok(n, i, j));
-				result += _costs[ij]._v;
-			}
-		}
-	}
+  Double result(0);
+  int const n(nV());
+  for (auto i : v) {
+    for (auto j : v) {
+      if (i < j) {
+        int const ij(ijtok(n, i, j));
+        result += _costs[ij]._v;
+      }
+    }
+  }
 //	double intra(0);
 //	for (auto const & edge : _edges) {
 //		if (v.contains(edge._i) && v.contains(edge._j))
@@ -121,20 +127,20 @@ Double UnipartieInstance::computeCost(IndexedList const &v) const {
 //	}
 //	double temp(intra * _inv_m - (d * 0.5 * _inv_m)*(d * 0.5 * _inv_m) );
 
-	return result;
+  return result;
 }
 
 Double UnipartieInstance::computeCost(IntSet const & v) const {
-	Double result(0);
-	int const n(nV());
-	for (auto i : v) {
-		for (auto j : v) {
-			if (i < j) {
-				int const ij(ijtok(n, i, j));
-				result += _costs[ij]._v;
-			}
-		}
-	}
+  Double result(0);
+  int const n(nV());
+  for (auto i : v) {
+    for (auto j : v) {
+      if (i < j) {
+        int const ij(ijtok(n, i, j));
+        result += _costs[ij]._v;
+      }
+    }
+  }
 //	double intra(0);
 //	for (auto const & edge : _edges) {
 //		intra += edge._v;
@@ -144,22 +150,22 @@ Double UnipartieInstance::computeCost(IntSet const & v) const {
 //		d += _k[i];
 //	}
 //	double temp(intra * _inv_m - (d * 0.5 * _inv_m) * (d * 0.5 * _inv_m));
-	return result;
+  return result;
 }
 // (xr)/m - (D/2m)²
 void UnipartieInstance::update(int id, IndexedList const & v,
-		DoubleVector & gradient) const {
-	bool const wasIn(v.contains(id));
-	for (auto const & link : _allLinks[id]) {
-		if (wasIn)
-			gradient[link.first] -= link.second;
-		else
-			gradient[link.first] += link.second;
-	}
+                               DoubleVector & gradient) const {
+  bool const wasIn(v.contains(id));
+  for (auto const & link : _allLinks[id]) {
+    if (wasIn)
+      gradient[link.first] -= link.second;
+    else
+      gradient[link.first] += link.second;
+  }
 
 //	for (auto const & edge : _adjencyGraph[id]) {
-//		size_t const i(edge.first);
-//		size_t const j(edge.second);
+//		int const i(edge.first);
+//		int const j(edge.second);
 //		bool const idIsI(id == i);
 //		bool const idIsJ(id == j);
 //		bool const isI(idIsI ? !v.contains(i) : v.contains(i));
@@ -178,31 +184,31 @@ void UnipartieInstance::update(int id, IndexedList const & v,
 
 // (xr)/m - (D/2m)²
 void UnipartieInstance::gradient(IndexedList const & v,
-		DoubleVector & result) const {
-	result.assign(v.max_size(), 0);
+                                 DoubleVector & result) const {
+  result.assign(v.max_size(), 0);
 
-	for (auto const & edge : _edges) {
-		int const i(edge._i);
-		int const j(edge._j);
-		bool const isI(v.contains(i));
-		bool const isJ(v.contains(j));
-		if (isI && isJ) {
-			result[i] -= _inv_m;
-			result[j] -= _inv_m;
-		} else if (isI && !isJ) {
-			result[j] += _inv_m;
-		} else if (!isI && isJ) {
-			result[i] += _inv_m;
-		}
-	}
+  for (auto const & edge : _edges) {
+    int const i(edge._i);
+    int const j(edge._j);
+    bool const isI(v.contains(i));
+    bool const isJ(v.contains(j));
+    if (isI && isJ) {
+      result[i] -= _inv_m;
+      result[j] -= _inv_m;
+    } else if (isI && !isJ) {
+      result[j] += _inv_m;
+    } else if (!isI && isJ) {
+      result[i] += _inv_m;
+    }
+  }
 //	double factor(std::pow(0.5 * _inv_m, 2));
 //	double d(0);
-//	for (size_t i(0); i < nV(); ++i) {
+//	for (int i(0); i < nV(); ++i) {
 //		if (v.contains(i)) {
 //			d += k(i);
 //		}
 //	}
-//	for (size_t i(0); i < nV(); ++i) {
+//	for (int i(0); i < nV(); ++i) {
 //		if (v.contains(i)) {
 //			result[i] -= factor * (k(i) * k(i) + 2 * k(i) * (d - k(i)));
 //		} else {
@@ -220,110 +226,107 @@ void UnipartieInstance::gradient(IndexedList const & v,
 }
 
 void UnipartieInstance::writeSolution(FractionnarySolution const& bestSolution,
-		double lb) const {
-	std::ofstream file(
-			GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
-	for (auto const & c : bestSolution) {
-		for (auto const & edge : costs()) {
-			int const r(edge._i);
-			int const b(edge._j);
-			if (c.first->contains(r) && c.first->contains(b)) {
-				file << std::setw(6) << 1 + r;
-				file << std::setw(6) << 1 + b;
-				file << std::endl;
-			}
+                                      double lb) const {
+  std::ofstream file(
+      GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
+  for (auto const & c : bestSolution) {
+    for (auto const & edge : costs()) {
+      int const r(edge._i);
+      int const b(edge._j);
+      if (c.first->contains(r) && c.first->contains(b)) {
+        file << std::setw(6) << 1 + r;
+        file << std::setw(6) << 1 + b;
+        file << std::endl;
+      }
 
-		}
-		//		for (size_t r(0); r < nR(); ++r) {
-		//			for (size_t b(0); b < nB(); ++b) {
-		//				if (c.first->contains(r) && c.first->contains(nR() + b)) {
-		//					file << std::setw(6) << 1 + r;
-		//					file << std::setw(6) << 1 + b + nR();
-		//					file << std::endl;
-		//				}
-		//
-		//			}
-		//		}
-	}
-	file.close();
+    }
+    //		for (int r(0); r < nR(); ++r) {
+    //			for (int b(0); b < nB(); ++b) {
+    //				if (c.first->contains(r) && c.first->contains(nR() + b)) {
+    //					file << std::setw(6) << 1 + r;
+    //					file << std::setw(6) << 1 + b + nR();
+    //					file << std::endl;
+    //				}
+    //
+    //			}
+    //		}
+  }
+  file.close();
 }
 void UnipartieInstance::getCliquePartitionProblem(
-		CliquePartitionProblem & result) const {
-	result.nV() = nV();
-	result.getEdges() = _edges;
-	result.getCosts() = _costs;
-	result.getAllLinks() = _allLinks;
+    CliquePartitionProblem & result) const {
+  result.nV() = nV();
+  result.getEdges() = _edges;
+  result.getCosts() = _costs;
+  result.getAllLinks() = _allLinks;
 }
 
 void UnipartieInstance::branchingWeights(FractionnarySolution const & solution,
-		BranchingWeights & weights) const {
+                                         BranchingWeights & weights) const {
 // on cherche des arrêtes présentes et semi-présentes dans deux colonnes
-	BranchingWeights2 temp;
-	std::map<Edge, std::pair<IntSet, IntSet> > toto;
-	for (auto const & kvp : solution) {
-		//		std::cout << std::setw(6) << kvp.first->id();
-		//		std::cout << std::setw(15) << kvp.second;
-		//		std::cout << std::endl;
-		for (Edge const & e : _costs) {
-			bool const iFirst(kvp.first->contains(e._i));
-			bool const iSecond(kvp.first->contains(e._j));
-			if (iFirst && iSecond) {
-				toto[e].first.insert(kvp.first->id());
-			} else if (iFirst || iSecond) {
-				toto[e].second.insert(kvp.first->id());
-			}
-		}
-	}
+  BranchingWeights2 temp;
+  std::map<Edge, std::pair<IntSet, IntSet> > toto;
+  for (auto const & kvp : solution) {
+    //		std::cout << std::setw(6) << kvp.first->id();
+    //		std::cout << std::setw(15) << kvp.second;
+    //		std::cout << std::endl;
+    for (Edge const & e : _costs) {
+      bool const iFirst(kvp.first->contains(e._i));
+      bool const iSecond(kvp.first->contains(e._j));
+      if (iFirst && iSecond) {
+        toto[e].first.insert(kvp.first->id());
+      } else if (iFirst || iSecond) {
+        toto[e].second.insert(kvp.first->id());
+      }
+    }
+  }
 //	std::cout << "synthese" << std::endl;
-	weights.clear();
-	for (auto const & t : toto) {
-		//		std::cout << std::setw(6) << t.second.first.size();
-		//		std::cout << std::setw(6) << t.second.second.size();
-		//		std::cout << std::endl;
-		if (!t.second.first.empty() && !t.second.second.empty()) {
-			//			std::cout << std::setw(6) << t.first._i;
-			//			std::cout << std::setw(6) << t.first._j;
-			//			std::cout << std::endl;
-			weights.insert(
-					std::make_pair(
-							0.5
-									* ((int) ((t.second.first.size()
-											+ t.second.second.size()))),
-							std::make_pair(t.first._i, t.first._j)));
-		}
-	}
-	if (weights.empty()) {
-		std::cout << "Weights.empty(), generating full weights" << std::endl;
-		for (auto const & kvp : solution) {
-			for (Edge const & e : _costs) {
-				bool const iR(kvp.first->contains(e._i));
-				bool const iB(kvp.first->contains(e._j));
-				if (iR && iB) {
-					toto[Edge(e._i, e._j, 1)].first.insert(kvp.first->id());
-				} else if (iR || iB) {
-					toto[Edge(e._i, e._j, 1)].second.insert(kvp.first->id());
-				}
+  weights.clear();
+  for (auto const & t : toto) {
+    //		std::cout << std::setw(6) << t.second.first.size();
+    //		std::cout << std::setw(6) << t.second.second.size();
+    //		std::cout << std::endl;
+    if (!t.second.first.empty() && !t.second.second.empty()) {
+      //			std::cout << std::setw(6) << t.first._i;
+      //			std::cout << std::setw(6) << t.first._j;
+      //			std::cout << std::endl;
+      weights.insert(
+          std::make_pair(
+              0.5 * ((int) ((t.second.first.size() + t.second.second.size()))),
+              std::make_pair(t.first._i, t.first._j)));
+    }
+  }
+  if (weights.empty()) {
+    std::cout << "Weights.empty(), generating full weights" << std::endl;
+    for (auto const & kvp : solution) {
+      for (Edge const & e : _costs) {
+        bool const iR(kvp.first->contains(e._i));
+        bool const iB(kvp.first->contains(e._j));
+        if (iR && iB) {
+          toto[Edge(e._i, e._j, 1)].first.insert(kvp.first->id());
+        } else if (iR || iB) {
+          toto[Edge(e._i, e._j, 1)].second.insert(kvp.first->id());
+        }
 
-			}
-		}
+      }
+    }
 
-		for (auto const & t : toto) {
-			//		std::cout << std::setw(6) << t.second.first.size();
-			//		std::cout << std::setw(6) << t.second.second.size();
-			//		std::cout << std::endl;
-			if (!t.second.first.empty() && !t.second.second.empty()) {
-				//			std::cout << std::setw(6) << t.first._i;
-				//			std::cout << std::setw(6) << t.first._j;
-				//			std::cout << std::endl;
-				weights.insert(
-						std::make_pair(
-								0.5
-										* ((int) ((t.second.first.size()
-												+ t.second.second.size()))),
-								std::make_pair(t.first._i, t.first._j)));
-			}
-		}
-		if (weights.empty())
-			std::cout << "weights.empty()" << std::endl;
-	}
+    for (auto const & t : toto) {
+      //		std::cout << std::setw(6) << t.second.first.size();
+      //		std::cout << std::setw(6) << t.second.second.size();
+      //		std::cout << std::endl;
+      if (!t.second.first.empty() && !t.second.second.empty()) {
+        //			std::cout << std::setw(6) << t.first._i;
+        //			std::cout << std::setw(6) << t.first._j;
+        //			std::cout << std::endl;
+        weights.insert(
+            std::make_pair(
+                0.5
+                    * ((int) ((t.second.first.size() + t.second.second.size()))),
+                std::make_pair(t.first._i, t.first._j)));
+      }
+    }
+    if (weights.empty())
+      std::cout << "weights.empty()" << std::endl;
+  }
 }

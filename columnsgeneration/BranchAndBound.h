@@ -10,43 +10,43 @@
 class Node;
 class ClusteringProblem;
 class BranchAndBound {
-public:
-	BranchAndBound(ClusteringProblem const &);
-	virtual ~BranchAndBound();
-public:
-	ClusteringProblem const * _input;
+ public:
+  BranchAndBound(ClusteringProblem const &);
+  virtual ~BranchAndBound();
+ public:
+  ClusteringProblem const * _input;
 
-	void columnGeneration();
+  void columnGeneration();
 
-	void init();
-	void run();
-	void treat(Node * node);
-	void printTree(std::ostream & = std::cout) const;
-	std::ostream & output();
-	void setOutput(std::ostream & = std::cout);
-	IMaster & master();
-	IMaster const & master() const;
+  void init();
+  void run();
+  void treat(Node * node);
+  void printTree(std::ostream & = std::cout) const;
+  std::ostream & output();
+  void setOutput(std::ostream & = std::cout);
+  IMaster & master();
+  IMaster const & master() const;
 
-	void writeSolution() const;
+  void writeSolution() const;
 
-	IMaster * _master;
+  IMaster * _master;
 
-	ColumnGenerator _columnGenerator;
+  ColumnGenerator _columnGenerator;
 
-	double bestFeasible() const;
-	double bestPossible() const;
-private:
-	Node * _root;
-	Node * _current;
+  double bestFeasible() const;
+  double bestPossible() const;
+ private:
+  Node * _root;
+  Node * _current;
 
-	DecisionList _decision;
+  DecisionList _decision;
 
-	std::ostream * _output;
-	std::multimap<Double, Node *, std::greater<Double>> _nodesByUpperBounds;
+  std::ostream * _output;
+  std::multimap<Double, Node *, std::greater<Double>> _nodesByUpperBounds;
 
-	Double _bestFeasible;
-	Double _bestPossible;
-	FractionnarySolution _bestSolution;
+  Double _bestFeasible;
+  Double _bestPossible;
+  FractionnarySolution _bestSolution;
 
 };
 

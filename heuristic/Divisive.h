@@ -12,14 +12,14 @@
 
 namespace bipartite {
 class Divisive {
-public:
-	Divisive(BipartiteGraph & instance, ModularityBPartition & solution);
-	virtual ~Divisive();
-public:
-	void run();
-private:
-	BipartiteGraph & _instance;
-	ModularityBPartition & _solution;
+ public:
+  Divisive(BipartiteGraph & instance, ModularityBPartition & solution);
+  virtual ~Divisive();
+ public:
+  void run();
+ private:
+  BipartiteGraph & _instance;
+  ModularityBPartition & _solution;
 };
 }
 #endif /* DIVISIVE_H_ */

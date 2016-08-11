@@ -24,57 +24,61 @@
 std::string RegisteredModularityBInstance::InstancesPath = "../txt/";
 
 int usage() {
-	std::cout << "Available instances : " << std::endl;
-	for (size_t i(0);
-			i < AvailableModularityBInstances::AvailableModularityBInstancesSize;
-			++i) {
-		AvailableModularityBInstances id(
-				static_cast<AvailableModularityBInstances>(i));
-		RegisteredModularityBInstance instance(id);
-		std::cout << std::setw(3) << i + 1;
-		std::cout << " : ";
-		std::cout << std::setw(30) << std::left << instance._name << std::right;
+  std::cout << "Available instances : " << std::endl;
+  for (int i(0);
+      i < AvailableModularityBInstances::AvailableModularityBInstancesSize;
+      ++i) {
+    AvailableModularityBInstances id(
+        static_cast<AvailableModularityBInstances>(i));
+    RegisteredModularityBInstance instance(id);
+    std::cout << std::setw(3) << i + 1;
+    std::cout << " : ";
+    std::cout << std::setw(30) << std::left << instance._name << std::right;
 
-		std::cout << "\n";
-	}
-	std::cout
-			<< "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP default)>"
-			<< std::endl;
-	std::cout << "The program launch the column generation algorithm"
-			<< std::endl;
-	return 0;
+    std::cout << "\n";
+  }
+  std::cout
+      << "<exe> <id of selected instance> <oracle in 0(MIQP),1(MILP default)>"
+      << std::endl;
+  std::cout << "The program launch the column generation algorithm"
+            << std::endl;
+  return 0;
 }
 
 int main(int argc, char** argv) {
-	Timer total;
-	if (argc == 1)
-		return usage();
+  Timer total;
+  if (argc == 1)
+    return usage();
 
-	AvailableModularityBInstances id(
-			static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
+  AvailableModularityBInstances id(
+      static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
 
-	AvailableOracle oracle(AvailableOracle::MILP);
-	if (argc > 2) {
-		oracle = static_cast<AvailableOracle>(atoi(argv[2]));
-	}
+  AvailableOracle oracle(AvailableOracle::MILP);
+  if (argc > 2) {
+    oracle = static_cast<AvailableOracle>(atoi(argv[2]));
+  }
 
-	RegisteredModularityBInstance instance(id);
+  RegisteredModularityBInstance instance(id);
 
-//	size_t id_node(0);
+//	int id_node(0);
 //	std::string file_name;
 //	do {
 //		file_name = GetStr("node/", instance.name(), "_node_", id_node);
 //		++id_node;
 //	} while (std::remove(file_name.c_str()) == 0);
 
-	instance.out();
-	CliquePartitionProblem cpp;
-	instance.getCliquePartitionProblem(cpp);
-	XpressSolver xpress;
-	//cpp.cps("cps_xpress", xpress);
-	CplexSolver cplex;
-	cpp.cps("cps_cplex", cplex);
-	return 0;
+  instance.out();
+  CliquePartitionProblem cpp;
+  instance.getCliquePartitionProblem(cpp);
+  XpressSolver xpress;
+  //cpp.cps("cps_xpress", xpress);
+  CplexSolver cplex;
+  cplex.initLp("cps_cplex");
+  cplex.setNbThreads(4);
+  cplex.setLog();
+  cplex.add(std::cout);
+  cpp.cps("cps_cplex", cplex);
+  return 0;
 }
 
 //	std::cout << instance.a() << std::endl;

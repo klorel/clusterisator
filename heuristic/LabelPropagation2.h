@@ -17,17 +17,17 @@
 #include "ICliquePartition.h"
 
 class LabelPropagation2 {
-public:
-	LabelPropagation2(ICliquePartition &solution);
-	virtual ~LabelPropagation2();
+ public:
+  LabelPropagation2(ICliquePartition &solution);
+  virtual ~LabelPropagation2();
 
-	bool operator()(size_t);
-	bool operator()();
-private:
-	void buildGraph();
-private:
-	CliquePartitionProblem const & _input;
-	ICliquePartition & _solution;
-	AdjencyGraph _graph;
+  bool operator()(int);
+  bool operator()();
+ private:
+  void buildGraph();
+ private:
+  CliquePartitionProblem const & _input;
+  ICliquePartition & _solution;
+  AdjencyGraph _graph;
 };
 #endif /* LABELPROPAGATION_HPP_ */

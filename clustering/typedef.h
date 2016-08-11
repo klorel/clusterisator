@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <numeric>
 #include <cmath>
 #include <ctime>
@@ -57,12 +58,12 @@ typedef std::vector<IntVector> IntMatrix;
 typedef std::vector<DoubleVector> DoubleMatrix;
 
 typedef std::vector<IntList> IntListVector;
-typedef std::map<size_t, Double> Int2Double;
+typedef std::map<int, Double> Int2Double;
 
 typedef std::pair<Double, Double> Double2;
 
-typedef std::multimap<Double, size_t, std::greater<Double> > Distances;
-typedef std::pair<size_t, size_t> Move;
+typedef std::multimap<Double, int, std::greater<Double> > Distances;
+typedef std::pair<int, int> Move;
 typedef std::vector<Move> Moves;
 
 // forward declaration of interfaces

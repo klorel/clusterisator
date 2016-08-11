@@ -12,10 +12,16 @@
 #include "../mip_solver/LpBuffer.h"
 
 #include "ClusteringProblem.h"
-
+#include <cplex.h>
 IMaster::IMaster(ClusteringProblem const * input,
-		DecisionList const * decisions) :
-		_input(input), _decisions(decisions), _columns(), _dual(), _primal(), _cstat(), _rstat() {
+                 DecisionList const * decisions)
+    : _input(input),
+      _decisions(decisions),
+      _columns(),
+      _dual(),
+      _primal(),
+      _cstat(),
+      _rstat() {
 
 }
 
@@ -24,15 +30,14 @@ IMaster::~IMaster() {
 }
 
 void IMaster::getBasis(ColumnBuffer & result) const {
-	throw std::invalid_argument("");
-//	result.clear();
-//	for (auto const & column : _columns) {
-//		size_t const id(column.id());
-//		if (_cstat[id] == CPX_BASIC) {
-//			result.add(0, CPX_CONTINUOUS, 0, CPX_INFBOUND, GetStr("C_", id));
-//			for (auto const & v : column.v()) {
-//				result.add(v, 1);
-//			}
-//		}
-//	}
+  result.clear();
+  for (auto const & column : _columns) {
+    int const id(column.id());
+    if (_cstat[id] == CPX_BASIC) {
+      result.add(0, CPX_CONTINUOUS, 0, CPX_INFBOUND, GetStr("C_", id));
+      for (auto const & v : column.v()) {
+        result.add(v, 1);
+      }
+    }
+  }
 }

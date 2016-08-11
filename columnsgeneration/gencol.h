@@ -23,6 +23,7 @@ Double const ZERO_REDUCED_COST = 1e-6;
 #define ASSERT_CHECK(x)
 
 enum AvailableOracle {
-	MILP, MIQP
+  MILP,
+  MIQP
 };
 #endif /* CG_MASTER_HPP */

@@ -4,10 +4,11 @@
 #include "Column.h"
 #include "CliquePartitionProblem.h"
 
-QpOracle::QpOracle(CliquePartitionProblem const * input) :
-		CpxOracle(input), _cpp(input) {
-	_diagRegularisation = 1e2 * 0;
-	initCpx();
+QpOracle::QpOracle(CliquePartitionProblem const * input)
+    : CpxOracle(input),
+      _cpp(input) {
+  _diagRegularisation = 1e2 * 0;
+  initCpx();
 }
 QpOracle::~QpOracle() {
 }
@@ -22,28 +23,28 @@ void QpOracle::initOracle() {
 //	// R..R+B-1 : Yb
 //	ColumnBuffer columnBuffer;
 //	_index.resize(_input->nV());
-//	for (size_t v(0); v < _input->nV(); ++v) {
+//	for (int v(0); v < _input->nV(); ++v) {
 //		_index[v] = columnBuffer.size();
 //		columnBuffer.add(0, CPX_BINARY, 0, 1, _cpp->name(v));
 //	}
 //
 //	// Srb=Yr.Yb
-//	std::map<size_t, std::map<size_t, Double> > q;
+//	std::map<int, std::map<int, Double> > q;
 //	for (auto const & edge : _cpp->getCosts()) {
 //		if (edge._v != 0) {
 //			q[edge._j][edge._i] = edge._v;
 //			q[edge._i][edge._j] = edge._v;
 //		}
 //	}
-////	for (size_t r(0); r < _input->nR(); ++r) {
-////		for (size_t b(0); b < _input->nB(); ++b) {
+////	for (int r(0); r < _input->nR(); ++r) {
+////		for (int b(0); b < _input->nB(); ++b) {
 ////			if (_input->w(r, b) != 0) {
 ////				q[r][_input->nR() + b] = _input->w(r, b);
 ////				q[_input->nR() + b][r] = _input->w(r, b);
 ////			}
 ////		}
 ////	}
-//	for (size_t v(0); v < _input->nV(); ++v)
+//	for (int v(0); v < _input->nV(); ++v)
 //		q[v][v] = -2 * _diagRegularisation;
 //	columnBuffer.add(_env, _prob);
 //	// quadratic declaration
@@ -81,7 +82,7 @@ void QpOracle::setUpOracle() {
 ////	CPXchgobj(_env, _oracle, (int) _index.size(), _index.data(), _dual->data());
 //	DoubleVector copyDual(*_dual);
 //
-//	for (size_t v(0); v < _input->nV(); ++v)
+//	for (int v(0); v < _input->nV(); ++v)
 //		copyDual[v] += _diagRegularisation;
 //	CPXchgobj(_env, _prob, (int) _index.size(), _index.data(), copyDual.data());
 //	//	for (auto const & i : _index) {
@@ -94,7 +95,7 @@ void QpOracle::setUpOracle() {
 //		CPXdelmipstarts(_env, _prob, 0, CPXgetnummipstarts(_env, _prob) - 1);
 }
 bool QpOracle::generate() {
-	return true;
+  return true;
 //	setUpOracle();
 ////	write();
 //	CPXsetintparam(_env, CPX_PARAM_SOLUTIONTARGET,
@@ -117,10 +118,10 @@ bool QpOracle::generate() {
 //		result = (_bestReducedCost > ZERO_REDUCED_COST);
 //		if (result) {
 //			DoubleVector x(CPXgetnumcols(_env, _prob));
-//			size_t const n(CPXgetsolnpoolnumsolns(_env, _prob));
+//			int const n(CPXgetsolnpoolnumsolns(_env, _prob));
 //			//			std::cout << std::setw(4) << n << std::endl;
 //			Double obj;
-//			for (size_t i(0); i < n; ++i) {
+//			for (int i(0); i < n; ++i) {
 //				CPXgetsolnpoolobjval(_env, _prob, (int) i, &obj);
 //				if (obj > ZERO_REDUCED_COST) {
 //					CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0,

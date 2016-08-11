@@ -5,20 +5,20 @@
 #include "gencol.h"
 #include "CpxOracle.h"
 
-class BinaryDecompositionOracle: public CpxOracle {
-public:
-	BinaryDecompositionOracle(BipartiteGraph const *);
-	virtual ~BinaryDecompositionOracle();
-public:
-	void initOracle();
+class BinaryDecompositionOracle : public CpxOracle {
+ public:
+  BinaryDecompositionOracle(BipartiteGraph const *);
+  virtual ~BinaryDecompositionOracle();
+ public:
+  void initOracle();
 
-	virtual void setUpOracle();
-	virtual void checkSolutions();
-private:
+  virtual void setUpOracle();
+  virtual void checkSolutions();
+ private:
 
-	RectMatrix _s;
-	RectMatrix _ab;
-	BipartiteGraph const *_biPartiteGraph;
+  RectMatrix _s;
+  RectMatrix _ab;
+  BipartiteGraph const *_biPartiteGraph;
 };
 
 #endif 

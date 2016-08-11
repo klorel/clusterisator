@@ -10,52 +10,52 @@ class Node;
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 class ColumnBuffer;
-class LpMaster: public IMaster {
-public:
-	LpMaster(ClusteringProblem const *, DecisionList const * decisions);
-	~LpMaster();
-public:
-	void freeLp();
-	void initLp();
-	virtual void add(IPartition const & solution);
-	virtual void add(Column const & column);
-	void add(ColumnSet const & columns);
-	void add(Column const &, ColumnBuffer &) const;
+class LpMaster : public IMaster {
+ public:
+  LpMaster(ClusteringProblem const *, DecisionList const * decisions);
+  ~LpMaster();
+ public:
+  void freeLp();
+  void initLp();
+  virtual void add(IPartition const & solution);
+  virtual void add(Column const & column);
+  void add(ColumnSet const & columns);
+  void add(Column const &, ColumnBuffer &) const;
 
-	virtual void add(ColumnSet const & columns, size_t & nb, Double&rd);
+  virtual void add(ColumnSet const & columns, int & nb, Double&rd);
 
-	void add(Column const & column, ColumnBuffer & columnBuffer,
-			size_t current_n, Double & rd, size_t &nb);
+  void add(Column const & column, ColumnBuffer & columnBuffer, int current_n,
+           Double & rd, int &nb);
 
-	virtual void add(ReducedCostSorter const & columns, size_t, size_t & nb,
-			Double&rd);
+  virtual void add(ReducedCostSorter const & columns, int, int & nb,
+                   Double&rd);
 
-	void addSingleton();
+  void addSingleton();
 
-	void write(std::string const & fileName = "master.lp") const;
+  void write(std::string const & fileName = "master.lp") const;
 
-	void readColumns(std::string const & fileName);
+  void readColumns(std::string const & fileName);
 
-	void getSolution();
-	bool getSolution(FractionnarySolution &);
+  void getSolution();
+  bool getSolution(FractionnarySolution &);
 
-	void solveMaster();
-	void writeColumns(std::string const & = "columns.txt") const;
-	Double obj() const;
+  void solveMaster();
+  void writeColumns(std::string const & = "columns.txt") const;
+  Double obj() const;
 
-	DoubleVector const & primal() const;
-	DoubleVector const & dual() const;
-	ColumnSet const & columns() const;
+  DoubleVector const & primal() const;
+  DoubleVector const & dual() const;
+  ColumnSet const & columns() const;
 
-	void applyBranchingRule();
+  void applyBranchingRule();
 //	void branchingWeights(FractionnarySolution const &, BranchingWeights &);
 
-	void build();
-private:
-	CPXENVptr _env;
-	CPXLPptr _lp;
+  void build();
+ private:
+  CPXENVptr _env;
+  CPXLPptr _lp;
 
-	Double _obj;
+  Double _obj;
 };
 
 #endif 

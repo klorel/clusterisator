@@ -6,24 +6,24 @@
 #include "CpxOracle.h"
 #include "UnipartieInstance.h"
 
-class UnipartiteBinaryDecompositionOracle: public CpxOracle {
-public:
-	UnipartiteBinaryDecompositionOracle(UnipartieInstance const *);
-	virtual ~UnipartiteBinaryDecompositionOracle();
-public:
-	void initOracle();
+class UnipartiteBinaryDecompositionOracle : public CpxOracle {
+ public:
+  UnipartiteBinaryDecompositionOracle(UnipartieInstance const *);
+  virtual ~UnipartiteBinaryDecompositionOracle();
+ public:
+  void initOracle();
 
-	virtual void setUpOracle();
-	virtual void checkSolutions() const;
-private:
+  virtual void setUpOracle();
+  virtual void checkSolutions() const;
+ private:
 
-	IntVector _s;
-	IntVector _a;
-	size_t _tD;
-	size_t _c;
+  IntVector _s;
+  IntVector _a;
+  int _tD;
+  int _c;
 //	RectMatrix _aa;
-	IntVector _aa;
-	UnipartieInstance const *_uniPartiteGraph;
+  IntVector _aa;
+  UnipartieInstance const *_uniPartiteGraph;
 };
 
 #endif 

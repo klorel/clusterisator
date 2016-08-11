@@ -16,54 +16,54 @@
  * Represent a symetric, real-valued, matrix
  */
 class SymMatrix {
-public:
-	/**
-	 * @param n Size of the matrix
-	 */
-	SymMatrix(size_t n);
-	virtual ~SymMatrix();
+ public:
+  /**
+   * @param n Size of the matrix
+   */
+  SymMatrix(int n);
+  virtual ~SymMatrix();
 
-	Double get(size_t i, size_t j) const;
-	void set(size_t i, size_t j, Double v);
+  Double get(int i, int j) const;
+  void set(int i, int j, Double v);
 
-private:
-	/**
-	 * (Re)initialize the matrix: its size is set equal to n, and is coefficients are set to 0
-	 */
-	void allocate(size_t n);
+ private:
+  /**
+   * (Re)initialize the matrix: its size is set equal to n, and is coefficients are set to 0
+   */
+  void allocate(int n);
 
-	/**
-	 * The size of the matrix
-	 */
-	size_t _n;
+  /**
+   * The size of the matrix
+   */
+  int _n;
 
-	/**
-	 * The actual, needed, coefficients
-	 */
-	std::vector<DoubleVector> _matrix;
+  /**
+   * The actual, needed, coefficients
+   */
+  std::vector<DoubleVector> _matrix;
 };
 
-SymMatrix::SymMatrix(size_t n) {
-	allocate(n);
+SymMatrix::SymMatrix(int n) {
+  allocate(n);
 }
 
 SymMatrix::~SymMatrix() {
 }
-inline void SymMatrix::allocate(size_t n) {
-	_n = n;
-	_matrix = std::vector<DoubleVector>(n);
-	for (size_t idx = 0; idx < n; idx++) {
-		_matrix[idx] = DoubleVector(idx + 1, Zero<Double>());
-	}
+inline void SymMatrix::allocate(int n) {
+  _n = n;
+  _matrix = std::vector<DoubleVector>(n);
+  for (int idx = 0; idx < n; idx++) {
+    _matrix[idx] = DoubleVector(idx + 1, Zero<Double>());
+  }
 }
 
-inline Double SymMatrix::get(size_t i, size_t j) const {
-	assert(i < _n && j < _n);
-	return _matrix[std::max(i, j)][std::min(i, j)];
+inline Double SymMatrix::get(int i, int j) const {
+  assert(i < _n && j < _n);
+  return _matrix[std::max(i, j)][std::min(i, j)];
 }
-inline void SymMatrix::set(size_t i, size_t j, Double v) {
-	assert(i < _n && j < _n);
-	_matrix[std::max(i, j)][std::min(i, j)] = v;
+inline void SymMatrix::set(int i, int j, Double v) {
+  assert(i < _n && j < _n);
+  _matrix[std::max(i, j)][std::min(i, j)] = v;
 }
 
 #endif /* SYMMATRIX_HPP_ */
