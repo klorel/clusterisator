@@ -21,6 +21,7 @@ class ColumnGenerator {
   ReducedCostSorter const & result() const;
 
   void setNumberByIte(int);
+  int getNumberByIte()const;
   Double rc() const;
 
   Double vnsTime() const;

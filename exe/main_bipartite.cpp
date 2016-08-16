@@ -59,9 +59,8 @@ int main(int argc, char** argv) {
 //	} while (std::remove(file_name.c_str()) == 0);
 
   instance.out();
-
   // oracles creation
-  VnsGenerator vnsOracle(&instance);
+  VnsGenerator vnsOracle(&instance);  
   instance.setVnsOracle(&vnsOracle);
 
   BinaryDecompositionOracle bMilpOracle(&instance);
@@ -69,13 +68,22 @@ int main(int argc, char** argv) {
   instance.setExactOracle(&bMilpOracle);
 
   BranchAndBound branchAndBound(instance);
+
+  int nColumnGeneratorNumberByIte(10);
+  if (argc > 2) {
+	  nColumnGeneratorNumberByIte = atoi(argv[2]);
+
+  }
+  std::cout << "nColumnGeneratorNumberByIte : " << nColumnGeneratorNumberByIte << std::endl;
+  branchAndBound._columnGenerator.setNumberByIte(nColumnGeneratorNumberByIte);
+
   branchAndBound.init();
   branchAndBound.master().addSingleton();
   branchAndBound.setOutput();
   branchAndBound.run();
 //	branchAndBound.writeSolution();
-  std::cout << "program run in " << std::setprecision(10) << total.elapsed()
-            << std::endl;
+  std::cout << "program run in " << std::setprecision(10) << total.elapsed() << std::endl;
+  std::cout << "Solution is " << branchAndBound.bestFeasible() << std::endl;
 //	instance.cps("toto");
   return 0;
 }

@@ -111,12 +111,12 @@ bool VnsGenerator::localSearch() {
           stop = false;
           violations = newViolations;
         }
-      }ASSERT_CHECK(checkGradient());
+      }
+	  ASSERT_CHECK(checkGradient());
     }
   } while (!stop);
 //
   ASSERT_CHECK(violations == _current.violation(*_decisions));
-
 //
   return true;
 }

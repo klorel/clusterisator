@@ -44,7 +44,7 @@ public:
   virtual int nrows()const;
 
 
-  virtual void applyBranchingRule();
+  virtual void applyBranchingRule(DecisionList const & decision, RowBuffer & rowBuffer, RowBuffer & decisionBuffer);
   virtual bool generate();
   virtual void checkSolutions() const;
   virtual void setUpOracle();

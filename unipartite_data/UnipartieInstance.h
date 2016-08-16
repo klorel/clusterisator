@@ -18,7 +18,6 @@ class CliquePartitionProblem;
 // (xr)/m - (D/2m)²
 class UnipartieInstance : public ClusteringProblem {
  public:
-  virtual double cst() const;
   virtual int nV() const;
   virtual Edges const & edges() const;
 
@@ -49,6 +48,8 @@ class UnipartieInstance : public ClusteringProblem {
   Double inv_m() const;
   Double sum_k() const;
 
+  Double & cst();
+  Double  cst() const;
  public:
   UnipartieInstance();
   UnipartieInstance(Edges const & edges);
@@ -58,11 +59,10 @@ class UnipartieInstance : public ClusteringProblem {
  private:
   Double _m;
   Double _inv_m;
-  double _cst;
   DoubleVector _k;
 
   Edges _edges;
-
+  
 //	typedef std::pair<int, double> Link;
 //	typedef std::vector<Link> Links;
 //	typedef std::vector<Links> AllLinks;
@@ -75,11 +75,9 @@ class UnipartieInstance : public ClusteringProblem {
   std::vector<Edge> _costs;
 
   AdjencyGraph _adjencyGraph;
+  Double _cst;
 };
 
-inline double UnipartieInstance::cst() const {
-  return _cst;
-}
 inline std::string UnipartieInstance::name(int v) const {
   return GetStr("YR_", v);
 }

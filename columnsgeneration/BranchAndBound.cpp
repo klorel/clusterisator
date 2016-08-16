@@ -20,6 +20,8 @@ BranchAndBound::BranchAndBound(ClusteringProblem const &input)
   _columnGenerator.setExact(_input->getExactOracle(), _master->dual(),
                             _decision);
   _columnGenerator.setVns(_input->getVnsOracle(), _master->dual(), _decision);
+  _columnGenerator.setNumberByIte(10);
+
 }
 
 BranchAndBound::~BranchAndBound() {
@@ -41,8 +43,6 @@ void BranchAndBound::columnGeneration() {
   double rc(0);
   int nb(0);
   int ite(0);
-  int const nColumnsByIte(10);
-  _columnGenerator.setNumberByIte(nColumnsByIte);
   if (_output != NULL) {
     output() << std::setw(6) << "ite";
     output() << std::setw(10) << "nb col";
@@ -70,7 +70,7 @@ void BranchAndBound::columnGeneration() {
     if (foundColumn) {
       rc = _columnGenerator.rc();
       nb = 0;
-      _master->add(_columnGenerator.result(), nColumnsByIte, nb, rc);
+      _master->add(_columnGenerator.result(), _columnGenerator.getNumberByIte(), nb, rc);
       a += timer.elapsed();
     } else {
       stop = true;
@@ -83,6 +83,7 @@ void BranchAndBound::columnGeneration() {
       output() << std::setw(25) << std::setprecision(10) << _master->obj();
       output() << std::setw(25) << std::setprecision(10) << rc;
       output() << std::setw(15) << std::setprecision(8) << total.elapsed();
+	  output() << std::setw(15) << _master->log();
       output() << std::endl;
     }
   } while (!stop);

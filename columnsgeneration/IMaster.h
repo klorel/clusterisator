@@ -57,6 +57,7 @@ class IMaster {
   IMaster(ClusteringProblem const *, DecisionList const * decisions);
   virtual ~IMaster();
   virtual void getBasis(ColumnBuffer &) const;
+  std::string const & log()const { return _log; }
  protected:
   ClusteringProblem const * _input;
   DecisionList const * _decisions;
@@ -66,6 +67,8 @@ class IMaster {
   std::vector<double> _primal;
   std::vector<int> _cstat;
   std::vector<int> _rstat;
+
+  std::string _log;
 };
 
 #endif /* IMASTER_H_ */

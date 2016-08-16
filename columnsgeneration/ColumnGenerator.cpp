@@ -12,6 +12,11 @@ ColumnGenerator::ColumnGenerator()
 ColumnGenerator::~ColumnGenerator() {
 
 }
+
+int ColumnGenerator::getNumberByIte()const {
+	return _nColumnsByIte;
+}
+
 void ColumnGenerator::setExact(IOracle * oracle, DoubleVector const & dual,
                                DecisionList const & list) {
   _exact = oracle;

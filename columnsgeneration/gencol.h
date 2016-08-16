@@ -24,6 +24,6 @@ Double const ZERO_REDUCED_COST = 1e-6;
 
 enum AvailableOracle {
   MILP,
-  MIQP
+  MIQP 
 };
 #endif /* CG_MASTER_HPP */

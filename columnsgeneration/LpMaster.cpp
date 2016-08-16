@@ -219,6 +219,20 @@ void LpMaster::readColumns(std::string const & fileName) {
             << fileName << std::endl;
 }
 
+
+bool PrimalPredicate::operator()(DoubleVector const & v1, DoubleVector const & v2)const {
+	//return v1 < v2;
+	for (int i(0); i < v1.size(); ++i) {
+		if (v1[i] - v2[i] < -1e-10)
+			return true;
+		else if (v1[i] - v2[i] > 1e-10)
+			return false;
+	}
+	return false;
+	
+}
+
+
 void LpMaster::getSolution() {
   assert(CPXgetnumrows(_env, _lp) == _dual.size());
   CPXgetpi(_env, _lp, _dual.data(), 0, (int) (_dual.size() - 1));
@@ -233,16 +247,36 @@ void LpMaster::getSolution() {
   CPXgetobjval(_env, _lp, &_obj);
   _cstat.resize(CPXgetnumcols(_env, _lp));
   CPXgetbase(_env, _lp, _cstat.data(), _rstat.data());
-//	int nBasis(0);
-//	int nBasisDegen(0);
-//	for (int i(0); i < cstat.size(); ++i) {
-//		if (cstat[i] == CPX_BASIC)
-//			++nBasis;
-//		if (cstat[i] == CPX_BASIC && _primal[i] < 1e-6)
-//			++nBasisDegen;
-//	}
-//	std::cout << "Degenerated variables in basis " << nBasisDegen << " / "
-//			<< nBasis << std::endl;
+	int nBasis(0);
+	int nBasisDegen(0);
+	IntSet basis;
+	for (int i(0); i < _cstat.size(); ++i) {
+		//if (_cstat[i] == CPX_BASIC)
+		//	std::cout << "STATUS[" << i << "] = CPX_BASIC" << std::endl;
+		//else if (_cstat[i] == CPX_AT_LOWER)
+		//	std::cout << "STATUS[" << i << "] = CPX_AT_LOWER" << std::endl;
+		//else if (_cstat[i] == CPX_AT_UPPER)
+		//	std::cout << "STATUS[" << i << "] = CPX_AT_UPPER" << std::endl;
+		//else if (_cstat[i] == CPX_FREE_SUPER)
+		//	std::cout << "STATUS[" << i << "] = CPX_FREE_SUPER" << std::endl;
+		if (_cstat[i] == CPX_BASIC) {
+			basis.insert(i);
+			++nBasis;
+		}
+		if (_cstat[i] == CPX_BASIC && _primal[i] < 1e-6)
+			++nBasisDegen;
+	}
+	//for (int i(0); i < _primal.size(); ++i) {
+		//if(_primal[i]>1e-10)
+		//std::cout << "x[" << i << "] = "<<std::setprecision(10) << _primal[i] << ", ";
+	//}
+	//std::cout << std::endl<<" basis ("<<basis.size()<<") = ";
+	//for (auto const b : basis)
+	//	std::cout << b << ", ";
+	//std::cout << std::endl;
+	_allBasis[_primal].insert(basis);
+	//std::cout << std::setw(4)<<_allBasis[_primal].size() << "\tNumber of basis related to primal solution "<< std::endl;
+	_log = GetStr(_allBasis[_primal].size());
 }
 
 bool LpMaster::getSolution(FractionnarySolution & solution) {
@@ -332,4 +366,3 @@ void LpMaster::add(IPartition const & solution) {
   }
   add(columns);
 }
-

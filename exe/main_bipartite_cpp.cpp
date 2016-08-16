@@ -6,17 +6,10 @@
  */
 
 #include "../bipartite_data/RegisteredModularityBInstance.h"
+#include "../columnsgeneration/CliquePartitionProblem.h"
 
 #include "../clustering/Timer.h"
 #include "../clustering/common.h"
-
-#include "../heuristic/VnsLabelPropagation.h"
-#include "../heuristic/Divisive.h"
-
-#include "../columnsgeneration/BranchAndBound.h"
-#include "../columnsgeneration/VnsGenerator.h"
-#include "../columnsgeneration/MilpOracle.h"
-#include "../columnsgeneration/QpOracle.h"
 
 #include "../mip_solver/XpressSolver.h"
 #include "../mip_solver/CplexSolver.h"
@@ -50,14 +43,7 @@ int main(int argc, char** argv) {
   if (argc == 1)
     return usage();
 
-  AvailableModularityBInstances id(
-      static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
-
-  AvailableOracle oracle(AvailableOracle::MILP);
-  if (argc > 2) {
-    oracle = static_cast<AvailableOracle>(atoi(argv[2]));
-  }
-
+  AvailableModularityBInstances id(static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
   RegisteredModularityBInstance instance(id);
 
 //	int id_node(0);

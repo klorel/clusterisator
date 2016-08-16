@@ -39,7 +39,7 @@ class CliquePartitionProblem : public ClusteringProblem {
                               DecisionList const * decision) const;
   virtual IOracle * newVnsOracle(DoubleVector const * dual,
                                  DecisionList const * decision) const;
-  virtual double cst() const;
+
   virtual void cps(std::string const &fileName, ILpSolver & solver) const;
 
   virtual void exportAmpl(std::string const &) const;
@@ -72,8 +72,8 @@ class CliquePartitionProblem : public ClusteringProblem {
 
   virtual void cpCost(DoubleVector &result) const {
   }
-  ;
-
+  Double & cst();
+  Double  cst() const;
  public:
   int _n;
   // edges with cost
@@ -81,6 +81,8 @@ class CliquePartitionProblem : public ClusteringProblem {
 
   AllLinks _allLinks;
   std::vector<Edge> _costs;
+
+  Double _cst;
 };
 
 inline void CliquePartitionProblem::exportAmpl(
@@ -95,9 +97,6 @@ inline void CliquePartitionProblem::exportAmpl(
   file.close();
 }
 
-inline double CliquePartitionProblem::cst() const {
-  return 0;
-}
 
 inline CliquePartitionProblem::~CliquePartitionProblem() {
 

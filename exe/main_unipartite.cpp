@@ -76,9 +76,18 @@ int main(int argc, char** argv) {
   instance.setExactOracle(&bMilpOracle);
 
   BranchAndBound branchAndBound(instance);
+
+  int nColumnGeneratorNumberByIte(10);
+  if (argc > 2) {
+	  nColumnGeneratorNumberByIte = atoi(argv[2]);
+
+  }
+  std::cout << "nColumnGeneratorNumberByIte : " << nColumnGeneratorNumberByIte << std::endl;
+  branchAndBound._columnGenerator.setNumberByIte(nColumnGeneratorNumberByIte);
+
   branchAndBound.init();
   //	branchAndBound.master().add(p);
-  //	branchAndBound.master().addEdge();
+  	//branchAndBound.master().addEdge();
   branchAndBound.master().addSingleton();
   //	branchAndBound.master().write();
   branchAndBound.setOutput();
@@ -86,10 +95,8 @@ int main(int argc, char** argv) {
   //	for (int i(0); i < 1; ++i)
   //		branchAndBound._vnsGenerator->run(1, false);
   //	branchAndBound.writeSolution();
-  std::cout << "program run in " << std::setprecision(10) << total.elapsed()
-            << std::endl;
-  std::cout << "Solution is " << branchAndBound.bestFeasible() + instance.cst()
-            << std::endl;
+  std::cout << "program run in " << std::setprecision(10) << total.elapsed()<< std::endl;
+  std::cout << "Solution is " << branchAndBound.bestFeasible() + instance.cst()<< std::endl;
 //	instance.cps(instance.name());
   return 0;
 }

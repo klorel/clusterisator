@@ -7,6 +7,8 @@
 
 #include "CplexSolver.h"
 #include "LpBuffer.h"
+#include "Decision.h"
+
 CplexSolver::CplexSolver() {
   _prob = NULL;
   _env = NULL;
@@ -120,27 +122,26 @@ bool CplexSolver::isOptimal() const {
       || CPXgetstat(_env, _prob) == CPXMIP_OPTIMAL_POPULATED_TOL;
 }
 
-void CplexSolver::applyBranchingRule() {
-//	if (_rowBuffer.size() != CPXgetnumrows(_env, _prob))
-//		CPXdelrows(_env, _prob, _rowBuffer.size(),
-//				CPXgetnumrows(_env, _prob) - 1);
-//	_decisionBuffer.clear();
-//	if (!_decisions->empty()) {
-//		for (Decision const & decision : *_decisions) {
-//			if (decision.cannot()) {
-//				// r+b <= 1
-//				_decisionBuffer.add(1, 'L', decision.name());
-//				_decisionBuffer.add(decision.noeud1(), +1);
-//				_decisionBuffer.add(decision.noeud2(), +1);
-//			} else {
-//				// r = b
-//				_decisionBuffer.add(0, 'E', decision.name());
-//				_decisionBuffer.add(decision.noeud1(), +1);
-//				_decisionBuffer.add(decision.noeud2(), -1);
-//			}
-//		}
-//		_decisionBuffer.add(_env, _prob);
-//	}
+void CplexSolver::applyBranchingRule(DecisionList const & decisions, RowBuffer & rowBuffer, RowBuffer & decisionBuffer) {
+	if (rowBuffer.size() != CPXgetnumrows(_env, _prob))
+		CPXdelrows(_env, _prob, rowBuffer.size(), CPXgetnumrows(_env, _prob) - 1);
+	decisionBuffer.clear();
+	if (!decisions.empty()) {
+		for (Decision const & decision : decisions) {
+			if (decision.cannot()) {
+				// r+b <= 1
+				decisionBuffer.add(1, 'L', decision.name());
+				decisionBuffer.add(decision.noeud1(), +1);
+				decisionBuffer.add(decision.noeud2(), +1);
+			} else {
+				// r = b
+				decisionBuffer.add(0, 'E', decision.name());
+				decisionBuffer.add(decision.noeud1(), +1);
+				decisionBuffer.add(decision.noeud2(), -1);
+			}
+		}
+		decisionBuffer.add(_env, _prob);
+	}
 }
 
 void CplexSolver::checkSolutions() const {

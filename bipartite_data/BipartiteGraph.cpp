@@ -1,9 +1,9 @@
+
 #include "BipartiteGraph.h"
 
-#include "../columnsgeneration/MilpOracle.h"
-#include "../columnsgeneration/QpOracle.h"
+#include "gencol.h"
+#include "../columnsgeneration/Column.h"
 #include "../columnsgeneration/CliquePartitionProblem.h"
-#include "BinaryDecompositionOracle.h"
 
 BipartiteGraph::BipartiteGraph()
     : _m(0),

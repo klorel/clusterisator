@@ -10,6 +10,12 @@ class Node;
 typedef struct cpxlp* CPXLPptr;
 typedef struct cpxenv* CPXENVptr;
 class ColumnBuffer;
+
+class PrimalPredicate {
+public:
+	bool operator()(DoubleVector const & v1, DoubleVector const & v2)const;
+};
+
 class LpMaster : public IMaster {
  public:
   LpMaster(ClusteringProblem const *, DecisionList const * decisions);
@@ -56,6 +62,8 @@ class LpMaster : public IMaster {
   CPXLPptr _lp;
 
   Double _obj;
+
+  std::map<DoubleVector, std::set<IntSet>, PrimalPredicate > _allBasis;
 };
 
 #endif 

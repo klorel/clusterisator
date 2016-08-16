@@ -18,7 +18,12 @@ int CliquePartitionProblem::nV() const {
 int &CliquePartitionProblem::nV() {
   return _n;
 }
-
+Double & CliquePartitionProblem::cst() {
+	return _cst;
+}
+Double  CliquePartitionProblem::cst() const {
+	return _cst;
+}
 Edges & CliquePartitionProblem::getEdges() {
   return _edges2;
 }
@@ -208,13 +213,12 @@ void CliquePartitionProblem::cps(std::string const &fileName,
   }
   solver.add(rowBuffer);
   solver.maximize();
-  //solver.write(fileName + ".lp");
+  solver.write(fileName + ".lp");
 
   solver.run();
 
   double objval = solver.objValue();
-  std::cout << "optimal solution value  : " << std::setprecision(20) << objval
-            << std::endl;
+  std::cout << "optimal solution value  : " << std::setprecision(20) << objval << std::endl;
 
 }
 
