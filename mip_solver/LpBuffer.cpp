@@ -1,4 +1,5 @@
 #include "LpBuffer.h"
+
 #include <cplex.h>
 
 Double & RowBuffer::rhsObj(int id) {
