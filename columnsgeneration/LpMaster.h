@@ -13,7 +13,8 @@ class ColumnBuffer;
 
 class PrimalPredicate {
 public:
-	bool operator()(DoubleVector const & v1, DoubleVector const & v2)const;
+	bool operator()(DoubleVector const & v1, DoubleVector const & v2)const; 
+	bool operator()(Int2Double const & v1, Int2Double const & v2)const;
 };
 
 class LpMaster : public IMaster {
@@ -63,7 +64,7 @@ class LpMaster : public IMaster {
 
   Double _obj;
 
-  std::map<DoubleVector, std::set<IntSet>, PrimalPredicate > _allBasis;
+  std::map<Int2Double, std::set<IntSet>, PrimalPredicate > _allBasis;
 };
 
 #endif 

@@ -74,6 +74,7 @@ void BranchAndBound::columnGeneration() {
       a += timer.elapsed();
     } else {
       stop = true;
+	  rc = _columnGenerator.rc();
     }
     if (_output != NULL) {
       output() << std::setw(6) << ite;

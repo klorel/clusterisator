@@ -11,8 +11,8 @@ class BinaryDecompositionOracle : public CpxOracle {
   virtual ~BinaryDecompositionOracle();
  public:
   void initOracle();
+  void fill(RowBuffer &, ColumnBuffer&);
 
-  virtual void setUpOracle();
   virtual void checkSolutions();
  private:
 

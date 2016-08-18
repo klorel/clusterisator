@@ -19,7 +19,6 @@ class CpxOracle : public IOracle {
  public:
   virtual void applyBranchingRule();
   virtual bool generate();
-  virtual void setUpOracle()=0;
   virtual void initOracle()=0;
   virtual void checkSolutions() const;
  public:

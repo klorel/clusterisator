@@ -9,6 +9,7 @@
 #define TYPEDEF_H_
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <memory>
 #include <numeric>
@@ -39,9 +40,11 @@
 //#else
 //typedef double Double;
 //#endif
+
 typedef double Double;
 
 typedef std::pair<int, int> Position;
+typedef std::pair<int, int> IntPair;
 typedef std::vector<bool> BoolVector;
 
 typedef std::set<int> IntSet;
@@ -59,6 +62,7 @@ typedef std::vector<DoubleVector> DoubleMatrix;
 
 typedef std::vector<IntList> IntListVector;
 typedef std::map<int, Double> Int2Double;
+typedef std::map<IntPair, Double> IntPair2Double;
 
 typedef std::pair<Double, Double> Double2;
 
