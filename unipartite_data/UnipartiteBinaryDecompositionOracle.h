@@ -15,6 +15,8 @@ class UnipartiteBinaryDecompositionOracle : public CpxOracle {
 
   virtual void setUpOracle();
   virtual void checkSolutions() const;
+
+  void fill(RowBuffer & rowBuffer, ColumnBuffer & columnBuffer);
  private:
 
   IntVector _s;

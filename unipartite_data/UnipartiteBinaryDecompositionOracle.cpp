@@ -13,13 +13,11 @@ UnipartiteBinaryDecompositionOracle::UnipartiteBinaryDecompositionOracle(
 UnipartiteBinaryDecompositionOracle::~UnipartiteBinaryDecompositionOracle() {
 }
 void UnipartiteBinaryDecompositionOracle::initOracle() {
-  _solver->initLp("Oracle");
+  _solver->initLp("UnipartiteBinaryDecompositionOracle");
   char const binary(_solver->binary());
   char const continuous(_solver->continuous());
   double const infinity(_solver->infinity());
-
-  // 0..R-1 : Yr
-  // R..R+B-1 : Yb
+  
   int const n(_input->nV());
   int const nn(n * (n - 1) / 2);
   ColumnBuffer columnBuffer(_solver->continuous());
@@ -42,17 +40,14 @@ void UnipartiteBinaryDecompositionOracle::initOracle() {
                      GetStr("S_V", i, "_V", j));
   }
 
-  _tD = (int) std::ceil(
-      (std::log(_uniPartiteGraph->sum_k() + 1) / log(2) - 1));
-  double const tempCoeff(
-      _uniPartiteGraph->inv_m() * _uniPartiteGraph->inv_m() * 0.5 * 0.5);
+  _tD = (int) std::ceil((std::log(_uniPartiteGraph->sum_k() + 1) / log(2) - 1));
+  double const tempCoeff(_uniPartiteGraph->inv_m() * _uniPartiteGraph->inv_m() * 0.5 * 0.5);
 
   _a.resize(_tD + 1);
   for (int h(0); h < _tD + 1; ++h) {
     // ah binary
     _a[h] = columnBuffer.size();
-    columnBuffer.add(-std::pow(2, 2 * h) * tempCoeff, binary, 0, 1,
-                     GetStr("a_", h));
+    columnBuffer.add(-std::pow(2, 2 * h) * tempCoeff, binary, 0, 1,GetStr("a_", h));
   }
 //	_aa = RectMatrix(_tD + 1, _tD + 1, 0);
   _aa.resize((_tD + 1) * _tD * 0.5);
@@ -61,28 +56,25 @@ void UnipartiteBinaryDecompositionOracle::initOracle() {
       // ahl >= 0
       _aa[ijtok(_tD + 1, h, l)] = columnBuffer.size();
       double const cost(-std::pow(2, h + l + 1) * tempCoeff);
-      columnBuffer.add(cost, continuous, 0, infinity,
-                       GetStr("a_H", h, "_L", l));
+      columnBuffer.add(cost, continuous, 0, infinity, GetStr("a_H", h, "_L", l));
     }
   }
 
   int const D(columnBuffer.size());
   columnBuffer.add(0, continuous, -infinity, +infinity, "D");
 
-  _c = columnBuffer.size();
-  columnBuffer.add(tempCoeff, continuous, -infinity, +infinity, "D");
+  //_c = columnBuffer.size();
+  //columnBuffer.add(tempCoeff, continuous, -infinity, +infinity, "D");
 
   _solver->add(columnBuffer);
-  // binary declaration
-
   // constraints
   _rowBuffer.clear();
-  // C = sum kr² Yr
-  _rowBuffer.add(0, 'E', "D_k");
-  for (int v(0); v < n; ++v) {
-    _rowBuffer.add(v, _uniPartiteGraph->k(v) * _uniPartiteGraph->k(v));
-  }
-  _rowBuffer.add(_c, -1);
+  //// C = sum kr² Yr
+  //_rowBuffer.add(0, 'E', "C_k");
+  //for (int v(0); v < n; ++v) {
+  //  _rowBuffer.add(v, _uniPartiteGraph->k(v) * _uniPartiteGraph->k(v));
+  //}
+  //_rowBuffer.add(_c, -1);
 
   // D = sum kr Yr
   _rowBuffer.add(0, 'E', "D_k");

@@ -84,7 +84,7 @@ void CplexSolver::initLp(std::string const & name) {
   int err;
   _env = CPXopenCPLEX(&err);
   CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_OFF);
-  CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_ON);
+  //CPXsetintparam(_env, CPX_PARAM_SCRIND, CPX_ON);
   CPXsetintparam(_env, CPX_PARAM_THREADS, 1);
   	//CPXsetintparam(_env, CPX_PARAM_PREPASS, 0);
   //	CPXsetintparam(_env, CPX_PARAM_CUTPASS, -1);

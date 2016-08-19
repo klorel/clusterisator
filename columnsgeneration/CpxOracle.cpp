@@ -56,7 +56,7 @@ bool CpxOracle::generate() {
 	// update dual variables
 	_solver->chgObj(_index, *_dual);
 
-	std::cout << "writing oracle in oracle.lp" << std::endl;
+	//std::cout << "writing oracle in oracle.lp" << std::endl;
 	_solver->write("oracle.lp");
 	std::ofstream file("oracle.txt");
 	for (int i(0); i < _dual->size(); ++i) {
@@ -73,8 +73,8 @@ bool CpxOracle::generate() {
   if (_solver->isOptimal()) {
     _bestReducedCost = _solver->objValue();
     result = (_bestReducedCost > ZERO_REDUCED_COST);
-	MY_PRINT(_bestReducedCost);
-	MY_PRINT(ZERO_REDUCED_COST);
+	//MY_PRINT(_bestReducedCost);
+	//MY_PRINT(ZERO_REDUCED_COST);
 //		MY_PRINT(result);
     if (result) {
       DoubleVector x;

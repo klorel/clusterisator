@@ -91,7 +91,6 @@ bool ColumnGenerator::exact() {
 	Timer timer;
 	_step = "EXACT";
 	timer.restart();
-	//stop = !generate();
 	bool stop = !_exact->generate();
 	_exactTime += timer.elapsed();
 	if (!stop) {
@@ -106,9 +105,9 @@ bool ColumnGenerator::exact() {
 bool ColumnGenerator::run() {
 	clear();
 	bool stop(false);
-	if (!stop && _vns != NULL && vns()) {
-		stop = true;
-	}
+	//if (!stop && _vns != NULL && vns()) {
+	//	stop = true;
+	//}
 	if (!stop && _exact != NULL) {
 		exact();
 	}
