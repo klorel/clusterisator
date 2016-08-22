@@ -20,6 +20,10 @@ class MilpOracle : public CpxOracle {
 
   virtual void setUpOracle();
   void checkMipSolution() const;
+
+
+  void fill(RowBuffer & rowBuffer, ColumnBuffer & columnBuffer);
+
  private:
   Products _products;
   CliquePartitionProblem const * const _cpp;

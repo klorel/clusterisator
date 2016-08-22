@@ -58,21 +58,21 @@ int main(int argc, char** argv) {
 	instance.out();
 	CliquePartitionProblem cpp;
 	instance.getCliquePartitionProblem(cpp);
-	XpressSolver xpress;
-	
-	xpress.stream().push_back(&std::cout);
-	xpress.initLp("cps_xpress");
-	xpress.setNbThreads(4);
-	
-	xpress.setLog();
-	cpp.cps("cps_xpress", xpress);
+	//XpressSolver xpress;
+	//
+	//xpress.stream().push_back(&std::cout);
+	//xpress.initLp("cps_xpress");
+	//xpress.setNbThreads(4);
+	//
+	//xpress.setLog();
+	//cpp.cps("cps_xpress", xpress);
 
-	//CplexSolver cplex;
-	//cplex.initLp("cps_cplex");
-	//cplex.setNbThreads(4);
-	//cplex.setLog();
-	//cplex.add(std::cout);
-	//cpp.cps("cps_cplex", cplex);
+	CplexSolver cplex;
+	cplex.initLp("cps_cplex");
+	cplex.setNbThreads(4);
+	cplex.setLog();
+	cplex.add(std::cout);
+	cpp.cps("cps_cplex", cplex);
 	return 0;
 }
 

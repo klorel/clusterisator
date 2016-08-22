@@ -74,13 +74,17 @@ int main(int argc, char** argv) {
 
   UnipartiteBinaryDecompositionOracle bMilpOracle(&instance);
   instance.setExactOracle(&bMilpOracle);
+  
+  //CliquePartitionProblem cpp;
+  //instance.getCliquePartitionProblem(cpp);
+  //MilpOracle  milpOracle(&cpp);
+  //instance.setExactOracle(&milpOracle);
 
   BranchAndBound branchAndBound(instance);
 
   int nColumnGeneratorNumberByIte(10);
   if (argc > 2) {
 	  nColumnGeneratorNumberByIte = atoi(argv[2]);
-
   }
   std::cout << "nColumnGeneratorNumberByIte : " << nColumnGeneratorNumberByIte << std::endl;
   branchAndBound._columnGenerator.setNumberByIte(nColumnGeneratorNumberByIte);

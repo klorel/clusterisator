@@ -105,9 +105,9 @@ bool ColumnGenerator::exact() {
 bool ColumnGenerator::run() {
 	clear();
 	bool stop(false);
-	//if (!stop && _vns != NULL && vns()) {
-	//	stop = true;
-	//}
+	if (!stop && _vns != NULL && vns()) {
+		stop = true;
+	}
 	if (!stop && _exact != NULL) {
 		exact();
 	}

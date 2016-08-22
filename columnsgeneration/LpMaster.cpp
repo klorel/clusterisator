@@ -292,6 +292,7 @@ void LpMaster::getSolution() {
 		//	_dual[i] = 0;
 	}
 	assert(CPXgetnumcols(_env, _lp) == _primal.size());
+
 	CPXgetx(_env, _lp, _primal.data(), 0, (int)(_primal.size() - 1));
 	CPXgetobjval(_env, _lp, &_obj);
 	_cstat.resize(CPXgetnumcols(_env, _lp));

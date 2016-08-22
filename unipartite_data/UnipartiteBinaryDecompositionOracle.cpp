@@ -12,109 +12,113 @@ UnipartiteBinaryDecompositionOracle::UnipartiteBinaryDecompositionOracle(
 }
 UnipartiteBinaryDecompositionOracle::~UnipartiteBinaryDecompositionOracle() {
 }
+
+void UnipartiteBinaryDecompositionOracle::fill(RowBuffer & rowBuffer, ColumnBuffer & columnBuffer) {
+	char const binary(_solver->binary());
+	char const continuous(_solver->continuous());
+	double const infinity(_solver->infinity());
+
+	int const n(_input->nV());
+	int const nn(n * (n - 1) / 2);
+	_index.resize(n);
+	for (int v(0); v < n; ++v) {
+		_index[v] = columnBuffer.size();
+		columnBuffer.add(0, binary, 0, 1, GetStr("Y_", v));
+	}
+
+	// s = Yi Yj
+	_s.resize(nn);
+	for (auto const & edge : _uniPartiteGraph->edges()) {
+		int const i(edge._i);
+		int const j(edge._j);
+		int const ij(ijtok(n, i, j));
+		_s[ij] = columnBuffer.size();
+		double const cost(edge._v * _uniPartiteGraph->inv_m());
+		columnBuffer.add(cost, continuous, -infinity, infinity,GetStr("S_V", i, "_V", j));
+	}
+
+	_tD = (int)std::ceil((std::log(_uniPartiteGraph->sum_k() + 1) / log(2) - 1));
+	double const tempCoeff(_uniPartiteGraph->inv_m() * _uniPartiteGraph->inv_m() * 0.5 * 0.5);
+
+	_a.resize(_tD + 1);
+	for (int h(0); h < _tD + 1; ++h) {
+		// ah binary
+		_a[h] = columnBuffer.size();
+		columnBuffer.add(-std::pow(2, 2 * h) * tempCoeff, binary, 0, 1, GetStr("a_", h));
+	}
+	//	_aa = RectMatrix(_tD + 1, _tD + 1, 0);
+	_aa.resize((_tD + 1) * _tD * 0.5);
+	for (int h(0); h < _tD + 1; ++h) {
+		for (int l(h + 1); l < _tD + 1; ++l) {
+			// ahl >= 0
+			_aa[ijtok(_tD + 1, h, l)] = columnBuffer.size();
+			double const cost(-std::pow(2, h + l + 1) * tempCoeff);
+			columnBuffer.add(cost, continuous, 0, infinity, GetStr("a_H", h, "_L", l));
+		}
+	}
+
+	int const D(columnBuffer.size());
+	columnBuffer.add(0, continuous, -infinity, +infinity, "D");
+
+	_c = columnBuffer.size();
+	columnBuffer.add(tempCoeff, continuous, -infinity, +infinity, "D");
+	// constraints
+	rowBuffer.clear();
+	// C = sum kr² Yr
+	_rowBuffer.add(0, 'E', "C_k");
+	for (int v(0); v < n; ++v) {
+	  _rowBuffer.add(v, _uniPartiteGraph->k(v) * _uniPartiteGraph->k(v));
+	}
+	_rowBuffer.add(_c, -1);
+
+	// D = sum kr Yr
+	rowBuffer.add(0, 'E', "D_k");
+	for (int v(0); v < n; ++v) {
+		rowBuffer.add(v, _uniPartiteGraph->k(v));
+	}
+	rowBuffer.add(D, -1);
+	// D = sum 2^h ah
+	rowBuffer.add(0, 'E', "D_POW");
+	for (int h(0); h < _tD + 1; ++h) {
+		rowBuffer.add(_a[h], std::pow(2, h));
+	}
+	rowBuffer.add(D, -1);
+	for (auto const & edge : _uniPartiteGraph->edges()) {
+		int const i(edge._i);
+		int const j(edge._j);
+		int const ij(ijtok(n, i, j));
+		// Srb <= Yr (r,b) in E
+		rowBuffer.add(0, 'L', GetStr("S_LEQ_R_V", i, "_V", j));
+		rowBuffer.add(i, -1);
+		rowBuffer.add(_s[ij], +1);
+		// Srb <= Yb (r,b) in E
+		rowBuffer.add(0, 'L', GetStr("S_LEQ_B_V", i, "_V", j));
+		rowBuffer.add(j, -1);
+		rowBuffer.add(_s[ij], +1);
+	}
+	// abhl >= ah+bl-1
+	for (int h(0); h < _tD + 1; ++h) {
+		for (int l(h + 1); l < _tD + 1; ++l) {
+			rowBuffer.add(-1, 'G', GetStr("FORTET_H", h, "_L", l));
+			if (h == l) {
+				rowBuffer.add(_a[h], -2);
+			}
+			else {
+				rowBuffer.add(_a[h], -1);
+				rowBuffer.add(_a[l], -1);
+			}
+			int const hl(ijtok(_tD + 1, h, l));
+			rowBuffer.add(_aa[hl], 1);
+		}
+	}
+}
+
 void UnipartiteBinaryDecompositionOracle::initOracle() {
   _solver->initLp("UnipartiteBinaryDecompositionOracle");
-  char const binary(_solver->binary());
   char const continuous(_solver->continuous());
-  double const infinity(_solver->infinity());
-  
-  int const n(_input->nV());
-  int const nn(n * (n - 1) / 2);
   ColumnBuffer columnBuffer(_solver->continuous());
-  _index.resize(n);
-  for (int v(0); v < n; ++v) {
-    _index[v] = columnBuffer.size();
-    columnBuffer.add(0, binary, 0, 1, GetStr("Y_", v));
-  }
-
-  // s = Yi Yj
-  _s.resize(nn);
-  for (auto const & edge : _uniPartiteGraph->edges()) {
-    int const i(edge._i);
-    int const j(edge._j);
-    int const ij(ijtok(n, i, j));
-    _s[ij] = columnBuffer.size();
-    double const cost(edge._v * _uniPartiteGraph->inv_m());
-
-    columnBuffer.add(cost, continuous, -infinity, infinity,
-                     GetStr("S_V", i, "_V", j));
-  }
-
-  _tD = (int) std::ceil((std::log(_uniPartiteGraph->sum_k() + 1) / log(2) - 1));
-  double const tempCoeff(_uniPartiteGraph->inv_m() * _uniPartiteGraph->inv_m() * 0.5 * 0.5);
-
-  _a.resize(_tD + 1);
-  for (int h(0); h < _tD + 1; ++h) {
-    // ah binary
-    _a[h] = columnBuffer.size();
-    columnBuffer.add(-std::pow(2, 2 * h) * tempCoeff, binary, 0, 1,GetStr("a_", h));
-  }
-//	_aa = RectMatrix(_tD + 1, _tD + 1, 0);
-  _aa.resize((_tD + 1) * _tD * 0.5);
-  for (int h(0); h < _tD + 1; ++h) {
-    for (int l(h + 1); l < _tD + 1; ++l) {
-      // ahl >= 0
-      _aa[ijtok(_tD + 1, h, l)] = columnBuffer.size();
-      double const cost(-std::pow(2, h + l + 1) * tempCoeff);
-      columnBuffer.add(cost, continuous, 0, infinity, GetStr("a_H", h, "_L", l));
-    }
-  }
-
-  int const D(columnBuffer.size());
-  columnBuffer.add(0, continuous, -infinity, +infinity, "D");
-
-  //_c = columnBuffer.size();
-  //columnBuffer.add(tempCoeff, continuous, -infinity, +infinity, "D");
-
+  fill(_rowBuffer, columnBuffer);
   _solver->add(columnBuffer);
-  // constraints
-  _rowBuffer.clear();
-  //// C = sum kr² Yr
-  //_rowBuffer.add(0, 'E', "C_k");
-  //for (int v(0); v < n; ++v) {
-  //  _rowBuffer.add(v, _uniPartiteGraph->k(v) * _uniPartiteGraph->k(v));
-  //}
-  //_rowBuffer.add(_c, -1);
-
-  // D = sum kr Yr
-  _rowBuffer.add(0, 'E', "D_k");
-  for (int v(0); v < n; ++v) {
-    _rowBuffer.add(v, _uniPartiteGraph->k(v));
-  }
-  _rowBuffer.add(D, -1);
-  // D = sum 2^h ah
-  _rowBuffer.add(0, 'E', "D_POW");
-  for (int h(0); h < _tD + 1; ++h) {
-    _rowBuffer.add(_a[h], std::pow(2, h));
-  }
-  _rowBuffer.add(D, -1);
-  for (auto const & edge : _uniPartiteGraph->edges()) {
-    int const i(edge._i);
-    int const j(edge._j);
-    int const ij(ijtok(n, i, j));
-    // Srb <= Yr (r,b) in E
-    _rowBuffer.add(0, 'L', GetStr("S_LEQ_R_V", i, "_V", j));
-    _rowBuffer.add(i, -1);
-    _rowBuffer.add(_s[ij], +1);
-    // Srb <= Yb (r,b) in E
-    _rowBuffer.add(0, 'L', GetStr("S_LEQ_B_V", i, "_V", j));
-    _rowBuffer.add(j, -1);
-    _rowBuffer.add(_s[ij], +1);
-  }
-  // abhl >= ah+bl-1
-  for (int h(0); h < _tD + 1; ++h) {
-    for (int l(h + 1); l < _tD + 1; ++l) {
-      _rowBuffer.add(-1, 'G', GetStr("FORTET_H", h, "_L", l));
-      if (h == l) {
-        _rowBuffer.add(_a[h], -2);
-      } else {
-        _rowBuffer.add(_a[h], -1);
-        _rowBuffer.add(_a[l], -1);
-      }
-      int const hl(ijtok(_tD + 1, h, l));
-      _rowBuffer.add(_aa[hl], 1);
-    }
-  }
   _solver->add(_rowBuffer);
   _solver->maximize();
 //	checkSolutions();
