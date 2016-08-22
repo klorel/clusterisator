@@ -8,7 +8,7 @@
 #ifndef I_CLUSTERING_PROBLEM_H_
 #define I_CLUSTERING_PROBLEM_H_
 
-#include "common.h"
+#include "../clustering/common.h"
 #include "Edge.h"
 #include "gencol.h"
 class IOracle;
