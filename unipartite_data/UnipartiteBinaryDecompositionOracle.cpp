@@ -2,13 +2,11 @@
 #include "../clustering/Timer.h"
 #include "../columnsgeneration/Node.h"
 
-UnipartiteBinaryDecompositionOracle::UnipartiteBinaryDecompositionOracle(
-    UnipartieInstance const * input)
-    : CpxOracle(input),
-      _uniPartiteGraph(input) {
-  _tD = 0;
-  _c = 0;
-  initCpx();
+UnipartiteBinaryDecompositionOracle::UnipartiteBinaryDecompositionOracle(UnipartieInstance const * input) :
+		CpxOracle(input), _uniPartiteGraph(input) {
+	_tD = 0;
+	_c = 0;
+	initCpx();
 }
 UnipartiteBinaryDecompositionOracle::~UnipartiteBinaryDecompositionOracle() {
 }
@@ -34,10 +32,10 @@ void UnipartiteBinaryDecompositionOracle::fill(RowBuffer & rowBuffer, ColumnBuff
 		int const ij(ijtok(n, i, j));
 		_s[ij] = columnBuffer.size();
 		double const cost(edge._v * _uniPartiteGraph->inv_m());
-		columnBuffer.add(cost, continuous, -infinity, infinity,GetStr("S_V", i, "_V", j));
+		columnBuffer.add(cost, continuous, -infinity, infinity, GetStr("S_V", i, "_V", j));
 	}
 
-	_tD = (int)std::ceil((std::log(_uniPartiteGraph->sum_k() + 1) / log(2) - 1));
+	_tD = (int) std::ceil((std::log(_uniPartiteGraph->sum_k() + 1) / log(2) - 1));
 	double const tempCoeff(_uniPartiteGraph->inv_m() * _uniPartiteGraph->inv_m() * 0.5 * 0.5);
 
 	_a.resize(_tD + 1);
@@ -61,13 +59,13 @@ void UnipartiteBinaryDecompositionOracle::fill(RowBuffer & rowBuffer, ColumnBuff
 	columnBuffer.add(0, continuous, -infinity, +infinity, "D");
 
 	_c = columnBuffer.size();
-	columnBuffer.add(tempCoeff, continuous, -infinity, +infinity, "D");
+	columnBuffer.add(tempCoeff, continuous, -infinity, +infinity, "C");
 	// constraints
 	rowBuffer.clear();
 	// C = sum kr² Yr
 	_rowBuffer.add(0, 'E', "C_k");
 	for (int v(0); v < n; ++v) {
-	  _rowBuffer.add(v, _uniPartiteGraph->k(v) * _uniPartiteGraph->k(v));
+		_rowBuffer.add(v, _uniPartiteGraph->k(v) * _uniPartiteGraph->k(v));
 	}
 	_rowBuffer.add(_c, -1);
 
@@ -102,8 +100,7 @@ void UnipartiteBinaryDecompositionOracle::fill(RowBuffer & rowBuffer, ColumnBuff
 			rowBuffer.add(-1, 'G', GetStr("FORTET_H", h, "_L", l));
 			if (h == l) {
 				rowBuffer.add(_a[h], -2);
-			}
-			else {
+			} else {
 				rowBuffer.add(_a[h], -1);
 				rowBuffer.add(_a[l], -1);
 			}
@@ -114,13 +111,12 @@ void UnipartiteBinaryDecompositionOracle::fill(RowBuffer & rowBuffer, ColumnBuff
 }
 
 void UnipartiteBinaryDecompositionOracle::initOracle() {
-  _solver->initLp("UnipartiteBinaryDecompositionOracle");
-  char const continuous(_solver->continuous());
-  ColumnBuffer columnBuffer(_solver->continuous());
-  fill(_rowBuffer, columnBuffer);
-  _solver->add(columnBuffer);
-  _solver->add(_rowBuffer);
-  _solver->maximize();
+	_solver->initLp("UnipartiteBinaryDecompositionOracle");
+	ColumnBuffer columnBuffer(_solver->continuous());
+	fill(_rowBuffer, columnBuffer);
+	_solver->add(columnBuffer);
+	_solver->add(_rowBuffer);
+	_solver->maximize();
 //	checkSolutions();
 
 //	CPXwriteprob(_env,_prob,"bMILP.lp","LP");
@@ -132,20 +128,20 @@ void UnipartiteBinaryDecompositionOracle::initOracle() {
 }
 
 void UnipartiteBinaryDecompositionOracle::setUpOracle() {
-  _columns.clear();
-  _solver->chgObj(_index, *_dual);
+	_columns.clear();
+	_solver->chgObj(_index, *_dual);
 //	for (auto const & i : _index) {
 //		std::cout << std::setw(6) << i;
 //		std::cout << std::setw(25) << _dual->at(i);
 //		std::cout << std::endl;
 //	}
-  //	write();
-  _solver->delMipStarts();
+	//	write();
+	_solver->delMipStarts();
 
 }
 
 void UnipartiteBinaryDecompositionOracle::checkSolutions() const {
-  throw std::invalid_argument("");
+	throw std::invalid_argument("");
 //	CpxOracle::checkSolutions();
 //	DoubleVector x(CPXgetnumcols(_env, _prob));
 //	int const n(1 + 0 * CPXgetsolnpoolnumsolns(_env, _prob));
