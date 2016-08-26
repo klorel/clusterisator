@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
 	CplexSolver cplex;
 	cplex.initLp("cps_cplex");
-	cplex.setNbThreads(4);
+//	cplex.setNbThreads(4);
 	cplex.setLog();
 	cplex.add(std::cout);
 	cpp.cps("cps_cplex", cplex);

@@ -1,7 +1,7 @@
 /*
  * ILpSolver.h
  *
- *  Created on: 8 août 2016
+ *  Created on: 8 aoï¿½t 2016
  *      Author: manuruiz
  */
 
