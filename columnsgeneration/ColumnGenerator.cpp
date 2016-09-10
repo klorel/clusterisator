@@ -63,7 +63,7 @@ bool ColumnGenerator::vns() {
 	Timer timer;
 	bool heuristicSucceeded(false);
 	bool stopvns(false);
-	for (int i(0); i < 10 && !stopvns; ++i) {
+	for (int i(0); i < 30 && !stopvns; ++i) {
 		if (_nColumnsByIte == 0) {
 			if (_vns->run(1, true)) {
 				heuristicSucceeded = true;

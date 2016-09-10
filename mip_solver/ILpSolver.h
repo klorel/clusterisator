@@ -30,7 +30,7 @@ class ILpSolver {
   virtual void chgObj(IntVector const & indexe, DoubleVector const & values);
 
   virtual void delMipStarts();
-
+  virtual void delRows(int first, int last);
   virtual bool isOptimal() const;
   virtual double objValue() const;
   virtual void objValue(int i, Double & obj) const;

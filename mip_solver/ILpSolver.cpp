@@ -65,6 +65,10 @@ void ILpSolver::delMipStarts() {
 	throw std::invalid_argument(__SIGNATURE__);
 }
 
+void ILpSolver::delRows(int first, int last) {
+	throw std::invalid_argument(__SIGNATURE__);
+}
+
 bool ILpSolver::isOptimal() const {
 	throw std::invalid_argument(__SIGNATURE__);
 	return false;

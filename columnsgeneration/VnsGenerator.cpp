@@ -128,8 +128,8 @@ bool VnsGenerator::run(int iteMax, bool stopAtFirst) {
   int ite(0);
 //	Double kMax((Double) std::max(_input->nR(), _input->nB()));
 //	Double kMax((Double) std::min(_input->nR(), _input->nB()));
-  Double kMax(_input->nV() > 100 ? 100 : (Double) _input->nV());
-//	Double kMax((Double) _input->nV() * 0.3 + 1);
+//  Double kMax(_input->nV() > 100 ? 100 : (Double) _input->nV());
+	Double kMax((Double) _input->nV() * 0.5 + 1);
 //	Double kMax(3);
 //	_current.clear();
 //	compute();
