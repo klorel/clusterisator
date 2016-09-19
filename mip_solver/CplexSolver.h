@@ -38,8 +38,9 @@ public:
   virtual double objValue() const;
   virtual void objValue(int i, Double & obj) const;
   virtual void solution(int i, DoubleVector & result) const;
-
-
+  virtual void primal(DoubleVector & result)const;
+  virtual void dual(DoubleVector & result)const;
+virtual void rc(DoubleVector & result)const;
   virtual int ncols()const;
   virtual int nrows()const;
 
@@ -54,6 +55,7 @@ public:
   virtual void run();
 
   virtual void setNbThreads(int);
+  virtual void setDual();
 
   virtual void setLog();
   virtual void setNoLog();

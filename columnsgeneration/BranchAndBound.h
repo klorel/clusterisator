@@ -24,12 +24,12 @@ class BranchAndBound {
   void printTree(std::ostream & = std::cout) const;
   std::ostream & output();
   void setOutput(std::ostream & = std::cout);
-  IMaster & master();
-  IMaster const & master() const;
+  LpMaster & master();
+  LpMaster const & master() const;
 
   void writeSolution() const;
 
-  IMaster * _master;
+  LpMaster * _master;
 
   ColumnGenerator _columnGenerator;
 

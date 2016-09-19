@@ -9,7 +9,7 @@
 #include "LpBuffer.h"
 #include "Decision.h"
 
-CplexSolver::CplexSolver() {
+CplexSolver::CplexSolver() :ILpSolver(){
 	_prob = NULL;
 	_env = NULL;
 
@@ -237,6 +237,19 @@ void CplexSolver::solution(int i, DoubleVector & x) const {
 	CPXgetsolnpoolx(_env, _prob, (int) i, x.data(), 0, (int) (x.size() - 1));
 }
 
+void CplexSolver::primal(DoubleVector & result) const {
+	result.resize(ncols());
+	CPXgetx(_env, _prob, result.data(), 0, ncols() - 1);
+
+}
+void CplexSolver::dual(DoubleVector & result) const {
+	result.assign(nrows(), 0);
+	CPXgetpi(_env, _prob, result.data(), 0, nrows() - 1);
+}
+void CplexSolver::rc(DoubleVector & result)const{
+	result.resize(ncols());
+	CPXgetdj(_env, _prob, result.data(), 0, ncols() - 1);
+}
 int CplexSolver::ncols() const {
 	return CPXgetnumcols(_env, _prob);
 }
@@ -249,7 +262,7 @@ void CplexSolver::run() {
 		CPXsetintparam(_env, CPX_PARAM_SOLUTIONTARGET, CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
 		CPXmipopt(_env, _prob);
 	} else
-		CPXoptimize(_env, _prob);
+		CPXlpopt(_env, _prob);
 }
 char CplexSolver::binary() const {
 	return CPX_BINARY;
@@ -281,6 +294,9 @@ void CplexSolver::setNoLog() {
 }
 void CplexSolver::setNbThreads(int n) {
 	CPXsetintparam(_env, CPX_PARAM_THREADS, n);
+}
+void CplexSolver::setDual() {
+	CPXsetintparam(_env, CPX_PARAM_LPMETHOD, CPX_ALG_DUAL);
 }
 #endif
 

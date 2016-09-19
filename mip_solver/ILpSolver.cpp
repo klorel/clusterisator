@@ -11,6 +11,7 @@
 
 ILpSolver::ILpSolver() {
 	minimize();
+	_is_mip = false;
 	// TODO Auto-generated constructor stub
 
 }

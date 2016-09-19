@@ -3,10 +3,10 @@
 
 #include "gencol.h"
 #include "IOracle.h"
-
+class ClusteringProblem;
 class ColumnGenerator {
  public:
-  ColumnGenerator();
+  ColumnGenerator(ClusteringProblem const *);
   virtual ~ColumnGenerator();
  public:
 
@@ -29,10 +29,14 @@ class ColumnGenerator {
 
   std::string const & step() const;
   void applyBranchingRule();
+  void addNeighbor();
  private:
   bool vns();
   bool exact();
   void clear();
+
+
+  Double reducedCost(Column const & rhs)const;
  private:
   IOracle * _vns;
   IOracle * _exact;
@@ -45,6 +49,11 @@ class ColumnGenerator {
   Double _rc;
 
   ReducedCostSorter _result;
+  ColumnSet _neighbor;
+
+  ClusteringProblem const * _input;
+  DoubleVector const * _dual;
+  DecisionList const * _list;
 
 };
 

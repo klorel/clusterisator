@@ -12,7 +12,7 @@ TARGET_LINK_LIBRARIES(unipartite_cpp dataunipartite columnsgeneration clustering
 ADD_EXECUTABLE( bipartite  main_bipartite.cpp )
 ADD_EXECUTABLE( bipartite_cpp  main_bipartite_cpp.cpp )
 
-TARGET_LINK_LIBRARIES(bipartite     databipartite columnsgeneration clustering ${MIP_LIB})
+TARGET_LINK_LIBRARIES(bipartite     heuristic databipartite columnsgeneration clustering ${MIP_LIB})
 TARGET_LINK_LIBRARIES(bipartite_cpp databipartite columnsgeneration clustering ${MIP_LIB})
 
 

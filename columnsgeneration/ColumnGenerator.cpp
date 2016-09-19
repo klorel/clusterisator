@@ -2,38 +2,75 @@
 
 #include "BranchAndBound.h"
 #include "Timer.h"
+#include "ClusteringProblem.h"
 
-ColumnGenerator::ColumnGenerator() :
-		_vns(NULL), _exact(NULL), _exactTime(0), _vnsTime(0), _step(""), _nColumnsByIte(
-				0), _rc(0) {
+ColumnGenerator::ColumnGenerator(ClusteringProblem const * input) :
+		_vns(NULL), _exact(NULL), _exactTime(0), _vnsTime(0), _step(""), _nColumnsByIte(0), _rc(0), _input(input), _dual(NULL), _list(NULL) {
 
 }
 ColumnGenerator::~ColumnGenerator() {
 
 }
 
-int ColumnGenerator::getNumberByIte()const {
+int ColumnGenerator::getNumberByIte() const {
 	return _nColumnsByIte;
 }
 
-void ColumnGenerator::setExact(IOracle * oracle, DoubleVector const & dual,
-		DecisionList const & list) {
+void ColumnGenerator::setExact(IOracle * oracle, DoubleVector const & dual, DecisionList const & list) {
 	_exact = oracle;
 	_exact->setData(dual, list);
+	_dual = &dual;
+	_list = &list;
 }
-void ColumnGenerator::setVns(IOracle * oracle, DoubleVector const & dual,
-		DecisionList const & list) {
+void ColumnGenerator::setVns(IOracle * oracle, DoubleVector const & dual, DecisionList const & list) {
 	_vns = oracle;
 	_vns->setData(dual, list);
+	_dual = &dual;
+	_list = &list;
 
 }
 void ColumnGenerator::clear() {
 	_result.clear();
 	_vns->columns().clear();
 	_exact->columns().clear();
+}
+void ColumnGenerator::addNeighbor() {
+	_neighbor.clear();
+	ReducedCostSorter temp_result;
+	for (auto const & kvp : _result) {
+		_neighbor.insert(*kvp.second);
+	}
+	for (auto const & kvp : _result) {
+		if (kvp.first > 1e-6) {
+			for (auto const i : kvp.second->v()) {
+				Column neighbor(_input);
+				neighbor.v() = kvp.second->v();
+				neighbor.v().erase(i);
+				if (_neighbor.find(neighbor) == _neighbor.end()) {
+					Double const neighbor_rc(neighbor.computeReducedCost(*_dual));
+//					std::cout << std::setw(6)<<i;
+//					std::cout << std::setw(15)<<neighbor_rc;
+//					std::cout << std::endl;
 
+					if (neighbor.violation(*_list) == 0 && neighbor_rc > ZERO_REDUCED_COST) {
+						neighbor.cost() = neighbor.computeCost();
+						neighbor.reducedCost() = neighbor_rc;
+						auto it = _neighbor.insert(neighbor).first;
+						temp_result.insert( { neighbor_rc, &*it });
+					}
+				}
+			}
+		}
+	}
+	_result.insert(temp_result.begin(), temp_result.end());
+//	std::cout << "Neighbor generated "<<_neighbor.size()-n<<" new columns"<<std::endl;
 }
 
+Double ColumnGenerator::reducedCost(Column const & rhs) const {
+	Double result(0);
+	result = _input->computeCost(rhs.v());
+	return result;
+}
 ReducedCostSorter const & ColumnGenerator::result() const {
 	return _result;
 }
@@ -63,7 +100,7 @@ bool ColumnGenerator::vns() {
 	Timer timer;
 	bool heuristicSucceeded(false);
 	bool stopvns(false);
-	for (int i(0); i < 30 && !stopvns; ++i) {
+	for (int i(0); i < 10 && !stopvns; ++i) {
 		if (_nColumnsByIte == 0) {
 			if (_vns->run(1, true)) {
 				heuristicSucceeded = true;
@@ -111,6 +148,7 @@ bool ColumnGenerator::run() {
 	if (!stop && _exact != NULL) {
 		exact();
 	}
+	ReducedCostSorter neighbors;
 
 	return !_result.empty();
 }
