@@ -18,7 +18,7 @@ IMaster::IMaster(ClusteringProblem const * input,
     : _input(input),
       _decisions(decisions),
       _columns(),
-      _dual(),
+      _minus_dual(),
       _primal(),
       _cstat(),
       _rstat() {

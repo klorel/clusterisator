@@ -59,19 +59,19 @@ void BranchAndBound::columnGeneration() {
 		Timer master;
 		//		_master->write();
 		_master->solveMaster();
-		if (ite == 1) {
-			_master->udpate_stabilization();
-			_master->solveMaster();
-		}
+//		if (ite == 1) {
+//			_master->udpate_stabilization();
+//			_master->solveMaster();
+//		}
 
-		Double const stabilization_penalty(_master->stabilizationPenalty());
+//		Double const stabilization_penalty(_master->stabilizationPenalty());
 
 		m += timer.elapsed();
 		timer.restart();
 		FractionnarySolution current;
 		bool is_integer = _master->getSolution(current);
-		if (is_integer && _master->obj() - stabilization_penalty > best_solution + 1e-6 && std::fabs(stabilization_penalty) < ZERO_REDUCED_COST) {
-			best_solution = _master->obj() - stabilization_penalty;
+		if (is_integer && _master->obj()) {
+			best_solution = _master->obj();
 			best = current;
 		}
 //		std::cout << std::setw(15) << "master : " << master.elapsed() << std::endl;
@@ -92,13 +92,14 @@ void BranchAndBound::columnGeneration() {
 			a += timer.elapsed();
 		} else {
 			rc = _columnGenerator.rc();
-			if (std::fabs(stabilization_penalty) > ZERO_REDUCED_COST) {
-				_master->udpate_stabilization();
-				std::cout << "_master->udpate_stabilization();"<<std::endl;
-			} else {
-				// update the bundle if non zero
-				stop = true;
-			}
+			stop = true;
+//			if (std::fabs(stabilization_penalty) > ZERO_REDUCED_COST) {
+//				_master->udpate_stabilization();
+//				std::cout << "_master->udpate_stabilization();"<<std::endl;
+//			} else {
+//				// update the bundle if non zero
+//				stop = true;
+//			}
 		}
 //		if (is_integer && std::fabs(stabilization_penalty) < ZERO_REDUCED_COST)
 //			_master->udpate_stabilization();
@@ -111,8 +112,8 @@ void BranchAndBound::columnGeneration() {
 			output() << std::setw(25) << std::setprecision(10) << rc;
 			output() << std::setw(15) << std::setprecision(8) << total.elapsed();
 			output() << std::setw(15) << _master->log();
-			output() << std::setw(15) << stabilization_penalty;
-			if (best_solution != 1e-50 && is_integer && std::fabs(stabilization_penalty) < ZERO_REDUCED_COST)
+//			output() << std::setw(15) << stabilization_penalty;
+			if (best_solution != 1e-50 && is_integer )
 				output() << std::setw(15) << best_solution;
 			output() << std::endl;
 		}

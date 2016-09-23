@@ -63,7 +63,7 @@ class IMaster {
   DecisionList const * _decisions;
 
   ColumnSet _columns;
-  std::vector<double> _dual;
+  std::vector<double> _minus_dual;
   std::vector<double> _primal;
   std::vector<int> _cstat;
   std::vector<int> _rstat;

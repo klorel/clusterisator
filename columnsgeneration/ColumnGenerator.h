@@ -52,7 +52,7 @@ class ColumnGenerator {
   ColumnSet _neighbor;
 
   ClusteringProblem const * _input;
-  DoubleVector const * _dual;
+  DoubleVector const * _minus_dual;
   DecisionList const * _list;
 
 };

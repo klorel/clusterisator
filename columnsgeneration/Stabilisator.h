@@ -37,6 +37,8 @@ public:
 	void build(CplexSolver & solver, ColumnBuffer & buffer);
 	void update_pi(CplexSolver & solver, DoubleVector const & pi);
 	Double get_penalty(CplexSolver & solver);
+
+
 public:
 	DoubleVector _pi_bar;
 
@@ -45,7 +47,9 @@ public:
 
 	IntVector _indexes;
 	DoubleVector _cost;
+	DoubleVector _dual_cost;
 	DoubleVector _x;
+	DoubleVector _rc;
 };
 
 #endif /* COLUMNSGENERATION_STABILISATORS_H_ */

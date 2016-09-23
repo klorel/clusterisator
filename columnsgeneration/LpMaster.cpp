@@ -18,7 +18,10 @@ Double LpMaster::stabilizationPenalty() {
 	return _stabilisator.get_penalty(_solver);
 }
 void LpMaster::udpate_stabilization() {
-	_stabilisator.update_pi(_solver, _dual);
+	DoubleVector dual(_minus_dual);
+	for (auto & v : dual)
+		v *= -1;
+	_stabilisator.update_pi(_solver, dual);
 }
 void LpMaster::build() {
 	_solver.initLp("LpMaster");
@@ -52,53 +55,51 @@ void LpMaster::initLp() {
 	RowBuffer rowBuffer;
 	for (int v(0); v < _input->nV(); ++v)
 		rowBuffer.add(1, 'E', GetStr("ROW_Y", v));
-	_dual.assign(rowBuffer.size(), 0);
+	_minus_dual.assign(rowBuffer.size(), 1);
 	_rstat.assign(rowBuffer.size(), 0);
 	_solver.add(rowBuffer);
 	_solver.maximize();
 
-	_stabilisator.set(_dual, 20, .001);
-	ColumnBuffer stabBuffer(_solver.continuous());
-	_stabilisator.build(_solver, stabBuffer);
-	_solver.add(stabBuffer);
-
-//	_dual = {
-//		0,
-//		-0.0178007827294536,
-//		-0.00719606110339603,
-//		-0.00126246686024489,
-//		-0.00681732104532246,
-//		-0.00719606110339596,
-//		-0.00631233430122468,
-//		-0.00214619366241636,
-//		-0.00378740058073484,
+//	_stabilisator.set(_minus_dual, 2, .1);
+//	ColumnBuffer stabBuffer(_solver.continuous());
+//	_stabilisator.build(_solver, stabBuffer);
+//	_solver.add(stabBuffer);
+//
+//	_minus_dual = {
+//		-0.0164120691831839,
+//		-0.0279005176114127,
+//		-0.00820603459159197,
+//		-0.00858477464966545,
+//		-0.0041661406388083,
+//		-0.00845852796364082,
+//		-0.00656482767327358,
+//		-0.00214619366241637,
 //		-0.0061860876152001,
-//		-0.00934225476581242,
-//		-0.00896351470773892,
-//		-0.0239868703446535,
-//		-0.0277742709253883,
-//		-0.00871102133568993,
-//		-0.0051761141270042,
-//		-0.00467112738290621,
-//		-0.00189370029036738,
-//		-0.0155283423810125,
-//		-0.0122459285443757,
-//		-0.0263855573791189,
-//		-0.0160333291251106,
-//		-0.0263855573791187,
-//		-0.0130034086605226,
-//		-0.00353490720868571,
-//		-0.0112359550561797,
-//		-0.0214619366241636,
-//		-0.00744855447544503,
-//		-0.0138871354626941,
-//		-0.0201994697639186,
+//		-0.00530236081302865,
+//		-0.00871102133568992,
+//		-0.0253755838909228,
+//		-0.0171695492993309,
+//		-0.0277742709253882,
+//		-0.00871102133568994,
+//		-0.00517611412700417,
+//		-0.00719606110339608,
+//		-0.00214619366241633,
 //		0,
-//		-0.00896351470773891
+//		0,
+//		-0.024618103774776,
+//		-0.0190632495896982,
+//		-0.022345663426335,
+//		-0.0100997348819594,
+//		-0.00290367377856325,
+//		-0.0100997348819594,
+//		-0.0214619366241636,
+//		-0.00681732104532261,
+//		-0.0111097083701553,
+//		-0.0208307031940412,
+//		0,
+//		0
 //	};
-
-	_stabilisator.update_pi(_solver, _dual);
-//	_solver.write("stab.lp");
+//	_stabilisator.update_pi(_solver, _minus_dual);
 //	std::exit(0);
 	//	int i(0);
 	//	for (auto const & column : _columns) {
@@ -138,7 +139,7 @@ void LpMaster::add(ReducedCostSorter const & columns, int nmax, int & nb, Double
 
 void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer, int current_n, Double & rd, int &nb) {
 
-	ASSERT_CHECK(column.check(_dual));
+	ASSERT_CHECK(column.check(_minus_dual));
 	auto result(_columns.insert(column));
 	if (!result.second) {
 		std::cout << "column already here : " << result.first->id() << std::endl;
@@ -149,7 +150,7 @@ void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer, int curre
 		double obj;
 //		CPXgetobj(_env, _lp, &obj, (int)result.first->id(),
 //			(int)result.first->id());
-		MY_PRINT(obj);ASSERT_CHECK(column.check(_dual));ASSERT_CHECK(column.violation(*_decisions) == 0);
+		MY_PRINT(obj);ASSERT_CHECK(column.check(_minus_dual));ASSERT_CHECK(column.violation(*_decisions) == 0);
 		exit(0);
 	} else {
 		rd = std::max(rd, column.reducedCost());
@@ -305,11 +306,11 @@ bool PrimalPredicate::operator()(Int2Double const & v1, Int2Double const & v2) c
 }
 
 void LpMaster::getSolution() {
-	assert(_solver.nrows() == _dual.size());
-	_solver.dual(_dual);
-	for (int i(0); i < _dual.size(); ++i) {
+	assert(_solver.nrows() == _minus_dual.size());
+	_solver.dual(_minus_dual);
+	for (int i(0); i < _minus_dual.size(); ++i) {
 		//		std::cout << i << " : " << _dual[i] << std::endl;
-		_dual[i] *= -1;
+		_minus_dual[i] *= -1;
 		//if(std::fabs(_dual[i])<1e-10)
 		//	_dual[i] = 0;
 	}
@@ -395,7 +396,7 @@ ColumnSet const & LpMaster::columns() const {
 }
 
 std::vector<double> const & LpMaster::dual() const {
-	return _dual;
+	return _minus_dual;
 }
 
 DoubleVector const & LpMaster::primal() const {
@@ -432,7 +433,7 @@ void LpMaster::add(IPartition const & solution) {
 			c.insert(n);
 		}
 		c.cost() = c.computeCost();
-		c.reducedCost() = c.computeReducedCost(_dual);
+		c.reducedCost() = c.computeReducedCost(_minus_dual);
 		//add(c);
 		if (_columns.find(c) == _columns.end())
 			columns.insert(c);

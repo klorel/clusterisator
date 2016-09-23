@@ -5,7 +5,7 @@
 #include "ClusteringProblem.h"
 
 ColumnGenerator::ColumnGenerator(ClusteringProblem const * input) :
-		_vns(NULL), _exact(NULL), _exactTime(0), _vnsTime(0), _step(""), _nColumnsByIte(0), _rc(0), _input(input), _dual(NULL), _list(NULL) {
+		_vns(NULL), _exact(NULL), _exactTime(0), _vnsTime(0), _step(""), _nColumnsByIte(0), _rc(0), _input(input), _minus_dual(NULL), _list(NULL) {
 
 }
 ColumnGenerator::~ColumnGenerator() {
@@ -19,13 +19,13 @@ int ColumnGenerator::getNumberByIte() const {
 void ColumnGenerator::setExact(IOracle * oracle, DoubleVector const & dual, DecisionList const & list) {
 	_exact = oracle;
 	_exact->setData(dual, list);
-	_dual = &dual;
+	_minus_dual = &dual;
 	_list = &list;
 }
 void ColumnGenerator::setVns(IOracle * oracle, DoubleVector const & dual, DecisionList const & list) {
 	_vns = oracle;
 	_vns->setData(dual, list);
-	_dual = &dual;
+	_minus_dual = &dual;
 	_list = &list;
 
 }
@@ -47,7 +47,7 @@ void ColumnGenerator::addNeighbor() {
 				neighbor.v() = kvp.second->v();
 				neighbor.v().erase(i);
 				if (_neighbor.find(neighbor) == _neighbor.end()) {
-					Double const neighbor_rc(neighbor.computeReducedCost(*_dual));
+					Double const neighbor_rc(neighbor.computeReducedCost(*_minus_dual));
 //					std::cout << std::setw(6)<<i;
 //					std::cout << std::setw(15)<<neighbor_rc;
 //					std::cout << std::endl;

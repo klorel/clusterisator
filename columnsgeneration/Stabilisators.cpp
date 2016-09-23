@@ -71,53 +71,51 @@ void Stabilisator::build(CplexSolver & solver, ColumnBuffer & buffer) {
 	}
 }
 void Stabilisator::update_pi(CplexSolver & solver, DoubleVector const & pi) {
-	DoubleVector rc(_cost);
+	DoubleVector rc;
 	solver.rc(rc);
+	_pi_bar = pi;
 	int n_rows((int) _pi_bar.size());
-//	size_t i(0);
-//	for (int row(0); row < n_rows; ++row) {
-//		std::cout << GetStr("z_m_", row) << " : " << rc[i] << std::endl;
-//		++i;
-//		std::cout << GetStr("y_m_", row) << " : " << rc[i] << std::endl;
-//		++i;
-//		std::cout << GetStr("y_p_", row) << " : " << rc[i] << std::endl;
-//		++i;
-//		std::cout << GetStr("z_p_", row) << " : " << rc[i] << std::endl;
-//		++i;
-//	}
-
-	if (_pi_bar.empty()) {
-		_pi_bar = pi;
-		for (auto & v : _pi_bar) {
-			v *= -1;
-		}
-	} else {
-		for (size_t i(0); i < _pi_bar.size(); ++i) {
-			_pi_bar[i] += 0.9 * (-pi[i] - _pi_bar[i]);
-		}
-	}
 //	std::cout << "avg = " << avg / _pi_bar.size() << std::endl;
+	_dual_cost.assign(4 * _pi_bar.size(), 0);
 	_cost.assign(4 * _pi_bar.size(), 0);
 	_indexes.assign(4 * _pi_bar.size(), 0);
 
 	int index(-1);
 	for (int row(0); row < n_rows; ++row) {
 		_cost[++index] = gamma1(row);
+		_dual_cost[index] = dseta_m();
 		_indexes[index] = index;
+
 		_cost[++index] = delta1(row);
+		_dual_cost[index] = epsilon_m();
 		_indexes[index] = index;
+
 		_cost[++index] = -delta2(row);
+		_dual_cost[index] = epsilon_p();
 		_indexes[index] = index;
+
 		_cost[++index] = -gamma2(row);
+		_dual_cost[index] = dseta_p();
 		_indexes[index] = index;
 	}
 	solver.chgObj(_indexes, _cost);
 }
 Double Stabilisator::get_penalty(CplexSolver & solver) {
-	solver.primal(_x);
+	solver.rc(_rc);
 	Double result(0);
+	size_t i(0);
+	for (int row(0); row < _pi_bar.size(); ++row) {
+		std::cout << GetStr("z_m_", row) << " : " << _rc[i] << std::endl;
+		++i;
+		std::cout << GetStr("y_m_", row) << " : " << _rc[i] << std::endl;
+		++i;
+		std::cout << GetStr("y_p_", row) << " : " << _rc[i] << std::endl;
+		++i;
+		std::cout << GetStr("z_p_", row) << " : " << _rc[i] << std::endl;
+		++i;
+	}
 	for (auto const id : _indexes) {
-		result += _cost[id] * _x[id];
+		result += _dual_cost[id] * std::max(-_rc[id], .0);
 	}
 	return result;
 }
