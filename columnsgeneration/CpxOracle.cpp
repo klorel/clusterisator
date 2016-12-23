@@ -22,6 +22,7 @@ CpxOracle::~CpxOracle() {
 void CpxOracle::initCpx() {
   _solver.reset(new CplexSolver);
   _solver->initLp("CpxOracle");
+
   initOracle();
 
 }

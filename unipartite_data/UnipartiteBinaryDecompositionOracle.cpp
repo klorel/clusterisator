@@ -7,7 +7,9 @@ UnipartiteBinaryDecompositionOracle::UnipartiteBinaryDecompositionOracle(Unipart
 	_tD = 0;
 	_c = 0;
 	initCpx();
+	//_solver->setLog();
 }
+
 UnipartiteBinaryDecompositionOracle::~UnipartiteBinaryDecompositionOracle() {
 }
 

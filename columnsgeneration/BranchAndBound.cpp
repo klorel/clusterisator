@@ -231,6 +231,9 @@ double BranchAndBound::bestFeasible() const {
 double BranchAndBound::bestPossible() const {
 	return _bestPossible;
 }
+FractionnarySolution const & BranchAndBound::bestSolution()const {
+	return _bestSolution;
+}
 void BranchAndBound::writeSolution() const {
 	_input->writeSolution(_bestSolution, _bestPossible);
 //	std::ofstream file(

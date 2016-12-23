@@ -101,7 +101,14 @@ int main(int argc, char** argv) {
   //	branchAndBound.writeSolution();
   std::cout << "program run in " << std::setprecision(10) << total.elapsed()<< std::endl;
   std::cout << "Solution is " << branchAndBound.bestFeasible() + instance.cst()<< std::endl;
+  
+  FractionnarySolution const & bestSolution(branchAndBound.bestSolution());
+
+  instance.writeSolution(bestSolution, branchAndBound.bestFeasible() + instance.cst());
 //	instance.cps(instance.name());
+
+  
+
   return 0;
 }
 

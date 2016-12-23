@@ -269,17 +269,16 @@ void UnipartieInstance::gradient(IndexedList const & v,
 void UnipartieInstance::writeSolution(FractionnarySolution const& bestSolution,
 	double lb) const {
 	std::ofstream file(
-		GetStr("optimal/", problemName(), "_", lb, ".txt").c_str());
+		GetStr(problemName(), "_", lb, ".txt").c_str());
 	for (auto const & c : bestSolution) {
 		for (auto const & edge : costs()) {
-			int const r(edge._i);
-			int const b(edge._j);
-			if (c.first->contains(r) && c.first->contains(b)) {
-				file << std::setw(6) << 1 + r;
-				file << std::setw(6) << 1 + b;
+			int const i(edge._i);
+			int const j(edge._j);
+			if (c.first->contains(i) && c.first->contains(j)) {
+				file << std::setw(6) << 1 + i;
+				file << std::setw(6) << 1 + j;
 				file << std::endl;
 			}
-
 		}
 		//		for (int r(0); r < nR(); ++r) {
 		//			for (int b(0); b < nB(); ++b) {

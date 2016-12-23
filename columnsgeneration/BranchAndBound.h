@@ -35,6 +35,7 @@ class BranchAndBound {
 
   double bestFeasible() const;
   double bestPossible() const;
+  FractionnarySolution const & bestSolution()const;
  private:
   Node * _root;
   Node * _current;
