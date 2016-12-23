@@ -7,7 +7,12 @@
 
 #include "ILpSolver.h"
 
+
+#ifdef _WINDOWS
+#define __SIGNATURE__ __FUNCSIG__
+#else
 #define __SIGNATURE__ __PRETTY_FUNCTION__
+#endif
 
 ILpSolver::ILpSolver() {
 	minimize();
