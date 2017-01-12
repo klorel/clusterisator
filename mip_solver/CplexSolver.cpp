@@ -259,7 +259,6 @@ int CplexSolver::nrows() const {
 void CplexSolver::run() {
 	CPXchgobjsen(_env, _prob, _is_minimize ? CPX_MIN : CPX_MAX);
 	if (_is_mip) {
-		CPXsetintparam(_env, CPX_PARAM_SOLUTIONTARGET, CPX_SOLUTIONTARGET_OPTIMALGLOBAL);
 		CPXmipopt(_env, _prob);
 	} else
 		CPXlpopt(_env, _prob);
