@@ -68,9 +68,9 @@ int main(int argc, char** argv) {
 //	std::cout << "DIVISIVE STARTED" << std::endl;
 //	bipartite::Divisive divisive(instance, p);
 //	divisive.run();
-	std::cout << "VNS STARTED" << std::endl;
-	bipartite::VnsLabelPropagation vns(instance, p, 20, 5);
-	vns.run();
+	//std::cout << "VNS STARTED" << std::endl;
+	//bipartite::VnsLabelPropagation vns(instance, p, 20, 5);
+	//vns.run();
 	std::cout << "B&B STARTED" << std::endl;
 
 	BranchAndBound branchAndBound(instance);
