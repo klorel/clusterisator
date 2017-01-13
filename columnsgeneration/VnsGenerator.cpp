@@ -127,7 +127,7 @@ bool VnsGenerator::run(int iteMax, bool stopAtFirst) {
 //	_columns.clear();
   int ite(0);
 //  Double kMax(_input->nV() > 10 ? 10 : (Double) _input->nV());
-  Double kMax(_input->nV() > 100 ? _input->nV() * 0.01 : (Double) _input->nV());
+  Double kMax(_input->nV() > 100 ? _input->nV() * 0.05 : (Double) _input->nV());
 //	Double kMax((Double) _input->nV() * 0.5 + 1);
 //	Double kMax(3);
 //	_current.clear();
