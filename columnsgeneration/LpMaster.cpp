@@ -150,7 +150,14 @@ void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer, int curre
 		double obj;
 //		CPXgetobj(_env, _lp, &obj, (int)result.first->id(),
 //			(int)result.first->id());
-		MY_PRINT(obj);ASSERT_CHECK(column.check(_minus_dual));ASSERT_CHECK(column.violation(*_decisions) == 0);
+		MY_PRINT(obj);
+		assert(column.check(_minus_dual)); 
+		assert(column.violation(*_decisions) == 0);
+		std::cout << "column is : ";
+		for (auto const v : column.v()) {
+			std::cout << v <<" ";
+		}
+		std::cout << std::endl;
 		exit(0);
 	} else {
 		rd = std::max(rd, column.reducedCost());
