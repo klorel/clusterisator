@@ -41,7 +41,7 @@ void ColumnGenerator::addNeighbor() {
 		_neighbor.insert(*kvp.second);
 	}
 	for (auto const & kvp : _result) {
-		if (kvp.first > 1e-6) {
+		if (kvp.first > ZERO_REDUCED_COST) {
 			for (auto const i : kvp.second->v()) {
 				Column neighbor(_input);
 				neighbor.v() = kvp.second->v();
