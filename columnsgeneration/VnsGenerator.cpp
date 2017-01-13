@@ -135,6 +135,7 @@ bool VnsGenerator::run(int iteMax, bool stopAtFirst) {
   initialize();
   Column column(_input);
 //	MY_PRINT(ite);
+  Timer timer;
   bool success(false);
   do {
     ++ite;
@@ -144,9 +145,10 @@ bool VnsGenerator::run(int iteMax, bool stopAtFirst) {
       ++k;
 
       shake(k);
+	  //std::cout << "shake       " << timer.elapsed() << std::endl;
       ASSERT_CHECK(check());
-
       localSearch();
+	  //std::cout << "localSearch " << timer.elapsed() << std::endl;
       if (VnsGeneratorSolution::IsBetter(_current, _best, *_decisions)) {
         //				std::cout << "k";
         //				std::cout << std::setw(6) << k;
