@@ -100,17 +100,26 @@ bool ColumnGenerator::vns() {
 	Timer timer;
 	bool heuristicSucceeded(false);
 	bool stopvns(false);
-	for (int i(0); i < 5 && !stopvns; ++i) {
+	for (int i(0); i < 1 && !stopvns; ++i) {
 		if (_nColumnsByIte == 0) {
 			if (_vns->run(1, false)) {
 				heuristicSucceeded = true;
 				//stopvns = true;
 			}
-		} else {
+		}
+		else {
 			if (_vns->run(1, false))
 				heuristicSucceeded = true;
 			if (_vns->columns().size() > _nColumnsByIte)
 				stopvns = true;
+		}
+	}
+	for (int i(0); i < 5 && !stopvns; ++i) {
+		if (_nColumnsByIte == 0) {
+			if (_vns->run(1, true)) {
+				heuristicSucceeded = true;
+				//stopvns = true;
+			}
 		}
 	}
 
