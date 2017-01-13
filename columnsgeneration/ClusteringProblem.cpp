@@ -37,9 +37,9 @@ void ClusteringProblem::branchingSelection(Node const & node, int &noeud1,
 std::pair<int, int> ClusteringProblem::branchingSelection(
     DecisionSet const & decisions, BranchingWeights & weights) const {
   BranchingWeights::const_iterator it(weights.begin());
-  while (decisions.find(
+  while (it != weights.end() && decisions.find(
       Decision(std::make_pair(it->second.first, it->second.second)))
-      != decisions.end() && it != weights.end()) {
+      != decisions.end()) {
     ++it;
   }
   return it->second;
