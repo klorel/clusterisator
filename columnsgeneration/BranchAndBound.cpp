@@ -110,7 +110,7 @@ void BranchAndBound::columnGeneration() {
 			output() << std::setw(8) << nb;
 			output() << std::setw(25) << std::scientific<< std::setprecision(10) << _master->obj();
 			output() << std::setw(25) << std::scientific << std::setprecision(10) << rc;
-			output() << std::setw(15) << std::scientific << std::setprecision(8) << total.elapsed();
+			output() << std::setw(25) << std::scientific << std::setprecision(10) << total.elapsed();
 			output() << std::setw(15) << _master->log();
 //			output() << std::setw(15) << stabilization_penalty;
 			if (best_solution != 1e-50 && is_integer )
