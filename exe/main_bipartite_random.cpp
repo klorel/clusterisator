@@ -22,17 +22,7 @@
 std::string RegisteredModularityBInstance::InstancesPath = "../txt/";
 
 int usage() {
-	std::cout << "Available instances : " << std::endl;
-	for (int i(0); i < AvailableModularityBInstances::AvailableModularityBInstancesSize; ++i) {
-		AvailableModularityBInstances id(static_cast<AvailableModularityBInstances>(i));
-		RegisteredModularityBInstance instance(id);
-		std::cout << std::setw(3) << i + 1;
-		std::cout << " : ";
-		std::cout << std::setw(30) << std::left << instance._name << std::right;
-		std::cout << "\n";
-	}
-	std::cout << "<exe> <id of selected instance>" << std::endl;
-	std::cout << "The program launch the column generation algorithm" << std::endl;
+	std::cout << "Random instance nR nB proba seed" << std::endl;
 	return 0;
 }
 
@@ -41,10 +31,41 @@ int main(int argc, char** argv) {
 	if (argc == 1)
 		return usage();
 
-	AvailableModularityBInstances id(static_cast<AvailableModularityBInstances>(atoi(argv[1]) - 1));
+	Edges edges;
+	int nR;
+	int nB;
+	double proba;
+	unsigned int seed;
+	{
+		std::stringstream buffer(argv[1]);
+		buffer >> nR;
+	}
+	{
+		std::stringstream buffer(argv[2]);
+		buffer >> nB;
+	}
+	{
+		std::stringstream buffer(argv[3]);
+		buffer >> proba;
+	}
 
-	RegisteredModularityBInstance instance(id);
-
+	{
+		std::stringstream buffer(argv[4]);
+		buffer >> seed;
+	}
+	std::srand(seed);
+	std::cout << "nR    : " << nR << std::endl;
+	std::cout << "nB    : " << nB << std::endl;
+	std::cout << "proba : " << proba << std::endl;
+	for (int r(0); r < nR; ++r) {
+		for (int b(0); b < nB; ++b) {
+			int const v = rand() % 100 + 1;
+			if (v > proba) {
+				edges.push_back(Edge(r, b));
+			}
+		}
+	}
+	BipartiteGraph instance(edges);
 //	int id_node(0);
 //	std::string file_name;
 //	do {
@@ -52,7 +73,6 @@ int main(int argc, char** argv) {
 //		++id_node;
 //	} while (std::remove(file_name.c_str()) == 0);
 
-	instance.out();
 	// oracles creation
 	VnsGenerator vnsOracle(&instance);
 	instance.setVnsOracle(&vnsOracle);
@@ -60,6 +80,7 @@ int main(int argc, char** argv) {
 	BinaryDecompositionOracle bMilpOracle(&instance);
 
 	instance.setExactOracle(&bMilpOracle);
+
 
 //	std::cout << "DIVISIVE STARTED" << std::endl;
 //	bipartite::Divisive divisive(instance, p);
@@ -71,11 +92,7 @@ int main(int argc, char** argv) {
 
 	BranchAndBound branchAndBound(instance);
 
-	int nColumnGeneratorNumberByIte(10);
-	if (argc > 2) {
-		nColumnGeneratorNumberByIte = atoi(argv[2]);
-
-	}
+	int nColumnGeneratorNumberByIte(0);
 	std::cout << "nColumnGeneratorNumberByIte : " << nColumnGeneratorNumberByIte << std::endl;
 	branchAndBound._columnGenerator.setNumberByIte(nColumnGeneratorNumberByIte);
 

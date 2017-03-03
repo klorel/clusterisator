@@ -143,7 +143,6 @@ void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer, int curre
 	auto result(_columns.insert(column));
 	if (!result.second) {
 		std::cout << "column already here : " << result.first->id() << std::endl;
-		//		result.first->print();
 		MY_PRINT(result.first->reducedCost());
 		MY_PRINT(result.first->cost());
 		MY_PRINT(result.first->violation(*_decisions));
