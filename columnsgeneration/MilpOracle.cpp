@@ -106,7 +106,7 @@ void MilpOracle::initOracle() {
 
 void MilpOracle::setUpOracle() {
 	_columns.clear();
-	_solver->chgObj(_index, *_dual);
+	_solver->chgObj(_index, *_minus_dual);
 	//	for (auto const & i : _index) {
 	//		std::cout << std::setw(6) << i;
 	//		std::cout << std::setw(25) << _dual->at(i);

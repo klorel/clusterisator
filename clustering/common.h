@@ -141,6 +141,8 @@ inline std::string GetStr(T1 const & t1, T2 const & t2, T3 const & t3,
 
 #define MY_PRINT(x) std::cout << #x << " = "<<x<<std::endl
 
+#define MY_PRINT_DBL(x, n) std::cout << #x << " = "<<std::setw(n)<<x<<std::endl
+
 #define __SEG_FAULT__ {std::vector<int> __toto__;__toto__[10]=1;}
 
 inline int ijtok(int n, int i, int j) {

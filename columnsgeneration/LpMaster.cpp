@@ -143,15 +143,21 @@ void LpMaster::add(Column const & column, ColumnBuffer & columnBuffer, int curre
 	auto result(_columns.insert(column));
 	if (!result.second) {
 		std::cout << "column already here : " << result.first->id() << std::endl;
-		MY_PRINT(result.first->reducedCost());
-		MY_PRINT(result.first->cost());
-		MY_PRINT(result.first->violation(*_decisions));
+		MY_PRINT_DBL(result.first->reducedCost(), 10);
+		MY_PRINT_DBL(result.first->cost(), 10);
+		MY_PRINT_DBL(result.first->violation(*_decisions), 10);
 		double obj;
 //		CPXgetobj(_env, _lp, &obj, (int)result.first->id(),
 //			(int)result.first->id());
-		MY_PRINT(obj);
-		assert(column.check(_minus_dual)); 
-		assert(column.violation(*_decisions) == 0);
+		MY_PRINT_DBL(obj, 10);
+		MY_PRINT_DBL(ZERO_REDUCED_COST, 10);
+		if (!column.check(minus_dual())){
+      std::cout << "check rc failed"<<std::endl;
+
+		}
+    if ( column.violation(*_decisions) >0){
+      std::cout << "there are violation"<<std::endl;
+    }
 		std::cout << "column is : ";
 		for (auto const v : column.v()) {
 			std::cout << v <<" ";
@@ -377,7 +383,7 @@ ColumnSet const & LpMaster::columns() const {
 	return _columns;
 }
 
-std::vector<double> const & LpMaster::dual() const {
+std::vector<double> const & LpMaster::minus_dual() const {
 	return _minus_dual;
 }
 

@@ -50,7 +50,7 @@ public:
 	Double obj() const;
 
 	DoubleVector const & primal() const;
-	DoubleVector const & dual() const;
+	DoubleVector const & minus_dual() const;
 	ColumnSet const & columns() const;
 
 	void applyBranchingRule();

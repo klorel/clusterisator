@@ -36,7 +36,7 @@ class IOracle {
 
   virtual void setData(DoubleVector const & dual, DecisionList const & decisions);
  protected:
-  DoubleVector const * _dual;
+  DoubleVector const * _minus_dual;
   DecisionList const * _decisions;
   ColumnSet _columns;
   Double _bestReducedCost;

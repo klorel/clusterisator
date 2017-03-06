@@ -57,14 +57,14 @@ bool CpxOracle::generate() {
 	bool result(false);
 	//std::exit(0);
 	// update dual variables
-	_solver->chgObj(_index, *_dual);
+	_solver->chgObj(_index, *_minus_dual);
 
 	//std::cout << "writing oracle in oracle.lp" << std::endl;
 	_solver->write("oracle.lp");
 	std::ofstream file("oracle.txt");
-	for (int i(0); i < _dual->size(); ++i) {
+	for (int i(0); i < _minus_dual->size(); ++i) {
 		file << std::setw(6) << i;
-		file << std::setw(50)<<std::setprecision(25) << (*_dual)[i];
+		file << std::setw(50)<<std::setprecision(25) << (*_minus_dual)[i];
 		file << std::endl;
 	}
   file.close();

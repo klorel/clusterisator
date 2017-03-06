@@ -51,7 +51,7 @@ class IMaster {
  public:
 
   virtual std::vector<double> const & primal() const = 0;
-  virtual std::vector<double> const & dual() const = 0;
+  virtual std::vector<double> const & minus_dual() const = 0;
   virtual ColumnSet const & columns() const = 0;
  public:
   IMaster(ClusteringProblem const *, DecisionList const * decisions);

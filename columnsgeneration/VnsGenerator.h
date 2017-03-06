@@ -46,7 +46,7 @@ class VnsGenerator : public IOracle {
 };
 
 inline Double VnsGenerator::dual(int n) const {
-  return (*_dual)[n];
+  return (*_minus_dual)[n];
 }
 
 inline int VnsGenerator::violationIf(int id) const {

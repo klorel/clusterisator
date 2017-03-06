@@ -9,7 +9,7 @@
 #include "ClusteringProblem.h"
 
 IOracle::IOracle(ClusteringProblem const * input)
-    : _dual(NULL),
+    : _minus_dual(NULL),
       _decisions(NULL),
       _bestReducedCost(0),
       _input(input) {
@@ -42,7 +42,7 @@ void IOracle::sortedColumns(
 //	MY_PRINT(_columns.size());
   for (auto const & column : _columns) {
 //		column.print();
-    ASSERT_CHECK(column.check(*_dual));
+    ASSERT_CHECK(column.check(*_minus_dual));
     result.insert(std::make_pair(column.reducedCost(), &column));
   }
 }
@@ -62,7 +62,7 @@ void IOracle::extractAndAddSolution(DoubleVector const & x, Double rd) {
   Column column(_input);
   extract(x, column);
   column.reducedCost() = rd;
-  ASSERT_CHECK(column.check(*_dual));ASSERT_CHECK(column.violation(*_decisions) == 0);
+  ASSERT_CHECK(column.check(*_minus_dual));ASSERT_CHECK(column.violation(*_decisions) == 0);
   _columns.insert(column);
 
 }
@@ -70,7 +70,7 @@ void IOracle::extractAndAddSolution(DoubleVector const & x, Double rd) {
 void IOracle::extractAndAddSolution(DoubleVector const & x) {
   Column column(_input);
   extract(x, column);
-  column.reducedCost() = column.computeReducedCost(*_dual);
+  column.reducedCost() = column.computeReducedCost(*_minus_dual);
   assert(column.violation(*_decisions) == 0);
   if (column.reducedCost() > ZERO_REDUCED_COST
       && column.violation(*_decisions) == 0)
@@ -78,9 +78,9 @@ void IOracle::extractAndAddSolution(DoubleVector const & x) {
 
 }
 
-void IOracle::setData(DoubleVector const & dual,
+void IOracle::setData(DoubleVector const & minus_dual,
                       DecisionList const & decisions) {
-  _dual = &dual;
+  _minus_dual = &minus_dual;
   _decisions = &decisions;
 
 }
