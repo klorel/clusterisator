@@ -194,37 +194,13 @@ void LpMaster::add(Column const & column) {
 	Double rd;
 	int nb(0);
 	add(column, columnBuffer, current_n, rd, nb);
-	//	//writeColumns("bug.txt");
-	//	auto result(_columns.insert(column));
-	//	if (!result.second) {
-	//		//		std::cout << "column already here : " << result.first->id()
-	//		//				<< std::endl;
-	//		//		result.first->print();
-	//		//		double obj;
-	//		//		CPXgetobj(_env, _lp, &obj, (int) result.first->id(),
-	//		//				(int) result.first->id());
-	//		//		std::cout << "column cost is " << obj << std::endl;
-	//		//		std::cout << "column violation is "
-	//		//				<< result.first->violation(*_decisions) << std::endl;
-	//		//		exit(0);
-	//	} else {
-	//		result.first->id() = _solver.ncols();
-	//		ColumnBuffer columnBuffer;
-	//		columnBuffer.add(column.cost(), CPX_CONTINUOUS, 0, CPX_INFBOUND,
-	//				GetStr("COLUMN_", result.first->id()));
-	//		for (auto const & r : column.r()) {
-	//			columnBuffer.add(r, 1);
-	//		}
-	//		for (auto const & b : column.b()) {
-	//			columnBuffer.add(_input->nR() + b, 1);
-	//		}
+
 	if (columnBuffer.size() > 0)
 		_solver.add(columnBuffer);
 
 	_primal.resize(_solver.ncols());
 }
 void LpMaster::addSingleton() {
-	DoubleVector emptyDual(_input->nV(), 0);
 	for (int v(0); v < _input->nV(); ++v) {
 		Column column(_input);
 		column.insert(v);
