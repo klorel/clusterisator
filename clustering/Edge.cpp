@@ -9,20 +9,25 @@ Edges::~Edges() {
 
 bool Edges::read(std::string const & fileName, std::ostream & stream) {
   std::ifstream file(fileName.c_str());
-  std::string line;
-  int i;
-  int j;
-  double v;
-  while (std::getline(file, line)) {
-    std::stringstream buffer(line);
-    buffer >> i;
-    buffer >> j;
-    if (buffer >> v)
-      push_back(Edge(i - 1, j - 1, v));
-    else
-      push_back(Edge(i - 1, j - 1));
+  if (file.good()) {
+	  std::string line;
+	  int i;
+	  int j;
+	  double v;
+	  while (std::getline(file, line)) {
+		  std::stringstream buffer(line);
+		  buffer >> i;
+		  buffer >> j;
+		  if (buffer >> v)
+			  push_back(Edge(i - 1, j - 1, v));
+		  else
+			  push_back(Edge(i - 1, j - 1));
+	  }
+	  file.close();
   }
-  file.close();
+  else {
+	  std::cout << "cannot open " << fileName << std::endl;
+  }
   return true;
 }
 void Edges::print(std::ostream & stream) const {
