@@ -158,7 +158,7 @@ bool VnsGenerator::run(int iteMax, bool stopAtFirst) {
         _best = _current;
         k = 0;
         if (_current.violation(*_decisions) == 0
-            && _current._reducedCost > ZERO_REDUCED_COST) {
+            && _current._reducedCost > 10*ZERO_REDUCED_COST) {
           ASSERT_CHECK(check(true));
           _current.build(column);
           _columns.insert(column);

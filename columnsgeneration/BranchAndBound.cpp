@@ -98,7 +98,6 @@ void BranchAndBound::columnGeneration() {
         if (!kvp.second->check(_master->minus_dual())) {
           std::cout << "!!! CHECK FAILED !!!" << std::endl;
         }
-
       }
       _master->add(_columnGenerator.result(), _columnGenerator.getNumberByIte(),
                    nb, rc);
