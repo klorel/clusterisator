@@ -19,8 +19,8 @@ typedef std::map<std::pair<int, int>, Double> BranchingWeights2;
 
 Double const ZERO_REDUCED_COST = 1e-6;
 
-#define ASSERT_CHECK(x) assert(x)
-//#define ASSERT_CHECK(x)
+//#define ASSERT_CHECK(x) assert(x)
+#define ASSERT_CHECK(x)
 
 enum AvailableOracle {
   MILP,

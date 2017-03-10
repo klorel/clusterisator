@@ -27,7 +27,7 @@ void LpMaster::udpate_stabilization() {
 void LpMaster::build() {
   _solver.initLp("LpMaster");
   _solver.setNbThreads(1);
-//	_solver.setLog();
+  //_solver.setLog();
 
 //	int err(-1);
 //	_env = CPXopenCPLEX(&err);

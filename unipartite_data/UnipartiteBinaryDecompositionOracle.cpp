@@ -47,7 +47,7 @@ void UnipartiteBinaryDecompositionOracle::fill(RowBuffer & rowBuffer, ColumnBuff
 		columnBuffer.add(-std::pow(2, 2 * h) * tempCoeff, binary, 0, 1, GetStr("a_", h));
 	}
 	//	_aa = RectMatrix(_tD + 1, _tD + 1, 0);
-	_aa.resize((_tD + 1) * _tD * 0.5);
+	_aa.resize(static_cast<int>((_tD + 1) * _tD * 0.5));
 	for (int h(0); h < _tD + 1; ++h) {
 		for (int l(h + 1); l < _tD + 1; ++l) {
 			// ahl >= 0

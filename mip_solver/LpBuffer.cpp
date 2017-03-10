@@ -34,12 +34,12 @@ void RowBuffer::get_names(std::vector<char> & result) const {
           && "you should provide a name for each element");
   int n(0);
   for (auto const & s : _name)
-    n += (s.size() + 1);
+    n += (static_cast<int>(s.size()) + 1);
   result.assign(n, '\0');
   int pos(0);
   for (auto const & s : _name) {
     std::copy(s.begin(), s.end(), result.begin() + pos);
-    pos += s.size() + 1;
+    pos += static_cast<int>(s.size()) + 1;
   }
 
 }
