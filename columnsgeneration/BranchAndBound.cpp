@@ -88,17 +88,9 @@ void BranchAndBound::columnGeneration() {
       rc = _columnGenerator.rc();
       nb = 0;
       Timer neighbor;
-      //_columnGenerator.addNeighbor();
+      _columnGenerator.addNeighbor();
 //			std::cout << std::setw(15) << "neighbor : " << neighbor.elapsed() << std::endl;
       neighbor.restart();
-      for (auto const & kvp : _columnGenerator.result()) {
-        if (kvp.first <= ZERO_REDUCED_COST) {
-          std::cout << "!!! ZERO_REDUCED_COST !!!" << std::endl;
-        }
-        if (!kvp.second->check(_master->minus_dual())) {
-          std::cout << "!!! CHECK FAILED !!!" << std::endl;
-        }
-      }
       _master->add(_columnGenerator.result(), _columnGenerator.getNumberByIte(),
                    nb, rc);
 //			std::cout << std::setw(15) << "add : " << neighbor.elapsed() << std::endl;

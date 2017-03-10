@@ -41,7 +41,7 @@ void ColumnGenerator::addNeighbor() {
 		_neighbor.insert(*kvp.second);
 	}
 	for (auto const & kvp : _result) {
-		if (kvp.first > ZERO_REDUCED_COST) {
+		if (kvp.first > 10*ZERO_REDUCED_COST) {
 			for (auto const i : kvp.second->v()) {
 				Column neighbor(_input);
 				neighbor.v() = kvp.second->v();
@@ -52,7 +52,7 @@ void ColumnGenerator::addNeighbor() {
 //					std::cout << std::setw(15)<<neighbor_rc;
 //					std::cout << std::endl;
 
-					if (neighbor.violation(*_list) == 0 && neighbor_rc > ZERO_REDUCED_COST) {
+					if (neighbor.violation(*_list) == 0 && neighbor_rc > 10 * ZERO_REDUCED_COST) {
 						neighbor.cost() = neighbor.computeCost();
 						neighbor.reducedCost() = neighbor_rc;
 						auto it = _neighbor.insert(neighbor).first;
