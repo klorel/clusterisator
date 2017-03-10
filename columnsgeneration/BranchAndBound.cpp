@@ -88,7 +88,7 @@ void BranchAndBound::columnGeneration() {
       rc = _columnGenerator.rc();
       nb = 0;
       Timer neighbor;
-      _columnGenerator.addNeighbor();
+      _columnGenerator.addNeighbor(1);
 //			std::cout << std::setw(15) << "neighbor : " << neighbor.elapsed() << std::endl;
       neighbor.restart();
       _master->add(_columnGenerator.result(), _columnGenerator.getNumberByIte(),

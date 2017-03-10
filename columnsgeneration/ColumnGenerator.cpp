@@ -34,7 +34,7 @@ void ColumnGenerator::clear() {
 	_vns->columns().clear();
 	_exact->columns().clear();
 }
-void ColumnGenerator::addNeighbor() {
+void ColumnGenerator::addNeighbor(int neighborhood_size) {
 	_neighbor.clear();
 	ReducedCostSorter temp_result;
 	for (auto const & kvp : _result) {
@@ -48,18 +48,43 @@ void ColumnGenerator::addNeighbor() {
 				neighbor.v().erase(i);
 				if (_neighbor.find(neighbor) == _neighbor.end()) {
 					Double const neighbor_rc(neighbor.computeReducedCost(*_minus_dual));
-//					std::cout << std::setw(6)<<i;
-//					std::cout << std::setw(15)<<neighbor_rc;
-//					std::cout << std::endl;
+					//					std::cout << std::setw(6)<<i;
+					//					std::cout << std::setw(15)<<neighbor_rc;
+					//					std::cout << std::endl;
 
 					if (neighbor.violation(*_list) == 0 && neighbor_rc > 10 * ZERO_REDUCED_COST) {
 						neighbor.cost() = neighbor.computeCost();
 						neighbor.reducedCost() = neighbor_rc;
 						auto it = _neighbor.insert(neighbor).first;
-						temp_result.insert( { neighbor_rc, &*it });
+						temp_result.insert({ neighbor_rc, &*it });
 					}
 				}
 			}
+			//if (neighborhood_size >= 2) {
+			//	for (auto const i : kvp.second->v()) {
+			//		for (auto const j : kvp.second->v()) {
+			//			if (i < j) {
+			//				Column neighbor(_input);
+			//				neighbor.v() = kvp.second->v();
+			//				neighbor.v().erase(i);
+			//				neighbor.v().erase(j);
+			//				if (_neighbor.find(neighbor) == _neighbor.end()) {
+			//					Double const neighbor_rc(neighbor.computeReducedCost(*_minus_dual));
+			//					//					std::cout << std::setw(6)<<i;
+			//					//					std::cout << std::setw(15)<<neighbor_rc;
+			//					//					std::cout << std::endl;
+
+			//					if (neighbor.violation(*_list) == 0 && neighbor_rc > 10 * ZERO_REDUCED_COST) {
+			//						neighbor.cost() = neighbor.computeCost();
+			//						neighbor.reducedCost() = neighbor_rc;
+			//						auto it = _neighbor.insert(neighbor).first;
+			//						temp_result.insert({ neighbor_rc, &*it });
+			//					}
+			//				}
+			//			}
+			//		}
+			//	}
+			//}
 		}
 	}
 	_result.insert(temp_result.begin(), temp_result.end());
