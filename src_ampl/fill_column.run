@@ -1,0 +1,6 @@
+
+let Y_COST := slave_obj;
+
+let Y_ROW := {r in V: Y[v] > 0.5};
+
+let{row in Y_ROW} Y_A[row] := 1;

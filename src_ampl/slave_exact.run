@@ -1,0 +1,6 @@
+
+problem slave_exact;
+
+solve;
+
+let{v in V}Y[v] := y[v];

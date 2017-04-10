@@ -1,0 +1,18 @@
+reset;
+
+model base.mod;
+model master.mod;
+
+model init.mod;
+
+model slave_exact.mod;
+
+data;
+set E := include ../txt/divorces.txt;
+model;
+
+
+include init.run;
+
+problem master;
+expand;
