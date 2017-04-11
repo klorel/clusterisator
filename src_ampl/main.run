@@ -1,18 +1,29 @@
 reset;
 
+option presolve 0;
+option solver cplexamp;
+option cplex_options 'outlev=0';
+
+option solver_msg 0;
+
 model base.mod;
 model master.mod;
 
 model init.mod;
 
+model columns_generation.mod;
+
 model slave_exact.mod;
 
+
+param DISPLAY_MASTER_SOLVE := 0;
+param DISPLAY_SLAVE_SOLVE  := 0;
+
 data;
-set E := include ../txt/divorces.txt;
+set E := include ../txt/south.txt;
 model;
 
 
 include init.run;
 
-problem master;
-expand;
+include columns_generation.run;

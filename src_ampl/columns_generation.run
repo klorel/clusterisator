@@ -1,0 +1,24 @@
+
+let CG_STOP := 0;
+let CG_ITE := 0;
+printf "%6s%6s%6s%15s%15s\n", "ITE", "COLS", "ADDED", "BOUND", "RC";
+repeat{
+	let CG_ITE := CG_ITE + 1;
+	let CG_COLS := card(COLS);
+	# solve master
+	include master.run;
+	
+	# pricing
+	include slave_exact.run;
+	
+	# add or stop
+	if CG_ADDED > 0 then{
+		include fill_column.run;
+		include add_column.run;
+	}else{
+		let CG_STOP := 1;
+	};
+	
+	printf "%6d%6d%6d%15.8f%15.8f\n", CG_ITE, CG_COLS, CG_ADDED, CG_BOUND, CG_REDUCED_COST;
+	
+} until CG_STOP == 1;

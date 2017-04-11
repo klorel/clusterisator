@@ -1,4 +1,6 @@
 
+param M_INTEGER default 0;
+
 # column ID;
 problem master;
 

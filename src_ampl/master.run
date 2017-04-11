@@ -1,0 +1,15 @@
+
+problem master;
+
+if DISPLAY_MASTER_SOLVE == 1 then{
+	solve MASTER_OBJ;
+}else{
+	close master.log;
+	solve MASTER_OBJ > master.log;
+}
+
+if solve_result != 'solved' then exit;
+
+let{v in V} DUAL_FOR_RC[v] := ctr[v];
+
+let CG_BOUND := sum{col in COLS}COST[col]*x[col];

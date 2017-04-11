@@ -4,13 +4,13 @@
 
 
 
-set ROWS default {};
+set ROWS default {} ordered by Reals;
 param RHS {ROWS} := 1;
 param DUAL{ROWS} default 0;
 
-set COLS default {};
+set COLS default {} ordered by Reals;
 param NEXT_ID := 1+card(COLS);
-param NEW_ID := 1-NEXT_ID;
+param NEW_ID := NEXT_ID-1;
 
 param COST{COLS};
 param PRIMAL{COLS};
@@ -22,6 +22,6 @@ param A{ROW_COL} default 0;
 # current solution from oracle
 param Y_COST;
 
-set Y_ROW default {}
-;
-param Y_A{Y_ROW};
+set Y_ROW default {};
+
+set Y_A dimen 2 default {};

@@ -2,8 +2,8 @@
 
 let COLS := COLS union {NEXT_ID};
 
-let ROW_COL := ROW_COL union union{row in Y_ROW}{(row, NEW_ID)};
+let ROW_COL := ROW_COL union union{__row in Y_ROW}{(__row, NEW_ID)};
 
-let{row in Y_ROW}A[row, NEW_ID] := Y_A[row];
+let{(__row, __value) in Y_A}A[__row, NEW_ID] := __value;
 
 let COST[NEW_ID] := Y_COST;

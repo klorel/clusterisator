@@ -1,6 +1,16 @@
 
 problem slave_exact;
+if DISPLAY_SLAVE_SOLVE == 1 then{
+	solve reduced_cost;
+}else{
+	close slave.log;
+	solve reduced_cost > slave.log;
+}
 
-solve;
+if solve_result != 'solved' then exit;
 
+let Y_COST := slave_cost;
 let{v in V}Y[v] := y[v];
+
+let CG_ADDED := if reduced_cost > 1e-6 then 1 else 0;
+let CG_REDUCED_COST := reduced_cost;
