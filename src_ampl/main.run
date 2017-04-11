@@ -18,12 +18,3 @@ model slave_exact.mod;
 
 param DISPLAY_MASTER_SOLVE := 0;
 param DISPLAY_SLAVE_SOLVE  := 0;
-
-data;
-set E := include ../txt/south.txt;
-model;
-
-
-include init.run;
-
-include columns_generation.run;

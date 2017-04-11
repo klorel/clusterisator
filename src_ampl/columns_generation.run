@@ -1,24 +1,43 @@
+include main.run;
+data;
+set E := include ../txt/toy.txt;
+model;
 
+include init.run;
+
+let CHECK_RC :=  1;
 let CG_STOP := 0;
 let CG_ITE := 0;
-printf "%6s%6s%6s%15s%15s\n", "ITE", "COLS", "ADDED", "BOUND", "RC";
+printf "%6s%6s%6s%8s%15s%15s\n", "ITE", "COLS", "ADDED", "STEP", "BOUND", "RC";
 repeat{
 	let CG_ITE := CG_ITE + 1;
-	let CG_COLS := card(COLS);
+
 	# solve master
 	include master.run;
 	
-	# pricing
-	include slave_exact.run;
+	let Y_REDUCED_COST := {};
+	let Y_COST := {};
+	let Y_ROW := {};
+	let Y_A := {};
+	let STEP := "HEUR";
+		
+	# heuristic pricing
+	# include slave_heuristic.run;
+	
+	# exact pricing if heuristic failed	
+	if CG_SUCCESS == 0 then{
+		include slave_exact.run;
+		let STEP := "EXACT";
+	};
 	
 	# add or stop
-	if CG_ADDED > 0 then{
-		include fill_column.run;
+	if CG_SUCCESS> 0 then{
 		include add_column.run;
 	}else{
 		let CG_STOP := 1;
 	};
 	
-	printf "%6d%6d%6d%15.8f%15.8f\n", CG_ITE, CG_COLS, CG_ADDED, CG_BOUND, CG_REDUCED_COST;
+	printf "%6d%6d%6d%8s%15.8f%15.8f\n", CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, CG_REDUCED_COST;
+	if CG_ITE<0 then exit;
 	
 } until CG_STOP == 1;

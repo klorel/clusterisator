@@ -18,10 +18,12 @@ param PRIMAL{COLS};
 set ROW_COL dimen 2 default {};
 param A{ROW_COL} default 0;
 
+set NEW_COLS ordered by Reals;
+# reduced cost of current solution from oracle
+set Y_REDUCED_COST dimen 2 default {};
+# cost of current solution from oracle
+set Y_COST dimen 2 default {};
+# first the column index and then the rows
+set Y_ROW dimen 2 default {};
 
-# current solution from oracle
-param Y_COST;
-
-set Y_ROW default {};
-
-set Y_A dimen 2 default {};
+set Y_A dimen 3 default {};

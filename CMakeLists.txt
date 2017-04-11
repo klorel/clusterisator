@@ -77,3 +77,4 @@ ADD_SUBDIRECTORY(unipartite_data)
 
 ADD_SUBDIRECTORY(exe)
 
+ADD_SUBDIRECTORY(src_ampl)

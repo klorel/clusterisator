@@ -1,4 +1,0 @@
-
-let Y_ROW := {__v in V: Y[__v] > 0.5};
-let Y_A := setof{__row in Y_ROW}(__row, 1);
-

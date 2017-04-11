@@ -1,9 +1,17 @@
 
 
-let COLS := COLS union {NEXT_ID};
+let NEW_COLS := union{(__i, __v) in Y_ROW}{__i};
 
-let ROW_COL := ROW_COL union union{__row in Y_ROW}{(__row, NEW_ID)};
-
-let{(__row, __value) in Y_A}A[__row, NEW_ID] := __value;
-
-let COST[NEW_ID] := Y_COST;
+let CG_ADDED := 0;
+for{__new_col in NEW_COLS, (__new_col, __rc) in Y_REDUCED_COST: CHECK_RC == 0 or __rc>ZERO_REDUCED_COST}{
+	let COLS := COLS union {NEXT_ID};
+	
+	let ROW_COL := ROW_COL union union{(__new_col, __row) in Y_ROW}{(__row, NEW_ID)};
+	
+	let{(__new_col, __row, __value) in Y_A}A[__row, NEW_ID] := __value;
+	
+	
+	let{(__new_col, __cost) in Y_COST} COST[NEW_ID] := __cost;
+	
+	let CG_ADDED := CG_ADDED + 1;
+};

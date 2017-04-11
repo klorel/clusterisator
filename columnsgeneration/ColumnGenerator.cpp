@@ -27,7 +27,6 @@ void ColumnGenerator::setVns(IOracle * oracle, DoubleVector const & dual, Decisi
 	_vns->setData(dual, list);
 	_minus_dual = &dual;
 	_list = &list;
-
 }
 void ColumnGenerator::clear() {
 	_result.clear();

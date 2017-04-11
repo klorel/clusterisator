@@ -1,7 +1,9 @@
 
 problem master;
-
+#expand;
 if DISPLAY_MASTER_SOLVE == 1 then{
+#	option solver_msg 1;
+#	option cplex_options 'outlev=1 lpdisplay=2';
 	solve MASTER_OBJ;
 }else{
 	close master.log;

@@ -1,0 +1,18 @@
+
+problem slave_exact;
+let HEUR_NUM := 0;
+# 2-uple
+for{v1 in V, v2 in V: v1<v2}{	
+	let{v in V} y[v]:= if v in {v1, v2} then 1 else 0;
+	if reduced_cost_y > ZERO_REDUCED_COST then {
+		let HEUR_NUM := HEUR_NUM+1;
+		
+		let Y_COST := Y_COST union {(HEUR_NUM, slave_cost_y)};
+		
+		let Y_REDUCED_COST := Y_REDUCED_COST union {(HEUR_NUM, reduced_cost_y)};
+	
+		let Y_ROW := Y_ROW union setof{__v in V: y[__v] > 0.5}(HEUR_NUM, __v);
+		
+		let Y_A   := Y_A union setof{(__id, __row) in Y_ROW}(__id, __row, 1);
+	};	
+};

@@ -1,14 +1,17 @@
 
 # create constraints
 let ROWS := V;
-
+param N_SINGLETON;
+let N_SINGLETON := 0;
 # add singleton
 for{v in V}{
-	let{u in V} Y[u] := if u == v then 1 else 0;
-	let Y_COST := 0;
+	let N_SINGLETON := N_SINGLETON+1;
+
+	let Y_COST := Y_COST union {(N_SINGLETON, 0)};
+	let Y_REDUCED_COST := Y_REDUCED_COST union {(N_SINGLETON, 0)};
 	
-	include fill_column.run;
-	
-	include add_column.run;	
+	let Y_ROW := Y_ROW union {(N_SINGLETON, v)};
+	let Y_A   := Y_A union {(N_SINGLETON, v, 1)};	
 };
 
+include add_column.run;	
