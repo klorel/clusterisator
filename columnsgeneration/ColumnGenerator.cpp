@@ -30,8 +30,10 @@ void ColumnGenerator::setVns(IOracle * oracle, DoubleVector const & dual, Decisi
 }
 void ColumnGenerator::clear() {
 	_result.clear();
-	_vns->columns().clear();
-	_exact->columns().clear();
+	if (_vns)
+		_vns->columns().clear();
+	if (_exact)
+		_exact->columns().clear();
 }
 void ColumnGenerator::addNeighbor(int neighborhood_size) {
 	_neighbor.clear();

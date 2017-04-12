@@ -30,7 +30,7 @@ class ColumnGenerator {
   std::string const & step() const;
   void applyBranchingRule();
   void addNeighbor(int neighborhood_size);
- private:
+ public:
   bool vns();
   bool exact();
   void clear();

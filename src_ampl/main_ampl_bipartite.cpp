@@ -63,6 +63,9 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 	instance.setVnsOracle(&vnsOracle);
 	vnsOracle.setData(dual, decisions);
 
+	ColumnGenerator generator(&instance);
+	generator.setVns(&vnsOracle, dual, decisions);
+
 	ampl::Set V = ampl.getSet("V");
 	ampl::Parameter DUAL_FOR_RC = ampl.getParameter("DUAL_FOR_RC");
 	dual.assign(V.size(), 0);
@@ -72,9 +75,15 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 		++cg_ite;
 		ampl.read("master.run");
 
-		//for (auto & t : V.members()) {
-		//	std::cout << t.toString() << " = " << DUAL_FOR_RC.get(t).toString() << std::endl;
-		//}
+		int i(0);
+		for (auto & t : V.members()) {
+			double const d = DUAL_FOR_RC.get(t).dbl();
+			dual[i] = -d;
+			++i;
+		}
+		generator.clear();
+		generator.vns();
+		std::cout << generator.rc() << std::endl;
 
 		ampl.read("slave_exact.run");
 		cg_added = ampl.getValue("CG_ADDED").dbl();
