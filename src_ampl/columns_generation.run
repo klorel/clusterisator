@@ -5,7 +5,11 @@ model;
 
 include init.run;
 
-let CHECK_RC :=  1;
+display V;
+display R;
+display B;
+display card(V);
+
 let CG_STOP := 0;
 let CG_ITE := 0;
 printf "%6s%6s%6s%8s%15s%15s\n", "ITE", "COLS", "ADDED", "STEP", "BOUND", "RC";
@@ -15,29 +19,23 @@ repeat{
 	# solve master
 	include master.run;
 	
-	let Y_REDUCED_COST := {};
-	let Y_COST := {};
-	let Y_ROW := {};
-	let Y_A := {};
-	let STEP := "HEUR";
-		
 	# heuristic pricing
 	# include slave_heuristic.run;
 	
 	# exact pricing if heuristic failed	
 	if CG_SUCCESS == 0 then{
 		include slave_exact.run;
-		let STEP := "EXACT";
 	};
 	
-	# add or stop
-	if CG_SUCCESS> 0 then{
-		include add_column.run;
+	include check_and_add.run;
+	if USE_STAB == 0 then {
+		printf "%6d%6d%6d%8s%15.8f%15.8f", CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, CG_REDUCED_COST;
+		printf "\n";
 	}else{
-		let CG_STOP := 1;
+		printf "%6d%6d%6d%8s%15.8f%15.8f", CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, CG_REDUCED_COST;
+		printf "%10s%15.6f", BUNDLE_STEP, FEAS_ERROR;
+		printf "\n";
 	};
-	
-	printf "%6d%6d%6d%8s%15.8f%15.8f\n", CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, CG_REDUCED_COST;
 	if CG_ITE<0 then exit;
 	
 } until CG_STOP == 1;

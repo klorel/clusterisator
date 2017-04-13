@@ -15,6 +15,5 @@ model columns_generation.mod;
 
 model slave_exact.mod;
 
-
 param DISPLAY_MASTER_SOLVE := 0;
 param DISPLAY_SLAVE_SOLVE  := 0;

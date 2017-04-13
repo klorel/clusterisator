@@ -9,9 +9,11 @@ if DISPLAY_SLAVE_SOLVE == 1 then{
 
 if solve_result != 'solved' then exit;
 
-let Y_COST := {(1, slave_cost)};
-let Y_REDUCED_COST := {(1, reduced_cost)};
+let POOL_COST := {(1, slave_cost, reduced_cost)};
+let POOL_SOLUTION := setof{__v in V: y[__v] > 0.5}(1, __v);
+let STEP := "EXACT";
 
-let Y_ROW := setof{__v in V: y[__v] > 0.5}(1, __v);
-
-let Y_A   := setof{(__id, __row) in Y_ROW}(__id, __row, 1);
+#let Y_COST := {(1, slave_cost)};
+#let Y_REDUCED_COST := {(1, reduced_cost)};
+#let Y_ROW := setof{__v in V: y[__v] > 0.5}(1, __v);
+#let Y_A   := setof{(__id, __row) in Y_ROW}(__id, __row, 1);

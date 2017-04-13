@@ -1,0 +1,54 @@
+
+if USE_STAB == 0 then{
+	# add or stop
+	if CG_SUCCESS> 0 then{
+		include add_column.run;
+	}else{
+		let CG_STOP := 1;
+	};
+}else{
+	if CG_SUCCESS > 0 and STEP != 'EXACT' then{
+		# we cannot check for SS or NS as EXACT was not called
+		include add_column.run;
+		let BUNDLE_STEP := 'XS';		
+	}else{
+		# we can check for SS or NS as EXACT was called
+		if CG_ITE >1 and (SCORE <= 0 or CG_ITE == 2) then{
+			let{v in V}CENTER[v] := PI[v];
+			let BUNDLE_STEP := 'SS';
+			let PHI_PI_BAR := PHI_PI;
+			
+			let NB_SS := NB_SS+1;
+			let NB_NS := 0;
+		}else{
+			let BUNDLE_STEP := 'NS';
+			let NB_NS := NB_NS+1;
+			let NB_SS := 0;
+		};	
+	};
+};
+#let RC := reduced_cost;		
+#let PHI_PI := PHI_DOT_B + (R_B_BAR/den_phi_bar)*rc_pi;
+#if ITERATION >1 and (SCORE <= 0 or ITERATION == 2) then{
+#	let{r in R}CENTER_R[r] := PI_R[r];
+#	let{b in B}CENTER_B[b] := PI_B[b];
+#	let STEP := 'SS';
+#	let PHI_PI_BAR := PHI_PI;
+#	
+#	let NB_SS := NB_SS+1;
+#	let NB_NS := 0;
+#}else{
+#	let STEP := 'NS';
+#	let NB_NS := NB_NS+1;
+#	let NB_SS := 0;
+#};		
+#if NB_SS >= NB_UPDATE then{
+#	if  (1/PARAM_PENALTY)^N_BRANCHES >= 1e-3 then 
+#		let PARAM_PENALTY := PARAM_PENALTY * 2;
+#	let NB_SS := 0; 
+#};	
+#if NB_NS >= NB_UPDATE then{
+#	if  1/PARAM_PENALTY <= 1e3 then 
+#		let PARAM_PENALTY := PARAM_PENALTY * 0.5;
+#	let NB_NS := 0; 
+#};

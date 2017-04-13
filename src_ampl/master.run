@@ -1,6 +1,7 @@
 
 problem master;
 #expand;
+let M_TIME := time();
 if DISPLAY_MASTER_SOLVE == 1 then{
 #	option solver_msg 1;
 #	option cplex_options 'outlev=1 lpdisplay=2';
@@ -9,9 +10,23 @@ if DISPLAY_MASTER_SOLVE == 1 then{
 	close master.log;
 	solve MASTER_OBJ > master.log;
 }
-
+#printf "master solve took %20d\n", time()-M_TIME;
 if solve_result != 'solved' then exit;
 
-let{v in V} DUAL_FOR_RC[v] := ctr[v];
+let C_DOT_X := c_dot_x;
+let{v in V} FEAS_V[v] := 1-sum{(v, col, val) in SET_PARTITIONNING_V_COL_VAL}val*x[col];
+let{v in V} PI[v] := set_partitionning[v].dual;
+let{v in V} DUAL_FOR_RC[v] := PI[v] + (if USE_STAB == 1 then fake_constraint.dual else 0);
 
 let CG_BOUND := sum{col in COLS}COST[col]*x[col];
+
+let POOL_COST := {};
+let POOL_SOLUTION  := {};
+let STEP := "UNKNOWN";
+
+
+let PHI_DOT_B := sum{v in V}set_partitionning[v].dual;
+let PHI_B_PI := PHI_DOT_B + FAKE_RHS * fake_constraint.dual;
+
+let SCORE := (PHI_PI - PHI_PI_BAR) - M*(PHI_B_PI - PHI_PI_BAR);
+

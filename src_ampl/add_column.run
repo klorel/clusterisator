@@ -1,17 +1,34 @@
+let M_TIME := time();
 
-
-let NEW_COLS := union{(__i, __v) in Y_ROW}{__i};
+#let NEW_COLS := union{(__i, __v) in Y_ROW}{__i};
+#let CG_ADDED := 0;
+#for{__new_col in NEW_COLS, (__new_col, __rc) in Y_REDUCED_COST: __rc>ZERO_REDUCED_COST}{
+#	let COLS := COLS union {NEXT_ID};
+#	
+#	let ROW_COL := ROW_COL union union{(__new_col, __row) in Y_ROW}{(__row, NEW_ID)};
+#	
+#	let{(__new_col, __row, __value) in Y_A}A[__row, NEW_ID] := __value;
+#	
+#	
+#	let{(__new_col, __cost) in Y_COST} COST[NEW_ID] := __cost;
+#	
+#	let CG_ADDED := CG_ADDED + 1;
+#};
 
 let CG_ADDED := 0;
-for{__new_col in NEW_COLS, (__new_col, __rc) in Y_REDUCED_COST: CHECK_RC == 0 or __rc>ZERO_REDUCED_COST}{
+for{(__new_col, __cost, __rc) in POOL_COST: __rc>ZERO_REDUCED_COST}{
 	let COLS := COLS union {NEXT_ID};
-	
-	let ROW_COL := ROW_COL union union{(__new_col, __row) in Y_ROW}{(__row, NEW_ID)};
-	
-	let{(__new_col, __row, __value) in Y_A}A[__row, NEW_ID] := __value;
-	
-	
-	let{(__new_col, __cost) in Y_COST} COST[NEW_ID] := __cost;
+	# set covering indexes
+	let SET_PARTITIONNING_V_COL_VAL := SET_PARTITIONNING_V_COL_VAL union union{(__new_col, __v) in POOL_SOLUTION}{(__v, NEW_ID, 1)};
+	# set covering values	
+	let COST[NEW_ID] := __cost;
 	
 	let CG_ADDED := CG_ADDED + 1;
+	let ALL_COST := ALL_COST union {(NEW_ID, __cost, __rc)};
+	let ALL_SOLUTION := ALL_SOLUTION union union{(__new_col, __v) in POOL_SOLUTION}{(NEW_ID, __v)};
 };
+
+#display COL_V;
+#printf "add took %20d\n", time()-M_TIME;
+
+#display SET_PARTITIONNING_V_COL_VAL;
