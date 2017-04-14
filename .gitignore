@@ -29,3 +29,7 @@ build*
 
 *.orig
 *.log
+*.nl
+src_ampl/*.log
+src_ampl/*.txt
+src_ampl/*.lp

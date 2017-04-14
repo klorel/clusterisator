@@ -1,3 +1,4 @@
+#display STEP, CG_SUCCESS;
 
 if USE_STAB == 0 then{
 	# add or stop
@@ -7,24 +8,21 @@ if USE_STAB == 0 then{
 		let CG_STOP := 1;
 	};
 }else{
-	if CG_SUCCESS > 0 and STEP != 'EXACT' then{
-		# we cannot check for SS or NS as EXACT was not called
+	if CG_SUCCESS > 0 then {
 		include add_column.run;
-		let BUNDLE_STEP := 'XS';		
+		
+		if CG_SUCCESS > 0 and STEP != 'EXACT' then{
+			# we cannot check for SS or NS as EXACT was not called
+			let BUNDLE_STEP := 'XS';		
+		}else{			
+
+		};
 	}else{
-		# we can check for SS or NS as EXACT was called
-		if CG_ITE >1 and (SCORE <= 0 or CG_ITE == 2) then{
-			let{v in V}CENTER[v] := PI[v];
-			let BUNDLE_STEP := 'SS';
-			let PHI_PI_BAR := PHI_PI;
-			
-			let NB_SS := NB_SS+1;
-			let NB_NS := 0;
-		}else{
-			let BUNDLE_STEP := 'NS';
-			let NB_NS := NB_NS+1;
-			let NB_SS := 0;
-		};	
+		if FEAS_ERROR <= 1e-6 then
+			let CG_STOP := 1;
+		else{
+			let PARAM_PENALTY := PARAM_PENALTY * 0.5;
+		}
 	};
 };
 #let RC := reduced_cost;		

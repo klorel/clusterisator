@@ -122,7 +122,7 @@ void extract_pool(ampl::AMPL & ampl, std::string const & name_cost, std::string 
 
 
 bool launch_heuristic(ampl::AMPL & ampl, DoubleVector & dual, ColumnGenerator & generator, std::vector<int> const & i_to_v) {
-	
+	bool success(false);
 	ampl::Parameter DUAL_FOR_RC = ampl.getParameter("DUAL_FOR_RC");
 	int i(0);
 	for (auto & t : DUAL_FOR_RC) {
@@ -133,7 +133,7 @@ bool launch_heuristic(ampl::AMPL & ampl, DoubleVector & dual, ColumnGenerator & 
 	generator.clear();
 	generator.vns();
 	//std::cout << generator.rc() << std::endl;
-	bool success(generator.rc() > ZERO_REDUCED_COST);
+	success = generator.rc() > ZERO_REDUCED_COST * 100;
 	if (success) {
 		generator.addNeighbor(1);
 		int n = 0;
@@ -142,18 +142,21 @@ bool launch_heuristic(ampl::AMPL & ampl, DoubleVector & dual, ColumnGenerator & 
 		std::vector<ampl::Tuple> pool_solution_tuples;
 		std::vector<ampl::Tuple> pool_cost_tuples;
 		for (auto const & kvp : generator.result()) {
-			n += 1;
-			
-			ampl::Tuple t_cost({ n, kvp.second->cost(), kvp.second->reducedCost() });
-			pool_cost_tuples.push_back(t_cost);
-			bool is_first = true;
-			for (auto const i : kvp.second->v()) {
-				ampl::Tuple t_solution({ n, i_to_v[i] });
-				pool_solution_tuples.push_back(t_solution);
+			if (kvp.first > ZERO_REDUCED_COST * 100 && n<1000) {
+				n += 1;
+
+				ampl::Tuple t_cost({ n, kvp.second->cost(), kvp.second->reducedCost() });
+				pool_cost_tuples.push_back(t_cost);
+				bool is_first = true;
+				for (auto const i : kvp.second->v()) {
+					ampl::Tuple t_solution({ n, i_to_v[i] });
+					pool_solution_tuples.push_back(t_solution);
+				}
 			}
 		}
 		pool_solution.setValues(pool_solution_tuples.data(), (int)pool_solution_tuples.size());
 		pool_cost.setValues(pool_cost_tuples.data(), (int)pool_cost_tuples.size());
+		ampl.getParameter("STEP").set("VNS");
 	}
 	return success;
 }
@@ -188,6 +191,14 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 	ampl::Parameter cg_cols = ampl.getParameter("CG_COLS");
 	ampl::Parameter cg_bound = ampl.getParameter("CG_BOUND");
 	ampl::Parameter cg_reduced_cost = ampl.getParameter("CG_REDUCED_COST");
+
+	ampl::Parameter use_stab = ampl.getParameter("USE_STAB");
+	ampl::Parameter bundle_step = ampl.getParameter("BUNDLE_STEP");
+	ampl::Parameter feas_error = ampl.getParameter("FEAS_ERROR");
+	ampl::Parameter opt_error = ampl.getParameter("OPT_ERROR");
+	ampl::Parameter phi_pi = ampl.getParameter("PHI_PI");
+	ampl::Parameter phi_pi_bar = ampl.getParameter("PHI_PI_BAR");
+	ampl::Parameter c_dot_x = ampl.getParameter("C_DOT_X");
 
 	DoubleVector dual;
 	DecisionList decisions;
@@ -250,14 +261,37 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 			}
 		}
 
+		if (use_stab.get().dbl() == 0) {
+			std::cout << std::setw(6) << cg_ite;
+			std::cout << std::setw(6) << cg_cols.get().dbl();
+			std::cout << std::setw(6) << cg_added.get().dbl();
+			std::cout << std::setw(6) << step;
+			std::cout << std::setw(25) << std::setprecision(10) << std::scientific << cg_bound.get().dbl();
+			std::cout << std::setw(25) << std::setprecision(10) << std::scientific << cg_reduced_cost.get().dbl();
+			std::cout << std::defaultfloat << std::endl;
+		}
+		else {
+			std::cout << std::setw(6) << cg_ite;
+			std::cout << std::setw(6) << cg_cols.get().dbl();
+			std::cout << std::setw(6) << cg_added.get().dbl();
+			std::cout << std::setw(6) << step;
+			std::cout << std::setw(20) << std::setprecision(10) << std::scientific << cg_bound.get().dbl();
+			std::cout << std::setw(20) << std::setprecision(10) << std::scientific << cg_reduced_cost.get().dbl();
 
-		std::cout << std::setw(6) << cg_ite;
-		std::cout << std::setw(6) << cg_cols.get().dbl();
-		std::cout << std::setw(6) << cg_added.get().dbl();
-		std::cout << std::setw(6) << step;
-		std::cout << std::setw(15) << std::setprecision(8) << cg_bound.get().dbl();
-		std::cout << std::setw(15) << std::setprecision(8) << cg_reduced_cost.get().dbl();
-		std::cout << std::endl;
+			std::cout << std::setw(10) << bundle_step.get().str();
+			std::cout << std::setw(20) << std::setprecision(10) << std::scientific << feas_error.get().dbl();
+			std::cout << std::setw(20) << std::setprecision(10) << std::scientific << opt_error.get().dbl();
+			if (bundle_step.get().str() != "XS") {
+				std::cout << std::setw(20) << std::setprecision(10) << std::scientific << phi_pi.get().dbl();
+				std::cout << std::setw(20) << std::setprecision(10) << std::scientific << (phi_pi_bar.get().dbl() > 1e10 ? -1 : phi_pi_bar.get().dbl());
+			} else {
+				std::cout << std::setw(20) << "-";
+				std::cout << std::setw(20) << "-";
+			};
+			std::cout << std::setw(20) << std::setprecision(10) << std::scientific << c_dot_x.get().dbl();
+			std::cout << std::defaultfloat << std::endl;
+
+		}
 	}
 }
 

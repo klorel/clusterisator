@@ -20,15 +20,28 @@ for{(__new_col, __cost, __rc) in POOL_COST: __rc>ZERO_REDUCED_COST}{
 	let COLS := COLS union {NEXT_ID};
 	# set covering indexes
 	let SET_PARTITIONNING_V_COL_VAL := SET_PARTITIONNING_V_COL_VAL union union{(__new_col, __v) in POOL_SOLUTION}{(__v, NEW_ID, 1)};
-	# set covering values	
+
+	let FAKE_COL_VAL := FAKE_COL_VAL union 	{(NEW_ID, card({(__new_col, __v) in POOL_SOLUTION}))};
+
 	let COST[NEW_ID] := __cost;
 	
 	let CG_ADDED := CG_ADDED + 1;
 	let ALL_COST := ALL_COST union {(NEW_ID, __cost, __rc)};
 	let ALL_SOLUTION := ALL_SOLUTION union union{(__new_col, __v) in POOL_SOLUTION}{(NEW_ID, __v)};
+	
+	if CG_ITE>0 then{
+		let CHECKER_V := {(__new_col, __v) in POOL_SOLUTION};
+		if abs(CHECKER_COST - __cost) >1e-10  then{
+			display "WRONG COST %20.8f%20.8f%20.8f", __cost- CHECKER_COST, __cost, CHECKER_COST;
+			exit;
+		}
+		if abs(CHECKER_REDUCED_COST - __rc) >1e-10 then{
+			printf "WRONG RC   %20.8f%20.8f%20.8f",  __rc-CHECKER_REDUCED_COST,  __rc, CHECKER_REDUCED_COST;
+			exit;
+		}
+	};
 };
 
 #display COL_V;
 #printf "add took %20d\n", time()-M_TIME;
 
-#display SET_PARTITIONNING_V_COL_VAL;

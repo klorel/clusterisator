@@ -2,7 +2,7 @@ reset;
 
 option presolve 0;
 option solver cplexamp;
-option cplex_options 'outlev=0';
+option cplex_options 'outlev=0 presolve=0 scale=-1 netoptimality=1e-8';
 
 option solver_msg 0;
 

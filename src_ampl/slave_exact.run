@@ -1,7 +1,10 @@
 
 problem slave_exact;
 if DISPLAY_SLAVE_SOLVE == 1 then{
+	option cplex_options 'outlev=1 mipdisplay=2';
+	option solver_msg 1;
 	solve reduced_cost;
+	option solver_msg 0;
 }else{
 	close slave.log;
 	solve reduced_cost > slave.log;
@@ -12,6 +15,51 @@ if solve_result != 'solved' then exit;
 let POOL_COST := {(1, slave_cost, reduced_cost)};
 let POOL_SOLUTION := setof{__v in V: y[__v] > 0.5}(1, __v);
 let STEP := "EXACT";
+
+let PHI_PI := PI_DOT_B + (FAKE_RHS/den_phi_bar)*phi;
+
+let SCORE := (PHI_PI - PHI_PI_BAR) - M*(PHI_B_PI - PHI_PI_BAR);
+#display PHI_PI;
+#display PHI_PI_BAR;
+#display PHI_B_PI;
+#display (PHI_PI - PHI_PI_BAR);
+#display  M*(PHI_B_PI - PHI_PI_BAR);
+#display SCORE;
+
+if PHI_PI < 0 then {
+	display phi;
+	
+	display FAKE_RHS;
+	
+	display den_phi_bar;
+	
+	display PI_DOT_B;
+	
+	display (
+		PI_DOT_B-(
+		+sum{v in SET_PARTITIONNING_V, i in 1..N_BRANCHES}z_neg[v, i]*(CENTER[v]-WIDTH*i)
+		-sum{v in SET_PARTITIONNING_V, i in 1..N_BRANCHES}z_pos[v, i]*(CENTER[v]+WIDTH*i)
+		)
+	);
+	
+	display C_DOT_X;
+	
+	display sum{v in V}y[v];
+};
+# we can check for SS or NS as EXACT was called
+if SCORE <= 0 or AT_LEAST_ONE_SS == 0 then{
+	let{v in V}CENTER[v] := PI[v];
+	let BUNDLE_STEP := 'SS';
+	let PHI_PI_BAR := PHI_PI;
+	
+	let NB_SS := NB_SS+1;
+	let NB_NS := 0;
+	let AT_LEAST_ONE_SS := 1;
+}else{
+	let BUNDLE_STEP := 'NS';
+	let NB_NS := NB_NS+1;
+	let NB_SS := 0;
+};	
 
 #let Y_COST := {(1, slave_cost)};
 #let Y_REDUCED_COST := {(1, reduced_cost)};
