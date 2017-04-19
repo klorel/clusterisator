@@ -14,6 +14,8 @@ problem slave_exact;
 
 var y{V} binary;
 
+subject to non_empty:sum{v in V}y[v]>=1;
+
 #model slave_exact_milp.mod;
 model slave_exact_binary_decomposition.mod;
 

@@ -15,11 +15,11 @@ if USE_STAB=0 then{
 
 		};
 	}else{
-		let CG_STOP := 1;
-#		if FEAS_ERROR <= 1e-6 then
-#			let CG_STOP := 1;
-#		else{
-#			let PARAM_PENALTY := PARAM_PENALTY * 0.5;
-#		}
+#		let CG_STOP := 1;
+		if FEAS_ERROR <= 1e-6 then
+			let CG_STOP := 1;
+		else{
+			let PARAM_PENALTY := PARAM_PENALTY * 0.5;
+		}
 	};
 };

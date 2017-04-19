@@ -1,7 +1,7 @@
 
 param N_BRANCHES := if USE_STAB == 0 then 0 else 6;
 param WIDTH default 1e-4;
-param PARAM_PENALTY default 1e-3;
+param PARAM_PENALTY default 1e-0;
 
 param CENTER{v in V} default 0;
 
@@ -27,7 +27,7 @@ param FEAS_V{V} default 0;
 param FEAS_ERROR := max{v in V}abs(FEAS_V[v]);
 
 param OPT_ERROR := abs(C_DOT_X - PHI_PI_BAR);
-param FAKE_RHS default card(V);
+param FAKE_RHS default card(V)*0+10;
 
 
 param BUNDLE_STEP symbolic default 'UNKNOWN';

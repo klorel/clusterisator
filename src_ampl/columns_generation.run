@@ -1,6 +1,6 @@
 include main.run;
 data;
-set E := include ../txt/divorces.txt;
+set E := include ../txt/hollyw.txt;
 model;
 
 include init.run;
