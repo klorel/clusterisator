@@ -9,9 +9,9 @@ param NEW_ID := NEXT_ID-1;
 param COST{COLS};
 param PRIMAL{COLS};
 
-set FAKE_COL_VAL dimen 2 default {};
-set SET_PARTITIONNING_V_COL_VAL dimen 3 default {};
-set SET_PARTITIONNING_V := union{(i,j,k) in SET_PARTITIONNING_V_COL_VAL}{i};
+#set SET_PARTITIONNING_V_COL_VAL dimen 3 default {};
+#set SET_PARTITIONNING_V := union{(i,j,k) in SET_PARTITIONNING_V_COL_VAL}{i};
+
 
 # id - cost - reduced cost
 set POOL_COST dimen 3 default {};
@@ -19,8 +19,5 @@ set POOL_COST dimen 3 default {};
 set POOL_SOLUTION dimen 2 default {};
 
 set ALL_COST dimen 3 default {};
-set ALL_SOLUTION dimen 2 default {};
+set ALL_COLUMNS dimen 2 default {};
 
-param FAKE_RHS := card(SET_PARTITIONNING_V);
-
-param USE_STAB := 1;

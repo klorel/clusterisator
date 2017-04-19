@@ -1,12 +1,9 @@
 include main.run;
 data;
-set E := include ../txt/south.txt;
+set E := include ../txt/toy.txt;
 model;
 
 include init.run;
-
-display T_R;
-display T_B;
 
 
 display V;
@@ -18,15 +15,13 @@ display card(E);
 let CG_STOP := 0;
 let CG_ITE := 0;
 printf "%6s%6s%6s%8s%17s%17s", "ITE", "COLS", "ADDED", "STEP", "BOUND", "RC";
-if USE_STAB == 1 then {
-	printf "%10s%17s%17s%17s%17s%17s", "BUNDLE", "FEAS", "OPT", "CURR", "REF", "C_DOT_X";
-}
 printf "\n";
 repeat{
 	let CG_ITE := CG_ITE + 1;
 
 	# solve master
 	include master.run;
+	problem DEFAULT;
 	
 	# heuristic pricing
 	# include slave_heuristic.run;
@@ -34,40 +29,18 @@ repeat{
 	# exact pricing if heuristic failed	
 	if CG_SUCCESS == 0 then{
 		include slave_exact.run;
-	};
-	include check_and_add.run;
-	if USE_STAB == 0 or Z_IS_FIXED == 1 then {
-		printf "%6d%6d%6d%8s%17.8E%17.8E", CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, CG_REDUCED_COST;
-		printf "\n";
-	}else{
-		printf "%6d%6d%6d%8s%17.8E%17.8E", CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, CG_REDUCED_COST;
-		printf "%10s%17.8E%17.8E", 
-		BUNDLE_STEP, 
-		FEAS_ERROR, 
-		if OPT_ERROR >= 1e10 then -1 else OPT_ERROR; 
-		if STEP != 'XS' then{
-			printf "%17.8E", PHI_PI;
-		}else{
-			printf "%25s", '-';
-		}
-		printf "%17.8E%17.8E",  if PHI_PI_BAR >= 1e10 then -1 else PHI_PI_BAR, C_DOT_X;
-		printf "\n";
-	};
-	if CG_STOP==1 and BUNDLE_STEP =='SS' then
-		let CG_STOP := 0;
-			 
-	if CG_STOP == 1 and Z_IS_FIXED == 0  then{
-		problem master;
-		fix{v in SET_PARTITIONNING_V, i in 1..N_BRANCHES} z_pos[v, i] := 0;
-		fix{v in SET_PARTITIONNING_V, i in 1..N_BRANCHES} z_neg[v, i] := 0;
-		let CG_STOP := 0;	
-		printf "FIXING Z\n";
-		let Z_IS_FIXED := 1;
-		# drop fake_constraint;
+		problem DEFAULT;
+		
 	};
 	
+	include check_and_add.run;
+	problem DEFAULT;
+#display CG_BOUND;
+	printf "%6d%6d%6d%8s%17.8E%17.8E", CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, CG_REDUCED_COST;
+	printf "\n";
+	
 	if CG_STOP == 1 then{
-		display {col in COLS:x[col]>1e-8}x[col];
+	#	display {col in COLS:x[col]>1e-8}x[col];
 	};
 	
 } until CG_STOP == 1;

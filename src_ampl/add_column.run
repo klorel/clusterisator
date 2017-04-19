@@ -1,47 +1,13 @@
-let M_TIME := time();
-
-#let NEW_COLS := union{(__i, __v) in Y_ROW}{__i};
-#let CG_ADDED := 0;
-#for{__new_col in NEW_COLS, (__new_col, __rc) in Y_REDUCED_COST: __rc>ZERO_REDUCED_COST}{
-#	let COLS := COLS union {NEXT_ID};
-#	
-#	let ROW_COL := ROW_COL union union{(__new_col, __row) in Y_ROW}{(__row, NEW_ID)};
-#	
-#	let{(__new_col, __row, __value) in Y_A}A[__row, NEW_ID] := __value;
-#	
-#	
-#	let{(__new_col, __cost) in Y_COST} COST[NEW_ID] := __cost;
-#	
-#	let CG_ADDED := CG_ADDED + 1;
-#};
 
 let CG_ADDED := 0;
 for{(__new_col, __cost, __rc) in POOL_COST: __rc>ZERO_REDUCED_COST}{
 	let COLS := COLS union {NEXT_ID};
 	# set covering indexes
-	let SET_PARTITIONNING_V_COL_VAL := SET_PARTITIONNING_V_COL_VAL union union{(__new_col, __v) in POOL_SOLUTION}{(__v, NEW_ID, 1)};
-
-	let FAKE_COL_VAL := FAKE_COL_VAL union 	{(NEW_ID, card({(__new_col, __v) in POOL_SOLUTION}))};
-
+#	let SET_PARTITIONNING_V_COL_VAL := SET_PARTITIONNING_V_COL_VAL union union{(__new_col, __v) in POOL_SOLUTION}{(__v, NEW_ID, 1)};
 	let COST[NEW_ID] := __cost;
 	
 	let CG_ADDED := CG_ADDED + 1;
-	let ALL_COST := ALL_COST union {(NEW_ID, __cost, __rc)};
-	let ALL_SOLUTION := ALL_SOLUTION union union{(__new_col, __v) in POOL_SOLUTION}{(NEW_ID, __v)};
 	
-	if CG_ITE>0 then{
-		let CHECKER_V := {(__new_col, __v) in POOL_SOLUTION};
-		if abs(CHECKER_COST - __cost) >1e-10  then{
-			display "WRONG COST %20.8f%20.8f%20.8f", __cost- CHECKER_COST, __cost, CHECKER_COST;
-			exit;
-		}
-		if abs(CHECKER_REDUCED_COST - __rc) >1e-10 then{
-			printf "WRONG RC   %20.8f%20.8f%20.8f",  __rc-CHECKER_REDUCED_COST,  __rc, CHECKER_REDUCED_COST;
-			exit;
-		}
-	};
+	let ALL_COST := ALL_COST union {(NEW_ID, __cost, __rc)};
+	let ALL_COLUMNS := ALL_COLUMNS union union{(__new_col, __v) in POOL_SOLUTION}{(NEW_ID, __v)};
 };
-
-#display COL_V;
-#printf "add took %20d\n", time()-M_TIME;
-

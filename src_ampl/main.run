@@ -2,18 +2,20 @@ reset;
 
 option presolve 0;
 option solver cplexamp;
-option cplex_options 'outlev=0 presolve=0 scale=-1 netoptimality=1e-8';
+option cplex_options 'outlev=0';
 
 option solver_msg 0;
 
-model base.mod;
-model master.mod;
+problem DEFAULT;
 
 model init.mod;
+model base.mod;
+model slave_exact.mod;
+model master.mod;
+
 
 model columns_generation.mod;
 
-model slave_exact.mod;
 
 param DISPLAY_MASTER_SOLVE := 0;
 param DISPLAY_SLAVE_SOLVE  := 0;
