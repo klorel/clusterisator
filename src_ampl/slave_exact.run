@@ -14,3 +14,37 @@ if solve_result != 'solved' then exit;
 
 let POOL_COST := {(1, slave_cost, reduced_cost)};
 let POOL_SOLUTION := setof{__v in V: y[__v] > 0.5}(1, __v);
+
+
+if USE_STAB != 0 then{
+	let PHI_PI := PI_DOT_B + FAKE_RHS*reduced_cost;
+	
+	let SCORE := (PHI_PI - PHI_PI_BAR) - M*(PHI_B_PI - PHI_PI_BAR);
+	#display y;
+	#display PHI_PI;
+	#display PHI_PI_BAR;
+	#display PHI_B_PI;
+	
+	#display ratio, reduced_cost, cluster_card;
+	#display ratio*FAKE_RHS;
+	#exit;
+	#display (PHI_PI - PHI_PI_BAR);
+	#display  M*(PHI_B_PI - PHI_PI_BAR);
+	#display SCORE;
+	#display PHI_B_PI, PHI_PI, PI_DOT_B;
+	
+	# we can check for SS or NS as EXACT was called
+	if SCORE <= 0 or AT_LEAST_ONE_SS == 0 then{
+		let{v in V}CENTER[v] := PI[v];
+		let BUNDLE_STEP := 'SS';
+		let PHI_PI_BAR := PHI_PI;
+		
+		let NB_SS := NB_SS+1;
+		let NB_NS := 0;
+		let AT_LEAST_ONE_SS := 1;
+	}else{
+		let BUNDLE_STEP := 'NS';
+		let NB_NS := NB_NS+1;
+		let NB_SS := 0;
+	};	
+};

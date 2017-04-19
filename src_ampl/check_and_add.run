@@ -1,7 +1,25 @@
 
-# add or stop
-if CG_SUCCESS> 0 then{
-	include add_column.run;
+if USE_STAB=0 then{
+	if CG_SUCCESS> 0 then{
+		include add_column.run;
+	}else{
+		let CG_STOP := 1;
+	};
 }else{
-	let CG_STOP := 1;
+	if CG_SUCCESS > 0 then {
+		include add_column.run;		
+		if CG_SUCCESS > 0 and STEP != 'EXACT' then{
+			# we cannot check for SS or NS as EXACT was not called
+			let BUNDLE_STEP := 'XS';		
+		}else{			
+
+		};
+	}else{
+		let CG_STOP := 1;
+#		if FEAS_ERROR <= 1e-6 then
+#			let CG_STOP := 1;
+#		else{
+#			let PARAM_PENALTY := PARAM_PENALTY * 0.5;
+#		}
+	};
 };

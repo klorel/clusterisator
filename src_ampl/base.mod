@@ -21,3 +21,4 @@ set POOL_SOLUTION dimen 2 default {};
 set ALL_COST dimen 3 default {};
 set ALL_COLUMNS dimen 2 default {};
 
+param USE_STAB := 1;
