@@ -2,7 +2,7 @@ reset;
 
 option presolve 0;
 option solver cplexamp;
-option cplex_options 'outlev=0';
+option cplex_options 'outlev=0 threads=1';
 
 option solver_msg 0;
 
@@ -17,5 +17,5 @@ model master.mod;
 model columns_generation.mod;
 
 
-param DISPLAY_MASTER_SOLVE := 0;
-param DISPLAY_SLAVE_SOLVE  := 0;
+param DISPLAY_MASTER_SOLVE default 0;
+param DISPLAY_SLAVE_SOLVE  default 0;

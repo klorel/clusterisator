@@ -1,0 +1,35 @@
+
+problem slave_exact;
+let STEP := "XS";
+
+if DISPLAY_SLAVE_SOLVE == 1 then{
+	option cplex_options 'outlev=1 mipdisplay=2 threads=1 nodes=1 cutpass=-1';
+	option solver_msg 1;
+	solve reduced_cost;
+	option solver_msg 0;
+}else{
+	option cplex_options 'outlev=0 mipdisplay=2 threads=1 nodes=1 cutpass=-1';
+
+	close slave.log;
+	solve reduced_cost > slave.log;
+}
+if reduced_cost <= ZERO_REDUCED_COST then{
+	display 'totot';
+	if DISPLAY_SLAVE_SOLVE == 1 then{
+		option cplex_options 'outlev=1 mipdisplay=2 threads=1 nodes=100 cutpass=-1';
+		option solver_msg 1;
+		solve reduced_cost;
+		option solver_msg 0;
+	}else{
+		option cplex_options 'outlev=0 mipdisplay=2 threads=1 nodes=100 cutpass=-1';
+	
+		close slave.log;
+		solve reduced_cost > slave.log;
+	}
+};
+
+if not solve_result in {'limit'} then { display solve_result;exit;};
+
+let POOL_COST := {(1, slave_cost, reduced_cost)};
+let POOL_SOLUTION := setof{__v in V: y[__v] > 0.5}(1, __v);
+

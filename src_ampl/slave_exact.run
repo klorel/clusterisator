@@ -1,16 +1,18 @@
 
 problem slave_exact;
 if DISPLAY_SLAVE_SOLVE == 1 then{
-	option cplex_options 'outlev=1 mipdisplay=2';
+	option cplex_options 'outlev=1 mipdisplay=2 threads=1';
 	option solver_msg 1;
 	solve reduced_cost;
 	option solver_msg 0;
 }else{
+	option cplex_options 'outlev=0 mipdisplay=2 threads=1';
 	close slave.log;
 	solve reduced_cost > slave.log;
 }
 let STEP := "EXACT";
-if solve_result != 'solved' then exit;
+if solve_result != 'solved' then{ display solve_result;exit;}
+
 
 let POOL_COST := {(1, slave_cost, reduced_cost)};
 let POOL_SOLUTION := setof{__v in V: y[__v] > 0.5}(1, __v);
@@ -42,6 +44,7 @@ if USE_STAB != 0 then{
 		let NB_SS := NB_SS+1;
 		let NB_NS := 0;
 		let AT_LEAST_ONE_SS := 1;
+		
 	}else{
 		let BUNDLE_STEP := 'NS';
 		let NB_NS := NB_NS+1;

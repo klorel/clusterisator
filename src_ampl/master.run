@@ -1,6 +1,6 @@
 
 problem master;
-
+option cplex_options 'outlev=1 mipdisplay=2 threads=1 bardisplay=1 dualopt';
 if DISPLAY_MASTER_SOLVE == 1 then{
 #	option solver_msg 1;
 #	option cplex_options 'outlev=1 lpdisplay=2';
@@ -10,18 +10,25 @@ if DISPLAY_MASTER_SOLVE == 1 then{
 	solve MASTER_OBJ > master.log;
 };
 #printf "master solve took %20d\n", time()-M_TIME;
-if solve_result != 'solved' then exit;
+if solve_result != 'solved' then { display solve_result;exit;};
 
 let{v in V} PI[v] := set_partitionning[v].dual;
 
+for{v in V}{
+	printf "%10.5f%10.5f", CENTER[v], PI[v];
+	printf{i in 1..N_BRANCHES}"%10.5f", max(0, z_neg[v, N_BRANCHES-i+1].rc);
+	printf{i in 1..N_BRANCHES}"%10.5f", max(0, z_pos[v, i].rc);
+	printf"\n";
+};
+
+#display PI, CENTER;
+let OPT_ERROR := max{v in V}abs(CENTER[v]-PI[v]);
 
 let CG_BOUND := sum{col in COLS}COST[col]*x[col];
 
 let POOL_COST := {};
 let POOL_SOLUTION  := {};
 let STEP := "UNKNOWN";
-
-
 
 
 if USE_STAB == 1 then{
@@ -34,9 +41,13 @@ if USE_STAB == 1 then{
 	#display C_DOT_X, PI_DOT_B, max{col in COLS}(COST[col] - sum{(v, col, val) in SET_PARTITIONNING_V_COL_VAL}val*PI[v]);
 	#display PHI_B_PI;
 	#display fake_constraint[USE_STAB].dual;
-	let PHI_B_PI := PI_DOT_B + FAKE_RHS * max{col in COLS}
-		(COST[col] - sum{(col, v) in ALL_COLUMNS}PI[v]);		
+	let PHI_B_PI := PI_DOT_B;
+	
+	let PHI_B_PI := MASTER_OBJ;
+	#let PHI_B_PI := PHI_B_PI + FAKE_RHS * max{col in COLS}(COST[col] - sum{(col, v) in ALL_COLUMNS}PI[v]);		
+
 	#display max{v in V}(PI[v]-CENTER[v]);
 	#display max{v in V}(PI[v]);
 	#display Z_COST, Z_WIDTH;
 };
+

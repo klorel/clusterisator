@@ -29,6 +29,7 @@ repeat{
 	problem DEFAULT;
 	
 	# heuristic pricing
+	include exact_heuristic.run;
 	# include slave_heuristic.run;
 	
 	# exact pricing if heuristic failed	
@@ -50,11 +51,11 @@ repeat{
 		printf "%10s%17.8E%17.8E", 
 		BUNDLE_STEP, 
 		FEAS_ERROR, 
-		if OPT_ERROR >= 1e10 then -1 else OPT_ERROR; 
+		OPT_ERROR;
 		if STEP != 'XS' then{
 			printf "%17.8E", PHI_PI;
 		}else{
-			printf "%25s", '-';
+			printf "%17s", '-';
 		}
 		printf "%17.8E%17.8E",  if PHI_PI_BAR >= 1e10 then -1 else PHI_PI_BAR, C_DOT_X;
 		printf "\n";
