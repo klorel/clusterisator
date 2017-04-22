@@ -23,3 +23,28 @@ if USE_STAB=0 then{
 		}
 	};
 };
+#if 1==0 then{
+#	if CG_SUCCESS > 0 then {
+#		include add_column.run;		
+#		if CG_SUCCESS > 0 and STEP != 'EXACT' then{
+#			# we cannot check for SS or NS as EXACT was not called
+#			let BUNDLE_STEP := 'XS';		
+#		}else{			
+#
+#		};
+#	}else{
+#		# launch exact only is feasibility is near 0
+#		if CG_STEP == 'VNS' then{
+#			if FEAS_ERROR >= 1e-6 then 
+#				let PARAM_PENALTY := PARAM_PENALTY * 0.5;
+#			else
+#				let CG_STEP := 'VNS_FEAS';
+#		}else{
+#			if FEAS_ERROR <= 1e-6 then
+#				let CG_STOP := 1;
+#			else{
+#				let PARAM_PENALTY := PARAM_PENALTY * 0.5;
+#			}			
+#		};
+#	};
+#};

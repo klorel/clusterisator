@@ -12,6 +12,8 @@ display B;
 display card(V);
 display card(E);
 
+display 1..card(V) diff V;
+exit;
 let CG_STOP := 0;
 let CG_ITE := 0;
 
@@ -29,7 +31,7 @@ repeat{
 	problem DEFAULT;
 	
 	# heuristic pricing
-	include exact_heuristic.run;
+	#include exact_heuristic.run;
 	# include slave_heuristic.run;
 	
 	# exact pricing if heuristic failed	

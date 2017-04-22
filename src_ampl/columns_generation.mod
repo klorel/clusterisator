@@ -18,3 +18,5 @@ param CG_ADDED default 0;
 param HEUR_NUM default 0;
 
 param STEP symbolic default "";
+
+set ALL_CG_STEP := { "EXACT", "VNS"};

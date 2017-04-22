@@ -1,6 +1,6 @@
 
 problem master;
-option cplex_options 'outlev=1 mipdisplay=2 threads=1 bardisplay=1 dualopt';
+option cplex_options 'outlev=1 mipdisplay=2 threads=1';
 if DISPLAY_MASTER_SOLVE == 1 then{
 #	option solver_msg 1;
 #	option cplex_options 'outlev=1 lpdisplay=2';
@@ -14,12 +14,18 @@ if solve_result != 'solved' then { display solve_result;exit;};
 
 let{v in V} PI[v] := set_partitionning[v].dual;
 
-for{v in V}{
-	printf "%10.5f%10.5f", CENTER[v], PI[v];
-	printf{i in 1..N_BRANCHES}"%10.5f", max(0, z_neg[v, N_BRANCHES-i+1].rc);
-	printf{i in 1..N_BRANCHES}"%10.5f", max(0, z_pos[v, i].rc);
-	printf"\n";
+for{v in V:1=0}{
+	printf "%10.5f%10.5f%10.5f%10.5f%10.5f%10.5f\n"
+		, CENTER[v]
+		, PI[v]
+		, sum{i in 1..N_BRANCHES:i==1}(+dual_neg[v, i]-CENTER[v])
+		, sum{i in 1..N_BRANCHES:i==1}(+dual_pos[v, i]-CENTER[v])
+		, sum{i in 1..N_BRANCHES}+dual_neg[v, i]*Z_COST[i]
+		, sum{i in 1..N_BRANCHES}+dual_pos[v, i]*Z_COST[i]
+		;
 };
+#display Z_COST, Z_WIDTH;
+#display dual_neg, dual_pos;
 
 #display PI, CENTER;
 let OPT_ERROR := max{v in V}abs(CENTER[v]-PI[v]);

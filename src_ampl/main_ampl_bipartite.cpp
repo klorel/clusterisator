@@ -127,11 +127,18 @@ bool launch_heuristic(ampl::AMPL & ampl, DoubleVector & dual, ColumnGenerator & 
 	int i(0);
 	for (auto & t : PI) {
 		double const d = t.second.dbl();
+		if (i >= dual.size()) {
+			std::cout << i << " upper dual size " << dual.size() << std::endl;
+			std::exit(0);
+		}
 		dual[i] = -d;
 		++i;
 	}
 	generator.clear();
+	//std::cout << "vns ... "<<std::endl;
 	generator.vns();
+	//std::cout << "... end" << std::endl;
+	
 	//std::cout << generator.rc() << std::endl;
 	success = generator.rc() > ZERO_REDUCED_COST * 10;
 	if (success) {
@@ -142,13 +149,23 @@ bool launch_heuristic(ampl::AMPL & ampl, DoubleVector & dual, ColumnGenerator & 
 		std::vector<ampl::Tuple> pool_solution_tuples;
 		std::vector<ampl::Tuple> pool_cost_tuples;
 		for (auto const & kvp : generator.result()) {
-			if (kvp.first > ZERO_REDUCED_COST*10 && n<10) {
+			if (kvp.first > ZERO_REDUCED_COST*10 && n<1000) {
+				//std::cout << "n : "<<n << std::endl;
 				n += 1;
 				ampl::Tuple t_cost({ n, kvp.second->cost(), kvp.second->reducedCost() });
 				pool_cost_tuples.push_back(t_cost);
 				bool is_first = true;
+				//std::cout << n << " : ";
+				//for (auto const i : kvp.second->v()) {
+				//	std::cout << i << " ";
+				//}
+				//std::cout << std::endl;
 				for (auto const i : kvp.second->v()) {
-					ampl::Tuple t_solution({ n, i_to_v[i] });
+					//std::cout << std::setw(6) << n;
+					//std::cout << std::setw(6) << i;
+					//std::cout << std::setw(6) << i_to_v[i];
+					//std::cout << std::endl;
+					ampl::Tuple t_solution({ n, i_to_v[i]});
 					pool_solution_tuples.push_back(t_solution);
 				}
 			}
@@ -211,30 +228,43 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 	generator.setNumberByIte(0);
 	ampl::Set V = ampl.getSet("V");
 	ampl::Parameter PI = ampl.getParameter("PI");
-	dual.assign(V.size(), 0);
+	dual.assign(instance.nV(), 0);
+	std::vector<int> i_to_v(dual.size(), -1);
+	for (int i(0); i < i_to_v.size(); ++i) {
+		i_to_v[i] = i + 1;
+	}
+
 	int max_v(0);
 	for (auto & t : PI) {
 		int v = static_cast<int>(t.first[0].dbl());
 		max_v = std::max(max_v, v);
+		//std::cout << t.first.toString() << " - ";
+		//std::cout << std::setw(6) << v;
+		//std::cout << std::endl;
 	}
-	std::vector<int> v_to_i(max_v + 1);
-	std::vector<int> i_to_v(dual.size());
+	std::vector<int> v_to_i(max_v + 1, -1);
 	int i(0);
+	std::cout << "max_v is " << max_v << std::endl;
 	for (auto & t : PI) {
 		int v = static_cast<int>(t.first[0].dbl());
-		v_to_i[v-1] = i;
-		i_to_v[i] = v;
+		v_to_i[v] = i;
 		//std::cout << std::setw(6) << i;
 		//std::cout << std::setw(6) << v;
 		//std::cout << std::endl;
 		++i;
 	}
-
+	//for (int v(0); v < v_to_i.size(); ++v) {
+	//	std::cout << std::setw(6) << v;
+	//	std::cout << std::setw(6) << v_to_i[v];
+	//	std::cout << std::endl;
+	//}
+	//std::exit(0);
 	AmplColumns all_columns;
 	AmplColumns pool;
 
 	extract_pool(ampl, "ALL_COST", "ALL_COLUMNS", all_columns);
 	std::string step;
+	std::cout << "begin columns generation" << std::endl;
 	while (cg_stop.get().dbl() != 1.0) {
 		++cg_ite;
 		ampl.read("master.run");
@@ -244,8 +274,8 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 		launch_heuristic(ampl, dual, generator, i_to_v);
 		
 		if (cg_success.get().dbl() == 0) {
-			ampl.read("slave_exact.run");
-			ampl.eval("problem DEFAULT;");
+//			ampl.read("slave_exact.run");
+//			ampl.eval("problem DEFAULT;");
 			step = "EXACT";
 		}
 		else {
@@ -310,6 +340,7 @@ int main(int argc, char **argv) {
 
 	instance.out();
 	// oracles creation
+	std::cout << "nV() : "<<instance.nV() << std::endl;
 
 	try {
 		ampl::AMPL ampl;
