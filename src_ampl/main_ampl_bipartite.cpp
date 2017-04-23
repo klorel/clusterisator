@@ -185,7 +185,50 @@ void get_exact(ampl::AMPL & ampl, AmplColumns const & columns) {
 	ampl.read("slave_exact.run");
 }
 
-void add_column(ampl::AMPL & ampl, AmplColumns const & columns) {
+void add_column(ampl::AMPL & ampl) {
+	ampl::Set pool_solution = ampl.getSet("POOL_SOLUTION");
+	ampl::Set pool_cost = ampl.getSet("POOL_COST");
+	ampl::Parameter cg_added = ampl.getParameter("CG_ADDED");
+	ampl::Set all_columns = ampl.getSet("ALL_COLUMNS").;
+	ampl::Set all_cost = ampl.getSet("ALL_COST");
+	ampl::Set cols = ampl.getSet("COLS");
+	//cols.getValues().
+	int current_size(static_cast<int>(all_cost.size()));
+	std::cout << "all_cost.size()      : " << all_cost.size() << std::endl;
+	std::cout << "all_columns.size()   : " << all_columns.size() << std::endl;
+	std::cout << "pool_cost.size()     : " << pool_cost.size() << std::endl;
+	std::cout << "pool_solution.size() : " << pool_solution.size() << std::endl;
+	std::vector<ampl::Tuple> new_all_cost(all_cost.size() + pool_cost.size());
+	int i(0); 
+	for (auto t : all_cost.getValues()) {
+		new_all_cost[i] = { t[0], t[1], t[2] };
+		++i;
+	}
+	int n(0);
+	std::vector<double> rc(pool_cost.size(), 0);
+	for (auto const & kvp : pool_cost.getValues()) {
+		rc[(int)(kvp[0].dbl()-1)] = kvp[2].dbl();
+		if (kvp[2].dbl() > ZERO_REDUCED_COST) {
+			new_all_cost[i] = { current_size+kvp[0].dbl(), kvp[1], kvp[2] };
+			++i;
+			++n;
+		}
+	}
+	std::cout << "n = " << n << std::endl;
+	std::vector<ampl::Tuple> new_all_solution(all_columns.size() + pool_solution.size());
+	i = 0;
+	for (auto t : all_columns.getValues()) {
+		new_all_solution[i] = { t[0], t[1] };
+		++i;
+	}
+	for (auto const & kvp : pool_solution.getValues()) {
+		if (rc[(int)(kvp[0].dbl()-1)] > ZERO_REDUCED_COST) {
+			new_all_solution[i] = { current_size+kvp[0].dbl(), kvp[1]};
+			++i;
+		}
+	}
+//	ampl.getSet("TOTO_COST").setValues(new_all_cost.data(), n);
+//	ampl.getSet("TOTO_COLUMNS").setValues(new_all_solution.data(), i);
 
 }
 int merge_pool(AmplColumns const & lhs, AmplColumns & rhs) {
@@ -282,7 +325,10 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 			step = "VNS";
 		}
 		//extract_pool(ampl, "POOL_COST", "POOL_SOLUTION", pool);
-		
+		if (cg_success.get().dbl() != 0) {
+			ampl.read("add_column.run");
+			add_column(ampl);
+		}
 		ampl.read("check_and_add.run");
 		ampl.eval("problem DEFAULT;");
 		

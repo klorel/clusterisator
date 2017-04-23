@@ -1,6 +1,6 @@
 include main.run;
 data;
-set E := include ../txt/hollyw.txt;
+set E := include ../txt/toy.txt;
 model;
 
 include init.run;
@@ -12,8 +12,6 @@ display B;
 display card(V);
 display card(E);
 
-display 1..card(V) diff V;
-exit;
 let CG_STOP := 0;
 let CG_ITE := 0;
 

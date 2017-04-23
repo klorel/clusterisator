@@ -1,13 +1,13 @@
 
 if USE_STAB=0 then{
 	if CG_SUCCESS> 0 then{
-		include add_column.run;
+		#include add_column.run;
 	}else{
 		let CG_STOP := 1;
 	};
 }else{
 	if CG_SUCCESS > 0 then {
-		include add_column.run;		
+#		include add_column.run;		
 		if CG_SUCCESS > 0 and STEP != 'EXACT' then{
 			# we cannot check for SS or NS as EXACT was not called
 			let BUNDLE_STEP := 'XS';		

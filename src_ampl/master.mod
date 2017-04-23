@@ -1,7 +1,7 @@
 
 param N_BRANCHES := if USE_STAB == 0 then 0 else 6;
 param WIDTH default 1e-4;
-param PARAM_PENALTY default 1e-5;
+param PARAM_PENALTY default 1e-7;
 
 param CENTER{v in V} default 0;
 
@@ -49,10 +49,10 @@ subject to dual_pos{v in V, i in 1..N_BRANCHES}: z_pos[v, i] <= Z_COST[i];
 
 var x{COLS} >= 0;
 
-var c_dot_x = +sum{col in COLS}COST[col]*x[col];
+var c_dot_x = +sum{(col, cost, rc) in ALL_COST}cost*x[col];
 
 maximize MASTER_OBJ:
-	+sum{col in COLS}COST[col]*x[col]
+	+sum{(col, cost, rc) in ALL_COST}cost*x[col]
 		
 	+sum{v in V, i in 1..N_BRANCHES}z_neg[v, i]*(+CENTER[v]+Z_WIDTH[i])
 	+sum{v in V, i in 1..N_BRANCHES}z_pos[v, i]*(-CENTER[v]-Z_WIDTH[i])

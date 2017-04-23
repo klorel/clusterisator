@@ -2,12 +2,12 @@
 let CG_ADDED := 0;
 for{(__new_col, __cost, __rc) in POOL_COST: __rc>ZERO_REDUCED_COST}{
 	let COLS := COLS union {NEXT_ID};
-	# set covering indexes
-#	let SET_PARTITIONNING_V_COL_VAL := SET_PARTITIONNING_V_COL_VAL union union{(__new_col, __v) in POOL_SOLUTION}{(__v, NEW_ID, 1)};
-	let COST[NEW_ID] := __cost;
 	
 	let CG_ADDED := CG_ADDED + 1;
 	
 	let ALL_COST := ALL_COST union {(NEW_ID, __cost, __rc)};
 	let ALL_COLUMNS := ALL_COLUMNS union union{(__new_col, __v) in POOL_SOLUTION}{(NEW_ID, __v)};
 };
+
+display card(ALL_COST);
+display card(ALL_COLUMNS);

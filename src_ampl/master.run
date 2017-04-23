@@ -30,12 +30,13 @@ for{v in V:1=0}{
 #display PI, CENTER;
 let OPT_ERROR := max{v in V}abs(CENTER[v]-PI[v]);
 
-let CG_BOUND := sum{col in COLS}COST[col]*x[col];
+let CG_BOUND := c_dot_x;
 
 let POOL_COST := {};
 let POOL_SOLUTION  := {};
 let STEP := "UNKNOWN";
 
+let CG_ADDED := 0;
 
 if USE_STAB == 1 then{
 	let C_DOT_X := c_dot_x;
