@@ -1,18 +1,20 @@
 include main.run;
-data;
-set E := include ../txt/divorces.txt;
-model;
-
+include read_E.run;
 include init.run;
 
 param IPS_ITE	default 0;
 param IPS_PI{V}	default 0;
 param IPS_STOP	default 0;
 param IPS_N 	default 0;
-problem master;
 
-maximize IPS_OBJ: sum{(col, cost, rc) in ALL_COST}(cost - sum{(col, v) in ALL_COLUMNS}IPS_PI[v]*0)*x[col];
-	
+problem IPS_PRICING: x;
+
+subject to ips_compatibility{x_z in Z}: +sum{(x_z, v, value) in Q_Z, (col, v) in ALL_COLUMNS}value*x[col];
+
+subject to ips_convexity: +sum{col in COLS}x[col] = 1;
+
+maximize IPS_REDUCED_COST: +sum{(col, cost, rc) in ALL_COST}(cost - sum{(col, v) in ALL_COLUMNS}IPS_PI[v])*x[col];
+
 problem DEFAULT;
 
 display V;
@@ -34,11 +36,10 @@ repeat{
 	# UPDATE the basis
 	###########################################################################
 	problem master;
-	unfix x;
 
 	let DISPLAY_MASTER_SOLVE := 0;
 	option cplex_options 'outlev=1 mipdisplay=2 lpdisplay=1 threads=1 dualopt';
-	
+	let DISPLAY_MASTER_SOLVE := 1;
 	if DISPLAY_MASTER_SOLVE == 1 then{
 		solve MASTER_OBJ;
 	}else{
@@ -47,26 +48,12 @@ repeat{
 	};
 	if solve_result != 'solved' then { display solve_result;exit;};
 	
-#	display {col in COLS: x[col]>1e-6}x[col];
-	
 	let{v in V} IPS_PI[v] := set_partitionning[v].dual;
-	
+	display x.sstatus;
 	include ips_q.run;
 	# fix uncompatible column
-	display Q;
-#	fix{(col, cost, rc) in ALL_COST: max{col_z in Z}abs(0+sum{(col_z, col_v) in NZ_Q}Q[col_z, col_v])>1e-6}x[col] := 0;
-	
-	#fix{(col, cost, rc) in ALL_COST:x[col].sstatus!='bas'}x[col];
-	#fix{(col, cost, rc) in ALL_COST:x[col] <= 1e-6}x[col];
-	#	fix;
-	#	let{(col, cost, rc) in ALL_COST:x[col].sstatus=='bas' and x[col]>1e-6}LB[col] := -Infinity;
-	
-#	display {(col, cost, rc) in ALL_COST:x[col].sstatus!='bas'}(cost - sum{(col, v) in ALL_COLUMNS}IPS_PI[v]);
-#	display card({(col, cost, rc) in ALL_COST:x[col].sstatus=='bas'});
-#	display card({(col, cost, rc) in ALL_COST:x[col].sstatus=='bas' and x[col] <= 1e-6});
-#	display card({(col, cost, rc) in ALL_COST:x[col].sstatus=='bas' and x[col] > 1e-6});
-	
- #	exit;
+	display Q_Z;
+
 	let CG_BOUND := c_dot_x;
 	
 	let POOL_COST := {};
@@ -78,27 +65,28 @@ repeat{
 	let CG_ITE := 0;
 	let CG_STOP := 0;
 #	display IPS_PI;
+	
 	repeat{
 		let IPS_N := card(COLS);
-	#display x.sstatus;
+				
 		let CG_ITE := CG_ITE + 1;
+
 		###########################################################################
 		# GENERATE columns maximizing the reduced cost
 		###########################################################################
-		problem master;
+		problem IPS_PRICING;
+
 		let DISPLAY_MASTER_SOLVE := 0;
 		option cplex_options 'outlev=1 mipdisplay=2 lpdisplay=1 threads=1 dualopt';
 		if DISPLAY_MASTER_SOLVE == 1 then{
-			solve IPS_OBJ;
+			solve IPS_REDUCED_COST;
 		}else{
 			close master.log;
-			solve IPS_OBJ > master.log;
+			solve IPS_REDUCED_COST > master.log;
 		};
 		if solve_result != 'solved' then { display solve_result;exit;};
 		
-		let{v in V} PI[v] := set_partitionning[v].dual + 0*IPS_PI[v];
-		
-		let OPT_ERROR := max{v in V}abs(CENTER[v]-PI[v]);
+		let{v in V} PI[v] := IPS_PI[v]+sum{(x_z, v, value) in Q_Z}value*ips_compatibility[x_z];
 		
 		let CG_BOUND := c_dot_x;
 		
@@ -108,19 +96,12 @@ repeat{
 		
 		let CG_ADDED := 0;
 		###########################################################################
-		problem DEFAULT;
-			
-		# exact pricing if heuristic failed	
-		if CG_SUCCESS == 0 then{
-			include slave_exact.run;
-			problem DEFAULT;
-			
-		};
-		
+		include slave_exact.run;
+		problem DEFAULT;		
 		include check_and_add.run;
 		let CG_ADDED := card({(__new_col, __cost, __rc) in POOL_COST: __rc>ZERO_REDUCED_COST});
 		problem DEFAULT;
-		printf "%6d%6d%6d%6d%8s%17.8E%17.8E%17.8E", IPS_ITE, 	CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, IPS_OBJ, CG_REDUCED_COST;
+		printf "%6d%6d%6d%6d%8s%17.8E%17.8E%17.8E", IPS_ITE, 	CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, IPS_REDUCED_COST, CG_REDUCED_COST;
 		printf "\n";
 		if CG_STOP != 1 then{
 			include add_column.run;		

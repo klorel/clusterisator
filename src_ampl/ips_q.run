@@ -1,29 +1,44 @@
 problem master;
-#display {col in COLS: x[col].sstatus == 'bas'};
 
-let BASIS := {col in COLS: x[col].sstatus == 'bas'};
-let P := {col in BASIS:x[col]>1e-6};
-let Z := {col in BASIS:x[col]<=1e-6};
+let BASIS := {x_b in COLS: x[x_b].sstatus == 'bas'};
 
-let COL_X := setof{col in BASIS}(col, if x[col] > 1e-6 then x[col] else 0);
+if card(BASIS) != card(V) then{
+	printf "WRONG BASIS SIZE !!! %d, should be %d\n", card(BASIS), card(V);
+	exit;
+};
+let P := {x_b in BASIS:x[x_b]> 1e-6};
+let Z := {x_b in BASIS:x[x_b]<=1e-6};
+
+let COL_X := setof{x_b in BASIS}(x_b, if x[x_b] > 1e-6 then x[x_b] else 0);
+
+#display A_B;
 #display card(COL_X);
 problem Q_BUILDER;
 #expand;
-solve > ips_q.log;
+solve;# > ips_q.log;
 
+if solve_result != 'solved' then{
+	#expand;
+	printf"FAILED do build Q\n";
+	display BASIS;
+	display x.sstatus;
+	exit;
+};
 #exit;
 
-let NZ_Q := {v in V, col in BASIS: abs(q_builder[v, col])>1e-8};
-
-let Q   := setof{(v, col) in NZ_Q} (v, col, q_builder[v, col]);
-let Q_P := setof{col in P, (v, col, val) in Q} (col, v, val);
-let Q_Z := setof{col in Z, (v, col, val) in Q} (col, v, val);
+let Q_P := setof{x_p in P, v in V : abs(q_P[x_p, v])>1e-8} (x_p, v, q_P[x_p, v]);
+let Q_Z := setof{x_z in Z, v in V : abs(q_Z[x_z, v])>1e-8} (x_z, v, q_Z[x_z, v]);
 
 # compatibility contsraint is then
-# subject to compatibility{col_z in Z}: sum{col_v in V}Q_Z[col_z, col_v]*y[col_v] = 0;   
+# subject to compatibility{x_z in Z}: sum{col_v in V}Q_Z[x_z, col_v]*y[col_v] = 0;   
 #display BASIS, P, Z;
 #display Q_Z;
 #display least_square;
 #display q_builder;
 problem DEFAULT;
 
+# - x_z row 
+# - col
+# - Q[x_z] A[col]
+
+#let Q_A_VAL := setof{(x_z

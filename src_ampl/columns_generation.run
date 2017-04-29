@@ -1,9 +1,5 @@
 include main.run;
-data;
-set E := include ../txt/divorces.txt;
-model;
-
-
+include read_E.run;
 include init.run;
 
 

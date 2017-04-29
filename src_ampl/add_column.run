@@ -1,10 +1,10 @@
 
-if card(COLS)>1 then{
+if card(COLS)<-1 then{
 	if USE_IPS == 0 then
 		include ips_q.run;
 	let Q_Z_COL := 
-		setof{(__new_col, __cost, __rc) in POOL_COST, col_z in Z: __rc>ZERO_REDUCED_COST}(
-			__new_col, col_z, 0+sum{(__new_col, col_v) in POOL_SOLUTION, (col_z, col_v, value) in Q_Z}value
+		setof{(__new_col, __cost, __rc) in POOL_COST, x_z in Z: __rc>ZERO_REDUCED_COST}(
+			__new_col, x_z, 0+sum{(__new_col, v) in POOL_SOLUTION, (x_z, v, value) in Q_Z}value
 		);
 	let COL_COMPATIBLE := {(__new_col, __cost, __rc) in POOL_COST:  __rc>ZERO_REDUCED_COST and max{(__new_col, col_z, val) in Q_Z_COL}abs(val) <= 1e-6};
 #	display {(__new_col, __cost, __rc) in POOL_COST: max{(__new_col, col_z, val) in Q_Z_COL}abs(val) > 1e-6}max{(__new_col, col_z, val) in Q_Z_COL}abs(val);
@@ -24,4 +24,4 @@ setof{(__new_col, __cost, __rc) in POOL_COST, (__new_col, __v) in POOL_SOLUTION:
 
 let CG_ADDED := card({(__new_col, __cost, __rc) in POOL_COST: __rc>ZERO_REDUCED_COST});
 
-display POOL_COST;
+#display POOL_COST;

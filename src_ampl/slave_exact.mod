@@ -28,6 +28,4 @@ var reduced_cost_y = slave_cost_y - sum{v in V}PI[v]*y[v];
 
 var phi = slave_cost - sum{v in V}PI[v]*y[v];
 
-subject to ips_constraint{col_z in Z: USE_IPS == 1}: sum{(col_z, col_v, val) in Q_Z}val*y[col_v] = 0;   
-
 problem DEFAULT;
