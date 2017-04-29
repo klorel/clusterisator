@@ -1,7 +1,8 @@
 include main.run;
 data;
-set E := include ../txt/toy.txt;
+set E := include ../txt/divorces.txt;
 model;
+
 
 include init.run;
 
@@ -31,7 +32,7 @@ repeat{
 	# heuristic pricing
 	#include exact_heuristic.run;
 	# include slave_heuristic.run;
-	
+
 	# exact pricing if heuristic failed	
 	if CG_SUCCESS == 0 then{
 		include slave_exact.run;
@@ -40,9 +41,9 @@ repeat{
 	};
 	
 	include check_and_add.run;
+	include add_column.run;
 	problem DEFAULT;
-
-
+	
 	if USE_STAB == 0 or Z_IS_FIXED == 1 then {
 		printf "%6d%6d%6d%8s%17.8E%17.8E", CG_ITE, CG_COLS, CG_ADDED, STEP, CG_BOUND, CG_REDUCED_COST;
 		printf "\n";

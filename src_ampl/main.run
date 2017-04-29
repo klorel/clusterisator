@@ -10,6 +10,8 @@ problem DEFAULT;
 
 model init.mod;
 model base.mod;
+
+model ips_q.mod;
 model slave_exact.mod;
 model master.mod;
 

@@ -1,4 +1,5 @@
 
+
 param PI{V} default 0;
 
 param T_R := ceil(1+log(sum{r in R}D_R[r])/log(2))-1;
@@ -16,8 +17,8 @@ var y{V} binary;
 
 #subject to non_empty:sum{v in V}y[v]>=1;
 
-#model slave_exact_milp.mod;
-model slave_exact_binary_decomposition.mod;
+model slave_exact_milp.mod;
+#model slave_exact_binary_decomposition.mod;
 
 maximize reduced_cost: slave_cost - sum{v in V}PI[v]*y[v];
 
@@ -27,5 +28,6 @@ var reduced_cost_y = slave_cost_y - sum{v in V}PI[v]*y[v];
 
 var phi = slave_cost - sum{v in V}PI[v]*y[v];
 
+subject to ips_constraint{col_z in Z: USE_IPS == 1}: sum{(col_z, col_v, val) in Q_Z}val*y[col_v] = 0;   
 
 problem DEFAULT;

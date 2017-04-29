@@ -1,6 +1,8 @@
 
 problem master;
-option cplex_options 'outlev=1 mipdisplay=2 threads=1';
+let DISPLAY_MASTER_SOLVE := 0;
+#expand;
+option cplex_options 'outlev=1 mipdisplay=2 lpdisplay=1 threads=1 dualopt';
 if DISPLAY_MASTER_SOLVE == 1 then{
 #	option solver_msg 1;
 #	option cplex_options 'outlev=1 lpdisplay=2';
@@ -9,6 +11,10 @@ if DISPLAY_MASTER_SOLVE == 1 then{
 	close master.log;
 	solve MASTER_OBJ > master.log;
 };
+#display CENTER;
+#display sum{v in V: USE_STAB==2}0.5*(1/PARAM_PENALTY)*(CENTER[v]-z[v])^2;
+#display card({i in 1.._nvars: _var[i].sstatus == 'bas' and _var[i]>1e-6});
+#display {i in 1.._nvars: _var[i].sstatus == 'bas' and _var[i]>1e-6}_varname[i];
 #printf "master solve took %20d\n", time()-M_TIME;
 if solve_result != 'solved' then { display solve_result;exit;};
 
@@ -26,9 +32,14 @@ for{v in V:1=0}{
 };
 #display Z_COST, Z_WIDTH;
 #display dual_neg, dual_pos;
-
 #display PI, CENTER;
 let OPT_ERROR := max{v in V}abs(CENTER[v]-PI[v]);
+
+#display{v in V}(
+#	abs(CENTER[v]-PI[v])
+#	,
+#	sum{i in 1..N_BRANCHES}(dual_neg[v, i]+dual_pos[v, i])*Z_COST[i]
+#	);
 
 let CG_BOUND := c_dot_x;
 
@@ -38,7 +49,7 @@ let STEP := "UNKNOWN";
 
 let CG_ADDED := 0;
 
-if USE_STAB == 1 then{
+if USE_STAB > 0 then{
 	let C_DOT_X := c_dot_x;
 	let{v in V} FEAS_V[v] := 1-sum{(col, v) in ALL_COLUMNS}x[col];
 	
@@ -48,9 +59,16 @@ if USE_STAB == 1 then{
 	#display C_DOT_X, PI_DOT_B, max{col in COLS}(COST[col] - sum{(v, col, val) in SET_PARTITIONNING_V_COL_VAL}val*PI[v]);
 	#display PHI_B_PI;
 	#display fake_constraint[USE_STAB].dual;
-	let PHI_B_PI := PI_DOT_B;
+	#let PHI_B_PI := PI_DOT_B;
 	
-	let PHI_B_PI := MASTER_OBJ;
+	#let PHI_SCORE := setof{col in COLS}(col, 
+	#+sum{(col, cost, rc) in ALL_COST}cost
+	#-sum{(col, v) in ALL_COLUMNS}PI[v]);
+	
+	let PHI_B_PI := PI_DOT_B + FAKE_RHS * convexity;
+#	display PHI_SCORE;
+#	display PHI_B_PI, PI_DOT_B;
+	#let PHI_B_PI := MASTER_OBJ;
 	#let PHI_B_PI := PHI_B_PI + FAKE_RHS * max{col in COLS}(COST[col] - sum{(col, v) in ALL_COLUMNS}PI[v]);		
 
 	#display max{v in V}(PI[v]-CENTER[v]);

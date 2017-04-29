@@ -1,39 +1,29 @@
 
 problem slave_exact;
+
+#let DISPLAY_SLAVE_SOLVE := 1;
 if DISPLAY_SLAVE_SOLVE == 1 then{
-	option cplex_options 'outlev=1 mipdisplay=2 threads=1';
+	option cplex_options 'outlev=1 mipdisplay=2';
 	option solver_msg 1;
 	solve reduced_cost;
 	option solver_msg 0;
 }else{
-	option cplex_options 'outlev=0 mipdisplay=2 threads=1';
+	option cplex_options 'outlev=0 mipdisplay=2 ';
 	close slave.log;
 	solve reduced_cost > slave.log;
 }
 let STEP := "EXACT";
 if solve_result != 'solved' then{ display solve_result;exit;}
 
-
-let POOL_COST := {(1, slave_cost, reduced_cost)};
-let POOL_SOLUTION := setof{__v in V: y[__v] > 0.5}(1, __v);
-
+let POOL_SIZE := card(POOL_COST);
+let POOL_COST := POOL_COST union {(POOL_SIZE+1, slave_cost, reduced_cost)};
+let POOL_SOLUTION := POOL_SOLUTION union  setof{__v in V: y[__v] > 0.5}(POOL_SIZE+1, __v);
 
 if USE_STAB != 0 then{
 	let PHI_PI := PI_DOT_B + FAKE_RHS*reduced_cost;
 	
 	let SCORE := (PHI_PI - PHI_PI_BAR) - M*(PHI_B_PI - PHI_PI_BAR);
-	#display y;
-	#display PHI_PI;
-	#display PHI_PI_BAR;
-	#display PHI_B_PI;
-	
-	#display ratio, reduced_cost, cluster_card;
-	#display ratio*FAKE_RHS;
-	#exit;
-	#display (PHI_PI - PHI_PI_BAR);
-	#display  M*(PHI_B_PI - PHI_PI_BAR);
-	#display SCORE;
-	#display PHI_B_PI, PHI_PI, PI_DOT_B;
+
 	
 	# we can check for SS or NS as EXACT was called
 	if SCORE <= 0 or AT_LEAST_ONE_SS == 0 then{

@@ -134,10 +134,10 @@ bool ColumnGenerator::vns() {
 			}
 		}
 		else {
-			if (_vns->run(1, false))
+			if (_vns->run(3, false))
 				heuristicSucceeded = true;
-			if (_vns->columns().size() > _nColumnsByIte)
-				stopvns = true;
+			//if (_vns->columns().size() > _nColumnsByIte)
+			//	stopvns = true;
 		}
 	}
 	//for (int i(0); i < 5 && !stopvns; ++i) {

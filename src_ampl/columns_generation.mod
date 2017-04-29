@@ -20,3 +20,5 @@ param HEUR_NUM default 0;
 param STEP symbolic default "";
 
 set ALL_CG_STEP := { "EXACT", "VNS"};
+
+param CG_COUNTER default 0;

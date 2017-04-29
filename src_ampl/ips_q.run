@@ -1,0 +1,29 @@
+problem master;
+#display {col in COLS: x[col].sstatus == 'bas'};
+
+let BASIS := {col in COLS: x[col].sstatus == 'bas'};
+let P := {col in BASIS:x[col]>1e-6};
+let Z := {col in BASIS:x[col]<=1e-6};
+
+let COL_X := setof{col in BASIS}(col, if x[col] > 1e-6 then x[col] else 0);
+#display card(COL_X);
+problem Q_BUILDER;
+#expand;
+solve > ips_q.log;
+
+#exit;
+
+let NZ_Q := {v in V, col in BASIS: abs(q_builder[v, col])>1e-8};
+
+let Q   := setof{(v, col) in NZ_Q} (v, col, q_builder[v, col]);
+let Q_P := setof{col in P, (v, col, val) in Q} (col, v, val);
+let Q_Z := setof{col in Z, (v, col, val) in Q} (col, v, val);
+
+# compatibility contsraint is then
+# subject to compatibility{col_z in Z}: sum{col_v in V}Q_Z[col_z, col_v]*y[col_v] = 0;   
+#display BASIS, P, Z;
+#display Q_Z;
+#display least_square;
+#display q_builder;
+problem DEFAULT;
+

@@ -124,6 +124,7 @@ void extract_pool(ampl::AMPL & ampl, std::string const & name_cost, std::string 
 bool launch_heuristic(ampl::AMPL & ampl, DoubleVector & dual, ColumnGenerator & generator, std::vector<int> const & i_to_v) {
 	bool success(false);
 	ampl::Parameter PI = ampl.getParameter("PI");
+	ampl::Constraint convexity = ampl.getConstraint("convexity");
 	int i(0);
 	for (auto & t : PI) {
 		double const d = t.second.dbl();
@@ -149,7 +150,7 @@ bool launch_heuristic(ampl::AMPL & ampl, DoubleVector & dual, ColumnGenerator & 
 		std::vector<ampl::Tuple> pool_solution_tuples;
 		std::vector<ampl::Tuple> pool_cost_tuples;
 		for (auto const & kvp : generator.result()) {
-			if (kvp.first > ZERO_REDUCED_COST*10 && n<1000) {
+			if (kvp.first > ZERO_REDUCED_COST*10) {
 				//std::cout << "n : "<<n << std::endl;
 				n += 1;
 				ampl::Tuple t_cost({ n, kvp.second->cost(), kvp.second->reducedCost() });
@@ -189,7 +190,7 @@ void add_column(ampl::AMPL & ampl) {
 	ampl::Set pool_solution = ampl.getSet("POOL_SOLUTION");
 	ampl::Set pool_cost = ampl.getSet("POOL_COST");
 	ampl::Parameter cg_added = ampl.getParameter("CG_ADDED");
-	ampl::Set all_columns = ampl.getSet("ALL_COLUMNS").;
+	ampl::Set all_columns = ampl.getSet("ALL_COLUMNS");
 	ampl::Set all_cost = ampl.getSet("ALL_COST");
 	ampl::Set cols = ampl.getSet("COLS");
 	//cols.getValues().
@@ -249,6 +250,7 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 
 	ampl::Parameter cg_cols = ampl.getParameter("CG_COLS");
 	ampl::Parameter cg_bound = ampl.getParameter("CG_BOUND");
+	ampl::Objective master_obj = ampl.getObjective("MASTER_OBJ");
 	ampl::Parameter cg_reduced_cost = ampl.getParameter("CG_REDUCED_COST");
 
 	ampl::Parameter use_stab = ampl.getParameter("USE_STAB");
@@ -268,7 +270,7 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 
 	ColumnGenerator generator(&instance);
 	generator.setVns(&vnsOracle, dual, decisions);
-	generator.setNumberByIte(0);
+	generator.setNumberByIte(1);
 	ampl::Set V = ampl.getSet("V");
 	ampl::Parameter PI = ampl.getParameter("PI");
 	dual.assign(instance.nV(), 0);
@@ -308,26 +310,31 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 	extract_pool(ampl, "ALL_COST", "ALL_COLUMNS", all_columns);
 	std::string step;
 	std::cout << "begin columns generation" << std::endl;
+	int counter(0);
 	while (cg_stop.get().dbl() != 1.0) {
 		++cg_ite;
 		ampl.read("master.run");
 		ampl.eval("problem DEFAULT;");
-		step = "UNKNOWN";
+		step = "??";
 
 		launch_heuristic(ampl, dual, generator, i_to_v);
-		
-		if (cg_success.get().dbl() == 0) {
-//			ampl.read("slave_exact.run");
-//			ampl.eval("problem DEFAULT;");
-			step = "EXACT";
-		}
-		else {
-			step = "VNS";
-		}
-		//extract_pool(ampl, "POOL_COST", "POOL_SOLUTION", pool);
+		++counter;
+		//if (counter >= 5 || cg_success.get().dbl() == 0) {
+		//	ampl.read("slave_exact.run");
+		//	counter = 0;
+		//}
+//		if (cg_success.get().dbl() == 0) {
+////			ampl.read("slave_exact.run");
+////			ampl.eval("problem DEFAULT;");
+//			step = "EXACT";
+//		}
+//		else {
+//			step = "VNS";
+//		}
+//		//extract_pool(ampl, "POOL_COST", "POOL_SOLUTION", pool);
 		if (cg_success.get().dbl() != 0) {
 			ampl.read("add_column.run");
-			add_column(ampl);
+//			add_column(ampl);
 		}
 		ampl.read("check_and_add.run");
 		ampl.eval("problem DEFAULT;");
@@ -344,7 +351,8 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 			std::cout << std::setw(6) << cg_cols.get().dbl();
 			std::cout << std::setw(6) << cg_added.get().dbl();
 			std::cout << std::setw(6) << step;
-			std::cout << std::setw(17) << std::setprecision(10) << std::scientific << cg_bound.get().dbl();
+			//std::cout << std::setw(17) << std::setprecision(10) << std::scientific << cg_bound.get().dbl();
+			std::cout << std::setw(17) << std::setprecision(10) << std::scientific << master_obj.get().value();
 			std::cout << std::setw(17) << std::setprecision(10) << std::scientific << cg_reduced_cost.get().dbl();
 			std::cout << std::defaultfloat << std::endl;
 		}
@@ -353,7 +361,9 @@ void columns_generation(RegisteredModularityBInstance & instance, ampl::AMPL & a
 			std::cout << std::setw(6) << cg_cols.get().dbl();
 			std::cout << std::setw(6) << cg_added.get().dbl();
 			std::cout << std::setw(6) << step;
-			std::cout << std::setw(17) << std::setprecision(10) << std::scientific << cg_bound.get().dbl();
+			//std::cout << std::setw(17) << std::setprecision(10) << std::scientific << cg_bound.get().dbl();
+			std::cout << std::setw(17) << std::setprecision(10) << std::scientific << master_obj.get().value();
+
 			std::cout << std::setw(17) << std::setprecision(10) << std::scientific << cg_reduced_cost.get().dbl();
 
 			std::cout << std::setw(10) << bundle_step.get().str();
